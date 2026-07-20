@@ -85,17 +85,11 @@ button.small{padding:4px 10px;font-size:11px;box-shadow:2px 2px 0 rgba(51,38,26,
 .gcard .gdims{font-size:9px;color:var(--ink2);margin-top:3px}
 
 .gallery .glabel .gbtns{display:flex;gap:6px}
-.cartitle{
-  display:flex;align-items:baseline;gap:10px;width:100%;text-align:left;
-  font-family:'Young Serif',serif;font-size:16px;color:var(--ink);
-  background:none;border:none;box-shadow:none;padding:0 0 8px;cursor:pointer;
-}
-.cartitle:hover{transform:none;box-shadow:none;color:var(--terra-d)}
-.cartitle .caret{color:var(--terra);font-size:13px;transition:transform .15s;display:inline-block}
-.cartitle .carhint{font-family:'Fragment Mono',monospace;font-size:10.5px;color:var(--ink2);letter-spacing:.05em}
-#carnetWrap.closed .caret{transform:rotate(-90deg)}
-#carnetWrap.closed #carnetBody{display:none}
-#carnetWrap{border-bottom:1.5px dashed var(--line);padding-bottom:6px}
+.carnet-btn{display:flex;align-items:center;gap:8px}
+.carnet-btn .caret{color:var(--terra);font-size:11px;transition:transform .15s;display:inline-block}
+.carnet-btn.collapsed .caret{transform:rotate(-90deg)}
+#carnetWrap{border-bottom:1.5px dashed var(--line);padding-bottom:16px}
+#carnetWrap.closed{display:none}
 .gcard{position:relative}
 .gcard .gact{
   position:absolute;top:2px;right:2px;display:none;gap:2px;
@@ -232,6 +226,8 @@ select:focus{outline:none;border-color:var(--glaze)}
 #synthInfo{font-size:11.5px;color:var(--ink2);margin-bottom:8px}
 #synthInfo b{color:var(--ink)}
 .srow{display:flex;gap:8px}
+.srow + .srow{margin-top:8px}
+.srow-export{justify-content:flex-end}
 #projName{
   flex:1;min-width:0;font-family:'Fragment Mono',monospace;font-size:12px;color:var(--ink);
   padding:7px 9px;border:1.5px solid var(--line);border-radius:2px;background:#fbf6ea;
@@ -322,15 +318,21 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
 #printArea svg .center-mark{stroke:#b8502a;stroke-width:.5}
 #printArea svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:#33261a}
 #printArea svg .plabel{font-family:'Young Serif',serif;font-size:4.6px;fill:#b8502a}
-@page{size:A4 portrait;margin:0}
+@page portrait{size:A4 portrait;margin:0}
+@page landscape{size:A4 landscape;margin:0}
 @media print{
   body{background:#fff}
   body::after{display:none}
   body > :not(#printArea){display:none !important}
   #printArea{display:block}
   .page{
+    page:portrait;
     width:210mm;height:296mm;padding:8mm 10mm 0;position:relative;
     page-break-after:always;background:#fff;color:#000;
+  }
+  .page.landscape{
+    page:landscape;
+    width:297mm;height:208mm;padding:8mm 10mm 0;
   }
 }
 </style>
@@ -349,15 +351,11 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
     </div>
   </div>
   <div class="actions">
-    <button id="btnSvg" class="small">Télécharger tout (SVG)</button>
+    <button id="carnetToggle" class="carnet-btn"><span class="caret">▾</span> Mon carnet de pièces</button>
   </div>
 </header>
 
 <section class="gallery" id="carnetWrap">
-  <button class="cartitle" id="carnetToggle">
-    <span class="caret">▾</span> Mon carnet de pièces
-    <span class="carhint">galerie de départ &amp; pièces enregistrées</span>
-  </button>
   <div id="carnetBody">
     <div class="glabel">Galerie de départ — clique pour charger la forme et les cotes</div>
     <div class="gcards" id="galleryCards"></div>
@@ -464,8 +462,11 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
         <div class="srow">
           <input type="text" id="projName" placeholder="nom de la pièce (pour le carnet)…" maxlength="60">
           <button class="small" id="btnSaveBar">enregistrer</button>
+        </div>
+        <div class="srow srow-export">
+          <button class="small" id="btnSvg" title="télécharger chaque gabarit en fichier SVG">SVG</button>
           <button class="small" id="btnPdf" title="télécharger les gabarits en PDF">PDF</button>
-          <button class="primary" id="btnPrint">Imprimer</button>
+          <button class="primary" id="btnPrint">Imprimer les gabarits</button>
         </div>
       </div>
     </div>
@@ -1597,34 +1598,51 @@ $('#ovApply').onclick = () => {
 /* ---------------------------------------------------------------
    UI : patrons
    --------------------------------------------------------------- */
-const TILE_W = 190, TILE_H = 255;   // zone utile A4 (marges 10 mm + bandeau)
+/* zones utiles A4 (mm) — marges ~10 mm + bandeau ; portrait ET paysage */
+const PG = { P: { w: 190, h: 268 }, L: { w: 277, h: 188 } };
+const GAP = 8, LBL = 7;   // espacement entre pièces / réserve d'étiquette (mm)
+const TILE_W = PG.P.w, TILE_H = PG.P.h;
 
 function tilesFor(vb){ return { cols: Math.ceil(vb.w/TILE_W), rows: Math.ceil(vb.h/TILE_H) }; }
 
+/* meilleure disposition d'une pièce : essaie portrait/paysage × pivot 0/90°,
+   garde le moins de feuilles (à égalité : portrait, puis raccord vertical) */
+function pieceLayout(r){
+  const { w, h } = r.vb;
+  const opts = [];
+  for(const orient of ['P','L']){
+    const { w:tw, h:th } = PG[orient];
+    opts.push({ orient, rot:false, cols:Math.ceil(w/tw), rows:Math.ceil(h/th) });
+    opts.push({ orient, rot:true,  cols:Math.ceil(h/tw), rows:Math.ceil(w/th) });
+  }
+  opts.sort((a,b) => {
+    const na = a.cols*a.rows, nb = b.cols*b.rows;
+    if(na !== nb) return na - nb;
+    if((a.orient==='P') !== (b.orient==='P')) return a.orient==='P' ? -1 : 1;
+    return (a.cols - a.rows) - (b.cols - b.rows);   // préfère plus de lignes que de colonnes
+  });
+  return opts[0];
+}
+
 /* ---------------------------------------------------------------
    Planification d'impression :
-   - les pièces qui tiennent sur une feuille (éventuellement pivotées
-     de 90°) sont imbriquées ensemble sur des « planches » communes ;
-   - les grandes pièces sont pivotées si ça réduit le nombre de
-     feuilles, puis débitées en mosaïque centrée.
+   - les pièces qui tiennent sur UNE feuille portrait sont imbriquées
+     ensemble sur des « planches » communes ;
+   - les autres sont posées sur leur meilleure orientation (portrait
+     ou paysage) puis, si trop grandes, débitées en mosaïque centrée.
    --------------------------------------------------------------- */
 function planPrint(pieces){
-  const GAP = 8, LBL = 7;   // espacement entre pièces / réserve d'étiquette (mm)
   const smalls = [], bigs = [];
   pieces.forEach(p => {
     const r = pieceRender(p, 'print');
     const {w, h} = r.vb;
-    const fitN = w <= TILE_W && h <= TILE_H - LBL;
-    const fitR = h <= TILE_W && w <= TILE_H - LBL;
+    const fitN = w <= PG.P.w && h <= PG.P.h - LBL;
+    const fitR = h <= PG.P.w && w <= PG.P.h - LBL;
     if(fitN || fitR){
       const rot = !fitN;
       smalls.push({ p, r, rot, w: (rot ? h : w), h: (rot ? w : h) + LBL });
     } else {
-      const pagesN = Math.ceil(w/TILE_W) * Math.ceil(h/TILE_H);
-      const pagesR = Math.ceil(h/TILE_W) * Math.ceil(w/TILE_H);
-      // pivote si ça économise des feuilles, ou à égalité si la pièce est plus large que haute
-      // (préférence verticale : les feuilles se raccordent en colonne, plus facile à scotcher)
-      bigs.push({ p, r, rot: pagesR < pagesN || (pagesR === pagesN && w > h) });
+      bigs.push({ p, r, layout: pieceLayout(r) });
     }
   });
   // imbrication en étagères, pièces les plus hautes d'abord
@@ -1634,14 +1652,14 @@ function planPrint(pieces){
     let placed = false;
     for(const bin of bins){
       for(const shelf of bin.shelves){
-        if(s.h <= shelf.h && shelf.x + s.w <= TILE_W){
+        if(s.h <= shelf.h && shelf.x + s.w <= PG.P.w){
           s.x = shelf.x; s.y = shelf.y;
           shelf.x += s.w + GAP;
           bin.items.push(s); placed = true; break;
         }
       }
       if(placed) break;
-      if(bin.y + s.h <= TILE_H){
+      if(bin.y + s.h <= PG.P.h){
         s.x = 0; s.y = bin.y;
         bin.shelves.push({ x: s.w + GAP, y: bin.y, h: s.h });
         bin.y += s.h + GAP;
@@ -1655,15 +1673,53 @@ function planPrint(pieces){
   });
   return { bins, bigs };
 }
-function bigSheets(b){
-  const w = b.rot ? b.r.vb.h : b.r.vb.w, h = b.rot ? b.r.vb.w : b.r.vb.h;
-  return { cols: Math.ceil(w/TILE_W), rows: Math.ceil(h/TILE_H), w, h };
-}
-const sheetsCount = plan => plan.bins.length + plan.bigs.reduce((n,b) => { const t = bigSheets(b); return n + t.cols*t.rows; }, 0);
+const sheetsCount = plan => plan.bins.length + plan.bigs.reduce((n,b) => n + b.layout.cols*b.layout.rows, 0);
 /* transform SVG qui amène la bbox de la pièce (pivotée ou non) en (0,0) */
 function normTransform(r, rot){
   return rot ? `translate(${r.vb.y + r.vb.h} ${-r.vb.x}) rotate(90)`
              : `translate(${-r.vb.x} ${-r.vb.y})`;
+}
+
+/* Quelles tuiles de la grille contiennent réellement de la matière ?
+   (les arcs/secteurs ont une bounding-box en grande partie vide → on
+   saute les feuilles entièrement blanches). Biais prudent : au moindre
+   doute on garde la tuile. */
+function tileOccupancy(r, layout){
+  const { orient, rot, cols, rows } = layout;
+  if(cols*rows <= 1) return [[true]];
+  const { w:tw, h:th } = PG[orient];
+  const vb = r.vb;
+  const pw = rot ? vb.h : vb.w, ph = rot ? vb.w : vb.h;
+  const x0 = -(cols*tw - pw)/2, y0 = -(rows*th - ph)/2;
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', `${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
+  svg.setAttribute('width', '300'); svg.setAttribute('height', '300');
+  svg.style.cssText = 'position:fixed;left:-9999px;top:0';
+  svg.innerHTML = r.body;
+  document.body.appendChild(svg);
+  const geos = [...svg.querySelectorAll('.piece-line')];
+  const pt = svg.createSVGPoint();
+  const inFill = (ox, oy) => { pt.x = ox; pt.y = oy;
+    return geos.some(g => { try { return g.isPointInFill(pt); } catch(e){ return false; } }); };
+  const occ = [];
+  const step = 5;
+  for(let rr=0; rr<rows; rr++){ occ[rr] = [];
+    for(let cc=0; cc<cols; cc++){
+      const vx = x0 + cc*tw, vy = y0 + rr*th;
+      let ox0, oy0, ow, oh;
+      if(!rot){ ox0 = vx + vb.x; oy0 = vy + vb.y; ow = tw; oh = th; }
+      else    { ox0 = vy + vb.x; oy0 = vb.y + vb.h - vx - tw; ow = th; oh = tw; }
+      let hit = false;
+      for(let sx = ox0; sx <= ox0+ow && !hit; sx += step)
+        for(let sy = oy0; sy <= oy0+oh && !hit; sy += step)
+          if(inFill(sx, sy)) hit = true;
+      occ[rr][cc] = hit;
+    }
+  }
+  document.body.removeChild(svg);
+  if(!occ.flat().some(Boolean)) occ[0][0] = true;   // ne jamais tout supprimer
+  return occ;
 }
 
 function refresh(){
@@ -1694,7 +1750,7 @@ function refresh(){
 
   // cartes
   const included = pieces.filter(p => !printExcl.has(p.tag));
-  const totalPages = included.length ? sheetsCount(planPrint(included)) : 0;
+  const totalPages = included.length ? collectPages(planPrint(included)).length : 0;
   $('#pieces').innerHTML = pieces.map(p => {
     const r = pieceRender(p);
     const dims = p.dims.map(x=>`<li>${x}</li>`).join('') + p.notes.map(x=>`<li class="warn">${x}</li>`).join('');
@@ -1710,7 +1766,7 @@ function refresh(){
       <ul class="piece-dims">${dims}</ul>
     </div>`;
   }).join('');
-  $('#pageEstimate').textContent = `impression : ~${totalPages} feuille${totalPages>1?'s':''} A4`;
+  $('#pageEstimate').textContent = `impression : ${totalPages} feuille${totalPages>1?'s':''} A4`;
   const nSel = included.reduce((n,p)=>n+p.qty,0);
   $('#synthInfo').innerHTML = included.length
     ? `<b>${nSel} gabarit${nSel>1?'s':''}</b> · <b>${totalPages} feuille${totalPages>1?'s':''} A4</b> · ${isKur()?'bloc':'terre'} ≈ <b>${fmtPoids(clayWeight(pieces))}</b>`
@@ -1756,17 +1812,15 @@ $('#btnSvg').onclick = () => computePieces().forEach((p,i) => setTimeout(()=>dow
 /* ---------------------------------------------------------------
    Impression mosaïque A4 à taille réelle
    --------------------------------------------------------------- */
-function fichePage(pieces, plan){
+function fichePage(pieces, pages){
   const sName = SHAPES[state.shape].name;
   const k = kFactor();
   const sil = silhouette();
   const sc = Math.min(52/sil.h, 62/sil.w);
   const poids = clayWeight(pieces);
-  plan = plan || planPrint(pieces);
-  const feuilles = sheetsCount(plan);
-  const where = {};   // pièce → « planche N » ou « X feuilles »
-  plan.bins.forEach((bin,bi) => bin.items.forEach(s => where[s.p.tag] = `planche ${bi+1}`));
-  plan.bigs.forEach(b => { const t = bigSheets(b); where[b.p.tag] = t.cols*t.rows > 1 ? `${t.cols*t.rows} feuilles` : '1 feuille'; });
+  pages = pages || collectPages(planPrint(pieces));
+  const feuilles = pages.length;
+  const where = whereMap(pages);   // pièce → « planche N » ou « X feuilles »
   const checklist = pieces.map(p =>
     `<li class="chk"><b>${p.tag}</b> ${p.name} × ${p.qty} — ${p.dims[0]}${p.noClay?' <i>(gabarit de contrôle, pas de terre)</i>':''} — <i>${where[p.tag]||''}</i></li>`
   ).join('');
@@ -1822,33 +1876,49 @@ function collectPages(plan){
     }).join('');
     pages.push({
       info: `planche ${bi+1}/${plan.bins.length} · pièces ${bin.items.map(s=>s.p.tag).join(', ')}`,
-      vb: [0, 0, TILE_W, TILE_H],
-      inner: `<rect class="tilebox" x="0" y="0" width="${TILE_W}" height="${TILE_H}"/>` + items,
+      orient: 'P', vb: [0, 0, PG.P.w, PG.P.h], tags: bin.items.map(s=>s.p.tag), planche: bi+1,
+      inner: `<rect class="tilebox" x="0" y="0" width="${PG.P.w}" height="${PG.P.h}"/>` + items,
     });
   });
   plan.bigs.forEach(b => {
-    const t = bigSheets(b);
-    const total = t.cols * t.rows;
-    const x0 = -(t.cols*TILE_W - t.w)/2;    // grille centrée sur la pièce
-    const y0 = -(t.rows*TILE_H - t.h)/2;
-    const gBody = `<g transform="${normTransform(b.r, b.rot)}">${b.r.body}</g>`;
+    const L = b.layout, tw = PG[L.orient].w, th = PG[L.orient].h;
+    const pw = L.rot ? b.r.vb.h : b.r.vb.w;   // emprise de la pièce après pivot
+    const ph = L.rot ? b.r.vb.w : b.r.vb.h;
+    const x0 = -(L.cols*tw - pw)/2;    // grille centrée sur la pièce
+    const y0 = -(L.rows*th - ph)/2;
+    const gBody = `<g transform="${normTransform(b.r, L.rot)}">${b.r.body}</g>`;
     let marks = '';
-    for(let rr=0; rr<=t.rows; rr++) for(let cc=0; cc<=t.cols; cc++){
-      const mx = x0 + cc*TILE_W, my = y0 + rr*TILE_H;
+    for(let rr=0; rr<=L.rows; rr++) for(let cc=0; cc<=L.cols; cc++){
+      const mx = x0 + cc*tw, my = y0 + rr*th;
       marks += `<g class="mark"><line x1="${mx-4}" y1="${my}" x2="${mx+4}" y2="${my}"/><line x1="${mx}" y1="${my-4}" x2="${mx}" y2="${my+4}"/></g>`;
     }
+    const orTxt = L.orient==='L' ? (L.rot?' (paysage, pivotée 90°)':' (paysage)') : (L.rot?' (pivotée 90°)':'');
+    const occ = tileOccupancy(b.r, L);
+    const total = occ.flat().filter(Boolean).length;   // feuilles réellement utiles
     let n = 0;
-    for(let rr=0; rr<t.rows; rr++) for(let cc=0; cc<t.cols; cc++){
+    for(let rr=0; rr<L.rows; rr++) for(let cc=0; cc<L.cols; cc++){
+      if(!occ[rr][cc]) continue;
       n++;
-      const vx = x0 + cc*TILE_W, vy = y0 + rr*TILE_H;
+      const vx = x0 + cc*tw, vy = y0 + rr*th;
       pages.push({
-        info: `pièce ${b.p.tag} · ${b.p.name} ×${b.p.qty}${b.rot?' (pivotée 90°)':''}${total>1?` — feuille ${n}/${total} (col. ${cc+1}, lig. ${rr+1})`:''}`,
-        vb: [vx, vy, TILE_W, TILE_H],
-        inner: `<rect class="tilebox" x="${vx}" y="${vy}" width="${TILE_W}" height="${TILE_H}"/>${marks}${gBody}`,
+        info: `pièce ${b.p.tag} · ${b.p.name} ×${b.p.qty}${orTxt}${total>1?` — feuille ${n}/${total}`:''}`,
+        orient: L.orient, vb: [vx, vy, tw, th], tags: [b.p.tag],
+        inner: `<rect class="tilebox" x="${vx}" y="${vy}" width="${tw}" height="${th}"/>${marks}${gBody}`,
       });
     }
   });
   return pages;
+}
+
+/* pièce → où la trouver (« planche N » / « X feuilles [paysage] ») d'après les pages réelles */
+function whereMap(pages){
+  const where = {}, big = {};
+  pages.forEach(pg => {
+    if(pg.planche) pg.tags.forEach(t => where[t] = `planche ${pg.planche}`);
+    else { const t = pg.tags[0]; big[t] = big[t] || { n:0, l: pg.orient==='L' }; big[t].n++; }
+  });
+  Object.keys(big).forEach(t => where[t] = `${big[t].n} feuille${big[t].n>1?'s':''}${big[t].l?' paysage':''}`);
+  return where;
 }
 
 function selectedPieces(){
@@ -1861,11 +1931,11 @@ $('#btnPrint').onclick = () => {
   const pieces = selectedPieces();
   if(!pieces.length) return;
   const title = state.projectName || SHAPES[state.shape].name;
-  const plan = planPrint(pieces);
-  const pagesHtml = fichePage(pieces, plan) + collectPages(plan).map(pg =>
-    `<div class="page">
+  const pages = collectPages(planPrint(pieces));
+  const pagesHtml = fichePage(pieces, pages) + pages.map(pg =>
+    `<div class="page${pg.orient==='L'?' landscape':''}">
       ${pageHead(`${title} — ${pg.info}`)}
-      <svg width="190mm" height="255mm" viewBox="${pg.vb.join(' ')}">${pg.inner}</svg>
+      <svg width="${pg.vb[2]}mm" height="${pg.vb[3]}mm" viewBox="${pg.vb.join(' ')}">${pg.inner}</svg>
     </div>`).join('');
   $('#printArea').innerHTML = pagesHtml;
   window.print();
@@ -1901,28 +1971,28 @@ async function ensurePdfLibs(){
   return pdfLibsReady;
 }
 /* bandeau commun des pages PDF ; retourne le y où commencer le contenu */
-function pdfHead(doc, info){
+function pdfHead(doc, info, pageW){
+  pageW = pageW || 210;
+  const barX = pageW - 60;
   doc.setFont('helvetica','bold'); doc.setFontSize(12);
   doc.setTextColor(51,38,26); doc.text('Gabarits', 10, 13);
   doc.setTextColor(184,80,42); doc.text('céramique', 10 + doc.getTextWidth('Gabarits '), 13);
   doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(51,38,26);
-  doc.text(doc.splitTextToSize(info, 90), 58, 10.5);
+  doc.text(doc.splitTextToSize(info, barX - 60), 58, 10.5);
   doc.setDrawColor(122,103,83); doc.setLineWidth(0.3);
-  doc.line(150, 11, 200, 11);                                        // barre témoin de 50 mm exactement
-  doc.line(150, 9.5, 150, 12.5); doc.line(200, 9.5, 200, 12.5);
+  doc.line(barX, 11, barX + 50, 11);                                 // barre témoin de 50 mm exactement
+  doc.line(barX, 9.5, barX, 12.5); doc.line(barX + 50, 9.5, barX + 50, 12.5);
   doc.setFontSize(6); doc.setTextColor(122,103,83);
-  doc.text('= 50 mm · à 100 %', 150, 16);
+  doc.text('= 50 mm · à 100 %', barX, 16);
   doc.setDrawColor(51,38,26); doc.setLineWidth(0.4);
-  doc.line(10, 19, 200, 19);
+  doc.line(10, 19, pageW - 10, 19);
   return 24;
 }
-function pdfFiche(doc, pieces, plan, title){
+function pdfFiche(doc, pieces, pages, title){
   const sName = SHAPES[state.shape].name;
   let y = pdfHead(doc, `Fiche d'atelier — ${sName}`) + 6;
-  const k = kFactor(), poids = clayWeight(pieces), feuilles = sheetsCount(plan);
-  const where = {};
-  plan.bins.forEach((bin,bi) => bin.items.forEach(s => where[s.p.tag] = `planche ${bi+1}`));
-  plan.bigs.forEach(b => { const t = bigSheets(b); where[b.p.tag] = `${t.cols*t.rows} feuille${t.cols*t.rows>1?'s':''}`; });
+  const k = kFactor(), poids = clayWeight(pieces), feuilles = pages.length;
+  const where = whereMap(pages);
   const line = (txt, opts={}) => {
     if(y > 275){ doc.addPage(); y = pdfHead(doc, `Fiche d'atelier — ${sName} (suite)`) + 6; }
     doc.setFont('helvetica', opts.bold ? 'bold' : 'normal');
@@ -1968,21 +2038,24 @@ $('#btnPdf').onclick = async () => {
       return;
     }
     const title = state.projectName || SHAPES[state.shape].name;
-    const plan = planPrint(pieces);
+    const pages = collectPages(planPrint(pieces));
     const doc = new window.jspdf.jsPDF({ unit:'mm', format:'a4', compress:true });
-    pdfFiche(doc, pieces, plan, title);
-    for(const pg of collectPages(plan)){
-      doc.addPage();
-      const y0 = pdfHead(doc, `${title} — ${pg.info}`);
+    pdfFiche(doc, pieces, pages, title);
+    for(const pg of pages){
+      const land = pg.orient === 'L';
+      const pageW = land ? 297 : 210;
+      doc.addPage('a4', land ? 'landscape' : 'portrait');
+      const y0 = pdfHead(doc, `${title} — ${pg.info}`, pageW);
+      const tw = pg.vb[2], th = pg.vb[3];
       const wrap = document.createElement('div');
       wrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:0;height:0;overflow:hidden';
-      wrap.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="190mm" height="255mm" viewBox="${pg.vb.join(' ')}">${
+      wrap.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="${tw}mm" height="${th}mm" viewBox="${pg.vb.join(' ')}">${
         pg.inner
           .replace(/class="([\w-]+)"/g, (m,c) => `style="${PDF_STYLES[c]||''}"`)
           .replace(/<text /g, '<text font-family="Courier" ')
       }</svg>`;
       document.body.appendChild(wrap);
-      await doc.svg(wrap.firstChild, { x:10, y:y0, width:190, height:255 });
+      await doc.svg(wrap.firstChild, { x:10, y:y0, width:tw, height:th });
       wrap.remove();
     }
     doc.save(`gabarits-${title.toLowerCase().replace(/[^a-z0-9à-ÿ]+/gi,'-')}.pdf`);
@@ -2133,7 +2206,9 @@ $('#carnetFile').onchange = () => {
 
 /* repli du carnet (état persisté) */
 function applyCarnetOpen(){
-  $('#carnetWrap').classList.toggle('closed', state.carnetOpen === false);
+  const closed = state.carnetOpen === false;
+  $('#carnetWrap').classList.toggle('closed', closed);
+  $('#carnetToggle').classList.toggle('collapsed', closed);
 }
 $('#carnetToggle').onclick = () => {
   state.carnetOpen = state.carnetOpen === false;
