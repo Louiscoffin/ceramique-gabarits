@@ -236,6 +236,38 @@ select:focus{outline:none;border-color:var(--glaze)}
 .pchk{width:15px;height:15px;accent-color:var(--terra);flex:none;cursor:pointer}
 .piece-card.excluded{opacity:.45}
 
+/* ---------- pourboire ---------- */
+.tipbar{
+  position:fixed;left:50%;bottom:20px;transform:translate(-50%,140%);
+  z-index:300;display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;
+  width:min(92vw,430px);
+  background:var(--card);border:1.5px solid var(--ink);border-radius:4px;
+  box-shadow:5px 5px 0 rgba(51,38,26,.22);padding:14px 15px;
+  font-size:12.5px;line-height:1.45;color:var(--ink);
+  transition:transform .4s cubic-bezier(.2,.9,.3,1.25);
+}
+.tipbar.show{transform:translate(-50%,0)}
+.tipbar .tipico{font-size:26px;flex:none;line-height:1}
+.tipbar .tiptxt{flex:1 1 180px;padding-right:14px}
+.tipbar .tiptxt b{color:var(--terra-d)}
+.tipbar a.tipbtn{
+  flex:1 1 100%;text-align:center;text-decoration:none;font-size:12.5px;
+  background:var(--terra);border:1.5px solid var(--terra-d);color:#fdf6ea;
+  padding:9px 13px;border-radius:2px;box-shadow:2px 2px 0 rgba(51,38,26,.22);
+}
+.tipbar a.tipbtn:hover{transform:translate(-1px,-1px)}
+.tipbar .tipclose{
+  position:absolute;top:7px;right:10px;background:none;border:none;box-shadow:none;
+  color:var(--ink2);font-size:17px;line-height:1;padding:0;cursor:pointer;
+}
+.tipfoot{
+  text-align:center;padding:26px 30px 38px;font-size:11.5px;color:var(--ink2);
+  border-top:1.5px dashed var(--line);margin-top:10px;
+}
+.tipfoot a{color:var(--terra-d);font-weight:bold}
+.tipfoot-fb{margin-top:6px}
+@media print{ .tipbar,.tipfoot{display:none !important} }
+
 /* ---------- éditeur de forme ---------- */
 .editor{margin-bottom:12px}
 .editor svg{display:block;width:100%;border:1.5px solid var(--line);background:#fbf6ea;border-radius:2px;touch-action:none;user-select:none}
@@ -472,6 +504,18 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
     </div>
   </section>
 </main>
+
+<footer class="tipfoot">
+  Outil gratuit, fait avec 🤎 — <a id="tipFootLink" href="#" target="_blank" rel="noopener noreferrer">offrez-moi un pain de terre ☕</a> <span style="opacity:.7">(montant libre)</span>
+  <div class="tipfoot-fb">Une idée, un bug, un retour&nbsp;? <a href="https://tally.so/r/ZjKADz" target="_blank" rel="noopener noreferrer">donnez votre avis ✍️</a></div>
+</footer>
+
+<div class="tipbar" id="tipbar">
+  <span class="tipico">🏺</span>
+  <span class="tiptxt">Cet outil vous a fait gagner du temps&nbsp;?<br><b>Offrez-moi un pain de terre</b> (ou un café) — <b>montant libre</b>.</span>
+  <a class="tipbtn" id="tipBtn" href="#" target="_blank" rel="noopener noreferrer">🏺 offrir un pain de terre</a>
+  <button class="tipclose" id="tipClose" title="fermer">×</button>
+</div>
 
 <div id="printArea"></div>
 
@@ -1807,7 +1851,7 @@ function downloadPiece(p){
   a.download = `gabarit-${state.shape}-${p.tag}-${p.name.toLowerCase().replace(/[^a-z0-9]+/g,'-')}.svg`;
   a.click(); URL.revokeObjectURL(a.href);
 }
-$('#btnSvg').onclick = () => computePieces().forEach((p,i) => setTimeout(()=>downloadPiece(p), i*250));
+$('#btnSvg').onclick = () => { computePieces().forEach((p,i) => setTimeout(()=>downloadPiece(p), i*250)); maybeThanks(); };
 
 /* ---------------------------------------------------------------
    Impression mosaïque A4 à taille réelle
@@ -1939,6 +1983,7 @@ $('#btnPrint').onclick = () => {
     </div>`).join('');
   $('#printArea').innerHTML = pagesHtml;
   window.print();
+  maybeThanks();
 };
 
 /* ---------------------------------------------------------------
@@ -2059,10 +2104,28 @@ $('#btnPdf').onclick = async () => {
       wrap.remove();
     }
     doc.save(`gabarits-${title.toLowerCase().replace(/[^a-z0-9à-ÿ]+/gi,'-')}.pdf`);
+    maybeThanks();
   } finally {
     btn.disabled = false; btn.textContent = 'PDF';
   }
 };
+
+/* ---------------------------------------------------------------
+   Pourboire — « offrez-moi un pain de terre »
+   --------------------------------------------------------------- */
+const BMAC_URL = 'https://buymeacoffee.com/louiscoffin';
+$('#tipBtn').href = BMAC_URL;
+$('#tipFootLink').href = BMAC_URL;
+let tipShown = false, tipTimer = null;
+function maybeThanks(){
+  if(tipShown) return;                                               // 1×/visite (réapparaît aux visites suivantes)
+  tipShown = true;
+  const t = $('#tipbar');
+  setTimeout(() => t.classList.add('show'), 600);                    // laisse le dialogue d'impression passer
+  clearTimeout(tipTimer);
+  tipTimer = setTimeout(() => t.classList.remove('show'), 13000);
+}
+$('#tipClose').onclick = () => $('#tipbar').classList.remove('show');
 
 /* ---------------------------------------------------------------
    go
