@@ -4,6 +4,31 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gabarits — patrons pour céramique à la plaque</title>
+
+<!-- ===================== Analytics PostHog =====================
+     1. Va sur eu.posthog.com → Settings → « Project API Key » (commence par phc_)
+     2. Colle-la ci-dessous à la place de phc_TA_CLE_ICI
+     Tant que la clé n'est pas renseignée, rien ne se charge (aucune erreur).
+     Traffic (pageviews) + clickmaps/heatmaps sont activés automatiquement ;
+     les événements métier (export_*, tip_click, feedback_click, shape_selected,
+     preset_loaded, piece_saved) sont déjà instrumentés dans le script en bas. -->
+<script>
+  window.PH_KEY = 'phc_o5CMC3YiV6vf2ByYNxwTx3mE8uS6hEVNXZ9tdnmUKdNM';
+  if (window.PH_KEY && PH_KEY.indexOf('phc_') === 0 && PH_KEY !== 'phc_TA_CLE_ICI') {
+    var _ph = document.createElement('script');
+    _ph.src = 'https://eu-assets.i.posthog.com/static/array.js';
+    _ph.onload = function(){
+      posthog.init(PH_KEY, {
+        api_host: 'https://eu.i.posthog.com',
+        defaults: '2026-05-30',
+        person_profiles: 'identified_only'
+      });
+    };
+    document.head.appendChild(_ph);
+  }
+</script>
+<!-- =========================================================== -->
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet">
@@ -507,7 +532,7 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
 
 <footer class="tipfoot">
   Outil gratuit, fait avec 🤎 — <a id="tipFootLink" href="#" target="_blank" rel="noopener noreferrer">offrez-moi un pain de terre ☕</a> <span style="opacity:.7">(montant libre)</span>
-  <div class="tipfoot-fb">Une idée, un bug, un retour&nbsp;? <a href="https://tally.so/r/ZjKADz" target="_blank" rel="noopener noreferrer">donnez votre avis ✍️</a></div>
+  <div class="tipfoot-fb">Une idée, un bug, un retour&nbsp;? <a id="fbFootLink" href="https://tally.so/r/ZjKADz" target="_blank" rel="noopener noreferrer">donnez votre avis ✍️</a></div>
 </footer>
 
 <div class="tipbar" id="tipbar">
@@ -1201,6 +1226,12 @@ function pieceRender(p, mode){ return renderGeo(p.geo, mode); }
    --------------------------------------------------------------- */
 const $ = s => document.querySelector(s);
 
+/* Suivi d'événements PostHog — défensif : ne fait rien tant que le
+   snippet PostHog n'est pas chargé (ni erreur en local file://). */
+function track(event, props){
+  try{ if(window.posthog && window.posthog.capture) window.posthog.capture(event, props || {}); }catch(e){}
+}
+
 const printExcl = new Set();   // pièces décochées pour l'impression (réinitialisé au changement de forme)
 let shapeGridOpen = false;
 
@@ -1229,6 +1260,7 @@ function buildShapeSelector(){
   ).join('');
   document.querySelectorAll('.shape').forEach(el => el.onclick = () => {
     state.shape = el.dataset.id; printExcl.clear(); shapeGridOpen = false;
+    track('shape_selected', { shape: el.dataset.id, mode: state.mode || 'plaque' });
     buildShapeSelector(); buildDimFields(); refresh();
   });
 }
@@ -1851,7 +1883,12 @@ function downloadPiece(p){
   a.download = `gabarit-${state.shape}-${p.tag}-${p.name.toLowerCase().replace(/[^a-z0-9]+/g,'-')}.svg`;
   a.click(); URL.revokeObjectURL(a.href);
 }
-$('#btnSvg').onclick = () => { computePieces().forEach((p,i) => setTimeout(()=>downloadPiece(p), i*250)); maybeThanks(); };
+$('#btnSvg').onclick = () => {
+  const ps = computePieces();
+  ps.forEach((p,i) => setTimeout(()=>downloadPiece(p), i*250));
+  track('export_svg', { shape: state.shape, mode: state.mode || 'plaque', pieces: ps.length });
+  maybeThanks();
+};
 
 /* ---------------------------------------------------------------
    Impression mosaïque A4 à taille réelle
@@ -1982,6 +2019,7 @@ $('#btnPrint').onclick = () => {
       <svg width="${pg.vb[2]}mm" height="${pg.vb[3]}mm" viewBox="${pg.vb.join(' ')}">${pg.inner}</svg>
     </div>`).join('');
   $('#printArea').innerHTML = pagesHtml;
+  track('export_print', { shape: state.shape, mode: state.mode || 'plaque', feuilles: pages.length });
   window.print();
   maybeThanks();
 };
@@ -2104,6 +2142,7 @@ $('#btnPdf').onclick = async () => {
       wrap.remove();
     }
     doc.save(`gabarits-${title.toLowerCase().replace(/[^a-z0-9à-ÿ]+/gi,'-')}.pdf`);
+    track('export_pdf', { shape: state.shape, mode: state.mode || 'plaque', feuilles: pages.length });
     maybeThanks();
   } finally {
     btn.disabled = false; btn.textContent = 'PDF';
@@ -2116,6 +2155,9 @@ $('#btnPdf').onclick = async () => {
 const BMAC_URL = 'https://buymeacoffee.com/louiscoffin';
 $('#tipBtn').href = BMAC_URL;
 $('#tipFootLink').href = BMAC_URL;
+$('#tipBtn').onclick = () => track('tip_click', { source: 'bandeau' });
+$('#tipFootLink').onclick = () => track('tip_click', { source: 'footer' });
+$('#fbFootLink').onclick = () => track('feedback_click', { source: 'footer' });
 let tipShown = false, tipTimer = null;
 function maybeThanks(){
   if(tipShown) return;                                               // 1×/visite (réapparaît aux visites suivantes)
@@ -2163,6 +2205,7 @@ function buildGallery(){
     printExcl.clear();
     state.dims[p.shape] = Object.assign(defaultDims(p.shape), JSON.parse(JSON.stringify(p.dims)));
     document.querySelectorAll('.gcard').forEach(c => c.classList.toggle('on', c === el));
+    track('preset_loaded', { preset: p.name, shape: p.shape });
     buildMode(); buildShapeSelector(); buildDimFields(); refresh();
   });
 }
@@ -2226,6 +2269,7 @@ function loadProject(c){
 }
 function saveProjectAs(name){
   if(!name) return;
+  track('piece_saved', { shape: state.shape, mode: state.mode || 'plaque' });
   carnet.unshift({
     id: 'p' + Math.random().toString(36).slice(2,9),
     name,
