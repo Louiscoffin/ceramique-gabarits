@@ -5,27 +5,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gabarits — patrons pour céramique à la plaque</title>
 
-<!-- ===================== Analytics PostHog =====================
-     1. Va sur eu.posthog.com → Settings → « Project API Key » (commence par phc_)
-     2. Colle-la ci-dessous à la place de phc_TA_CLE_ICI
-     Tant que la clé n'est pas renseignée, rien ne se charge (aucune erreur).
-     Traffic (pageviews) + clickmaps/heatmaps sont activés automatiquement ;
-     les événements métier (export_*, tip_click, feedback_click, shape_selected,
-     preset_loaded, piece_saved) sont déjà instrumentés dans le script en bas. -->
+<!-- ===================== Mesure d'audience =====================
+     PostHog (EU) + Google Analytics 4. Colle tes identifiants ci-dessous.
+     RIEN n'est chargé au démarrage : loadAnalytics() n'est appelé
+     qu'APRÈS consentement (voir le bandeau cookies, script en bas). -->
 <script>
-  window.PH_KEY = 'phc_o5CMC3YiV6vf2ByYNxwTx3mE8uS6hEVNXZ9tdnmUKdNM';
-  if (window.PH_KEY && PH_KEY.indexOf('phc_') === 0 && PH_KEY !== 'phc_TA_CLE_ICI') {
-    var _ph = document.createElement('script');
-    _ph.src = 'https://eu-assets.i.posthog.com/static/array.js';
-    _ph.onload = function(){
-      posthog.init(PH_KEY, {
-        api_host: 'https://eu.i.posthog.com',
-        defaults: '2026-05-30',
-        person_profiles: 'identified_only'
-      });
-    };
-    document.head.appendChild(_ph);
-  }
+  window.PH_KEY = 'phc_o5CMC3YiV6vf2ByYNxwTx3mE8uS6hEVNXZ9tdnmUKdNM';  // PostHog (eu.posthog.com → Settings → Project API Key)
+  window.GA_ID  = 'G-XXXXXXXXXX';                                       // GA4 (Admin → Flux de données → Web → ID de mesure)
+  window.__analyticsLoaded = false;
+  window.loadAnalytics = function(){
+    if (window.__analyticsLoaded) return;
+    window.__analyticsLoaded = true;
+    if (window.PH_KEY && PH_KEY.indexOf('phc_') === 0 && PH_KEY !== 'phc_TA_CLE_ICI') {
+      var _ph = document.createElement('script');
+      _ph.src = 'https://eu-assets.i.posthog.com/static/array.js';
+      _ph.onload = function(){
+        posthog.init(PH_KEY, { api_host:'https://eu.i.posthog.com', defaults:'2026-05-30', person_profiles:'identified_only' });
+      };
+      document.head.appendChild(_ph);
+    }
+    if (window.GA_ID && GA_ID.indexOf('G-') === 0 && GA_ID !== 'G-XXXXXXXXXX') {
+      var _ga = document.createElement('script');
+      _ga.async = true;
+      _ga.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+      document.head.appendChild(_ga);
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function(){ dataLayer.push(arguments); };
+      gtag('js', new Date());
+      gtag('config', GA_ID);
+    }
+  };
 </script>
 <!-- =========================================================== -->
 
@@ -162,7 +171,6 @@ main{
   gap:22px;padding:22px 30px 60px;align-items:start;
 }
 @media (max-width:1150px){main{grid-template-columns:290px 1fr}.col-patterns{grid-column:1/-1}}
-@media (max-width:760px){main{grid-template-columns:1fr}.col-patterns{grid-column:auto}}
 .panel{
   background:var(--card);border:1.5px solid var(--ink);border-radius:3px;
   box-shadow:5px 5px 0 rgba(51,38,26,.15);
@@ -291,7 +299,47 @@ select:focus{outline:none;border-color:var(--glaze)}
 }
 .tipfoot a{color:var(--terra-d);font-weight:bold}
 .tipfoot-fb{margin-top:6px}
-@media print{ .tipbar,.tipfoot{display:none !important} }
+@media print{ .tipbar,.tipfoot,.consent{display:none !important} }
+
+/* ---------- consentement cookies ---------- */
+.consent{
+  position:fixed;left:20px;bottom:20px;z-index:320;width:min(92vw,330px);
+  transform:translateY(160%);transition:transform .4s cubic-bezier(.2,.9,.3,1.2);
+  background:var(--card);border:1.5px solid var(--ink);border-radius:4px;
+  box-shadow:5px 5px 0 rgba(51,38,26,.22);padding:14px 15px;
+  font-size:11.5px;line-height:1.5;color:var(--ink);
+}
+.consent.show{transform:translateY(0)}
+.consent b{font-family:'Young Serif',serif;font-weight:400;font-size:13.5px;color:var(--terra-d);display:block;margin-bottom:4px}
+.consent-btns{display:flex;gap:8px;margin-top:11px}
+.consent-btns button{flex:1;font-size:12px;padding:8px 6px}
+.consent .consent-yes{background:var(--terra);border-color:var(--terra-d);color:#fdf6ea}
+
+/* ---------- tour d'onboarding ---------- */
+.tour-btn{padding:6px 11px}
+#tourOverlay{position:fixed;inset:0;z-index:490;background:transparent}
+#tourHole{
+  position:fixed;z-index:491;border-radius:6px;pointer-events:none;
+  box-shadow:0 0 0 9999px rgba(30,20,12,.60);
+  transition:top .3s ease, left .3s ease, width .3s ease, height .3s ease;
+}
+#tourCard{
+  position:fixed;z-index:492;width:min(92vw,330px);
+  background:var(--card);border:1.5px solid var(--ink);border-radius:5px;
+  box-shadow:6px 6px 0 rgba(51,38,26,.3);padding:16px 17px;
+  font-size:13px;line-height:1.55;color:var(--ink);
+  transition:top .25s ease, left .25s ease;
+}
+#tourCard h4{font-family:'Young Serif',serif;font-weight:400;font-size:16.5px;color:var(--terra-d);margin-bottom:6px;padding-right:20px}
+#tourCard .tour-x{position:absolute;top:9px;right:11px;background:none;border:none;box-shadow:none;color:var(--ink2);font-size:19px;line-height:1;padding:0;cursor:pointer}
+#tourCard .tour-x:hover{color:var(--terra-d)}
+#tourCard b{color:var(--ink)}
+#tourCard .tour-nav{display:flex;align-items:center;gap:8px;margin-top:15px}
+#tourCard .tour-step{flex:1;font-size:11px;color:var(--ink2);letter-spacing:.03em}
+#tourCard .tour-skip{background:none;border:none;box-shadow:none;color:var(--ink2);font-size:11.5px;text-decoration:underline;padding:0;cursor:pointer}
+#tourCard .tour-prev{background:var(--paper)}
+#tourCard .tour-next{background:var(--terra);border-color:var(--terra-d);color:#fdf6ea}
+@media print{ #tourOverlay,#tourHole,#tourCard{display:none !important} }
 
 /* ---------- éditeur de forme ---------- */
 .editor{margin-bottom:12px}
@@ -303,6 +351,8 @@ select:focus{outline:none;border-color:var(--glaze)}
 .edline.hit{stroke-width:8;stroke:transparent;cursor:copy}
 .edpt{fill:#fdf6ea;stroke:var(--terra);stroke-width:1.4;cursor:grab}
 .edpt:hover{fill:#f2c9b5}
+.edpt.sel{fill:var(--terra);stroke:var(--terra-d)}
+.edhit{cursor:grab}
 .edbtns{display:flex;gap:6px;margin-top:8px}
 .edreadout{font-size:10.5px;color:var(--ink2);margin-top:6px;line-height:1.5}
 
@@ -384,13 +434,59 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
   #printArea{display:block}
   .page{
     page:portrait;
-    width:210mm;height:296mm;padding:8mm 10mm 0;position:relative;
-    page-break-after:always;background:#fff;color:#000;
+    width:210mm;height:293mm;padding:8mm 10mm 0;position:relative;
+    page-break-after:always;break-after:page;break-inside:avoid;
+    background:#fff;color:#000;
   }
+  .page:last-child{page-break-after:auto;break-after:auto}   /* évite une page blanche finale */
   .page.landscape{
     page:landscape;
-    width:297mm;height:208mm;padding:8mm 10mm 0;
+    width:297mm;height:203mm;padding:8mm 10mm 0;
   }
+  .page svg{max-width:100%;display:block}
+}
+
+/* ============ MOBILE (placé en dernier pour primer sur les règles de base) ============ */
+@media (max-width:760px){
+  main{grid-template-columns:1fr;gap:16px;padding:16px}
+  .col-patterns{grid-column:auto}
+  .gallery{padding:14px 16px 0}
+
+  /* header compact */
+  header{padding:16px 16px 12px;align-items:center}
+  .brand{gap:11px}
+  .brand svg{width:34px;height:34px}
+  h1{font-size:23px}
+  .tagline{font-size:11px;margin-top:3px}
+
+  /* cibles tactiles ≥ 44px + 16px pour éviter le zoom iOS au focus */
+  input[type=number], select, #projName{font-size:16px;min-height:44px}
+  input[type=number]{width:92px;padding:8px 10px}
+  button, .btn{font-size:14px;padding:12px 16px;min-height:44px}
+  button.small{font-size:13px;padding:9px 12px;min-height:40px}
+  .field{margin-bottom:12px}
+  .field label{font-size:13px}
+  .radio-row .opt{padding:11px 6px;font-size:12.5px}
+  .shape{padding:9px 4px 7px;font-size:10.5px}
+  .shape svg{width:28px;height:28px}
+  input[type=range]{height:30px}
+
+  /* barre d'actions compacte, toujours accessible (sticky bas d'écran) */
+  .synth{
+    position:sticky;bottom:0;margin:16px -14px -14px;
+    padding:10px 14px calc(11px + env(safe-area-inset-bottom));
+    border-top:1.5px solid var(--ink);box-shadow:0 -4px 14px rgba(51,38,26,.14);
+  }
+  #synthInfo{display:none}   /* feuilles déjà dans le titre du panneau, poids dans le résumé */
+  .srow{margin-bottom:0}
+  .srow + .srow{margin-top:8px}
+  .srow-export{align-items:stretch}
+  .srow-export .primary{flex:1}
+
+  /* bandeaux plein largeur, bas d'écran */
+  .tipbar{left:12px;right:12px;bottom:12px;width:auto;transform:translateY(160%)}
+  .tipbar.show{transform:translateY(0)}
+  .consent{left:12px;right:12px;bottom:12px;width:auto}
 }
 </style>
 </head>
@@ -408,6 +504,7 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
     </div>
   </div>
   <div class="actions">
+    <button id="tourBtn" class="tour-btn" title="revoir le tuto">? tuto</button>
     <button id="carnetToggle" class="carnet-btn"><span class="caret">▾</span> Mon carnet de pièces</button>
   </div>
 </header>
@@ -430,7 +527,7 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
 
 <main>
   <!-- ============ 1. FORME & COTES ============ -->
-  <section class="panel">
+  <section class="panel" id="panel-forme">
     <div class="ptitle"><span><span class="num">1.</span>Forme &amp; cotes</span></div>
     <div class="pbody">
       <div class="radio-row" id="modeRow" style="margin-bottom:12px">
@@ -476,7 +573,7 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
   </section>
 
   <!-- ============ 2. PHOTO ============ -->
-  <section class="panel">
+  <section class="panel" id="panel-apercu">
     <div class="ptitle"><span><span class="num">2.</span>Aperçu</span><button class="small" id="btnClearPhoto" style="display:none">retirer la photo</button></div>
     <div class="pbody">
       <div id="previewBox">
@@ -509,7 +606,7 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
   </section>
 
   <!-- ============ 3. PATRONS ============ -->
-  <section class="panel col-patterns">
+  <section class="panel col-patterns" id="panel-pieces">
     <div class="ptitle"><span><span class="num">3.</span>Pièces à découper</span><span id="pageEstimate" style="font-size:11px;color:var(--ink2)"></span></div>
     <div class="pbody">
       <div class="summary" id="summary"></div>
@@ -532,14 +629,30 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
 
 <footer class="tipfoot">
   Outil gratuit, fait avec 🤎 — <a id="tipFootLink" href="#" target="_blank" rel="noopener noreferrer">offrez-moi un pain de terre ☕</a> <span style="opacity:.7">(montant libre)</span>
-  <div class="tipfoot-fb">Une idée, un bug, un retour&nbsp;? <a id="fbFootLink" href="https://tally.so/r/ZjKADz" target="_blank" rel="noopener noreferrer">donnez votre avis ✍️</a></div>
+  <div class="tipfoot-fb"><a id="newsFootLink" href="https://tally.so/r/7ROYeP" target="_blank" rel="noopener noreferrer">✉️ recevez les (rares) nouveautés</a> · <a id="fbFootLink" href="https://tally.so/r/ZjKADz" target="_blank" rel="noopener noreferrer">donnez votre avis ✍️</a> · <a id="cookiesLink" href="#">cookies</a></div>
 </footer>
+
+<div class="consent" id="consent" hidden>
+  <b>Un petit cookie&nbsp;?</b>
+  Une mesure d'audience anonyme m'aide à voir quelles formes servent et à améliorer l'outil. Rien n'est chargé sans votre accord.
+  <div class="consent-btns">
+    <button class="consent-no" id="consentNo">Refuser</button>
+    <button class="consent-yes" id="consentYes">Accepter</button>
+  </div>
+</div>
 
 <div class="tipbar" id="tipbar">
   <span class="tipico">🏺</span>
   <span class="tiptxt">Cet outil vous a fait gagner du temps&nbsp;?<br><b>Offrez-moi un pain de terre</b> (ou un café) — <b>montant libre</b>.</span>
   <a class="tipbtn" id="tipBtn" href="#" target="_blank" rel="noopener noreferrer">🏺 offrir un pain de terre</a>
   <button class="tipclose" id="tipClose" title="fermer">×</button>
+</div>
+
+<div class="tipbar" id="news">
+  <span class="tipico">✉️</span>
+  <span class="tiptxt">Je communique <b>très peu</b> — seulement pour annoncer les nouveautés de l'outil (le tournage arrive 👀) et partager. Envie d'être prévenu·e&nbsp;?</span>
+  <a class="tipbtn" id="newsBtn" href="https://tally.so/r/7ROYeP" target="_blank" rel="noopener noreferrer">M'inscrire</a>
+  <button class="tipclose" id="newsClose" title="fermer">×</button>
 </div>
 
 <div id="printArea"></div>
@@ -1226,10 +1339,11 @@ function pieceRender(p, mode){ return renderGeo(p.geo, mode); }
    --------------------------------------------------------------- */
 const $ = s => document.querySelector(s);
 
-/* Suivi d'événements PostHog — défensif : ne fait rien tant que le
-   snippet PostHog n'est pas chargé (ni erreur en local file://). */
+/* Suivi d'événements — défensif : envoie à PostHog ET GA4 s'ils sont
+   chargés, ne fait rien sinon (aucune erreur en local file://). */
 function track(event, props){
   try{ if(window.posthog && window.posthog.capture) window.posthog.capture(event, props || {}); }catch(e){}
+  try{ if(window.gtag) window.gtag('event', event, props || {}); }catch(e){}
 }
 
 const printExcl = new Set();   // pièces décochées pour l'impression (réinitialisé au changement de forme)
@@ -1268,7 +1382,7 @@ $('#spickBtn').onclick = () => { shapeGridOpen = !shapeGridOpen; buildShapeSelec
 function buildDimFields(){
   const s = SHAPES[state.shape];
   $('#dimFields').innerHTML = (s.editor ? editorHTML(s.editor) : '') + s.fields.map(f =>
-    `<div class="field"><label>${f.lab}</label><span><input type="number" data-k="${f.k}" min="${f.min ?? 0}"${f.max ? ` max="${f.max}"` : ''} step="1" value="${state.dims[state.shape][f.k]}"><span class="unit">${f.min ? '' : 'mm'}</span></span></div>`).join('');
+    `<div class="field"><label>${f.lab}</label><span><input type="number" inputmode="decimal" data-k="${f.k}" min="${f.min ?? 0}"${f.max ? ` max="${f.max}"` : ''} step="1" value="${state.dims[state.shape][f.k]}"><span class="unit">${f.min ? '' : 'mm'}</span></span></div>`).join('');
   document.querySelectorAll('#dimFields input').forEach(inp => inp.oninput = () => {
     let v = parseFloat(inp.value);
     const f = s.fields.find(x => x.k === inp.dataset.k);
@@ -1290,19 +1404,26 @@ const ED = {
   profil: { vb:'-14 -6 140 172', maxY:160, maxR:110, minPts:2 },
   libre:  { vb:'0 0 200 200', minPts:3 },
 };
+let edSelected = -1;   // point sélectionné dans l'éditeur (-1 = aucun)
+function updateEdDel(){
+  const btn = $('#edDel'); if(!btn) return;
+  const pts = state.dims[state.shape].pts;
+  btn.disabled = !(edSelected >= 0 && pts && pts.length > ED[SHAPES[state.shape].editor].minPts);
+}
 function editorHTML(type){
   return `<div class="editor">
     <svg id="edSvg" viewBox="${ED[type].vb}"></svg>
     <div class="edbtns">
       <button type="button" class="small" id="edAdd">+ point</button>
+      <button type="button" class="small" id="edDel" disabled>− supprimer le point</button>
       <button type="button" class="small" id="edReset">réinitialiser</button>
     </div>
     <div class="edreadout" id="edReadout"></div>
     <div class="hint">${type==='profil'
       ? (isKur()
-        ? `dessine le <b>demi-profil extérieur</b> de la pièce (l'axe est à gauche) : glisse les points, clic sur la courbe pour en ajouter, double-clic pour supprimer. Le bloc s'ajuste autour avec la marge de taille.`
-        : `dessine le <b>demi-profil</b> (l'axe est à gauche) : glisse les points, clic sur la courbe pour en ajouter, double-clic pour supprimer. Chaque segment devient une section de cône à empiler.`)
-      : `dessine le contour du fond : glisse les points, clic sur la courbe pour en ajouter, double-clic pour supprimer. La courbe est lissée automatiquement.`}</div>
+        ? `dessine le <b>demi-profil extérieur</b> de la pièce (l'axe est à gauche) : glisse les points, tape sur la courbe pour en ajouter. Le bloc s'ajuste autour avec la marge de taille.`
+        : `dessine le <b>demi-profil</b> (l'axe est à gauche) : glisse les points, tape sur la courbe pour en ajouter. Chaque segment devient une section de cône à empiler.`)
+      : `dessine le contour du fond : glisse les points, tape sur la courbe pour en ajouter. La courbe est lissée automatiquement.`}<br>Pour <b>supprimer</b> un point : tape-le puis « − supprimer le point ».</div>
   </div>`;
 }
 
@@ -1336,12 +1457,16 @@ function edSvgPoint(svg, evt){
 
 function initEditor(type){
   const svg = $('#edSvg');
+  edSelected = -1;
   redrawEditor(type);
+  updateEdDel();
   let drag = null;
   svg.addEventListener('pointerdown', e => {
-    if(e.target.classList.contains('edpt')){
+    if(e.target.classList.contains('edpt') || e.target.classList.contains('edhit')){
       drag = +e.target.dataset.i;
+      edSelected = drag;
       svg.setPointerCapture(e.pointerId);
+      redrawEditor(type); updateEdDel();
       e.preventDefault();
     }
   });
@@ -1368,11 +1493,12 @@ function initEditor(type){
   svg.addEventListener('pointerup', endDrag);
   svg.addEventListener('pointercancel', endDrag);
   svg.addEventListener('dblclick', e => {
-    if(!e.target.classList.contains('edpt')) return;
+    if(!(e.target.classList.contains('edpt') || e.target.classList.contains('edhit'))) return;
     const pts = state.dims[state.shape].pts;
     if(pts.length <= ED[type].minPts) return;
     pts.splice(+e.target.dataset.i, 1);
-    redrawEditor(type); refresh();
+    edSelected = -1;
+    redrawEditor(type); updateEdDel(); refresh();
   });
   svg.addEventListener('click', e => {
     if(!e.target.classList.contains('hit')) return;
@@ -1393,7 +1519,8 @@ function initEditor(type){
       });
       pts.splice(best+1, 0, {x:Math.round(p.x), y:Math.round(p.y)});
     }
-    redrawEditor(type); refresh();
+    edSelected = -1;
+    redrawEditor(type); updateEdDel(); refresh();
   });
   $('#edAdd').onclick = () => {
     const pts = state.dims[state.shape].pts;
@@ -1408,14 +1535,29 @@ function initEditor(type){
       const nx = pts[(best+1)%pts.length];
       pts.splice(best+1, 0, {x:Math.round((pts[best].x+nx.x)/2), y:Math.round((pts[best].y+nx.y)/2)});
     }
-    redrawEditor(type); refresh();
+    edSelected = -1;
+    redrawEditor(type); updateEdDel(); refresh();
+  };
+  $('#edDel').onclick = () => {
+    const pts = state.dims[state.shape].pts;
+    if(edSelected < 0 || pts.length <= ED[type].minPts) return;
+    pts.splice(edSelected, 1);
+    edSelected = -1;
+    redrawEditor(type); updateEdDel(); refresh();
   };
   $('#edReset').onclick = () => {
     state.dims[state.shape].pts = JSON.parse(JSON.stringify(SHAPES[state.shape].init.pts));
-    redrawEditor(type); refresh();
+    edSelected = -1;
+    redrawEditor(type); updateEdDel(); refresh();
   };
 }
 
+/* un point de l'éditeur : grande zone de tap transparente + point visible (surligné si sélectionné) */
+function edPoint(cx, cy, i){
+  const sel = i === edSelected;
+  return `<circle class="edhit" data-i="${i}" cx="${cx}" cy="${cy}" r="10" fill="transparent"/>`+
+         `<circle class="edpt${sel?' sel':''}" data-i="${i}" cx="${cx}" cy="${cy}" r="${sel?6:4.5}"/>`;
+}
 function redrawEditor(type){
   const svg = $('#edSvg');
   if(!svg) return;
@@ -1431,7 +1573,7 @@ function redrawEditor(type){
     g += `<path class="edmirror" d="M ${right} L 0 ${Y(pts.at(-1).y)} L 0 ${Y(pts[0].y)} Z"/>`;
     g += `<path class="edline" d="M ${right}"/>`;
     g += `<path class="edline hit" d="M ${right}"/>`;
-    pts.forEach((p,i)=> g += `<circle class="edpt" data-i="${i}" cx="${p.r}" cy="${Y(p.y)}" r="4"/>`);
+    pts.forEach((p,i)=> g += edPoint(p.r, Y(p.y), i));
     const maxR = Math.max(...pts.map(p=>p.r));
     $('#edReadout') && ($('#edReadout').innerHTML =
       `Ø base ${fmt(2*pts[0].r)} · Ø max ${fmt(2*maxR)} · Ø haut ${fmt(2*pts.at(-1).r)} · hauteur ${fmt(pts.at(-1).y-pts[0].y)} mm (fini) — ${pts.length-1} section${pts.length>2?'s':''}`);
@@ -1442,7 +1584,7 @@ function redrawEditor(type){
     g += `<path class="edmirror" d="${pathFrom(sm, true)}"/>`;
     g += `<path class="edline" d="${pathFrom(sm, true)}"/>`;
     g += `<path class="edline hit" d="${pathFrom(sm, true)}"/>`;
-    pts.forEach((p,i)=> g += `<circle class="edpt" data-i="${i}" cx="${p.x}" cy="${p.y}" r="4"/>`);
+    pts.forEach((p,i)=> g += edPoint(p.x, p.y, i));
     const xs = sm.map(p=>p.x), ys = sm.map(p=>p.y);
     $('#edReadout') && ($('#edReadout').innerHTML =
       `encombrement ${fmt(Math.max(...xs)-Math.min(...xs))} × ${fmt(Math.max(...ys)-Math.min(...ys))} mm · périmètre ${fmt(perim(sm,true))} mm (fini)`);
@@ -1675,7 +1817,7 @@ $('#ovApply').onclick = () => {
    UI : patrons
    --------------------------------------------------------------- */
 /* zones utiles A4 (mm) — marges ~10 mm + bandeau ; portrait ET paysage */
-const PG = { P: { w: 190, h: 268 }, L: { w: 277, h: 188 } };
+const PG = { P: { w: 190, h: 260 }, L: { w: 277, h: 176 } };   // hauteurs avec marge de sécurité anti-coupure à l'impression
 const GAP = 8, LBL = 7;   // espacement entre pièces / réserve d'étiquette (mm)
 const TILE_W = PG.P.w, TILE_H = PG.P.h;
 
@@ -1887,7 +2029,7 @@ $('#btnSvg').onclick = () => {
   const ps = computePieces();
   ps.forEach((p,i) => setTimeout(()=>downloadPiece(p), i*250));
   track('export_svg', { shape: state.shape, mode: state.mode || 'plaque', pieces: ps.length });
-  maybeThanks();
+  afterExport();
 };
 
 /* ---------------------------------------------------------------
@@ -2021,7 +2163,7 @@ $('#btnPrint').onclick = () => {
   $('#printArea').innerHTML = pagesHtml;
   track('export_print', { shape: state.shape, mode: state.mode || 'plaque', feuilles: pages.length });
   window.print();
-  maybeThanks();
+  afterExport();
 };
 
 /* ---------------------------------------------------------------
@@ -2069,6 +2211,10 @@ function pdfHead(doc, info, pageW){
   doc.text('= 50 mm · à 100 %', barX, 16);
   doc.setDrawColor(51,38,26); doc.setLineWidth(0.4);
   doc.line(10, 19, pageW - 10, 19);
+  // pied de page discret — boucle de croissance (chaque PDF partagé ramène du monde)
+  const pageH = pageW > 210 ? 210 : 297;
+  doc.setFont('helvetica','normal'); doc.setFontSize(6.5); doc.setTextColor(150,130,105);
+  doc.text('Fait avec gabarit-ceramique.fr', pageW / 2, pageH - 6, { align: 'center' });
   return 24;
 }
 function pdfFiche(doc, pieces, pages, title){
@@ -2143,7 +2289,7 @@ $('#btnPdf').onclick = async () => {
     }
     doc.save(`gabarits-${title.toLowerCase().replace(/[^a-z0-9à-ÿ]+/gi,'-')}.pdf`);
     track('export_pdf', { shape: state.shape, mode: state.mode || 'plaque', feuilles: pages.length });
-    maybeThanks();
+    afterExport();
   } finally {
     btn.disabled = false; btn.textContent = 'PDF';
   }
@@ -2158,16 +2304,186 @@ $('#tipFootLink').href = BMAC_URL;
 $('#tipBtn').onclick = () => track('tip_click', { source: 'bandeau' });
 $('#tipFootLink').onclick = () => track('tip_click', { source: 'footer' });
 $('#fbFootLink').onclick = () => track('feedback_click', { source: 'footer' });
-let tipShown = false, tipTimer = null;
+$('#newsFootLink').onclick = () => track('newsletter_click', { source: 'footer' });
+$('#newsBtn').onclick = () => { track('newsletter_click', { source: 'bandeau' }); localStorage.setItem('gabarits-news-off','1'); };
+let tipShown = false, tipTimer = null, newsShown = false;
 function maybeThanks(){
   if(tipShown) return;                                               // 1×/visite (réapparaît aux visites suivantes)
   tipShown = true;
+  $('#news').classList.remove('show');                              // une seule bannière à la fois
   const t = $('#tipbar');
   setTimeout(() => t.classList.add('show'), 600);                    // laisse le dialogue d'impression passer
   clearTimeout(tipTimer);
   tipTimer = setTimeout(() => t.classList.remove('show'), 13000);
 }
 $('#tipClose').onclick = () => $('#tipbar').classList.remove('show');
+
+/* invite newsletter : 1 seule fois, pour un utilisateur déjà engagé (≥ 2 exports),
+   jamais en même temps que le pourboire ni le bandeau cookies */
+function showNews(){
+  if(newsShown) return;
+  newsShown = true;
+  $('#tipbar').classList.remove('show');
+  const el = $('#news');
+  el.hidden = false;
+  setTimeout(() => el.classList.add('show'), 600);
+  setTimeout(() => el.classList.remove('show'), 15000);
+}
+$('#newsClose').onclick = () => { $('#news').classList.remove('show'); localStorage.setItem('gabarits-news-off','1'); };
+
+/* appelé après chaque export : choisit AU PLUS une sollicitation */
+function afterExport(){
+  const n = (+localStorage.getItem('gabarits-exports') || 0) + 1;
+  localStorage.setItem('gabarits-exports', String(n));
+  const consentEl = $('#consent');
+  const consentVisible = consentEl && !consentEl.hidden && consentEl.classList.contains('show');
+  if(!consentVisible && n >= 2 && !localStorage.getItem('gabarits-news-off') && !newsShown){
+    showNews();          // invite newsletter (une fois, utilisateur engagé)
+  } else {
+    maybeThanks();       // sinon, le pourboire (1×/visite)
+  }
+}
+
+/* ---------------------------------------------------------------
+   Consentement cookies (RGPD) — l'analytics ne démarre qu'après « Accepter »
+   --------------------------------------------------------------- */
+(function(){
+  const KEY = 'gabarits-consent';
+  const el = $('#consent');
+  const showBanner = () => { el.hidden = false; setTimeout(() => el.classList.add('show'), 30); };
+  const hideBanner = () => { el.classList.remove('show'); setTimeout(() => { el.hidden = true; }, 400); };
+  if(localStorage.getItem(KEY) === 'granted') window.loadAnalytics && window.loadAnalytics();
+  // le bandeau cookies ne s'affiche plus tout seul : il est déclenché après le tour d'onboarding
+  window.showConsentIfNeeded = () => {
+    const c = localStorage.getItem(KEY);
+    if(c !== 'granted' && c !== 'denied') showBanner();
+  };
+  function decide(v){
+    localStorage.setItem(KEY, v);
+    hideBanner();
+    if(v === 'granted' && !window.__analyticsLoaded) window.loadAnalytics && window.loadAnalytics();
+    if(v === 'denied' && window.__analyticsLoaded) location.reload();   // stoppe l'analytics déjà chargé
+  }
+  $('#consentYes').onclick = () => decide('granted');
+  $('#consentNo').onclick  = () => decide('denied');
+  $('#cookiesLink').onclick = e => { e.preventDefault(); showBanner(); };
+})();
+
+/* ---------------------------------------------------------------
+   Tour d'onboarding — spotlight par bloc, mobile + desktop, replayable
+   --------------------------------------------------------------- */
+const TOUR = [
+  { sel:null, title:'Bienvenue 👋', html:'Cet outil crée les <b>gabarits</b> (patrons à découper) pour réaliser une forme en céramique. Un petit tour de 30&nbsp;s&nbsp;?' },
+  { sel:'#panel-forme', title:'1 · Forme & cotes', html:'Choisis la <b>technique</b> (plaque ou kurinuki), la <b>forme</b>, puis saisis les <b>cotes en mm</b>. Le bloc « Ma terre » gère le retrait de cuisson et l’épaisseur de plaque.' },
+  { sel:'#panel-apercu', title:'2 · Aperçu', html:'Ta pièce s’affiche <b>en direct</b> quand tu changes les cotes. Tu peux même superposer une <b>photo</b> pour caler les proportions.' },
+  { sel:'#panel-pieces', title:'3 · Pièces à découper', html:'Voici tes <b>gabarits</b>, cotés à taille réelle. Décoche ceux que tu ne veux pas imprimer.' },
+  { sel:'.synth', title:'Enregistrer & exporter', html:'<b>Enregistre</b> ta pièce dans ton carnet, puis exporte en <b>SVG</b>, <b>PDF</b>, ou <b>imprime à 100&nbsp;%</b> — vérifie l’échelle avec la règle de 50&nbsp;mm sur la feuille.' },
+  { sel:'#carnetToggle', title:'Ton carnet', html:'Des <b>modèles de départ</b> (bol, mug, pichet…) et tes <b>pièces enregistrées</b> se retrouvent ici.' },
+  { sel:null, title:'À toi de jouer 🏺', html:'Tu peux <b>revoir ce tuto</b> quand tu veux via le bouton <b>? tuto</b> en haut. Bonne création&nbsp;!' },
+];
+let tourStep = -1, tourEls = null;
+function startTour(){
+  if(!tourEls){
+    const ov = document.createElement('div'); ov.id = 'tourOverlay';
+    const hole = document.createElement('div'); hole.id = 'tourHole';
+    const card = document.createElement('div'); card.id = 'tourCard';
+    document.body.append(ov, hole, card);
+    tourEls = { ov, hole, card };
+    ov.onclick = () => endTour();                 // clic hors carte = quitter
+    window.addEventListener('resize', onTourReflow);
+    window.addEventListener('scroll', onTourReflow, true);
+    window.addEventListener('keydown', onTourKey);
+  }
+  // un tour propre : on referme les autres sollicitations
+  ['#consent','#tipbar','#news'].forEach(s => { const e = $(s); if(e) e.classList.remove('show'); });
+  track('tour_start');
+  showStep(0);
+}
+function onTourReflow(){
+  if(tourStep < 0) return;
+  const s = TOUR[tourStep];
+  placeStep(s, s.sel ? document.querySelector(s.sel) : null);
+}
+function onTourKey(e){ if(e.key === 'Escape') endTour(); }
+function showStep(i){
+  tourStep = i;
+  const step = TOUR[i];
+  const target = step.sel ? document.querySelector(step.sel) : null;
+  if(target){
+    target.scrollIntoView({ block:'center', behavior:'smooth' });
+    setTimeout(() => placeStep(step, target), 380);
+  } else {
+    placeStep(step, null);
+  }
+}
+function placeStep(step, target){
+  if(!tourEls) return;
+  const { hole, card } = tourEls;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const last = tourStep === TOUR.length - 1;
+  card.innerHTML =
+    `<button class="tour-x" id="tourX" title="quitter le tuto">×</button>
+     <h4>${step.title}</h4><div>${step.html}</div>
+     <div class="tour-nav">
+       <span class="tour-step">${tourStep+1} / ${TOUR.length}</span>
+       ${tourStep > 0 ? '<button class="small tour-prev" id="tourPrev">Précédent</button>' : ''}
+       <button class="small tour-next" id="tourNext">${last ? 'Terminer' : 'Suivant'}</button>
+     </div>`;
+  card.querySelector('#tourX').onclick = () => endTour();
+  card.querySelector('#tourNext').onclick = () => last ? endTour() : showStep(tourStep + 1);
+  const prev = card.querySelector('#tourPrev'); if(prev) prev.onclick = () => showStep(tourStep - 1);
+
+  // spotlight
+  const pad = 6;
+  if(target){
+    const r = target.getBoundingClientRect();
+    let top = Math.max(4, r.top - pad);
+    let h = r.height + pad*2;
+    const maxH = vh - 150;                     // laisse la place à la carte
+    if(h > maxH){ h = maxH; top = Math.max(4, r.top - pad); }
+    hole.style.top = top + 'px';
+    hole.style.left = Math.max(4, r.left - pad) + 'px';
+    hole.style.width = Math.min(vw - 8, r.width + pad*2) + 'px';
+    hole.style.height = h + 'px';
+  } else {
+    hole.style.top = (vh/2) + 'px'; hole.style.left = (vw/2) + 'px';
+    hole.style.width = '0px'; hole.style.height = '0px';
+  }
+
+  // carte : sous la cible si possible, sinon au-dessus, sinon centrée
+  const cr = card.getBoundingClientRect();
+  const cw = cr.width, ch = cr.height;
+  let cx, cy;
+  if(target){
+    const r = target.getBoundingClientRect();
+    if(r.bottom + 12 + ch <= vh) cy = r.bottom + 12;
+    else if(r.top - 12 - ch >= 0) cy = r.top - 12 - ch;
+    else cy = Math.max(8, (vh - ch) / 2);
+    cx = Math.min(Math.max(8, r.left + r.width/2 - cw/2), vw - cw - 8);
+  } else {
+    cx = (vw - cw) / 2; cy = (vh - ch) / 2;
+  }
+  card.style.left = cx + 'px';
+  card.style.top = cy + 'px';
+}
+function endTour(){
+  if(tourEls){ tourEls.ov.remove(); tourEls.hole.remove(); tourEls.card.remove(); tourEls = null; }
+  window.removeEventListener('resize', onTourReflow);
+  window.removeEventListener('scroll', onTourReflow, true);
+  window.removeEventListener('keydown', onTourKey);
+  tourStep = -1;
+  localStorage.setItem('gabarits-onboarded', '1');
+  track('tour_done');
+  window.showConsentIfNeeded && window.showConsentIfNeeded();   // cookies après le tour
+}
+$('#tourBtn').onclick = () => startTour();
+
+/* première connexion : tour d'abord, cookies ensuite ; sinon cookies directement */
+if(!localStorage.getItem('gabarits-onboarded')){
+  setTimeout(startTour, 650);
+} else {
+  setTimeout(() => window.showConsentIfNeeded && window.showConsentIfNeeded(), 500);
+}
 
 /* ---------------------------------------------------------------
    go
@@ -2268,18 +2584,24 @@ function loadProject(c){
   buildCoteType(); buildShapeSelector(); buildDimFields(); refresh();
 }
 function saveProjectAs(name){
+  name = (name || '').trim();
   if(!name) return;
   track('piece_saved', { shape: state.shape, mode: state.mode || 'plaque' });
-  carnet.unshift({
-    id: 'p' + Math.random().toString(36).slice(2,9),
+  const payload = {
     name,
     shape: state.shape,
     dims: JSON.parse(JSON.stringify(state.dims[state.shape])),
     ep: state.ep, retrait: state.retrait, coteType: state.coteType,
-  });
+  };
+  // si une pièce du même nom existe déjà → on la met à jour (pas de doublon)
+  const existing = carnet.find(c => c.name.trim().toLowerCase() === name.toLowerCase());
+  if(existing) Object.assign(existing, payload);
+  else carnet.unshift(Object.assign({ id: 'p' + Math.random().toString(36).slice(2,9) }, payload));
   state.projectName = name;
   $('#projName').value = name;
   saveCarnet(); buildCarnet(); saveState();
+  const btn = $('#btnSaveBar');
+  if(btn){ const t = btn.textContent; btn.textContent = existing ? 'mis à jour ✓' : 'enregistré ✓'; setTimeout(()=>btn.textContent = t, 1400); }
 }
 $('#btnSaveProj').onclick = () =>
   saveProjectAs(prompt('Nom de la pièce (ex. « mug Léa Ø85 ») :', state.projectName || SHAPES[state.shape].name));
@@ -2321,6 +2643,8 @@ $('#carnetToggle').onclick = () => {
   state.carnetOpen = state.carnetOpen === false;
   applyCarnetOpen(); saveState();
 };
+// par défaut : ouvert sur desktop, replié sur mobile (jusqu'à ce que l'utilisateur choisisse)
+if(state.carnetOpen === undefined) state.carnetOpen = window.innerWidth > 760;
 applyCarnetOpen();
 
 // cohérence mode ↔ forme au chargement
