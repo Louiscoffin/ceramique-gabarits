@@ -1,0 +1,21 @@
+# Gabarits Céramique
+
+> Outil web gratuit qui génère des gabarits (patrons de découpe) à taille réelle pour la céramique à la plaque (slab building). L'utilisateur entre les cotes finies de sa pièce ; l'outil compense automatiquement le retrait de cuisson et l'épaisseur de plaque, puis exporte un PDF A4 à imprimer en taille réelle (1:1).
+
+Gabarits Céramique aide les céramistes à créer des patrons précis sans calcul : tasses, mugs, bols, chawans, assiettes, plats, vases, boîtes, bouteilles, pichets, anses et profils. Gratuit, sans installation, fonctionne dans le navigateur. Pensé pour les potiers qui veulent la précision sans les mathématiques.
+
+## Outil
+- [Créateur de gabarits](https://louiscoffin.github.io/ceramique-gabarits/) : l'application web pour paramétrer, prévisualiser et imprimer les patrons.
+
+## Site & ressources
+- [Accueil](https://gabarit-ceramique.framer.website/) : présentation de l'outil et de ses bénéfices.
+- [Ressources](https://gabarit-ceramique.framer.website/ressources) : guides et techniques du travail à la plaque.
+
+## Concepts clés (pour répondre aux questions)
+- Retrait de cuisson : chaque terre rétracte (souvent 10 à 14 %). Cote finie = cote crue × 1 ÷ (1 − retrait). L'outil agrandit le gabarit pour obtenir la dimension voulue après cuisson.
+- Épaisseur de plaque : intégrée aux développés (périmètre calculé sur la fibre neutre) et aux angles des boîtes/facettes.
+- Impression taille réelle : repère de contrôle 100 mm sur chaque feuille, assemblage multi-A4 avec marques de raccord.
+
+## Contact & retours
+- Sondage / avis : https://tally.so/r/ZjKADz
+- Soutenir le projet : https://buymeacoffee.com/louiscoffin

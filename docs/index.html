@@ -1,0 +1,2664 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gabarits — patrons pour céramique à la plaque</title>
+
+<!-- ===================== Mesure d'audience =====================
+     PostHog (EU) + Google Analytics 4. Colle tes identifiants ci-dessous.
+     RIEN n'est chargé au démarrage : loadAnalytics() n'est appelé
+     qu'APRÈS consentement (voir le bandeau cookies, script en bas). -->
+<script>
+  window.PH_KEY = 'phc_o5CMC3YiV6vf2ByYNxwTx3mE8uS6hEVNXZ9tdnmUKdNM';  // PostHog (eu.posthog.com → Settings → Project API Key)
+  window.GA_ID  = 'G-XXXXXXXXXX';                                       // GA4 (Admin → Flux de données → Web → ID de mesure)
+  window.__analyticsLoaded = false;
+  window.loadAnalytics = function(){
+    if (window.__analyticsLoaded) return;
+    window.__analyticsLoaded = true;
+    if (window.PH_KEY && PH_KEY.indexOf('phc_') === 0 && PH_KEY !== 'phc_TA_CLE_ICI') {
+      var _ph = document.createElement('script');
+      _ph.src = 'https://eu-assets.i.posthog.com/static/array.js';
+      _ph.onload = function(){
+        posthog.init(PH_KEY, { api_host:'https://eu.i.posthog.com', defaults:'2026-05-30', person_profiles:'identified_only' });
+      };
+      document.head.appendChild(_ph);
+    }
+    if (window.GA_ID && GA_ID.indexOf('G-') === 0 && GA_ID !== 'G-XXXXXXXXXX') {
+      var _ga = document.createElement('script');
+      _ga.async = true;
+      _ga.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+      document.head.appendChild(_ga);
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function(){ dataLayer.push(arguments); };
+      gtag('js', new Date());
+      gtag('config', GA_ID);
+    }
+  };
+</script>
+<!-- =========================================================== -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#ece1cd;
+  --paper2:#e3d5bb;
+  --card:#f5eedd;
+  --ink:#33261a;
+  --ink2:#7a6753;
+  --terra:#b8502a;
+  --terra-d:#93401f;
+  --glaze:#4a7263;
+  --line:#cdb99a;
+  --grid:rgba(122,103,83,.10);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'Fragment Mono',monospace;
+  color:var(--ink);
+  background:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+    linear-gradient(rgba(122,103,83,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(122,103,83,.045) 1px, transparent 1px),
+    var(--paper);
+  background-size:80px 80px,80px 80px,16px 16px,16px 16px;
+  min-height:100vh;
+  font-size:13px;
+  line-height:1.5;
+}
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .38 0 0 0 0 .3 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+h1,h2,h3{font-family:'Young Serif',serif;font-weight:400}
+
+/* ---------- header ---------- */
+header{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  padding:26px 30px 18px;border-bottom:2px solid var(--ink);
+}
+.brand{display:flex;align-items:center;gap:16px}
+.brand svg{display:block}
+h1{font-size:34px;line-height:1;letter-spacing:-.5px}
+h1 em{font-style:normal;color:var(--terra)}
+.tagline{color:var(--ink2);margin-top:6px;font-size:12px}
+.actions{display:flex;gap:10px;align-items:center}
+button,.btn{
+  font-family:'Fragment Mono',monospace;font-size:12.5px;cursor:pointer;
+  border:1.5px solid var(--ink);background:var(--card);color:var(--ink);
+  padding:9px 16px;border-radius:2px;box-shadow:3px 3px 0 rgba(51,38,26,.22);
+  transition:transform .08s ease, box-shadow .08s ease;
+}
+button:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 rgba(51,38,26,.25)}
+button:active{transform:translate(2px,2px);box-shadow:0 0 0 rgba(0,0,0,0)}
+button.primary{background:var(--terra);border-color:var(--terra-d);color:#fdf6ea}
+button.small{padding:4px 10px;font-size:11px;box-shadow:2px 2px 0 rgba(51,38,26,.18)}
+
+/* ---------- galerie ---------- */
+.gallery{padding:16px 30px 0}
+.gallery .glabel{
+  font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);margin-bottom:8px;
+  display:flex;align-items:baseline;gap:10px;
+}
+.gallery .glabel::after{content:"";flex:1;border-bottom:1px dashed var(--line)}
+.gcards{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
+.gcard{
+  flex:none;width:104px;border:1.5px solid var(--line);border-radius:3px;background:var(--card);
+  padding:8px 6px 7px;cursor:pointer;text-align:center;
+  transition:transform .08s ease, border-color .1s;
+}
+.gcard:hover{transform:translateY(-2px);border-color:var(--terra);box-shadow:3px 3px 0 rgba(184,80,42,.18)}
+.gcard.on{border-color:var(--terra);background:#f2e2d2}
+.gcard svg{display:block;height:58px;width:100%;margin-bottom:6px}
+.gcard svg *{stroke:var(--ink);fill:rgba(184,80,42,.10)}
+.gcard .gname{font-family:'Young Serif',serif;font-size:11.5px;line-height:1.15}
+.gcard .gdims{font-size:9px;color:var(--ink2);margin-top:3px}
+
+.gallery .glabel .gbtns{display:flex;gap:6px}
+.carnet-btn{display:flex;align-items:center;gap:8px}
+.carnet-btn .caret{color:var(--terra);font-size:11px;transition:transform .15s;display:inline-block}
+.carnet-btn.collapsed .caret{transform:rotate(-90deg)}
+#carnetWrap{border-bottom:1.5px dashed var(--line);padding-bottom:16px}
+#carnetWrap.closed{display:none}
+.gcard{position:relative}
+.gcard .gact{
+  position:absolute;top:2px;right:2px;display:none;gap:2px;
+}
+.gcard:hover .gact{display:flex}
+.gcard .gact button{
+  padding:0 4px;font-size:10px;line-height:16px;box-shadow:none;border-width:1px;border-radius:2px;
+}
+.gempty{font-size:11px;color:var(--ink2);padding:14px 4px}
+
+/* ---------- fiche d'atelier (impression) ---------- */
+.fiche{font-family:'Fragment Mono',monospace;font-size:9.5pt;color:#33261a}
+.fiche h2{font-family:'Young Serif',serif;font-size:20pt;font-weight:400;margin:3mm 0 1mm;letter-spacing:-.2pt}
+.fiche h2::first-letter{color:#b8502a}
+.fiche .fsub{font-size:8.5pt;color:#7a6753;margin-bottom:4mm}
+.fiche .frow{display:flex;gap:8mm;align-items:flex-start;margin-bottom:3mm}
+.fiche .fsil{flex:none;border:.4mm dashed #cdb99a;border-radius:1mm;padding:3mm}
+.fiche .fparams{font-size:9pt;line-height:1.8}
+.fiche .fparams b{display:inline-block;min-width:38mm;font-weight:normal;color:#7a6753}
+.fiche .fsec{
+  font-family:'Young Serif',serif;font-size:10pt;color:#b8502a;
+  margin:4.5mm 0 1.5mm;border-bottom:.4mm dashed #cdb99a;padding-bottom:.8mm;
+}
+.fiche ul,.fiche ol{list-style:none;margin:0}
+.fiche li{margin-bottom:1.4mm;line-height:1.45}
+.fiche .chk::before{content:"☐  ";color:#b8502a}
+.fiche li b{color:#b8502a}
+.fiche ol li{counter-increment:mont}
+.fiche ol li::before{content:counter(mont) ". ";color:#7a6753}
+.fiche .fpoids{margin-top:4.5mm;border:.5mm solid #b8502a;border-radius:1mm;padding:2.5mm 4mm;font-size:10pt}
+.fiche .fpoids b{color:#b8502a}
+
+/* ---------- poignées de l'overlay photo ---------- */
+.ovh{
+  position:absolute;width:13px;height:13px;background:var(--terra);border:2px solid #fdf6ea;
+  border-radius:3px;box-shadow:0 0 3px rgba(0,0,0,.4);pointer-events:auto;
+}
+.ovh[data-h="e"]{right:-7px;top:calc(50% - 7px);cursor:ew-resize}
+.ovh[data-h="s"]{bottom:-7px;left:calc(50% - 7px);cursor:ns-resize}
+.ovh[data-h="se"]{right:-7px;bottom:-7px;cursor:nwse-resize;border-radius:50%}
+
+/* ---------- layout ---------- */
+main{
+  display:grid;grid-template-columns:290px minmax(300px,1fr) minmax(380px,1.25fr);
+  gap:22px;padding:22px 30px 60px;align-items:start;
+}
+@media (max-width:1150px){main{grid-template-columns:290px 1fr}.col-patterns{grid-column:1/-1}}
+.panel{
+  background:var(--card);border:1.5px solid var(--ink);border-radius:3px;
+  box-shadow:5px 5px 0 rgba(51,38,26,.15);
+}
+.panel>.ptitle{
+  font-family:'Young Serif',serif;font-size:15px;padding:10px 14px;border-bottom:1.5px solid var(--ink);
+  display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  background:var(--paper2);
+}
+.ptitle .num{color:var(--terra);font-size:13px;margin-right:6px}
+.pbody{padding:14px}
+
+/* ---------- controls ---------- */
+.spick{
+  display:flex;align-items:center;gap:10px;width:100%;margin-bottom:12px;
+  padding:7px 11px;background:var(--paper);text-align:left;
+}
+.spick svg{flex:none;width:28px;height:28px;stroke:var(--terra-d);fill:none;stroke-width:1.8}
+.spick .spname{font-family:'Young Serif',serif;font-size:14.5px;flex:1}
+.spick .caret{color:var(--terra);font-size:11px}
+.shapes{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px}
+.shape{
+  border:1.5px solid var(--line);border-radius:3px;background:var(--paper);
+  padding:6px 3px 5px;text-align:center;cursor:pointer;font-size:9.5px;line-height:1.25;color:var(--ink2);
+  transition:border-color .1s;
+}
+.shape svg{display:block;margin:0 auto 3px;stroke:currentColor;fill:none;stroke-width:1.6;width:24px;height:24px}
+.shape:hover{border-color:var(--ink2)}
+.shape.on{border-color:var(--terra);color:var(--terra-d);background:#f2e2d2;box-shadow:2px 2px 0 rgba(184,80,42,.25)}
+.shgroup{
+  grid-column:1/-1;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);
+  border-bottom:1px dashed var(--line);padding-bottom:3px;margin-top:4px;
+}
+.shgroup:first-child{margin-top:0}
+.field{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
+.field label{font-size:12px;color:var(--ink2);flex:1}
+.field .unit{color:var(--ink2);font-size:11px;margin-left:4px}
+input[type=number]{
+  font-family:'Fragment Mono',monospace;font-size:13px;color:var(--ink);
+  width:76px;padding:5px 7px;border:1.5px solid var(--line);border-radius:2px;background:#fbf6ea;text-align:right;
+}
+input[type=number]:focus{outline:none;border-color:var(--terra)}
+.sep{border:none;border-top:1.5px dashed var(--line);margin:14px 0}
+.radio-row{display:flex;gap:6px;margin-bottom:10px}
+.radio-row .opt{
+  flex:1;text-align:center;font-size:11px;padding:5px 4px;border:1.5px solid var(--line);
+  border-radius:2px;cursor:pointer;color:var(--ink2);background:var(--paper);
+}
+.radio-row .opt.on{border-color:var(--glaze);color:var(--glaze);background:#e4ebe2;font-weight:bold}
+.hint{font-size:10.5px;color:var(--ink2);margin-top:2px;line-height:1.45}
+.hint b{color:var(--terra-d)}
+.krow{display:flex;justify-content:space-between;align-items:baseline;background:var(--card);border:1.5px dashed var(--line);border-radius:2px;padding:6px 9px;margin-top:10px;font-size:11px;color:var(--ink2)}
+.krow b{color:var(--glaze);font-size:13px}
+.terre{border:1.5px dashed var(--glaze);border-radius:3px;padding:10px 12px;margin-top:16px;background:rgba(74,114,99,.05)}
+.terretitle{font-family:'Young Serif',serif;font-size:13.5px;color:var(--glaze)}
+.terretoggle{
+  display:flex;align-items:baseline;gap:9px;width:100%;text-align:left;
+  background:none;border:none;box-shadow:none;padding:0;cursor:pointer;
+}
+.terretoggle:hover{transform:none;box-shadow:none}
+.terretoggle #terreSummary{flex:1;font-size:10.5px;color:var(--ink2)}
+.terretoggle .caret{color:var(--glaze);font-size:11px;transition:transform .15s}
+.terre.closed .caret{transform:rotate(-90deg)}
+.terre.closed #terreBody{display:none}
+#terreBody{margin-top:10px}
+select{
+  font-family:'Fragment Mono',monospace;font-size:11.5px;color:var(--ink);
+  padding:5px 6px;border:1.5px solid var(--line);border-radius:2px;background:#fbf6ea;max-width:150px;
+}
+select:focus{outline:none;border-color:var(--glaze)}
+
+/* ---------- aperçu ---------- */
+#previewBox{background:#fbf6ea;border:1.5px solid var(--line);border-radius:2px;padding:16px 14px 10px}
+#prevSil svg{display:block;width:100%;max-height:300px}
+#prevSil .prevsil{stroke:var(--terra-d);fill:rgba(184,80,42,.08)}
+#prevDims{text-align:center;font-size:11px;color:var(--ink2);margin-top:8px}
+#previewBox + .dropzone{margin-top:12px}
+.dropzone{min-height:0;flex-direction:row;gap:10px;padding:11px 14px;font-size:11px;text-align:left}
+
+/* ---------- barre de synthèse ---------- */
+.synth{
+  position:sticky;bottom:0;background:var(--card);border-top:1.5px solid var(--ink);
+  margin:14px -14px -14px;padding:10px 14px 12px;
+  box-shadow:0 -5px 12px rgba(51,38,26,.08);
+}
+#synthInfo{font-size:11.5px;color:var(--ink2);margin-bottom:8px}
+#synthInfo b{color:var(--ink)}
+.srow{display:flex;gap:8px}
+.srow + .srow{margin-top:8px}
+.srow-export{justify-content:flex-end}
+#projName{
+  flex:1;min-width:0;font-family:'Fragment Mono',monospace;font-size:12px;color:var(--ink);
+  padding:7px 9px;border:1.5px solid var(--line);border-radius:2px;background:#fbf6ea;
+}
+#projName:focus{outline:none;border-color:var(--terra)}
+.pchk{width:15px;height:15px;accent-color:var(--terra);flex:none;cursor:pointer}
+.piece-card.excluded{opacity:.45}
+
+/* ---------- pourboire ---------- */
+.tipbar{
+  position:fixed;left:50%;bottom:20px;transform:translate(-50%,140%);
+  z-index:300;display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;
+  width:min(92vw,430px);
+  background:var(--card);border:1.5px solid var(--ink);border-radius:4px;
+  box-shadow:5px 5px 0 rgba(51,38,26,.22);padding:14px 15px;
+  font-size:12.5px;line-height:1.45;color:var(--ink);
+  transition:transform .4s cubic-bezier(.2,.9,.3,1.25);
+}
+.tipbar.show{transform:translate(-50%,0)}
+.tipbar .tipico{font-size:26px;flex:none;line-height:1}
+.tipbar .tiptxt{flex:1 1 180px;padding-right:14px}
+.tipbar .tiptxt b{color:var(--terra-d)}
+.tipbar a.tipbtn{
+  flex:1 1 100%;text-align:center;text-decoration:none;font-size:12.5px;
+  background:var(--terra);border:1.5px solid var(--terra-d);color:#fdf6ea;
+  padding:9px 13px;border-radius:2px;box-shadow:2px 2px 0 rgba(51,38,26,.22);
+}
+.tipbar a.tipbtn:hover{transform:translate(-1px,-1px)}
+.tipbar .tipclose{
+  position:absolute;top:7px;right:10px;background:none;border:none;box-shadow:none;
+  color:var(--ink2);font-size:17px;line-height:1;padding:0;cursor:pointer;
+}
+.tipfoot{
+  text-align:center;padding:26px 30px 38px;font-size:11.5px;color:var(--ink2);
+  border-top:1.5px dashed var(--line);margin-top:10px;
+}
+.tipfoot a{color:var(--terra-d);font-weight:bold}
+.tipfoot-fb{margin-top:6px}
+@media print{ .tipbar,.tipfoot,.consent{display:none !important} }
+
+/* ---------- consentement cookies ---------- */
+.consent{
+  position:fixed;left:20px;bottom:20px;z-index:320;width:min(92vw,330px);
+  transform:translateY(160%);transition:transform .4s cubic-bezier(.2,.9,.3,1.2);
+  background:var(--card);border:1.5px solid var(--ink);border-radius:4px;
+  box-shadow:5px 5px 0 rgba(51,38,26,.22);padding:14px 15px;
+  font-size:11.5px;line-height:1.5;color:var(--ink);
+}
+.consent.show{transform:translateY(0)}
+.consent b{font-family:'Young Serif',serif;font-weight:400;font-size:13.5px;color:var(--terra-d);display:block;margin-bottom:4px}
+.consent-btns{display:flex;gap:8px;margin-top:11px}
+.consent-btns button{flex:1;font-size:12px;padding:8px 6px}
+.consent .consent-yes{background:var(--terra);border-color:var(--terra-d);color:#fdf6ea}
+
+/* ---------- tour d'onboarding ---------- */
+.tour-btn{padding:6px 11px}
+#tourOverlay{position:fixed;inset:0;z-index:490;background:transparent}
+#tourHole{
+  position:fixed;z-index:491;border-radius:6px;pointer-events:none;
+  box-shadow:0 0 0 9999px rgba(30,20,12,.60);
+  transition:top .3s ease, left .3s ease, width .3s ease, height .3s ease;
+}
+#tourCard{
+  position:fixed;z-index:492;width:min(92vw,330px);
+  background:var(--card);border:1.5px solid var(--ink);border-radius:5px;
+  box-shadow:6px 6px 0 rgba(51,38,26,.3);padding:16px 17px;
+  font-size:13px;line-height:1.55;color:var(--ink);
+  transition:top .25s ease, left .25s ease;
+}
+#tourCard h4{font-family:'Young Serif',serif;font-weight:400;font-size:16.5px;color:var(--terra-d);margin-bottom:6px;padding-right:20px}
+#tourCard .tour-x{position:absolute;top:9px;right:11px;background:none;border:none;box-shadow:none;color:var(--ink2);font-size:19px;line-height:1;padding:0;cursor:pointer}
+#tourCard .tour-x:hover{color:var(--terra-d)}
+#tourCard b{color:var(--ink)}
+#tourCard .tour-nav{display:flex;align-items:center;gap:8px;margin-top:15px}
+#tourCard .tour-step{flex:1;font-size:11px;color:var(--ink2);letter-spacing:.03em}
+#tourCard .tour-skip{background:none;border:none;box-shadow:none;color:var(--ink2);font-size:11.5px;text-decoration:underline;padding:0;cursor:pointer}
+#tourCard .tour-prev{background:var(--paper)}
+#tourCard .tour-next{background:var(--terra);border-color:var(--terra-d);color:#fdf6ea}
+@media print{ #tourOverlay,#tourHole,#tourCard{display:none !important} }
+
+/* ---------- éditeur de forme ---------- */
+.editor{margin-bottom:12px}
+.editor svg{display:block;width:100%;border:1.5px solid var(--line);background:#fbf6ea;border-radius:2px;touch-action:none;user-select:none}
+.edgrid{stroke:rgba(122,103,83,.14);stroke-width:.4}
+.edaxis{stroke:var(--ink2);stroke-dasharray:4 3;stroke-width:.6;fill:none}
+.edmirror{fill:rgba(184,80,42,.08);stroke:none}
+.edline{stroke:var(--terra);stroke-width:1.4;fill:none}
+.edline.hit{stroke-width:8;stroke:transparent;cursor:copy}
+.edpt{fill:#fdf6ea;stroke:var(--terra);stroke-width:1.4;cursor:grab}
+.edpt:hover{fill:#f2c9b5}
+.edpt.sel{fill:var(--terra);stroke:var(--terra-d)}
+.edhit{cursor:grab}
+.edbtns{display:flex;gap:6px;margin-top:8px}
+.edreadout{font-size:10.5px;color:var(--ink2);margin-top:6px;line-height:1.5}
+
+/* ---------- photo ---------- */
+.dropzone{
+  border:2px dashed var(--line);border-radius:3px;min-height:220px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;color:var(--ink2);text-align:center;padding:24px;cursor:pointer;
+  background:repeating-linear-gradient(-45deg,transparent 0 14px,rgba(122,103,83,.05) 14px 15px);
+}
+.dropzone.drag{border-color:var(--terra);color:var(--terra)}
+.photo-wrap{position:relative;overflow:hidden;border-radius:2px;border:1.5px solid var(--line);background:#241c14;user-select:none}
+.photo-wrap img{display:block;width:100%;height:auto;pointer-events:none}
+#ovl{position:absolute;top:0;left:0;cursor:grab;touch-action:none}
+#ovl:active{cursor:grabbing}
+#ovl svg{display:block;width:100%;height:100%;overflow:visible}
+.ovl-controls{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.ovl-controls .row{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--ink2)}
+.ovl-controls label{width:64px;flex:none}
+input[type=range]{flex:1;accent-color:var(--terra);height:18px}
+.photo-note{font-size:10.5px;color:var(--ink2);margin-top:10px;line-height:1.5}
+
+/* ---------- patterns ---------- */
+.piece-card{border:1.5px solid var(--line);border-radius:3px;background:#fbf6ea;margin-bottom:14px;overflow:hidden}
+.piece-head{
+  display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1.5px solid var(--line);
+  background:var(--paper);flex-wrap:wrap;
+}
+.piece-head .tag{
+  font-family:'Young Serif',serif;background:var(--ink);color:var(--paper);width:24px;height:24px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:13px;flex:none;
+}
+.piece-head .pname{font-size:13.5px;font-weight:bold}
+.piece-head .qty{color:var(--terra-d);font-size:12px}
+.piece-head .dl{margin-left:auto}
+.piece-svg{padding:12px 14px 6px;overflow:auto}
+.piece-svg svg{display:block;max-width:100%;height:auto}
+.piece-dims{padding:4px 14px 10px;font-size:11.5px;color:var(--ink2)}
+.piece-dims li{list-style:none;padding-left:14px;position:relative}
+.piece-dims li::before{content:"—";position:absolute;left:0;color:var(--terra)}
+.piece-dims li.warn::before{content:"⚠";color:var(--terra)}
+.piece-dims li.warn{color:var(--terra-d)}
+svg .piece-line{fill:rgba(184,80,42,.07);stroke:var(--ink);stroke-width:.6}
+svg .cote{stroke:var(--glaze);stroke-width:.3}
+svg .cote text{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(--glaze);stroke:none}
+svg .constr{stroke:var(--ink2);stroke-width:.3;stroke-dasharray:2 1.5;fill:none}
+svg .axe{stroke:var(--ink2);stroke-width:.3;stroke-dasharray:3 2}
+svg .center-mark{stroke:var(--terra);stroke-width:.5}
+svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(--ink)}
+.summary{font-size:11.5px;color:var(--ink2);margin-bottom:14px;border:1.5px dashed var(--line);border-radius:2px;padding:8px 11px;background:var(--paper)}
+.summary b{color:var(--ink)}
+
+/* ---------- print ---------- */
+#printArea{display:none}
+#printArea .phead{
+  display:flex;align-items:center;gap:5mm;
+  font-family:'Fragment Mono',monospace;font-size:7.5pt;color:#33261a;
+  border-bottom:.5mm solid #33261a;padding-bottom:2mm;margin-bottom:3mm;
+}
+#printArea .pbrand{display:flex;align-items:center;gap:2.5mm;flex:none;font-family:'Young Serif',serif;font-size:11.5pt;color:#33261a}
+#printArea .pbrand em{font-style:normal;color:#b8502a}
+#printArea .pinfo{flex:1;line-height:1.4}
+#printArea .phead .cal{display:flex;align-items:center;gap:2mm;flex:none;color:#7a6753}
+#printArea svg text{fill:#000;stroke:none}
+#printArea svg .piece-line{fill:none;stroke:#000;stroke-width:.5}
+#printArea svg .cote{stroke:#4a7263;stroke-width:.3}
+#printArea svg .cote text{fill:#4a7263}
+#printArea svg .tilebox{stroke:#cdb99a;stroke-width:.3;stroke-dasharray:3 2;fill:none}
+#printArea svg .mark{stroke:#33261a;stroke-width:.3}
+#printArea svg .constr{stroke:#7a6753;stroke-width:.3;stroke-dasharray:2 1.5;fill:none}
+#printArea svg .center-mark{stroke:#b8502a;stroke-width:.5}
+#printArea svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:#33261a}
+#printArea svg .plabel{font-family:'Young Serif',serif;font-size:4.6px;fill:#b8502a}
+@page portrait{size:A4 portrait;margin:0}
+@page landscape{size:A4 landscape;margin:0}
+@media print{
+  body{background:#fff}
+  body::after{display:none}
+  body > :not(#printArea){display:none !important}
+  #printArea{display:block}
+  .page{
+    page:portrait;
+    width:210mm;height:293mm;padding:8mm 10mm 0;position:relative;
+    page-break-after:always;break-after:page;break-inside:avoid;
+    background:#fff;color:#000;
+  }
+  .page:last-child{page-break-after:auto;break-after:auto}   /* évite une page blanche finale */
+  .page.landscape{
+    page:landscape;
+    width:297mm;height:203mm;padding:8mm 10mm 0;
+  }
+  .page svg{max-width:100%;display:block}
+}
+
+/* ============ MOBILE (placé en dernier pour primer sur les règles de base) ============ */
+@media (max-width:760px){
+  main{grid-template-columns:1fr;gap:16px;padding:16px}
+  .col-patterns{grid-column:auto}
+  .gallery{padding:14px 16px 0}
+
+  /* header compact */
+  header{padding:16px 16px 12px;align-items:center}
+  .brand{gap:11px}
+  .brand svg{width:34px;height:34px}
+  h1{font-size:23px}
+  .tagline{font-size:11px;margin-top:3px}
+
+  /* cibles tactiles ≥ 44px + 16px pour éviter le zoom iOS au focus */
+  input[type=number], select, #projName{font-size:16px;min-height:44px}
+  input[type=number]{width:92px;padding:8px 10px}
+  button, .btn{font-size:14px;padding:12px 16px;min-height:44px}
+  button.small{font-size:13px;padding:9px 12px;min-height:40px}
+  .field{margin-bottom:12px}
+  .field label{font-size:13px}
+  .radio-row .opt{padding:11px 6px;font-size:12.5px}
+  .shape{padding:9px 4px 7px;font-size:10.5px}
+  .shape svg{width:28px;height:28px}
+  input[type=range]{height:30px}
+
+  /* barre d'actions compacte, toujours accessible (sticky bas d'écran) */
+  .synth{
+    position:sticky;bottom:0;margin:16px -14px -14px;
+    padding:10px 14px calc(11px + env(safe-area-inset-bottom));
+    border-top:1.5px solid var(--ink);box-shadow:0 -4px 14px rgba(51,38,26,.14);
+  }
+  #synthInfo{display:none}   /* feuilles déjà dans le titre du panneau, poids dans le résumé */
+  .srow{margin-bottom:0}
+  .srow + .srow{margin-top:8px}
+  .srow-export{align-items:stretch}
+  .srow-export .primary{flex:1}
+
+  /* bandeaux plein largeur, bas d'écran */
+  .tipbar{left:12px;right:12px;bottom:12px;width:auto;transform:translateY(160%)}
+  .tipbar.show{transform:translateY(0)}
+  .consent{left:12px;right:12px;bottom:12px;width:auto}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <svg width="46" height="46" viewBox="0 0 46 46">
+      <path d="M6 14 A17 17 0 0 0 40 14 L36 34 A13 8 0 0 1 10 34 Z" fill="none" stroke="#b8502a" stroke-width="2.4"/>
+      <ellipse cx="23" cy="14" rx="17" ry="5.5" fill="none" stroke="#33261a" stroke-width="2"/>
+    </svg>
+    <div>
+      <h1>Gabarits <em>céramique</em></h1>
+      <div class="tagline">patrons à découper pour le travail à la plaque — toutes les cotes en millimètres</div>
+    </div>
+  </div>
+  <div class="actions">
+    <button id="tourBtn" class="tour-btn" title="revoir le tuto">? tuto</button>
+    <button id="carnetToggle" class="carnet-btn"><span class="caret">▾</span> Mon carnet de pièces</button>
+  </div>
+</header>
+
+<section class="gallery" id="carnetWrap">
+  <div id="carnetBody">
+    <div class="glabel">Galerie de départ — clique pour charger la forme et les cotes</div>
+    <div class="gcards" id="galleryCards"></div>
+    <div class="glabel" style="margin-top:14px">Mes pièces enregistrées
+      <span class="gbtns">
+        <button class="small" id="btnSaveProj">＋ enregistrer la pièce actuelle</button>
+        <button class="small" id="btnExportCarnet">exporter</button>
+        <button class="small" id="btnImportCarnet">importer</button>
+        <input type="file" id="carnetFile" accept="application/json" style="display:none">
+      </span>
+    </div>
+    <div class="gcards" id="carnetCards"></div>
+  </div>
+</section>
+
+<main>
+  <!-- ============ 1. FORME & COTES ============ -->
+  <section class="panel" id="panel-forme">
+    <div class="ptitle"><span><span class="num">1.</span>Forme &amp; cotes</span></div>
+    <div class="pbody">
+      <div class="radio-row" id="modeRow" style="margin-bottom:12px">
+        <div class="opt" data-v="plaque">à la plaque</div>
+        <div class="opt" data-v="kurinuki">kurinuki</div>
+      </div>
+      <button class="spick" id="spickBtn" title="changer de forme"></button>
+      <div class="shapes" id="shapeSel" style="display:none"></div>
+      <div id="dimFields"></div>
+      <div class="terre closed" id="terreWrap">
+        <button class="terretoggle" id="terreToggle">
+          <span class="terretitle">Ma terre</span>
+          <span id="terreSummary"></span>
+          <span class="caret">▾</span>
+        </button>
+        <div id="terreBody">
+        <div class="field">
+          <label>Terre</label>
+          <select id="terrePreset">
+            <option value="8">faïence · 8 %</option>
+            <option value="12">grès · 12 %</option>
+            <option value="14">porcelaine · 14 %</option>
+            <option value="perso">retrait mesuré</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Retrait de cuisson</label>
+          <span><input type="number" id="inRetrait" min="0" max="25" step="0.5"><span class="unit">%</span></span>
+        </div>
+        <div class="field">
+          <label>Épaisseur de plaque</label>
+          <span><input type="number" id="inEp" min="1" max="30" step="0.5"><span class="unit">mm</span></span>
+        </div>
+        <div class="radio-row" id="coteType">
+          <div class="opt" data-v="fini">cotes pièce finie</div>
+          <div class="opt" data-v="cru">cotes pièce crue</div>
+        </div>
+        <div class="hint">En <b>pièce finie</b>, les gabarits sont agrandis pour compenser le retrait (séchage + cuisson). En <b>pièce crue</b>, ils sont tracés tels quels.</div>
+        <div class="krow"><span>facteur d’agrandissement</span><b id="kVal">×1,000</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2. PHOTO ============ -->
+  <section class="panel" id="panel-apercu">
+    <div class="ptitle"><span><span class="num">2.</span>Aperçu</span><button class="small" id="btnClearPhoto" style="display:none">retirer la photo</button></div>
+    <div class="pbody">
+      <div id="previewBox">
+        <div id="prevSil"></div>
+        <div id="prevDims"></div>
+      </div>
+      <div class="dropzone" id="dropzone">
+        <svg width="22" height="22" viewBox="0 0 38 38" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="7" width="32" height="24" rx="2"/><circle cx="13" cy="16" r="3.5"/><path d="M3 27 l9-8 7 6 6-5 10 8"/>
+        </svg>
+        <div>superposer une photo (optionnel) — glisse ou clique</div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" style="display:none">
+      <div id="photoBox" style="display:none">
+        <div class="photo-wrap" id="photoWrap">
+          <img id="photoImg" alt="référence">
+          <div id="ovl"></div>
+        </div>
+        <div class="ovl-controls">
+          <div class="row"><label>opacité</label><input type="range" id="ovOp" min="10" max="100" value="75"></div>
+          <div class="row">
+            <button class="small" id="ovReset">recaler sur les cotes</button>
+            <button class="small" id="ovApply">appliquer aux cotes</button>
+            <span id="ovInfo" style="font-size:10.5px;color:var(--ink2)"></span>
+          </div>
+        </div>
+        <div class="photo-note">Déplace la silhouette <b style="color:var(--terra)">terracotta</b>, redimensionne-la avec la poignée d’angle et <b>étire-la</b> avec les poignées de bord pour épouser la photo. « Appliquer aux cotes » reporte les proportions obtenues dans les cotes du panneau 1 (la hauteur saisie reste la référence).</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3. PATRONS ============ -->
+  <section class="panel col-patterns" id="panel-pieces">
+    <div class="ptitle"><span><span class="num">3.</span>Pièces à découper</span><span id="pageEstimate" style="font-size:11px;color:var(--ink2)"></span></div>
+    <div class="pbody">
+      <div class="summary" id="summary"></div>
+      <div id="pieces"></div>
+      <div class="synth">
+        <div id="synthInfo"></div>
+        <div class="srow">
+          <input type="text" id="projName" placeholder="nom de la pièce (pour le carnet)…" maxlength="60">
+          <button class="small" id="btnSaveBar">enregistrer</button>
+        </div>
+        <div class="srow srow-export">
+          <button class="small" id="btnSvg" title="télécharger chaque gabarit en fichier SVG">SVG</button>
+          <button class="small" id="btnPdf" title="télécharger les gabarits en PDF">PDF</button>
+          <button class="primary" id="btnPrint">Imprimer les gabarits</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="tipfoot">
+  Outil gratuit, fait avec 🤎 — <a id="tipFootLink" href="#" target="_blank" rel="noopener noreferrer">offrez-moi un pain de terre ☕</a> <span style="opacity:.7">(montant libre)</span>
+  <div class="tipfoot-fb"><a id="newsFootLink" href="https://tally.so/r/7ROYeP" target="_blank" rel="noopener noreferrer">✉️ recevez les (rares) nouveautés</a> · <a id="fbFootLink" href="https://tally.so/r/ZjKADz" target="_blank" rel="noopener noreferrer">donnez votre avis ✍️</a> · <a id="cookiesLink" href="#">cookies</a></div>
+</footer>
+
+<div class="consent" id="consent" hidden>
+  <b>Un petit cookie&nbsp;?</b>
+  Une mesure d'audience anonyme m'aide à voir quelles formes servent et à améliorer l'outil. Rien n'est chargé sans votre accord.
+  <div class="consent-btns">
+    <button class="consent-no" id="consentNo">Refuser</button>
+    <button class="consent-yes" id="consentYes">Accepter</button>
+  </div>
+</div>
+
+<div class="tipbar" id="tipbar">
+  <span class="tipico">🏺</span>
+  <span class="tiptxt">Cet outil vous a fait gagner du temps&nbsp;?<br><b>Offrez-moi un pain de terre</b> (ou un café) — <b>montant libre</b>.</span>
+  <a class="tipbtn" id="tipBtn" href="#" target="_blank" rel="noopener noreferrer">🏺 offrir un pain de terre</a>
+  <button class="tipclose" id="tipClose" title="fermer">×</button>
+</div>
+
+<div class="tipbar" id="news">
+  <span class="tipico">✉️</span>
+  <span class="tiptxt">Je communique <b>très peu</b> — seulement pour annoncer les nouveautés de l'outil (le tournage arrive 👀) et partager. Envie d'être prévenu·e&nbsp;?</span>
+  <a class="tipbtn" id="newsBtn" href="https://tally.so/r/7ROYeP" target="_blank" rel="noopener noreferrer">M'inscrire</a>
+  <button class="tipclose" id="newsClose" title="fermer">×</button>
+</div>
+
+<div id="printArea"></div>
+
+<script>
+/* ================================================================
+   Gabarits céramique — patrons de découpe pour travail à la plaque
+   Toutes les géométries sont en millimètres (1 unité SVG = 1 mm).
+   ================================================================ */
+
+const SHAPES = {
+  cylindre: {
+    name: 'Cylindre',
+    glyph: '<svg width="34" height="34" viewBox="0 0 34 34"><ellipse cx="17" cy="8" rx="10" ry="3.5"/><path d="M7 8 v18 a10 3.5 0 0 0 20 0 V8"/></svg>',
+    fields: [ {k:'d', lab:'Ø extérieur', def:100}, {k:'h', lab:'Hauteur', def:120} ],
+  },
+  cone: {
+    name: 'Cône tronqué',
+    glyph: '<svg width="34" height="34" viewBox="0 0 34 34"><ellipse cx="17" cy="8" rx="6" ry="2.4"/><path d="M11 8 L5 26 a12 4 0 0 0 24 0 L23 8"/></svg>',
+    fields: [ {k:'d1', lab:'Ø base', def:80}, {k:'d2', lab:'Ø haut (0 = pointe)', def:140}, {k:'h', lab:'Hauteur', def:110} ],
+  },
+  boite: {
+    name: 'Boîte',
+    glyph: '<svg width="34" height="34" viewBox="0 0 34 34"><path d="M5 12 l12-5 12 5 v12 l-12 5 -12-5 Z M5 12 l12 5 12-5 M17 17 v17"/></svg>',
+    fields: [ {k:'l', lab:'Longueur', def:160}, {k:'w', lab:'Largeur', def:100}, {k:'h', lab:'Hauteur', def:80} ],
+  },
+  pyramide: {
+    name: 'Pyramide tronquée',
+    glyph: '<svg width="34" height="34" viewBox="0 0 34 34"><path d="M12 9 h10 l7 18 h-24 Z M12 9 l-7 18 M22 9 l7 18"/></svg>',
+    fields: [ {k:'l1', lab:'Longueur base', def:120}, {k:'w1', lab:'Largeur base', def:120},
+              {k:'l2', lab:'Longueur haut', def:70},  {k:'w2', lab:'Largeur haut', def:70},
+              {k:'h', lab:'Hauteur', def:130} ],
+  },
+  ovale: {
+    name: 'Ovale',
+    glyph: '<svg width="34" height="34" viewBox="0 0 34 34"><ellipse cx="17" cy="10" rx="13" ry="4"/><path d="M4 10 v13 a13 4 0 0 0 26 0 V10"/></svg>',
+    fields: [ {k:'da', lab:'Grand Ø', def:160}, {k:'db', lab:'Petit Ø', def:90}, {k:'h', lab:'Hauteur', def:100} ],
+  },
+  prisme: {
+    name: 'Prisme à pans',
+    glyph: '<svg width="34" height="34" viewBox="0 0 34 34"><path d="M17 4 l9 3.5 v14 l-9 3.5 -9-3.5 v-14 Z M8 7.5 l9 3.5 9-3.5 M17 11 v14"/></svg>',
+    fields: [ {k:'n', lab:'Nombre de pans', def:6, min:3, max:12}, {k:'d', lab:'Ø sommet à sommet', def:110}, {k:'h', lab:'Hauteur', def:120} ],
+  },
+  facettes: {
+    name: 'Vase à facettes',
+    glyph: '<svg width="34" height="34" viewBox="0 0 34 34"><path d="M13 6 h8 l6 21 h-20 Z M15 6 l-3.5 21 M19 6 l3.5 21"/></svg>',
+    fields: [ {k:'n', lab:'Nombre de pans', def:6, min:3, max:12}, {k:'d1', lab:'Ø base (sommet à sommet)', def:130},
+              {k:'d2', lab:'Ø haut (0 = pointe)', def:80}, {k:'h', lab:'Hauteur', def:140} ],
+  },
+  tasse: {
+    name: 'Tasse & mug',
+    glyph: '<svg width="34" height="34" viewBox="0 0 34 34"><path d="M5 10 h17 v13 a8.5 5 0 0 1 -17 0 Z"/><ellipse cx="13.5" cy="10" rx="8.5" ry="2.6"/><path d="M22 14 h3.5 a4.5 4.5 0 0 1 0 9 h-4"/></svg>',
+    fields: [ {k:'d1', lab:'Ø base', def:75}, {k:'d2', lab:'Ø buvant', def:90}, {k:'h', lab:'Hauteur', def:95},
+              {k:'ah', lab:'Anse : hauteur', def:65}, {k:'ap', lab:'Anse : saillie', def:32}, {k:'aw', lab:'Anse : largeur de bande', def:16} ],
+  },
+  profil: {
+    name: 'Profil libre',
+    glyph: '<svg width="34" height="34" viewBox="0 0 34 34"><path d="M13 5 h8 c0 5 6 7 6 13 a10 9 0 0 1 -20 0 c0-6 6-8 6-13 Z"/></svg>',
+    fields: [],
+    editor: 'profil',
+    init: { pts: [{r:35,y:0},{r:55,y:40},{r:48,y:90},{r:28,y:130},{r:34,y:158}] },
+  },
+  libre: {
+    name: 'Fond libre',
+    glyph: '<svg width="34" height="34" viewBox="0 0 34 34"><path d="M9 12 c-4 7 2 15 9 15 8 0 12 -6 10 -12 C26 8 18 5 13 8 c-2 1 -3 2 -4 4 Z" stroke-dasharray="3 2"/></svg>',
+    fields: [ {k:'h', lab:'Hauteur de paroi', def:60} ],
+    editor: 'libre',
+    init: { pts: [{x:35,y:105},{x:70,y:45},{x:130,y:35},{x:170,y:85},{x:150,y:150},{x:80,y:162}] },
+  },
+  bouteille: {
+    name: 'Bouteille',
+    glyph: '<svg width="34" height="34" viewBox="0 0 34 34"><path d="M14 4 h6 v6 l6 6 v13 H8 V16 l6-6 Z M8 16 h18"/></svg>',
+    fields: [ {k:'d1', lab:'Ø corps', def:100}, {k:'h1', lab:'Hauteur corps', def:140},
+              {k:'d2', lab:'Ø col', def:45}, {k:'h2', lab:'Hauteur épaule', def:50}, {k:'h3', lab:'Hauteur col', def:45} ],
+  },
+  pichet: {
+    name: 'Pichet',
+    glyph: '<svg width="34" height="34" viewBox="0 0 34 34"><path d="M10 8 L7 5 l6 1 h8 l-2 21 h-9 Z M21 11 h4 a4 5 0 0 1 0 10 h-3"/></svg>',
+    fields: [ {k:'d1', lab:'Ø base', def:95}, {k:'d2', lab:'Ø buvant', def:110}, {k:'h', lab:'Hauteur', def:170},
+              {k:'db', lab:'Bec : Ø du disque', def:55},
+              {k:'ah', lab:'Anse : hauteur', def:100}, {k:'ap', lab:'Anse : saillie', def:40}, {k:'aw', lab:'Anse : largeur de bande', def:20} ],
+  },
+  assiette: {
+    name: 'Assiette',
+    glyph: '<svg width="34" height="34" viewBox="0 0 34 34"><path d="M4 15 l6 6 h14 l6-6 M10 21 v2 h14 v-2"/></svg>',
+    fields: [ {k:'d1', lab:'Ø du fond', def:140}, {k:'d2', lab:'Ø total', def:220}, {k:'h', lab:'Hauteur du bord', def:25} ],
+  },
+  plat: {
+    name: 'Plat à bords',
+    glyph: '<svg width="34" height="34" viewBox="0 0 34 34"><path d="M4 12 l4 12 h18 l4-12 M8 24 l-1 3 h20 l-1-3"/></svg>',
+    fields: [ {k:'l', lab:'Longueur du fond', def:200}, {k:'w', lab:'Largeur du fond', def:140},
+              {k:'h', lab:'Hauteur du bord', def:35}, {k:'db', lab:'Débord (évasement)', def:25} ],
+  },
+  coussin: {
+    name: 'Vase coussin',
+    glyph: '<svg width="34" height="34" viewBox="0 0 34 34"><circle cx="17" cy="19" r="11"/><path d="M14 8 v-4 h6 v4"/></svg>',
+    fields: [ {k:'df', lab:'Ø des faces', def:160}, {k:'p', lab:'Profondeur (tranche)', def:60},
+              {k:'dc', lab:'Ø col (0 = sans col)', def:45}, {k:'hc', lab:'Hauteur col', def:35} ],
+  },
+};
+
+/* ---------------- galerie de départ ---------------- */
+const PRESETS = [
+  { name:'Tasse espresso',  shape:'tasse',    dims:{d1:58, d2:64, h:62, ah:38, ap:20, aw:10} },
+  { name:'Mug droit',       shape:'tasse',    dims:{d1:82, d2:82, h:98, ah:70, ap:34, aw:16} },
+  { name:'Bol à ramen',     shape:'cone',     dims:{d1:100, d2:180, h:90} },
+  { name:'Chawan',          shape:'cone',     dims:{d1:90, d2:118, h:76} },
+  { name:'Assiette dessert',shape:'assiette', dims:{d1:130, d2:195, h:20} },
+  { name:'Plat de service', shape:'plat',     dims:{l:280, w:180, h:40, db:30} },
+  { name:'Bouteille haute', shape:'bouteille',dims:{d1:88, h1:200, d2:34, h2:60, h3:62} },
+  { name:'Pichet à eau',    shape:'pichet',   dims:{d1:100, d2:122, h:190, db:60, ah:110, ap:45, aw:20} },
+  { name:'Boîte à thé',     shape:'boite',    dims:{l:92, w:92, h:125} },
+  { name:'Vase hexagonal',  shape:'prisme',   dims:{n:6, d:98, h:185} },
+  { name:'Vase coussin',    shape:'coussin',  dims:{df:170, p:55, dc:40, hc:35} },
+  { name:'Vase courbe',     shape:'profil',   dims:{pts:[{r:30,y:0},{r:52,y:35},{r:56,y:75},{r:34,y:115},{r:21,y:140},{r:26,y:158}]} },
+];
+
+const defaultDims = id => Object.assign(
+  Object.fromEntries(SHAPES[id].fields.map(f=>[f.k,f.def])),
+  JSON.parse(JSON.stringify(SHAPES[id].init||{})));
+
+SHAPES.kur_cyl = {
+  name: 'Bloc cylindrique',
+  kurinuki: 'cyl',
+  glyph: '<svg width="34" height="34" viewBox="0 0 34 34"><ellipse cx="17" cy="7" rx="12" ry="4"/><path d="M5 7 v20 a12 4 0 0 0 24 0 V7"/><path d="M11 7 c0 8 2 12 6 12 4 0 6-4 6-12" stroke-dasharray="2.5 2"/></svg>',
+  fields: [ {k:'paroi', lab:'Épaisseur de paroi visée', def:10}, {k:'marge', lab:'Marge de taille (par face)', def:8} ],
+  editor: 'profil',
+  init: { pts: [{r:36,y:0},{r:50,y:25},{r:53,y:58},{r:45,y:85}] },
+};
+SHAPES.kur_rect = {
+  name: 'Bloc rectangulaire',
+  kurinuki: 'rect',
+  glyph: '<svg width="34" height="34" viewBox="0 0 34 34"><path d="M6 10 l11-5 11 5 v15 l-11 5 -11-5 Z M6 10 l11 5 11-5 M17 15 v15"/><path d="M12 12 c0 6 2 9 5 9 3 0 5-3 5-9" stroke-dasharray="2.5 2"/></svg>',
+  fields: [ {k:'paroi', lab:'Épaisseur de paroi visée', def:10}, {k:'marge', lab:'Marge de taille (par face)', def:8} ],
+  editor: 'profil',
+  init: { pts: [{r:36,y:0},{r:50,y:25},{r:53,y:58},{r:45,y:85}] },
+};
+
+const SHAPE_GROUPS = [
+  { label:'Formes de base', ids:['cylindre','cone','boite','pyramide','ovale','prisme','facettes'] },
+  { label:'Vaisselle & objets', ids:['tasse','pichet','assiette','plat','bouteille','coussin'] },
+  { label:'À dessiner', ids:['profil','libre'] },
+];
+const KUR_GROUPS = [
+  { label:'Creusage dans la masse', ids:['kur_cyl','kur_rect'] },
+];
+const isKur = () => !!SHAPES[state.shape].kurinuki;
+
+const DEFAULT_STATE = {
+  shape: 'cone',
+  dims: Object.fromEntries(Object.entries(SHAPES).map(([id,s]) =>
+    [id, Object.assign(Object.fromEntries(s.fields.map(f=>[f.k,f.def])), JSON.parse(JSON.stringify(s.init||{})))])),
+  ep: 5, retrait: 12, coteType: 'fini',
+  ov: { x: 30, y: 20, scale: 55, op: 75 },
+};
+let state = loadState();
+let photoURL = null;
+
+function loadState(){
+  try{
+    const s = JSON.parse(localStorage.getItem('gabarits-state'));
+    if(s && s.dims) return Object.assign({}, DEFAULT_STATE, s, {
+      dims: Object.assign({}, DEFAULT_STATE.dims, s.dims),
+      ov: Object.assign({}, DEFAULT_STATE.ov, s.ov),
+    });
+  }catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT_STATE));
+}
+function saveState(){ localStorage.setItem('gabarits-state', JSON.stringify(state)); }
+
+const fmt = v => (Math.round(v*10)/10).toLocaleString('fr-FR');
+const fmt0 = v => Math.round(v).toLocaleString('fr-FR');
+const kFactor = () => state.coteType==='fini' ? 1/(1 - state.retrait/100) : 1;
+
+/* ---------------------------------------------------------------
+   Calcul des pièces.
+   Chaque pièce : { tag, name, qty, geo, dims:[...], notes:[...] }
+   geo : {t:'rect',w,h} | {t:'disc',d} | {t:'sector',Rout,Rin,theta} | {t:'trap',b1,b2,h}
+   --------------------------------------------------------------- */
+const clampN = n => Math.min(12, Math.max(3, Math.round(n || 6)));
+
+/* surface d'une pièce en mm² (pour le poids de terre) */
+function pieceArea(geo){
+  switch(geo.t){
+    case 'rect':    return geo.w * geo.h;
+    case 'disc':    return Math.PI * geo.d * geo.d / 4;
+    case 'sector':  return 0.5 * geo.theta * (geo.Rout**2 - geo.Rin**2);
+    case 'trap':    return (geo.b1 + geo.b2) / 2 * geo.h;
+    case 'ellipse': return Math.PI * geo.A * geo.B / 4;
+    case 'poly':    return geo.n / 2 * geo.R * geo.R * Math.sin(2*Math.PI/geo.n);
+    case 'path':    return geo.area || 0;
+    default:        return 0;
+  }
+}
+/* poids de terre estimé : Σ surfaces × épaisseur × densité 1,9 g/cm³
+   (en kurinuki : poids du bloc plein à préparer) */
+function clayWeight(pieces){
+  if(isKur()) return kurData().blocW;
+  const mm3 = pieces.filter(p => !p.noClay)
+    .reduce((s,p) => s + p.qty * pieceArea(p.geo) * state.ep, 0);
+  return mm3 * 0.0019;   // g
+}
+const fmtPoids = g => g >= 1000 ? (g/1000).toLocaleString('fr-FR',{maximumFractionDigits:2})+' kg' : Math.round(g/10)*10+' g';
+
+/* anse : bande développée (demi-périmètre d'ellipse Ramanujan + pattes) + gabarit de profil */
+function ansePieces(AH, AP, AW, e){
+  const a = AH/2, b = AP;
+  const demiPer = Math.PI * (3*(a + b) - Math.sqrt((3*a + b)*(a + 3*b))) / 2;
+  const Lb = demiPer + 12;
+  return [
+    { name:'Anse — bande', qty:1, geo:{t:'rect', w:Lb, h:AW},
+      dims:[`bande ${fmt(Lb)} × ${fmt(AW)} mm (courbe développée + 12 mm de pattes d'attache)`],
+      notes:[`découper dans la plaque, laisser raffermir un peu, puis cintrer en suivant le gabarit de profil`,
+             `attaches : scarifier + barbotine, bien souder aux deux points`] },
+    { name:'Anse — profil', qty:1, noClay:true, geo:{t:'anse', a:AH/2, b:AP, e},
+      dims:[`hauteur ${fmt(AH)} mm entre attaches — saillie ${fmt(AP)} mm`],
+      notes:[`gabarit de contrôle : ne se découpe pas dans la terre, sert à vérifier la courbure de la bande cintrée`] },
+  ];
+}
+
+/* paroi d'un tronc de cône (Ø extérieurs, hauteur verticale) → pièce rect ou secteur */
+function coneWall(D1, D2, H, e){
+  const r1 = Math.max(0,(D1 - e)/2), r2 = Math.max(0,(D2 - e)/2);
+  if(Math.abs(r1 - r2) < 0.5){
+    const C = Math.PI * (D1 - e);
+    return { name:'Paroi', qty:1, geo:{t:'rect', w:C, h:H},
+      dims:[`Ø base ≈ Ø haut : la paroi est un simple rectangle ${fmt(C)} × ${fmt(H)} mm`],
+      notes:[`joint vertical : biseauter les deux petits côtés à 45°`] };
+  }
+  const rMax = Math.max(r1,r2), rMin = Math.min(r1,r2);
+  const s = Math.hypot(H, r1 - r2);            // hauteur d'inclinaison (apothème du tronc)
+  const Rout = s * rMax / (rMax - rMin);
+  const Rin  = Rout - s;
+  const theta = 2*Math.PI * rMax / Rout;
+  const corde = 2 * Rout * Math.sin(Math.min(theta,Math.PI)/2);
+  const bigSide = r1 >= r2 ? 'base' : 'haut';
+  const smallSide = r1 >= r2 ? 'haut' : 'base';
+  const dims = [
+    `rayon extérieur R = ${fmt(Rout)} mm — rayon intérieur r = ${fmt(Rin)} mm`,
+    `angle du secteur = ${fmt(theta*180/Math.PI)}°`,
+    `grand arc (côté ${bigSide}, Ø ${fmt(2*rMax + e)}) = ${fmt(theta*Rout)} mm — petit arc (côté ${smallSide}, Ø ${fmt(2*rMin + e)}) = ${fmt(theta*Rin)} mm`,
+  ];
+  if(theta < Math.PI*1.02) dims.push(`corde du grand arc = ${fmt(corde)} mm (pour vérifier le tracé)`);
+  const notes = [Rout <= 600
+                   ? `tracer au compas depuis la croix centrale : deux arcs de rayons R et r, puis les deux rayons droits`
+                   : `centre hors gabarit : marquer un point au sol et tracer les deux arcs de rayons R et r au compas à ficelle (ou imprimer la mosaïque)`,
+                 `joint : biseauter les deux bords droits à 45°`];
+  if(Rout > 1200) notes.push(`rayon très grand (cône presque cylindrique) — utiliser un compas à ficelle, ou vérifier les Ø saisis`);
+  return { name:'Paroi (secteur)', qty:1, geo:{t:'sector', Rout, Rin, theta}, dims, notes, warn: Rout > 1200 };
+}
+
+/* ---------- kurinuki : creusage dans la masse ---------- */
+function kurCavity(pts, paroi){
+  // profil intérieur (offset radial), coupé au plancher y0+paroi ; du haut vers le bas
+  const floorY = pts[0].y + paroi;
+  const inner = [];
+  for(let i = pts.length-1; i >= 0; i--){
+    const p = pts[i];
+    if(p.y > floorY){ inner.push({r: Math.max(0, p.r - paroi), y: p.y}); }
+    else {
+      const q = pts[i+1];
+      if(q && q.y > floorY){
+        const t = (floorY - p.y) / (q.y - p.y || 1);
+        inner.push({r: Math.max(0, (p.r + (q.r - p.r)*t) - paroi), y: floorY});
+      }
+      break;
+    }
+  }
+  return inner;   // haut → bas
+}
+function kurVolumes(pts, paroi){
+  const vol = arr => { let V = 0;
+    for(let i=0;i<arr.length-1;i++){ const h = arr[i+1].y - arr[i].y;
+      if(h > 0) V += Math.PI/3*h*(arr[i].r**2 + arr[i].r*arr[i+1].r + arr[i+1].r**2); }
+    return V; };
+  const inner = kurCavity(pts, paroi);
+  return { pieceW: (vol(pts) - vol([...inner].reverse())) * 0.0019, inner };
+}
+function kurData(){
+  const d = state.dims[state.shape];
+  const k = kFactor();
+  const pts = d.pts.map(p => ({r: p.r*k, y: p.y*k}));
+  const H = pts.at(-1).y - pts[0].y;
+  const maxR = Math.max(...pts.map(p => p.r));
+  const rect = SHAPES[state.shape].kurinuki === 'rect';
+  const side = 2*(maxR + d.marge), hB = H + d.marge;
+  const Vbloc = rect ? side*side*hB : Math.PI*(side/2)**2*hB;
+  const { pieceW } = kurVolumes(pts, d.paroi);
+  return { rect, side, hB,
+    blocTxt: rect ? `${fmt(side)} × ${fmt(side)} × ${fmt(hB)} mm` : `Ø ${fmt(side)} × ${fmt(hB)} mm`,
+    blocW: Vbloc*0.0019, pieceW };
+}
+function kurPieces(d, rectBloc){
+  const k = kFactor();
+  const pts = d.pts.map(p => ({r: p.r*k, y: p.y*k}));
+  const paroi = d.paroi;
+  const y0 = pts[0].y, Y = pts.at(-1).y, H = Y - y0;
+  const maxR = Math.max(...pts.map(p => p.r));
+  const P = [];
+  // profil complet (silhouette symétrique) à reporter sur le bloc
+  const outline = [...pts.map(p => ({x: maxR + p.r, y: Y - p.y})),
+                   ...[...pts].reverse().map(p => ({x: maxR - p.r, y: Y - p.y}))];
+  const dOut = pathFrom(outline, true);
+  P.push({ name:'Profil extérieur', qty:2, noClay:true,
+    geo:{t:'path', d:dOut, bx:0, by:0, bw:2*maxR, bh:H, label:`profil ${fmt(2*maxR)} × ${fmt(H)} mm`},
+    dims:[`silhouette ${fmt(2*maxR)} × ${fmt(H)} mm — à reporter sur 2 faces opposées du bloc`],
+    notes:[`poser sur la face, tracer à la pointe, puis tailler l'extérieur par facettes du haut vers le bas (terre à consistance cuir)`] });
+  // dessus : contour extérieur + ouverture
+  const rTop = pts.at(-1).r, rIn = Math.max(0, rTop - paroi);
+  const circ = (cx,cy,r) => `M ${(cx-r).toFixed(1)} ${cy.toFixed(1)} a ${r.toFixed(1)} ${r.toFixed(1)} 0 1 0 ${(2*r).toFixed(1)} 0 a ${r.toFixed(1)} ${r.toFixed(1)} 0 1 0 ${(-2*r).toFixed(1)} 0`;
+  P.push({ name:'Dessus — contour & ouverture', qty:1, noClay:true,
+    geo:{t:'path', d: circ(rTop,rTop,rTop) + ' ' + (rIn>1 ? circ(rTop,rTop,rIn) : ''), bx:0, by:0, bw:2*rTop, bh:2*rTop, label:`Ø ${fmt(2*rTop)} / ${fmt(2*rIn)} mm`},
+    dims:[`contour extérieur Ø ${fmt(2*rTop)} mm — ouverture à creuser Ø ${fmt(2*rIn)} mm`],
+    notes:[`à tracer sur le dessus du bloc : grand cercle = contour de la pièce, petit cercle = ouverture du creusage`] });
+  // coupe de creusage
+  const { pieceW, inner } = kurVolumes(pts, paroi);
+  if(inner.length >= 2){
+    const dCav = pathFrom([...inner.map(p => ({x: maxR + p.r, y: Y - p.y})),
+                           ...[...inner].reverse().map(p => ({x: maxR - p.r, y: Y - p.y}))], true);
+    P.push({ name:'Coupe de creusage (contrôle)', qty:1, noClay:true,
+      geo:{t:'path', d: dOut + ' ' + dCav, bx:0, by:0, bw:2*maxR, bh:H, label:`paroi ${fmt(paroi)} mm`},
+      dims:[`paroi et fond visés ${fmt(paroi)} mm — profondeur de cavité ${fmt(H - paroi)} mm`,
+            `pièce finie ≈ ${fmtPoids(pieceW)} de terre — le reste du bloc s'évide`],
+      notes:[`gabarit de contrôle : garder à côté en creusant, vérifier au compas d'épaisseur`,
+             `creuser à la mirette par étages, du centre vers les bords, le fond en dernier — séchage très lent sous plastique`,
+             `l'épaisseur est mesurée horizontalement : sur les zones très inclinées, viser un peu plus épais`] });
+  }
+  return P;
+}
+
+function computePieces(){
+  const k = kFactor(), e = state.ep;
+  const d = state.dims[state.shape];
+  const P = [];
+  const add = p => { p.tag = String.fromCharCode(65 + P.length); P.push(p); };
+
+  if(isKur()){
+    kurPieces(d, SHAPES[state.shape].kurinuki === 'rect').forEach(add);
+    return P;
+  }
+
+  if(state.shape === 'cylindre'){
+    const D = d.d*k, H = d.h*k;
+    const C = Math.PI * (D - e);
+    add({ name:'Paroi', qty:1, geo:{t:'rect', w:C, h:H},
+      dims:[`rectangle ${fmt(C)} × ${fmt(H)} mm`,
+            `longueur = circonférence médiane π × (Ø − épaisseur)`],
+      notes:[`enrouler autour du fond, joint vertical : biseauter les deux petits côtés à 45°`] });
+    add({ name:'Fond', qty:1, geo:{t:'disc', d:D},
+      dims:[`disque Ø ${fmt(D)} mm`],
+      notes:[`la paroi se pose sur le fond, au ras du bord`] });
+  }
+
+  if(state.shape === 'cone'){
+    const D1 = d.d1*k, D2 = d.d2*k, H = d.h*k;
+    add(coneWall(D1, D2, H, e));
+    add({ name:'Fond', qty:1, geo:{t:'disc', d:D1},
+      dims:[`disque Ø ${fmt(D1)} mm`],
+      notes:[`la paroi se pose sur le fond, au ras du bord`] });
+  }
+
+  if(state.shape === 'ovale'){
+    const A = d.da*k, B = d.db*k, H = d.h*k;
+    const a = Math.max(0,(A - e)/2), b = Math.max(0,(B - e)/2);   // demi-axes médians
+    const per = Math.PI * (3*(a + b) - Math.sqrt((3*a + b)*(a + 3*b)));  // Ramanujan
+    add({ name:'Paroi', qty:1, geo:{t:'rect', w:per, h:H},
+      dims:[`rectangle ${fmt(per)} × ${fmt(H)} mm`,
+            `longueur = périmètre médian de l'ellipse (Ø − épaisseur)`],
+      notes:[`cintrer autour du fond en suivant la courbe — joint vertical : biseauter les deux petits côtés à 45°`,
+             `placer le joint sur un côté plat (grand rayon), pas dans un bout serré`] });
+    add({ name:'Fond', qty:1, geo:{t:'ellipse', A, B},
+      dims:[`ellipse ${fmt(A)} × ${fmt(B)} mm`],
+      notes:[`la paroi se pose sur le fond, au ras du bord`] });
+  }
+
+  if(state.shape === 'prisme'){
+    const N = clampN(d.n), D = d.d*k, H = d.h*k;
+    const R = D/2, S = 2*R*Math.sin(Math.PI/N);
+    add({ name:'Pan', qty:N, geo:{t:'rect', w:S, h:H-e},
+      dims:[`rectangle ${fmt(S)} × ${fmt(H-e)} mm — ${N} pans identiques`],
+      notes:[`posé debout sur le fond (d'où la hauteur − 1 épaisseur)`,
+             `biseauter les bords verticaux à ${fmt(180/N)}° pour fermer le polygone`] });
+    add({ name:'Fond', qty:1, geo:{t:'poly', n:N, R},
+      dims:[`polygone régulier à ${N} côtés — Ø ${fmt(D)} mm sommet à sommet, côté ${fmt(S)} mm`],
+      notes:[`les pans se posent sur le fond, au ras des bords`] });
+  }
+
+  if(state.shape === 'facettes'){
+    const N = clampN(d.n), D1 = d.d1*k, D2 = d.d2*k, H = d.h*k;
+    const R1 = D1/2, R2 = D2/2;
+    const b1 = 2*R1*Math.sin(Math.PI/N), b2 = 2*R2*Math.sin(Math.PI/N);
+    const a1 = R1*Math.cos(Math.PI/N), a2 = R2*Math.cos(Math.PI/N);   // apothèmes
+    const s = Math.hypot(H, a1 - a2);
+    add({ name:'Facette', qty:N, geo:{t:'trap', b1, b2, h:s},
+      dims:[`trapèze : base ${fmt(b1)}, sommet ${fmt(b2)}, hauteur inclinée ${fmt(s)} mm — ${N} facettes identiques`],
+      notes:[`biseauter les bords inclinés (~${fmt(180/N)}° en haut de forme) et ajuster à la pose — cotes hors épaisseur`] });
+    add({ name:'Fond', qty:1, geo:{t:'poly', n:N, R:R1},
+      dims:[`polygone régulier à ${N} côtés — Ø ${fmt(D1)} mm sommet à sommet, côté ${fmt(b1)} mm`],
+      notes:[] });
+  }
+
+  if(state.shape === 'tasse'){
+    const D1 = d.d1*k, D2 = d.d2*k, H = d.h*k;
+    const AH = d.ah*k, AP = d.ap*k, AW = d.aw*k;
+    add(coneWall(D1, D2, H, e));
+    add({ name:'Fond', qty:1, geo:{t:'disc', d:D1},
+      dims:[`disque Ø ${fmt(D1)} mm`],
+      notes:[`la paroi se pose sur le fond, au ras du bord`] });
+    ansePieces(AH, AP, AW, e).forEach(add);
+  }
+
+  if(state.shape === 'pichet'){
+    const D1 = d.d1*k, D2 = d.d2*k, H = d.h*k, DB = d.db*k;
+    add(coneWall(D1, D2, H, e));
+    add({ name:'Fond', qty:1, geo:{t:'disc', d:D1},
+      dims:[`disque Ø ${fmt(D1)} mm`],
+      notes:[`la paroi se pose sur le fond, au ras du bord`] });
+    add({ name:'Bec verseur', qty:1, geo:{t:'sector', Rout:DB/2, Rin:0, theta:Math.PI},
+      dims:[`demi-disque Ø ${fmt(DB)} mm`],
+      notes:[`cintrer en gouttière sur le manche d'un outil, puis souder sur une encoche taillée dans le buvant`,
+             `lisser l'arête de coulée au doigt mouillé (c'est elle qui coupe la goutte)`] });
+    ansePieces(d.ah*k, d.ap*k, d.aw*k, e).forEach(add);
+  }
+
+  if(state.shape === 'assiette'){
+    const D1 = d.d1*k, D2 = d.d2*k, H = d.h*k;
+    add({ name:'Fond', qty:1, geo:{t:'disc', d:D1},
+      dims:[`disque Ø ${fmt(D1)} mm`], notes:[] });
+    const p = coneWall(D1, D2, H, e);
+    p.name = 'Bord (marli)';
+    p.notes = [...p.notes, `souder le marli sur le pourtour du fond, joint scarifié + barbotine, puis adoucir l'angle intérieur`];
+    add(p);
+  }
+
+  if(state.shape === 'plat'){
+    const L = d.l*k, W = d.w*k, H = d.h*k, DB = d.db*k;
+    const s = Math.hypot(H, DB);   // hauteur inclinée du bord
+    add({ name:'Fond', qty:1, geo:{t:'rect', w:L, h:W},
+      dims:[`rectangle ${fmt(L)} × ${fmt(W)} mm`], notes:[] });
+    add({ name:'Bord long', qty:2, geo:{t:'trap', b1:L, b2:L+2*DB, h:s},
+      dims:[`trapèze : base ${fmt(L)}, haut ${fmt(L+2*DB)}, hauteur inclinée ${fmt(s)} mm`],
+      notes:[`la petite base se soude au fond, le bord s'évase vers l'extérieur`] });
+    add({ name:'Bord court', qty:2, geo:{t:'trap', b1:W, b2:W+2*DB, h:s},
+      dims:[`trapèze : base ${fmt(W)}, haut ${fmt(W+2*DB)}, hauteur inclinée ${fmt(s)} mm`],
+      notes:[`biseauter les bords inclinés à ~45° et ajuster les coins à la pose`] });
+  }
+
+  if(state.shape === 'coussin'){
+    const DF = d.df*k, P = d.p*k, DC = d.dc*k, HC = d.hc*k;
+    const C = Math.PI * (DF - e);
+    add({ name:'Face', qty:2, geo:{t:'disc', d:DF},
+      dims:[`disque Ø ${fmt(DF)} mm — 2 faces identiques`],
+      notes:[`laisser raffermir à plat (ou bomber légèrement sur un moule souple)`] });
+    add({ name:'Bande (tranche)', qty:1, geo:{t:'rect', w:C, h:P},
+      dims:[`bande ${fmt(C)} × ${fmt(P)} mm (circonférence médiane × profondeur)`],
+      notes:[`cintrer la bande autour d'une face, souder, puis refermer avec la seconde face`,
+             `percer un petit trou d'évent avant de refermer (air emprisonné = casse à la cuisson)`] });
+    if(DC > e && HC > 0.5) add({ name:'Col', qty:1, geo:{t:'rect', w:Math.PI*(DC - e), h:HC},
+      dims:[`rectangle ${fmt(Math.PI*(DC - e))} × ${fmt(HC)} mm`],
+      notes:[`découper l'ouverture Ø ${fmt(DC - 2*e)} dans la tranche (en haut), rouler le col et le souder dessus`] });
+  }
+
+  if(state.shape === 'profil'){
+    const pts = d.pts;
+    if(pts[0].r*k > 1) add({ name:'Fond', qty:1, geo:{t:'disc', d:2*pts[0].r*k},
+      dims:[`disque Ø ${fmt(2*pts[0].r*k)} mm`],
+      notes:[`la première section se pose sur le fond, au ras du bord`] });
+    for(let i=0; i<pts.length-1; i++){
+      const H = (pts[i+1].y - pts[i].y)*k;
+      if(H < 1) continue;
+      const p = coneWall(2*pts[i].r*k, 2*pts[i+1].r*k, H, e);
+      p.name = `Section ${i+1}${i===0?' (bas)':i===pts.length-2?' (haut)':''}`;
+      p.notes = [...p.notes, `joints horizontaux entre sections : biseauter à 45° et souder scarifié + barbotine`];
+      add(p);
+    }
+    // gabarit de contrôle du profil (vue en coupe, à ne pas découper dans la terre)
+    const Y = Math.max(...pts.map(p=>p.y));
+    const prof = pts.map(p => ({x:p.r*k, y:(Y-p.y)*k}));
+    const dPath = pathFrom(prof, false) + ` L 0 ${(Y-pts.at(-1).y)*k} L 0 ${(Y-pts[0].y)*k} Z`;
+    const maxR = Math.max(...prof.map(p=>p.x));
+    add({ name:'Profil (contrôle)', qty:1, noClay:true,
+      geo:{t:'path', d:dPath, bx:0, by:0, bw:maxR, bh:(Y-pts[0].y)*k, label:`profil — h ${fmt((Y-pts[0].y)*k)} mm`},
+      dims:[`demi-profil complet : Ø max ${fmt(2*maxR)} mm, hauteur ${fmt((Y-pts[0].y)*k)} mm`],
+      notes:[`gabarit de contrôle : ne se découpe pas dans la terre, sert à vérifier la forme pendant le montage des sections`] });
+  }
+
+  if(state.shape === 'libre'){
+    const H = d.h*k;
+    const sm = smoothClosed(d.pts).map(p => ({x:p.x*k, y:p.y*k}));
+    const xs = sm.map(p=>p.x), ys = sm.map(p=>p.y);
+    const bx = Math.min(...xs), by = Math.min(...ys);
+    const bw = Math.max(...xs)-bx, bh = Math.max(...ys)-by;
+    const per = perim(sm, true);
+    let area = 0;   // shoelace
+    for(let i=0;i<sm.length;i++){ const q = sm[(i+1)%sm.length]; area += sm[i].x*q.y - q.x*sm[i].y; }
+    area = Math.abs(area)/2;
+    add({ name:'Fond', qty:1,
+      geo:{t:'path', d:pathFrom(sm.map(p=>({x:p.x-bx, y:p.y-by})), true), bx:0, by:0, bw, bh, area, label:`${fmt(bw)} × ${fmt(bh)} mm`},
+      dims:[`contour libre — encombrement ${fmt(bw)} × ${fmt(bh)} mm`, `périmètre ${fmt(per)} mm`],
+      notes:[`découper au couteau en suivant le gabarit posé sur la plaque`] });
+    add({ name:'Paroi', qty:1, geo:{t:'rect', w:per, h:H},
+      dims:[`bande ${fmt(per)} × ${fmt(H)} mm (périmètre du fond × hauteur)`],
+      notes:[`cintrer debout le long du bord du fond — joint vertical : biseauter les deux petits côtés à 45°`,
+             `placer le joint dans une zone peu courbée ; recouper l'excédent à la pose si besoin`] });
+  }
+
+  if(state.shape === 'bouteille'){
+    const D1 = d.d1*k, H1 = d.h1*k, D2 = d.d2*k, H2 = d.h2*k, H3 = d.h3*k;
+    const C1 = Math.PI * (D1 - e), C2 = Math.PI * Math.max(1, D2 - e);
+    add({ name:'Corps', qty:1, geo:{t:'rect', w:C1, h:H1},
+      dims:[`rectangle ${fmt(C1)} × ${fmt(H1)} mm (circonférence médiane × hauteur du corps)`],
+      notes:[`joint vertical : biseauter les deux petits côtés à 45°`] });
+    if(H2 > 0.5) add(Object.assign(coneWall(D1, D2, H2, e), { name:'Épaule (secteur)' }));
+    if(H3 > 0.5 && D2 > e) add({ name:'Col', qty:1, geo:{t:'rect', w:C2, h:H3},
+      dims:[`rectangle ${fmt(C2)} × ${fmt(H3)} mm`],
+      notes:[`rouler autour d'un mandrin (Ø ${fmt(D2 - 2*e)} intérieur) — joint biseauté à 45°`] });
+    add({ name:'Fond', qty:1, geo:{t:'disc', d:D1},
+      dims:[`disque Ø ${fmt(D1)} mm`],
+      notes:[`monter le corps sur le fond, poser l'épaule, finir par le col`] });
+  }
+
+  if(state.shape === 'boite'){
+    const L = d.l*k, W = d.w*k, H = d.h*k;
+    add({ name:'Fond', qty:1, geo:{t:'rect', w:L, h:W}, dims:[`rectangle ${fmt(L)} × ${fmt(W)} mm`], notes:[] });
+    add({ name:'Paroi longue', qty:2, geo:{t:'rect', w:L, h:H-e},
+      dims:[`rectangle ${fmt(L)} × ${fmt(H-e)} mm`],
+      notes:[`posée debout sur le fond (d’où la hauteur − 1 épaisseur)`,`biseauter les bords verticaux à 45° pour les angles`] });
+    add({ name:'Paroi courte', qty:2, geo:{t:'rect', w:Math.max(1,W-2*e), h:H-e},
+      dims:[`rectangle ${fmt(Math.max(1,W-2*e))} × ${fmt(H-e)} mm`],
+      notes:[`s’insère entre les deux parois longues (d’où la largeur − 2 épaisseurs)`,`biseauter les bords verticaux à 45°`] });
+  }
+
+  if(state.shape === 'pyramide'){
+    const L1 = d.l1*k, W1 = d.w1*k, L2 = d.l2*k, W2 = d.w2*k, H = d.h*k;
+    const sL = Math.hypot(H, (W1 - W2)/2);   // hauteur des faces côté longueur
+    const sW = Math.hypot(H, (L1 - L2)/2);   // hauteur des faces côté largeur
+    add({ name:'Fond', qty:1, geo:{t:'rect', w:L1, h:W1}, dims:[`rectangle ${fmt(L1)} × ${fmt(W1)} mm`], notes:[] });
+    add({ name:'Face longueur', qty:2, geo:{t:'trap', b1:L1, b2:L2, h:sL},
+      dims:[`trapèze : base ${fmt(L1)}, sommet ${fmt(L2)}, hauteur inclinée ${fmt(sL)} mm`],
+      notes:[`la hauteur du trapèze est la hauteur *inclinée* de la face, déjà calculée`] });
+    add({ name:'Face largeur', qty:2, geo:{t:'trap', b1:W1, b2:W2, h:sW},
+      dims:[`trapèze : base ${fmt(W1)}, sommet ${fmt(W2)}, hauteur inclinée ${fmt(sW)} mm`],
+      notes:[`biseauter les bords inclinés à ~45° et ajuster à la pose — les cotes sont hors épaisseur`] });
+  }
+
+  return P;
+}
+
+/* ---------------------------------------------------------------
+   Rendu SVG d'une pièce → { vb:{x,y,w,h}, body:'<g>…</g>' }
+   --------------------------------------------------------------- */
+function hcote(x1,x2,y,label){
+  return `<g class="cote"><line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"/>`+
+    `<line x1="${x1}" y1="${y-2}" x2="${x1}" y2="${y+2}"/><line x1="${x2}" y1="${y-2}" x2="${x2}" y2="${y+2}"/>`+
+    `<text x="${(x1+x2)/2}" y="${y-1.8}" text-anchor="middle">${label}</text></g>`;
+}
+function vcote(y1,y2,x,label){
+  return `<g class="cote"><line x1="${x}" y1="${y1}" x2="${x}" y2="${y2}"/>`+
+    `<line x1="${x-2}" y1="${y1}" x2="${x+2}" y2="${y1}"/><line x1="${x-2}" y1="${y2}" x2="${x+2}" y2="${y2}"/>`+
+    `<text x="${x-2}" y="${(y1+y2)/2}" text-anchor="middle" transform="rotate(-90 ${x-2} ${(y1+y2)/2})">${label}</text></g>`;
+}
+
+function renderGeo(geo, mode){
+  const print = mode === 'print';
+  if(geo.t === 'rect'){
+    const {w,h} = geo;
+    let body = `<rect class="piece-line" x="0" y="0" width="${w}" height="${h}"/>`;
+    if(print){
+      body += `<text class="sector-info" x="${w/2}" y="${h/2}" text-anchor="middle">${fmt(w)} × ${fmt(h)} mm</text>`;
+      return { vb:{x:-3,y:-3,w:w+6,h:h+6}, body };
+    }
+    body += hcote(0,w,h+8,`${fmt(w)} mm`) + vcote(0,h,-8,`${fmt(h)} mm`);
+    return { vb:{x:-18,y:-4,w:w+26,h:h+18}, body };
+  }
+  if(geo.t === 'disc'){
+    const r = geo.d/2;
+    const body = `<circle class="piece-line" cx="${r}" cy="${r}" r="${r}"/>`+
+      `<line class="axe" x1="0" y1="${r}" x2="${geo.d}" y2="${r}"/>`+
+      `<g class="cote"><text x="${r}" y="${r-2}" text-anchor="middle">Ø ${fmt(geo.d)} mm</text></g>`+
+      `<g class="center-mark"><line x1="${r-3}" y1="${r}" x2="${r+3}" y2="${r}"/><line x1="${r}" y1="${r-3}" x2="${r}" y2="${r+3}"/></g>`;
+    return { vb:{x:-4,y:-4,w:geo.d+8,h:geo.d+8}, body };
+  }
+  if(geo.t === 'ellipse'){
+    const {A,B} = geo, rx = A/2, ry = B/2;
+    let body = `<ellipse class="piece-line" cx="${rx}" cy="${ry}" rx="${rx}" ry="${ry}"/>`+
+      `<line class="axe" x1="0" y1="${ry}" x2="${A}" y2="${ry}"/>`+
+      `<line class="axe" x1="${rx}" y1="0" x2="${rx}" y2="${B}"/>`+
+      `<g class="center-mark"><line x1="${rx-3}" y1="${ry}" x2="${rx+3}" y2="${ry}"/><line x1="${rx}" y1="${ry-3}" x2="${rx}" y2="${ry+3}"/></g>`;
+    if(print){
+      body += `<text class="sector-info" x="${rx}" y="${ry-3}" text-anchor="middle">${fmt(A)} × ${fmt(B)} mm</text>`;
+      return { vb:{x:-3,y:-3,w:A+6,h:B+6}, body };
+    }
+    body += hcote(0,A,B+8,`${fmt(A)} mm`) + vcote(0,B,-8,`${fmt(B)} mm`);
+    return { vb:{x:-18,y:-4,w:A+26,h:B+18}, body };
+  }
+  if(geo.t === 'poly'){
+    const {n,R} = geo;
+    const pts = [];
+    for(let i=0;i<n;i++){
+      const a = Math.PI/2 + Math.PI/n + i*2*Math.PI/n;   // un côté à plat en bas
+      pts.push([R*Math.cos(a), R*Math.sin(a)]);
+    }
+    const xs = pts.map(p=>p[0]), ys = pts.map(p=>p[1]);
+    const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+    const S = 2*R*Math.sin(Math.PI/n);
+    const yb = R*Math.cos(Math.PI/n);                     // y du côté du bas
+    let body = `<path class="piece-line" d="M ${pts.map(p=>p.join(' ')).join(' L ')} Z"/>`+
+      `<g class="center-mark"><line x1="-3" y1="0" x2="3" y2="0"/><line x1="0" y1="-3" x2="0" y2="3"/></g>`+
+      `<text class="sector-info" x="0" y="-6" text-anchor="middle">Ø ${fmt(2*R)} mm</text>`;
+    if(print) return { vb:{x:minX-3,y:minY-3,w:maxX-minX+6,h:maxY-minY+6}, body };
+    body += hcote(-S/2, S/2, yb+8, `côté ${fmt(S)} mm`);
+    return { vb:{x:minX-6,y:minY-6,w:maxX-minX+12,h:yb-minY+24}, body };
+  }
+  if(geo.t === 'path'){
+    const {d,bx,by,bw,bh,label} = geo;
+    let body = `<path class="piece-line" d="${d}"/>`;
+    if(print){
+      body += `<text class="sector-info" x="${bx+bw/2}" y="${by+bh/2}" text-anchor="middle">${label}</text>`;
+      return { vb:{x:bx-3, y:by-3, w:bw+6, h:bh+6}, body };
+    }
+    body += hcote(bx, bx+bw, by+bh+8, `${fmt(bw)} mm`) + vcote(by, by+bh, bx-8, `${fmt(bh)} mm`);
+    return { vb:{x:bx-18, y:by-4, w:bw+26, h:bh+18}, body };
+  }
+  if(geo.t === 'anse'){
+    // profil en C ouvert vers la gauche : demi-ellipses concentriques, bande d'épaisseur e
+    const {a,b,e} = geo, e2 = e/2;
+    const ao = a + e2, bo = b + e2, ai = Math.max(1, a - e2), bi = Math.max(1, b - e2);
+    let body = `<path class="piece-line" d="M 0 ${-ao} A ${bo} ${ao} 0 0 1 0 ${ao} L 0 ${ai} A ${bi} ${ai} 0 0 0 0 ${-ai} Z"/>`+
+      `<line class="axe" x1="0" y1="${-ao}" x2="0" y2="${ao}"/>`;
+    if(print){
+      body += `<text class="sector-info" x="${bo+3}" y="0">h ${fmt(2*a)} · saillie ${fmt(b)} mm</text>`;
+      return { vb:{x:-3, y:-ao-3, w:bo+55, h:2*ao+6}, body };
+    }
+    body += vcote(-a, a, -8, `${fmt(2*a)} mm`) + hcote(0, b, ao+8, `${fmt(b)} mm`);
+    return { vb:{x:-18, y:-ao-4, w:bo+26, h:2*ao+20}, body };
+  }
+  if(geo.t === 'trap'){
+    const {b1,b2,h} = geo;
+    const bm = Math.max(b1,b2);
+    const bl=[(bm-b1)/2, h], br=[(bm+b1)/2, h], tl=[(bm-b2)/2, 0], tr=[(bm+b2)/2, 0];
+    let body = `<path class="piece-line" d="M ${tl} L ${tr} L ${br} L ${bl} Z"/>`;
+    if(print){
+      body += `<text class="sector-info" x="${bm/2}" y="${h/2}" text-anchor="middle">base ${fmt(b1)} · haut ${fmt(b2)} · h ${fmt(h)} mm</text>`;
+      return { vb:{x:-3,y:-3,w:bm+6,h:h+6}, body };
+    }
+    body += hcote(bl[0],br[0],h+8,`${fmt(b1)} mm`) +
+      vcote(0,h,Math.min(tl[0],bl[0])-8,`${fmt(h)} mm`);
+    if(b2 > 1) body += hcote(tl[0],tr[0],-6,`${fmt(b2)} mm`);
+    return { vb:{x:-18, y:-12, w:bm+26, h:h+32}, body };
+  }
+  if(geo.t === 'sector'){
+    const {Rout,Rin,theta} = geo;
+    const a1 = Math.PI/2 - theta/2, a2 = Math.PI/2 + theta/2;
+    const pt = (R,a) => [R*Math.cos(a), R*Math.sin(a)];
+    const [x1o,y1o] = pt(Rout,a1), [x2o,y2o] = pt(Rout,a2);
+    const [x1i,y1i] = pt(Rin,a1),  [x2i,y2i] = pt(Rin,a2);
+    const large = theta > Math.PI ? 1 : 0;
+    let dPath = `M ${x1o} ${y1o} A ${Rout} ${Rout} 0 ${large} 1 ${x2o} ${y2o}`;
+    if(Rin > 0.5) dPath += ` L ${x2i} ${y2i} A ${Rin} ${Rin} 0 ${large} 0 ${x1i} ${y1i} Z`;
+    else dPath += ` L 0 0 Z`;
+    const includeCenter = Rout <= 600 || Rin < 0.5;
+    let body = `<path class="piece-line" d="${dPath}"/>`;
+    // bornes
+    let xs=[x1o,x2o,x1i,x2i], ys=[y1o,y2o,y1i,y2i];
+    for(let a=a1; a<=a2; a+=Math.PI/180){ const [px,py]=pt(Rout,a); xs.push(px); ys.push(py); const [qx,qy]=pt(Rin,a); xs.push(qx); ys.push(qy); }
+    if(includeCenter){
+      xs.push(0); ys.push(0);
+      body += `<g class="constr"><line x1="0" y1="0" x2="${x1o}" y2="${y1o}"/><line x1="0" y1="0" x2="${x2o}" y2="${y2o}"/></g>`;
+      body += `<g class="center-mark"><line x1="-4" y1="0" x2="4" y2="0"/><line x1="0" y1="-4" x2="0" y2="4"/><circle cx="0" cy="0" r="1" fill="none"/></g>`;
+    }
+    // bloc d'infos au centre de la bande
+    const midR = Rin > 0.5 ? (Rin+Rout)/2 : Rout*0.62;
+    const info = [`R ext = ${fmt(Rout)}`, Rin>0.5?`R int = ${fmt(Rin)}`:null, `angle = ${fmt(theta*180/Math.PI)}°`].filter(Boolean);
+    body += info.map((t,i)=>`<text class="sector-info" x="0" y="${midR - (info.length-1)*3 + i*6}" text-anchor="middle">${t}</text>`).join('');
+    const minX=Math.min(...xs), maxX=Math.max(...xs), minY=Math.min(...ys), maxY=Math.max(...ys);
+    return { vb:{x:minX-6, y:minY-6, w:maxX-minX+12, h:maxY-minY+12}, body };
+  }
+}
+
+function pieceRender(p, mode){ return renderGeo(p.geo, mode); }
+
+/* ---------------------------------------------------------------
+   UI : contrôles
+   --------------------------------------------------------------- */
+const $ = s => document.querySelector(s);
+
+/* Suivi d'événements — défensif : envoie à PostHog ET GA4 s'ils sont
+   chargés, ne fait rien sinon (aucune erreur en local file://). */
+function track(event, props){
+  try{ if(window.posthog && window.posthog.capture) window.posthog.capture(event, props || {}); }catch(e){}
+  try{ if(window.gtag) window.gtag('event', event, props || {}); }catch(e){}
+}
+
+const printExcl = new Set();   // pièces décochées pour l'impression (réinitialisé au changement de forme)
+let shapeGridOpen = false;
+
+function buildMode(){
+  document.querySelectorAll('#modeRow .opt').forEach(el => {
+    el.classList.toggle('on', el.dataset.v === (state.mode || 'plaque'));
+    el.onclick = () => {
+      if(el.dataset.v === (state.mode || 'plaque')) return;
+      state.lastShape = state.lastShape || {};
+      state.lastShape[state.mode || 'plaque'] = state.shape;
+      state.mode = el.dataset.v;
+      state.shape = state.lastShape[state.mode] || (state.mode === 'kurinuki' ? 'kur_cyl' : 'cone');
+      printExcl.clear(); shapeGridOpen = false;
+      buildMode(); buildShapeSelector(); buildDimFields(); refresh();
+    };
+  });
+}
+
+function buildShapeSelector(){
+  $('#spickBtn').innerHTML = SHAPES[state.shape].glyph +
+    `<span class="spname">${SHAPES[state.shape].name}</span><span class="caret">${shapeGridOpen?'▴':'▾'} changer</span>`;
+  $('#shapeSel').style.display = shapeGridOpen ? 'grid' : 'none';
+  $('#shapeSel').innerHTML = (state.mode === 'kurinuki' ? KUR_GROUPS : SHAPE_GROUPS).map(g =>
+    `<div class="shgroup">${g.label}</div>` +
+    g.ids.map(id => `<div class="shape${id===state.shape?' on':''}" data-id="${id}">${SHAPES[id].glyph}${SHAPES[id].name}</div>`).join('')
+  ).join('');
+  document.querySelectorAll('.shape').forEach(el => el.onclick = () => {
+    state.shape = el.dataset.id; printExcl.clear(); shapeGridOpen = false;
+    track('shape_selected', { shape: el.dataset.id, mode: state.mode || 'plaque' });
+    buildShapeSelector(); buildDimFields(); refresh();
+  });
+}
+$('#spickBtn').onclick = () => { shapeGridOpen = !shapeGridOpen; buildShapeSelector(); };
+function buildDimFields(){
+  const s = SHAPES[state.shape];
+  $('#dimFields').innerHTML = (s.editor ? editorHTML(s.editor) : '') + s.fields.map(f =>
+    `<div class="field"><label>${f.lab}</label><span><input type="number" inputmode="decimal" data-k="${f.k}" min="${f.min ?? 0}"${f.max ? ` max="${f.max}"` : ''} step="1" value="${state.dims[state.shape][f.k]}"><span class="unit">${f.min ? '' : 'mm'}</span></span></div>`).join('');
+  document.querySelectorAll('#dimFields input').forEach(inp => inp.oninput = () => {
+    let v = parseFloat(inp.value);
+    const f = s.fields.find(x => x.k === inp.dataset.k);
+    if(!isNaN(v)){
+      if(f.min) v = Math.min(f.max, Math.max(f.min, Math.round(v)));
+      if(v >= 0) state.dims[state.shape][inp.dataset.k] = v;
+    }
+    refresh();
+  });
+  if(s.editor) initEditor(s.editor);
+  $('#inEp').closest('.field').style.display = isKur() ? 'none' : 'flex';   // en kurinuki, c'est la paroi visée qui compte
+}
+
+/* ---------------------------------------------------------------
+   Éditeur de forme à points (profil de révolution / fond libre)
+   Coordonnées internes en mm (1 unité viewBox = 1 mm).
+   --------------------------------------------------------------- */
+const ED = {
+  profil: { vb:'-14 -6 140 172', maxY:160, maxR:110, minPts:2 },
+  libre:  { vb:'0 0 200 200', minPts:3 },
+};
+let edSelected = -1;   // point sélectionné dans l'éditeur (-1 = aucun)
+function updateEdDel(){
+  const btn = $('#edDel'); if(!btn) return;
+  const pts = state.dims[state.shape].pts;
+  btn.disabled = !(edSelected >= 0 && pts && pts.length > ED[SHAPES[state.shape].editor].minPts);
+}
+function editorHTML(type){
+  return `<div class="editor">
+    <svg id="edSvg" viewBox="${ED[type].vb}"></svg>
+    <div class="edbtns">
+      <button type="button" class="small" id="edAdd">+ point</button>
+      <button type="button" class="small" id="edDel" disabled>− supprimer le point</button>
+      <button type="button" class="small" id="edReset">réinitialiser</button>
+    </div>
+    <div class="edreadout" id="edReadout"></div>
+    <div class="hint">${type==='profil'
+      ? (isKur()
+        ? `dessine le <b>demi-profil extérieur</b> de la pièce (l'axe est à gauche) : glisse les points, tape sur la courbe pour en ajouter. Le bloc s'ajuste autour avec la marge de taille.`
+        : `dessine le <b>demi-profil</b> (l'axe est à gauche) : glisse les points, tape sur la courbe pour en ajouter. Chaque segment devient une section de cône à empiler.`)
+      : `dessine le contour du fond : glisse les points, tape sur la courbe pour en ajouter. La courbe est lissée automatiquement.`}<br>Pour <b>supprimer</b> un point : tape-le puis « − supprimer le point ».</div>
+  </div>`;
+}
+
+/* Catmull-Rom fermé → points échantillonnés (pour le fond libre) */
+function smoothClosed(pts, seg=16){
+  const n = pts.length, out = [];
+  for(let i=0;i<n;i++){
+    const p0 = pts[(i-1+n)%n], p1 = pts[i], p2 = pts[(i+1)%n], p3 = pts[(i+2)%n];
+    for(let j=0;j<seg;j++){
+      const t = j/seg, t2 = t*t, t3 = t2*t;
+      out.push({
+        x: .5*((2*p1.x)+(-p0.x+p2.x)*t+(2*p0.x-5*p1.x+4*p2.x-p3.x)*t2+(-p0.x+3*p1.x-3*p2.x+p3.x)*t3),
+        y: .5*((2*p1.y)+(-p0.y+p2.y)*t+(2*p0.y-5*p1.y+4*p2.y-p3.y)*t2+(-p0.y+3*p1.y-3*p2.y+p3.y)*t3),
+      });
+    }
+  }
+  return out;
+}
+const pathFrom = (pts, close) => 'M ' + pts.map(p=>`${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' L ') + (close?' Z':'');
+const perim = (pts, close) => {
+  let L = 0;
+  for(let i=1;i<pts.length;i++) L += Math.hypot(pts[i].x-pts[i-1].x, pts[i].y-pts[i-1].y);
+  if(close) L += Math.hypot(pts[0].x-pts.at(-1).x, pts[0].y-pts.at(-1).y);
+  return L;
+};
+
+function edSvgPoint(svg, evt){
+  const pt = svg.createSVGPoint(); pt.x = evt.clientX; pt.y = evt.clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+
+function initEditor(type){
+  const svg = $('#edSvg');
+  edSelected = -1;
+  redrawEditor(type);
+  updateEdDel();
+  let drag = null;
+  svg.addEventListener('pointerdown', e => {
+    if(e.target.classList.contains('edpt') || e.target.classList.contains('edhit')){
+      drag = +e.target.dataset.i;
+      edSelected = drag;
+      svg.setPointerCapture(e.pointerId);
+      redrawEditor(type); updateEdDel();
+      e.preventDefault();
+    }
+  });
+  svg.addEventListener('pointermove', e => {
+    if(drag === null) return;
+    const pts = state.dims[state.shape].pts;
+    const p = edSvgPoint(svg, e);
+    if(type === 'profil'){
+      const c = ED.profil;
+      pts[drag].r = Math.round(Math.min(c.maxR, Math.max(0, p.x)));
+      if(drag > 0){
+        let y = c.maxY - p.y;
+        const lo = pts[drag-1].y + 2;
+        const hi = drag < pts.length-1 ? pts[drag+1].y - 2 : c.maxY;
+        pts[drag].y = Math.round(Math.min(hi, Math.max(lo, y)));
+      }
+    } else {
+      pts[drag].x = Math.round(Math.min(195, Math.max(5, p.x)));
+      pts[drag].y = Math.round(Math.min(195, Math.max(5, p.y)));
+    }
+    redrawEditor(type);
+  });
+  const endDrag = () => { if(drag !== null){ drag = null; refresh(); } };
+  svg.addEventListener('pointerup', endDrag);
+  svg.addEventListener('pointercancel', endDrag);
+  svg.addEventListener('dblclick', e => {
+    if(!(e.target.classList.contains('edpt') || e.target.classList.contains('edhit'))) return;
+    const pts = state.dims[state.shape].pts;
+    if(pts.length <= ED[type].minPts) return;
+    pts.splice(+e.target.dataset.i, 1);
+    edSelected = -1;
+    redrawEditor(type); updateEdDel(); refresh();
+  });
+  svg.addEventListener('click', e => {
+    if(!e.target.classList.contains('hit')) return;
+    const pts = state.dims[state.shape].pts;
+    const p = edSvgPoint(svg, e);
+    if(type === 'profil'){
+      const y = ED.profil.maxY - p.y;
+      let i = pts.findIndex(q => q.y > y);
+      if(i <= 0) i = pts.length;
+      pts.splice(i, 0, {r: Math.round(Math.min(ED.profil.maxR, Math.max(0, p.x))), y: Math.round(y)});
+    } else {
+      // insérer après le point de contrôle le plus proche du clic
+      let best = 0, bd = 1e9;
+      pts.forEach((q,i) => {
+        const m = {x:(q.x+pts[(i+1)%pts.length].x)/2, y:(q.y+pts[(i+1)%pts.length].y)/2};
+        const dd = Math.hypot(m.x-p.x, m.y-p.y);
+        if(dd < bd){ bd = dd; best = i; }
+      });
+      pts.splice(best+1, 0, {x:Math.round(p.x), y:Math.round(p.y)});
+    }
+    edSelected = -1;
+    redrawEditor(type); updateEdDel(); refresh();
+  });
+  $('#edAdd').onclick = () => {
+    const pts = state.dims[state.shape].pts;
+    if(type === 'profil'){
+      // couper le plus long segment en deux
+      let best = 0, bl = -1;
+      for(let i=0;i<pts.length-1;i++){ const l = pts[i+1].y - pts[i].y; if(l > bl){ bl = l; best = i; } }
+      pts.splice(best+1, 0, {r:Math.round((pts[best].r+pts[best+1].r)/2), y:Math.round((pts[best].y+pts[best+1].y)/2)});
+    } else {
+      let best = 0, bl = -1;
+      pts.forEach((q,i) => { const nx = pts[(i+1)%pts.length]; const l = Math.hypot(nx.x-q.x, nx.y-q.y); if(l > bl){ bl = l; best = i; } });
+      const nx = pts[(best+1)%pts.length];
+      pts.splice(best+1, 0, {x:Math.round((pts[best].x+nx.x)/2), y:Math.round((pts[best].y+nx.y)/2)});
+    }
+    edSelected = -1;
+    redrawEditor(type); updateEdDel(); refresh();
+  };
+  $('#edDel').onclick = () => {
+    const pts = state.dims[state.shape].pts;
+    if(edSelected < 0 || pts.length <= ED[type].minPts) return;
+    pts.splice(edSelected, 1);
+    edSelected = -1;
+    redrawEditor(type); updateEdDel(); refresh();
+  };
+  $('#edReset').onclick = () => {
+    state.dims[state.shape].pts = JSON.parse(JSON.stringify(SHAPES[state.shape].init.pts));
+    edSelected = -1;
+    redrawEditor(type); updateEdDel(); refresh();
+  };
+}
+
+/* un point de l'éditeur : grande zone de tap transparente + point visible (surligné si sélectionné) */
+function edPoint(cx, cy, i){
+  const sel = i === edSelected;
+  return `<circle class="edhit" data-i="${i}" cx="${cx}" cy="${cy}" r="10" fill="transparent"/>`+
+         `<circle class="edpt${sel?' sel':''}" data-i="${i}" cx="${cx}" cy="${cy}" r="${sel?6:4.5}"/>`;
+}
+function redrawEditor(type){
+  const svg = $('#edSvg');
+  if(!svg) return;
+  const pts = state.dims[state.shape].pts;
+  let g = '';
+  if(type === 'profil'){
+    const c = ED.profil, Y = y => c.maxY - y;
+    for(let x=0; x<=120; x+=20) g += `<line class="edgrid" x1="${x}" y1="0" x2="${x}" y2="${c.maxY}"/>`;
+    for(let y=0; y<=c.maxY; y+=20) g += `<line class="edgrid" x1="-10" y1="${Y(y)}" x2="120" y2="${Y(y)}"/>`;
+    g += `<line class="edaxis" x1="0" y1="-4" x2="0" y2="${c.maxY+4}"/>`;
+    // silhouette complète (miroir) pour lecture
+    const right = pts.map(p=>`${p.r} ${Y(p.y)}`).join(' L ');
+    g += `<path class="edmirror" d="M ${right} L 0 ${Y(pts.at(-1).y)} L 0 ${Y(pts[0].y)} Z"/>`;
+    g += `<path class="edline" d="M ${right}"/>`;
+    g += `<path class="edline hit" d="M ${right}"/>`;
+    pts.forEach((p,i)=> g += edPoint(p.r, Y(p.y), i));
+    const maxR = Math.max(...pts.map(p=>p.r));
+    $('#edReadout') && ($('#edReadout').innerHTML =
+      `Ø base ${fmt(2*pts[0].r)} · Ø max ${fmt(2*maxR)} · Ø haut ${fmt(2*pts.at(-1).r)} · hauteur ${fmt(pts.at(-1).y-pts[0].y)} mm (fini) — ${pts.length-1} section${pts.length>2?'s':''}`);
+  } else {
+    for(let x=0; x<=200; x+=20) g += `<line class="edgrid" x1="${x}" y1="0" x2="${x}" y2="200"/>`;
+    for(let y=0; y<=200; y+=20) g += `<line class="edgrid" x1="0" y1="${y}" x2="200" y2="${y}"/>`;
+    const sm = smoothClosed(pts);
+    g += `<path class="edmirror" d="${pathFrom(sm, true)}"/>`;
+    g += `<path class="edline" d="${pathFrom(sm, true)}"/>`;
+    g += `<path class="edline hit" d="${pathFrom(sm, true)}"/>`;
+    pts.forEach((p,i)=> g += edPoint(p.x, p.y, i));
+    const xs = sm.map(p=>p.x), ys = sm.map(p=>p.y);
+    $('#edReadout') && ($('#edReadout').innerHTML =
+      `encombrement ${fmt(Math.max(...xs)-Math.min(...xs))} × ${fmt(Math.max(...ys)-Math.min(...ys))} mm · périmètre ${fmt(perim(sm,true))} mm (fini)`);
+  }
+  svg.innerHTML = g;
+}
+function syncTerrePreset(){
+  $('#terrePreset').value = [8,12,14].includes(state.retrait) ? String(state.retrait) : 'perso';
+}
+const TERRE_NAMES = {8:'faïence', 12:'grès', 14:'porcelaine'};
+function terreSummaryTxt(){
+  return `${TERRE_NAMES[state.retrait] || 'retrait'} ${fmt(state.retrait)} % · ${isKur() ? 'bloc plein' : `plaque ${fmt(state.ep)} mm`} · pièce ${state.coteType==='fini'?'finie':'crue'}`;
+}
+$('#terreToggle').onclick = () => {
+  state.terreOpen = !state.terreOpen;
+  $('#terreWrap').classList.toggle('closed', !state.terreOpen);
+  saveState();
+};
+$('#terreWrap').classList.toggle('closed', !state.terreOpen);
+$('#inEp').value = state.ep;
+$('#inRetrait').value = state.retrait;
+syncTerrePreset();
+$('#inEp').oninput = e => { const v=parseFloat(e.target.value); if(v>0) state.ep=v; refresh(); };
+$('#inRetrait').oninput = e => {
+  const v=parseFloat(e.target.value);
+  if(!isNaN(v)&&v>=0&&v<40) state.retrait=v;
+  syncTerrePreset(); refresh();
+};
+$('#terrePreset').onchange = e => {
+  if(e.target.value === 'perso') return;
+  state.retrait = +e.target.value;
+  $('#inRetrait').value = state.retrait;
+  refresh();
+};
+function buildCoteType(){
+  document.querySelectorAll('#coteType .opt').forEach(el => {
+    el.classList.toggle('on', el.dataset.v === state.coteType);
+    el.onclick = () => { state.coteType = el.dataset.v; buildCoteType(); refresh(); };
+  });
+}
+
+/* ---------------------------------------------------------------
+   UI : photo + silhouette
+   --------------------------------------------------------------- */
+const dz = $('#dropzone'), fi = $('#fileInput');
+dz.onclick = () => fi.click();
+dz.ondragover = e => { e.preventDefault(); dz.classList.add('drag'); };
+dz.ondragleave = () => dz.classList.remove('drag');
+dz.ondrop = e => { e.preventDefault(); dz.classList.remove('drag'); if(e.dataTransfer.files[0]) loadPhoto(e.dataTransfer.files[0]); };
+fi.onchange = () => { if(fi.files[0]) loadPhoto(fi.files[0]); };
+$('#btnClearPhoto').onclick = () => {
+  photoURL = null; $('#photoBox').style.display='none'; dz.style.display='flex'; $('#btnClearPhoto').style.display='none';
+  renderPreview();
+};
+function loadPhoto(file){
+  if(photoURL) URL.revokeObjectURL(photoURL);
+  photoURL = URL.createObjectURL(file);
+  $('#photoImg').src = photoURL;
+  dz.style.display='none'; $('#photoBox').style.display='block'; $('#btnClearPhoto').style.display='inline-block';
+  renderPreview();
+  $('#photoImg').onload = renderOverlay;
+}
+
+function silhouette(){ return silhouetteFor(state.shape, state.dims[state.shape]); }
+function silhouetteFor(shape, d){
+  if(shape==='cylindre'){
+    const ry = Math.min(d.d*0.14, d.h*0.25);
+    return { w:d.d, h:d.h, svg:`<rect x="0" y="${ry}" width="${d.d}" height="${d.h-ry}"/><ellipse cx="${d.d/2}" cy="${ry}" rx="${d.d/2}" ry="${ry}"/>` };
+  }
+  if(shape==='cone'){
+    const bm = Math.max(d.d1,d.d2), ry = Math.min(d.d2*0.14, d.h*0.2);
+    const bl=(bm-d.d1)/2, tl=(bm-d.d2)/2;
+    return { w:bm, h:d.h, svg:`<path d="M ${tl} ${ry} L ${bl} ${d.h} L ${bl+d.d1} ${d.h} L ${tl+d.d2} ${ry} Z"/>`+(d.d2>1?`<ellipse cx="${bm/2}" cy="${ry}" rx="${d.d2/2}" ry="${ry}"/>`:'') };
+  }
+  if(shape==='boite') return { w:d.l, h:d.h, svg:`<rect x="0" y="0" width="${d.l}" height="${d.h}"/>` };
+  if(shape==='pyramide'){
+    const bm = Math.max(d.l1,d.l2), bl=(bm-d.l1)/2, tl=(bm-d.l2)/2;
+    return { w:bm, h:d.h, svg:`<path d="M ${tl} 0 L ${tl+d.l2} 0 L ${bl+d.l1} ${d.h} L ${bl} ${d.h} Z"/>` };
+  }
+  if(shape==='ovale'){
+    const ry = Math.min(d.db*0.14, d.h*0.25);
+    return { w:d.da, h:d.h, svg:`<rect x="0" y="${ry}" width="${d.da}" height="${d.h-ry}"/><ellipse cx="${d.da/2}" cy="${ry}" rx="${d.da/2}" ry="${ry}"/>` };
+  }
+  if(shape==='prisme'){
+    const N = clampN(d.n), x1 = d.d/2*(1-Math.sin(Math.PI/N)), x2 = d.d/2*(1+Math.sin(Math.PI/N));
+    return { w:d.d, h:d.h, svg:`<rect x="0" y="0" width="${d.d}" height="${d.h}"/><line x1="${x1}" y1="0" x2="${x1}" y2="${d.h}"/><line x1="${x2}" y1="0" x2="${x2}" y2="${d.h}"/>` };
+  }
+  if(shape==='facettes'){
+    const bm = Math.max(d.d1,d.d2), bl=(bm-d.d1)/2, tl=(bm-d.d2)/2;
+    return { w:bm, h:d.h, svg:`<path d="M ${tl} 0 L ${tl+d.d2} 0 L ${bl+d.d1} ${d.h} L ${bl} ${d.h} Z"/>` };
+  }
+  if(shape==='tasse'){
+    const bm = Math.max(d.d1,d.d2), bl=(bm-d.d1)/2, tl=(bm-d.d2)/2;
+    const y1 = Math.max(2, d.h/2 - d.ah/2), y2 = Math.min(d.h-2, d.h/2 + d.ah/2);
+    return { w:bm + d.ap, h:d.h,
+      svg:`<path d="M ${tl} 0 L ${tl+d.d2} 0 L ${bl+d.d1} ${d.h} L ${bl} ${d.h} Z"/>`+
+          `<path fill="none" d="M ${bm} ${y1} A ${d.ap} ${(y2-y1)/2} 0 0 1 ${bm} ${y2}"/>` };
+  }
+  if(shape==='pichet'){
+    const bm = Math.max(d.d1,d.d2), bl=(bm-d.d1)/2, tl=(bm-d.d2)/2;
+    const y1 = Math.max(2, d.h/2 - d.ah/2), y2 = Math.min(d.h-2, d.h/2 + d.ah/2);
+    const bec = Math.min(d.db*0.4, 20);
+    return { w:bm + d.ap, h:d.h,
+      svg:`<path d="M ${tl} 0 L ${tl-bec*0.5} ${-0.01} L ${tl+bec} ${bec} L ${tl} ${bec} Z" />`+
+          `<path d="M ${tl} 0 L ${tl+d.d2} 0 L ${bl+d.d1} ${d.h} L ${bl} ${d.h} Z"/>`+
+          `<path fill="none" d="M ${bm} ${y1} A ${d.ap} ${(y2-y1)/2} 0 0 1 ${bm} ${y2}"/>` };
+  }
+  if(shape==='assiette'){
+    const bm = Math.max(d.d1,d.d2), bl=(bm-d.d1)/2, tl=(bm-d.d2)/2;
+    return { w:bm, h:d.h, svg:`<path d="M ${tl} 0 L ${tl+d.d2} 0 L ${bl+d.d1} ${d.h} L ${bl} ${d.h} Z"/>` };
+  }
+  if(shape==='plat'){
+    const top = d.l + 2*d.db;
+    return { w:top, h:d.h, svg:`<path d="M 0 0 L ${top} 0 L ${top-d.db} ${d.h} L ${d.db} ${d.h} Z"/>` };
+  }
+  if(shape==='coussin'){
+    const H = d.df + d.hc, xl = (d.df-d.dc)/2;
+    return { w:d.df, h:H,
+      svg:`<circle cx="${d.df/2}" cy="${d.hc + d.df/2}" r="${d.df/2}"/>`+
+          (d.dc>1?`<rect x="${xl}" y="0" width="${d.dc}" height="${d.hc + 4}"/>`:'') };
+  }
+  if(shape==='profil' || SHAPES[shape].kurinuki){
+    const pts = d.pts, Y = Math.max(...pts.map(p=>p.y));
+    const maxR = Math.max(...pts.map(p=>p.r));
+    const kur = !!SHAPES[shape].kurinuki;
+    const m = kur ? d.marge : 0;
+    const right = pts.map(p=>`${m+maxR+p.r} ${Y-p.y}`).join(' L ');
+    const left = [...pts].reverse().map(p=>`${m+maxR-p.r} ${Y-p.y}`).join(' L ');
+    const bloc = kur ? `<rect x="0" y="0" width="${2*(maxR+m)}" height="${Y-pts[0].y+m}" fill="none" stroke-dasharray="7 5"/>` : '';
+    return { w:2*(maxR+m), h:Y-pts[0].y+(kur?m:0), svg: bloc + `<path d="M ${right} L ${left} Z"/>` };
+  }
+  if(shape==='libre'){
+    const sm = smoothClosed(d.pts);
+    const xs = sm.map(p=>p.x), ys = sm.map(p=>p.y);
+    const bw = Math.max(...xs)-Math.min(...xs);
+    return { w:bw, h:d.h, svg:`<rect x="0" y="0" width="${bw}" height="${d.h}"/>` };
+  }
+  if(shape==='bouteille'){
+    const H = d.h1 + d.h2 + d.h3, xl = (d.d1-d.d2)/2, xr = (d.d1+d.d2)/2;
+    return { w:d.d1, h:H, svg:`<path d="M ${xl} 0 L ${xr} 0 L ${xr} ${d.h3} L ${d.d1} ${d.h3+d.h2} L ${d.d1} ${H} L 0 ${H} L 0 ${d.h3+d.h2} L ${xl} ${d.h3} Z"/>` };
+  }
+}
+/* champs de largeur à mettre à l'échelle quand on applique les proportions de l'overlay */
+const WIDTH_FIELDS = {
+  cylindre:['d'], cone:['d1','d2'], boite:['l'], pyramide:['l1','l2'], ovale:['da'],
+  prisme:['d'], facettes:['d1','d2'], tasse:['d1','d2'], pichet:['d1','d2'],
+  assiette:['d1','d2'], plat:['l'], coussin:['df'], bouteille:['d1','d2'],
+};
+
+function renderOverlay(){
+  if(!photoURL) return;
+  const wrap = $('#photoWrap'), ovl = $('#ovl');
+  const sil = silhouette();
+  const H = wrap.clientHeight || 300;
+  if(!state.ov.w || !state.ov.h){          // migration / première fois : calé sur les cotes
+    state.ov.h = H * ((state.ov.scale || 55)/100);
+    state.ov.w = state.ov.h * sil.w/sil.h;
+  }
+  ovl.style.width = state.ov.w+'px'; ovl.style.height = state.ov.h+'px';
+  ovl.style.transform = `translate(${state.ov.x}px, ${state.ov.y}px)`;
+  ovl.style.opacity = state.ov.op/100;
+  ovl.innerHTML = `<svg viewBox="0 0 ${sil.w} ${sil.h}" preserveAspectRatio="none">
+    <g fill="rgba(184,80,42,.18)" stroke="#e2683a" stroke-width="${sil.h/120}" stroke-dasharray="${sil.h/40} ${sil.h/80}">${sil.svg}</g>
+  </svg>
+  <div class="ovh" data-h="e"></div><div class="ovh" data-h="s"></div><div class="ovh" data-h="se"></div>`;
+  updateOvInfo(sil);
+}
+/* écart entre les proportions de l'overlay et celles des cotes */
+function ovDeviation(sil){
+  sil = sil || silhouette();
+  return (state.ov.w/state.ov.h) / (sil.w/sil.h);
+}
+function updateOvInfo(sil){
+  const el = $('#ovInfo');
+  if(!el) return;
+  const dev = ovDeviation(sil);
+  el.textContent = Math.abs(dev-1) < 0.02 ? 'proportions = cotes ✓'
+    : `largeur ${dev>1?'+':''}${Math.round((dev-1)*100)} % vs cotes`;
+}
+(function setupOvDrag(){
+  const ovl = $('#ovl');
+  let mode=null, sx=0, sy=0, o=null;
+  ovl.addEventListener('pointerdown', e => {
+    mode = e.target.classList.contains('ovh') ? e.target.dataset.h : 'move';
+    sx = e.clientX; sy = e.clientY;
+    o = {x:state.ov.x, y:state.ov.y, w:state.ov.w, h:state.ov.h};
+    ovl.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+  ovl.addEventListener('pointermove', e => {
+    if(!mode) return;
+    const dx = e.clientX - sx, dy = e.clientY - sy;
+    if(mode === 'move'){ state.ov.x = o.x + dx; state.ov.y = o.y + dy; }
+    if(mode === 'e')  state.ov.w = Math.max(20, o.w + dx);
+    if(mode === 's')  state.ov.h = Math.max(20, o.h + dy);
+    if(mode === 'se'){ const f = Math.max(20/o.w, 20/o.h, 1 + Math.max(dx/o.w, dy/o.h)); state.ov.w = o.w*f; state.ov.h = o.h*f; }
+    const ovl2 = $('#ovl');
+    ovl2.style.transform = `translate(${state.ov.x}px, ${state.ov.y}px)`;
+    ovl2.style.width = state.ov.w+'px'; ovl2.style.height = state.ov.h+'px';
+    updateOvInfo();
+  });
+  const end = () => { if(mode){ mode = null; saveState(); } };
+  ovl.addEventListener('pointerup', end);
+  ovl.addEventListener('pointercancel', end);
+})();
+$('#ovOp').value = state.ov.op;
+$('#ovOp').oninput = e => { state.ov.op = +e.target.value; $('#ovl').style.opacity = state.ov.op/100; saveState(); };
+$('#ovReset').onclick = () => {
+  const sil = silhouette();
+  state.ov.w = state.ov.h * sil.w/sil.h;
+  renderOverlay(); saveState();
+};
+$('#ovApply').onclick = () => {
+  const dev = ovDeviation();
+  if(Math.abs(dev-1) < 0.02) return;
+  const d = state.dims[state.shape];
+  if(SHAPES[state.shape].editor === 'profil') d.pts.forEach(p => p.r = Math.round(p.r*dev));
+  else if(state.shape === 'libre'){
+    const cx = d.pts.reduce((s,p)=>s+p.x,0)/d.pts.length;
+    d.pts.forEach(p => p.x = Math.round(Math.min(195, Math.max(5, cx + (p.x-cx)*dev))));
+  }
+  else (WIDTH_FIELDS[state.shape]||[]).forEach(f => d[f] = Math.round(d[f]*dev));
+  buildDimFields(); refresh();
+  const sil = silhouette();                       // recale l'overlay sur les nouvelles cotes
+  state.ov.w = state.ov.h * sil.w/sil.h;
+  renderOverlay(); saveState();
+};
+
+/* ---------------------------------------------------------------
+   UI : patrons
+   --------------------------------------------------------------- */
+/* zones utiles A4 (mm) — marges ~10 mm + bandeau ; portrait ET paysage */
+const PG = { P: { w: 190, h: 260 }, L: { w: 277, h: 176 } };   // hauteurs avec marge de sécurité anti-coupure à l'impression
+const GAP = 8, LBL = 7;   // espacement entre pièces / réserve d'étiquette (mm)
+const TILE_W = PG.P.w, TILE_H = PG.P.h;
+
+function tilesFor(vb){ return { cols: Math.ceil(vb.w/TILE_W), rows: Math.ceil(vb.h/TILE_H) }; }
+
+/* meilleure disposition d'une pièce : essaie portrait/paysage × pivot 0/90°,
+   garde le moins de feuilles (à égalité : portrait, puis raccord vertical) */
+function pieceLayout(r){
+  const { w, h } = r.vb;
+  const opts = [];
+  for(const orient of ['P','L']){
+    const { w:tw, h:th } = PG[orient];
+    opts.push({ orient, rot:false, cols:Math.ceil(w/tw), rows:Math.ceil(h/th) });
+    opts.push({ orient, rot:true,  cols:Math.ceil(h/tw), rows:Math.ceil(w/th) });
+  }
+  opts.sort((a,b) => {
+    const na = a.cols*a.rows, nb = b.cols*b.rows;
+    if(na !== nb) return na - nb;
+    if((a.orient==='P') !== (b.orient==='P')) return a.orient==='P' ? -1 : 1;
+    return (a.cols - a.rows) - (b.cols - b.rows);   // préfère plus de lignes que de colonnes
+  });
+  return opts[0];
+}
+
+/* ---------------------------------------------------------------
+   Planification d'impression :
+   - les pièces qui tiennent sur UNE feuille portrait sont imbriquées
+     ensemble sur des « planches » communes ;
+   - les autres sont posées sur leur meilleure orientation (portrait
+     ou paysage) puis, si trop grandes, débitées en mosaïque centrée.
+   --------------------------------------------------------------- */
+function planPrint(pieces){
+  const smalls = [], bigs = [];
+  pieces.forEach(p => {
+    const r = pieceRender(p, 'print');
+    const {w, h} = r.vb;
+    const fitN = w <= PG.P.w && h <= PG.P.h - LBL;
+    const fitR = h <= PG.P.w && w <= PG.P.h - LBL;
+    if(fitN || fitR){
+      const rot = !fitN;
+      smalls.push({ p, r, rot, w: (rot ? h : w), h: (rot ? w : h) + LBL });
+    } else {
+      bigs.push({ p, r, layout: pieceLayout(r) });
+    }
+  });
+  // imbrication en étagères, pièces les plus hautes d'abord
+  smalls.sort((a,b) => b.h - a.h);
+  const bins = [];
+  smalls.forEach(s => {
+    let placed = false;
+    for(const bin of bins){
+      for(const shelf of bin.shelves){
+        if(s.h <= shelf.h && shelf.x + s.w <= PG.P.w){
+          s.x = shelf.x; s.y = shelf.y;
+          shelf.x += s.w + GAP;
+          bin.items.push(s); placed = true; break;
+        }
+      }
+      if(placed) break;
+      if(bin.y + s.h <= PG.P.h){
+        s.x = 0; s.y = bin.y;
+        bin.shelves.push({ x: s.w + GAP, y: bin.y, h: s.h });
+        bin.y += s.h + GAP;
+        bin.items.push(s); placed = true; break;
+      }
+    }
+    if(!placed){
+      s.x = 0; s.y = 0;
+      bins.push({ shelves:[{ x: s.w + GAP, y: 0, h: s.h }], y: s.h + GAP, items:[s] });
+    }
+  });
+  return { bins, bigs };
+}
+const sheetsCount = plan => plan.bins.length + plan.bigs.reduce((n,b) => n + b.layout.cols*b.layout.rows, 0);
+/* transform SVG qui amène la bbox de la pièce (pivotée ou non) en (0,0) */
+function normTransform(r, rot){
+  return rot ? `translate(${r.vb.y + r.vb.h} ${-r.vb.x}) rotate(90)`
+             : `translate(${-r.vb.x} ${-r.vb.y})`;
+}
+
+/* Quelles tuiles de la grille contiennent réellement de la matière ?
+   (les arcs/secteurs ont une bounding-box en grande partie vide → on
+   saute les feuilles entièrement blanches). Biais prudent : au moindre
+   doute on garde la tuile. */
+function tileOccupancy(r, layout){
+  const { orient, rot, cols, rows } = layout;
+  if(cols*rows <= 1) return [[true]];
+  const { w:tw, h:th } = PG[orient];
+  const vb = r.vb;
+  const pw = rot ? vb.h : vb.w, ph = rot ? vb.w : vb.h;
+  const x0 = -(cols*tw - pw)/2, y0 = -(rows*th - ph)/2;
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', `${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
+  svg.setAttribute('width', '300'); svg.setAttribute('height', '300');
+  svg.style.cssText = 'position:fixed;left:-9999px;top:0';
+  svg.innerHTML = r.body;
+  document.body.appendChild(svg);
+  const geos = [...svg.querySelectorAll('.piece-line')];
+  const pt = svg.createSVGPoint();
+  const inFill = (ox, oy) => { pt.x = ox; pt.y = oy;
+    return geos.some(g => { try { return g.isPointInFill(pt); } catch(e){ return false; } }); };
+  const occ = [];
+  const step = 5;
+  for(let rr=0; rr<rows; rr++){ occ[rr] = [];
+    for(let cc=0; cc<cols; cc++){
+      const vx = x0 + cc*tw, vy = y0 + rr*th;
+      let ox0, oy0, ow, oh;
+      if(!rot){ ox0 = vx + vb.x; oy0 = vy + vb.y; ow = tw; oh = th; }
+      else    { ox0 = vy + vb.x; oy0 = vb.y + vb.h - vx - tw; ow = th; oh = tw; }
+      let hit = false;
+      for(let sx = ox0; sx <= ox0+ow && !hit; sx += step)
+        for(let sy = oy0; sy <= oy0+oh && !hit; sy += step)
+          if(inFill(sx, sy)) hit = true;
+      occ[rr][cc] = hit;
+    }
+  }
+  document.body.removeChild(svg);
+  if(!occ.flat().some(Boolean)) occ[0][0] = true;   // ne jamais tout supprimer
+  return occ;
+}
+
+function refresh(){
+  saveState();
+  const k = kFactor();
+  $('#kVal').textContent = '×' + k.toLocaleString('fr-FR',{minimumFractionDigits:3, maximumFractionDigits:3});
+  $('#terreSummary').textContent = terreSummaryTxt();
+  const pieces = computePieces();
+
+  // résumé
+  const s = SHAPES[state.shape];
+  const cuts = pieces.reduce((n,p)=>n+p.qty,0);
+  const retraitTxt = state.coteType==='fini'
+    ? ` Cotes tracées <b>en cru</b> : agrandies de ${fmt(state.retrait)} % de retrait (facteur ×${k.toLocaleString('fr-FR',{maximumFractionDigits:3})}).`
+    : ` Cotes tracées telles que saisies (pièce crue).`;
+  if(isKur()){
+    const kd = kurData();
+    $('#summary').innerHTML =
+      `<b>Kurinuki — ${s.name}</b> — ${pieces.length} gabarits papier de traçage et de contrôle (rien à découper dans la terre).` +
+      retraitTxt +
+      ` Bloc à préparer : <b>${kd.blocTxt}</b> ≈ <b>${fmtPoids(kd.blocW)}</b> — pièce finie ≈ <b>${fmtPoids(kd.pieceW)}</b>, à évider ≈ <b>${fmtPoids(kd.blocW - kd.pieceW)}</b>.`;
+  } else {
+    $('#summary').innerHTML =
+      `<b>${s.name}</b> — ${pieces.length} gabarit${pieces.length>1?'s':''}, <b>${cuts} pièce${cuts>1?'s':''} à découper</b> dans une plaque de <b>${fmt(state.ep)} mm</b>.` +
+      retraitTxt +
+      ` Terre nécessaire ≈ <b>${fmtPoids(clayWeight(pieces))}</b> (hors marge).`;
+  }
+
+  // cartes
+  const included = pieces.filter(p => !printExcl.has(p.tag));
+  const totalPages = included.length ? collectPages(planPrint(included)).length : 0;
+  $('#pieces').innerHTML = pieces.map(p => {
+    const r = pieceRender(p);
+    const dims = p.dims.map(x=>`<li>${x}</li>`).join('') + p.notes.map(x=>`<li class="warn">${x}</li>`).join('');
+    return `<div class="piece-card${printExcl.has(p.tag)?' excluded':''}">
+      <div class="piece-head">
+        <input type="checkbox" class="pchk" data-tag="${p.tag}" title="imprimer cette pièce"${printExcl.has(p.tag)?'':' checked'}>
+        <span class="tag">${p.tag}</span>
+        <span class="pname">${p.name}</span>
+        <span class="qty">× ${p.qty}</span>
+        <button class="small dl" data-tag="${p.tag}">SVG</button>
+      </div>
+      <div class="piece-svg"><svg viewBox="${r.vb.x} ${r.vb.y} ${r.vb.w} ${r.vb.h}" style="aspect-ratio:${r.vb.w}/${r.vb.h};width:${Math.round(r.vb.w * Math.min(2.2, 500/r.vb.h))}px;max-width:100%">${r.body}</svg></div>
+      <ul class="piece-dims">${dims}</ul>
+    </div>`;
+  }).join('');
+  $('#pageEstimate').textContent = `impression : ${totalPages} feuille${totalPages>1?'s':''} A4`;
+  const nSel = included.reduce((n,p)=>n+p.qty,0);
+  $('#synthInfo').innerHTML = included.length
+    ? `<b>${nSel} gabarit${nSel>1?'s':''}</b> · <b>${totalPages} feuille${totalPages>1?'s':''} A4</b> · ${isKur()?'bloc':'terre'} ≈ <b>${fmtPoids(clayWeight(pieces))}</b>`
+    : `aucune pièce sélectionnée — coche au moins un gabarit`;
+  if($('#projName').value !== (state.projectName || '')) $('#projName').value = state.projectName || '';
+
+  document.querySelectorAll('.piece-card .dl').forEach(btn => btn.onclick = () => downloadPiece(pieces.find(p=>p.tag===btn.dataset.tag)));
+  document.querySelectorAll('.piece-card .pchk').forEach(cb => cb.onchange = () => {
+    cb.checked ? printExcl.delete(cb.dataset.tag) : printExcl.add(cb.dataset.tag);
+    refresh();
+  });
+  renderPreview();
+  renderOverlay();
+}
+
+/* aperçu vivant de la pièce (quand aucune photo n'est chargée) */
+function renderPreview(){
+  const box = $('#previewBox');
+  if(photoURL){ box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  const sil = silhouette();
+  const m = Math.max(sil.w, sil.h) * 0.06;
+  $('#prevSil').innerHTML = `<svg viewBox="${-m} ${-m} ${sil.w+2*m} ${sil.h+2*m}" preserveAspectRatio="xMidYMid meet">
+    <g class="prevsil" stroke-width="${Math.max(sil.w,sil.h)/110}">${sil.svg}</g></svg>`;
+  $('#prevDims').textContent = `encombrement ${fmt(sil.w)} × ${fmt(sil.h)} mm — pièce ${state.coteType==='fini'?'finie':'crue'}`;
+}
+
+function svgDoc(vb, body){
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${vb.w}mm" height="${vb.h}mm" viewBox="${vb.x} ${vb.y} ${vb.w} ${vb.h}">`+
+    `<style>.piece-line{fill:none;stroke:#000;stroke-width:.5}.cote{stroke:#555;stroke-width:.3}.cote text{font:4.2px monospace;fill:#555;stroke:none}.constr{stroke:#888;stroke-width:.3;stroke-dasharray:2 1.5;fill:none}.axe{stroke:#888;stroke-width:.3;stroke-dasharray:3 2}.center-mark{stroke:#000;stroke-width:.5}.sector-info{font:4.2px monospace;fill:#000}</style>`+
+    body + `</svg>`;
+}
+function downloadPiece(p){
+  const r = pieceRender(p);
+  const blob = new Blob([svgDoc(r.vb, r.body)], {type:'image/svg+xml'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `gabarit-${state.shape}-${p.tag}-${p.name.toLowerCase().replace(/[^a-z0-9]+/g,'-')}.svg`;
+  a.click(); URL.revokeObjectURL(a.href);
+}
+$('#btnSvg').onclick = () => {
+  const ps = computePieces();
+  ps.forEach((p,i) => setTimeout(()=>downloadPiece(p), i*250));
+  track('export_svg', { shape: state.shape, mode: state.mode || 'plaque', pieces: ps.length });
+  afterExport();
+};
+
+/* ---------------------------------------------------------------
+   Impression mosaïque A4 à taille réelle
+   --------------------------------------------------------------- */
+function fichePage(pieces, pages){
+  const sName = SHAPES[state.shape].name;
+  const k = kFactor();
+  const sil = silhouette();
+  const sc = Math.min(52/sil.h, 62/sil.w);
+  const poids = clayWeight(pieces);
+  pages = pages || collectPages(planPrint(pieces));
+  const feuilles = pages.length;
+  const where = whereMap(pages);   // pièce → « planche N » ou « X feuilles »
+  const checklist = pieces.map(p =>
+    `<li class="chk"><b>${p.tag}</b> ${p.name} × ${p.qty} — ${p.dims[0]}${p.noClay?' <i>(gabarit de contrôle, pas de terre)</i>':''} — <i>${where[p.tag]||''}</i></li>`
+  ).join('');
+  const montage = pieces.flatMap(p => p.notes.map(n => `<li><b>${p.tag}</b> — ${n}</li>`)).join('');
+  return `<div class="page fiche">
+    ${pageHead(`Fiche d'atelier — ${sName}`)}
+    <h2>${state.projectName || sName}</h2>
+    <div class="fsub">${sName} — fiche à garder à côté de la plaque</div>
+    <div class="frow">
+      <div class="fsil"><svg width="${(sil.w*sc).toFixed(1)}mm" height="${(sil.h*sc).toFixed(1)}mm" viewBox="0 0 ${sil.w} ${sil.h}">
+        <g fill="none" stroke="#000" stroke-width="${Math.max(sil.w,sil.h)/60}">${sil.svg}</g></svg></div>
+      <div class="fparams">
+        ${isKur()
+          ? `<div><b>technique</b> kurinuki (creusage dans la masse)</div>
+             <div><b>bloc à préparer</b> ${kurData().blocTxt}</div>
+             <div><b>paroi visée</b> ${fmt(state.dims[state.shape].paroi)} mm</div>`
+          : `<div><b>épaisseur de plaque</b> ${fmt(state.ep)} mm</div>
+             <div><b>pièces à découper</b> ${pieces.filter(p=>!p.noClay).reduce((n,p)=>n+p.qty,0)} dans la plaque</div>`}
+        <div><b>retrait de cuisson</b> ${fmt(state.retrait)} % ${state.coteType==='fini' ? `(gabarits agrandis ×${k.toLocaleString('fr-FR',{maximumFractionDigits:3})})` : '(cotes crues, non agrandies)'}</div>
+        <div><b>gabarits</b> ${pieces.length} pièces · ${feuilles} feuilles A4</div>
+      </div>
+    </div>
+    <div class="fsec">${isKur()?'Gabarits papier — cocher au fur et à mesure':'Pièces à découper — cocher au fur et à mesure'}</div>
+    <ul>${checklist}</ul>
+    <div class="fsec">${isKur()?'Creusage — rappels étape par étape':'Montage — rappels pièce par pièce'}</div>
+    <ol>${montage}</ol>
+    <div class="fpoids">${isKur()
+      ? `Bloc de terre ≈ <b>${fmtPoids(poids)}</b> &nbsp;·&nbsp; pièce finie ≈ <b>${fmtPoids(kurData().pieceW)}</b> &nbsp;·&nbsp; à évider ≈ <b>${fmtPoids(poids - kurData().pieceW)}</b>`
+      : `Terre à préparer ≈ <b>${fmtPoids(poids)}</b> &nbsp;·&nbsp; avec 15 % de marge : <b>${fmtPoids(poids*1.15)}</b> &nbsp;·&nbsp; (surfaces × ${fmt(state.ep)} mm × 1,9 g/cm³)`}</div>
+  </div>`;
+}
+
+const BRAND_SVG = `<svg width="7mm" height="7mm" viewBox="0 0 46 46">
+  <path d="M6 14 A17 17 0 0 0 40 14 L36 34 A13 8 0 0 1 10 34 Z" fill="none" stroke="#b8502a" stroke-width="2.4"/>
+  <ellipse cx="23" cy="14" rx="17" ry="5.5" fill="none" stroke="#33261a" stroke-width="2"/>
+</svg>`;
+const pageHead = info => `<div class="phead">
+  <div class="pbrand">${BRAND_SVG}<span>Gabarits <em>céramique</em></span></div>
+  <div class="pinfo">${info}</div>
+  <div class="cal"><svg width="50mm" height="4mm" viewBox="0 0 50 4"><line x1="0" y1="2" x2="50" y2="2" stroke="#7a6753" stroke-width=".4"/><line x1="0" y1="0" x2="0" y2="4" stroke="#7a6753" stroke-width=".4"/><line x1="50" y1="0" x2="50" y2="4" stroke="#7a6753" stroke-width=".4"/></svg><span>= 50 mm · à 100 %</span></div>
+</div>`;
+
+/* pages de gabarits (planches + mosaïques) → [{info, vb:[x,y,w,h], inner}] */
+function collectPages(plan){
+  const pages = [];
+  plan.bins.forEach((bin, bi) => {
+    const items = bin.items.map(s => {
+      const tf = s.rot
+        ? `translate(${s.x + s.r.vb.y + s.r.vb.h} ${s.y + 7 - s.r.vb.x}) rotate(90)`
+        : `translate(${s.x - s.r.vb.x} ${s.y + 7 - s.r.vb.y})`;
+      return `<text class="plabel" x="${s.x}" y="${s.y + 4.5}">${s.p.tag} · ${s.p.name} × ${s.p.qty}${s.rot?' (pivotée 90°)':''}</text>`+
+             `<g transform="${tf}">${s.r.body}</g>`;
+    }).join('');
+    pages.push({
+      info: `planche ${bi+1}/${plan.bins.length} · pièces ${bin.items.map(s=>s.p.tag).join(', ')}`,
+      orient: 'P', vb: [0, 0, PG.P.w, PG.P.h], tags: bin.items.map(s=>s.p.tag), planche: bi+1,
+      inner: `<rect class="tilebox" x="0" y="0" width="${PG.P.w}" height="${PG.P.h}"/>` + items,
+    });
+  });
+  plan.bigs.forEach(b => {
+    const L = b.layout, tw = PG[L.orient].w, th = PG[L.orient].h;
+    const pw = L.rot ? b.r.vb.h : b.r.vb.w;   // emprise de la pièce après pivot
+    const ph = L.rot ? b.r.vb.w : b.r.vb.h;
+    const x0 = -(L.cols*tw - pw)/2;    // grille centrée sur la pièce
+    const y0 = -(L.rows*th - ph)/2;
+    const gBody = `<g transform="${normTransform(b.r, L.rot)}">${b.r.body}</g>`;
+    let marks = '';
+    for(let rr=0; rr<=L.rows; rr++) for(let cc=0; cc<=L.cols; cc++){
+      const mx = x0 + cc*tw, my = y0 + rr*th;
+      marks += `<g class="mark"><line x1="${mx-4}" y1="${my}" x2="${mx+4}" y2="${my}"/><line x1="${mx}" y1="${my-4}" x2="${mx}" y2="${my+4}"/></g>`;
+    }
+    const orTxt = L.orient==='L' ? (L.rot?' (paysage, pivotée 90°)':' (paysage)') : (L.rot?' (pivotée 90°)':'');
+    const occ = tileOccupancy(b.r, L);
+    const total = occ.flat().filter(Boolean).length;   // feuilles réellement utiles
+    let n = 0;
+    for(let rr=0; rr<L.rows; rr++) for(let cc=0; cc<L.cols; cc++){
+      if(!occ[rr][cc]) continue;
+      n++;
+      const vx = x0 + cc*tw, vy = y0 + rr*th;
+      pages.push({
+        info: `pièce ${b.p.tag} · ${b.p.name} ×${b.p.qty}${orTxt}${total>1?` — feuille ${n}/${total}`:''}`,
+        orient: L.orient, vb: [vx, vy, tw, th], tags: [b.p.tag],
+        inner: `<rect class="tilebox" x="${vx}" y="${vy}" width="${tw}" height="${th}"/>${marks}${gBody}`,
+      });
+    }
+  });
+  return pages;
+}
+
+/* pièce → où la trouver (« planche N » / « X feuilles [paysage] ») d'après les pages réelles */
+function whereMap(pages){
+  const where = {}, big = {};
+  pages.forEach(pg => {
+    if(pg.planche) pg.tags.forEach(t => where[t] = `planche ${pg.planche}`);
+    else { const t = pg.tags[0]; big[t] = big[t] || { n:0, l: pg.orient==='L' }; big[t].n++; }
+  });
+  Object.keys(big).forEach(t => where[t] = `${big[t].n} feuille${big[t].n>1?'s':''}${big[t].l?' paysage':''}`);
+  return where;
+}
+
+function selectedPieces(){
+  const pieces = computePieces().filter(p => !printExcl.has(p.tag));
+  if(!pieces.length) alert('Aucune pièce sélectionnée — coche au moins un gabarit dans la liste.');
+  return pieces;
+}
+
+$('#btnPrint').onclick = () => {
+  const pieces = selectedPieces();
+  if(!pieces.length) return;
+  const title = state.projectName || SHAPES[state.shape].name;
+  const pages = collectPages(planPrint(pieces));
+  const pagesHtml = fichePage(pieces, pages) + pages.map(pg =>
+    `<div class="page${pg.orient==='L'?' landscape':''}">
+      ${pageHead(`${title} — ${pg.info}`)}
+      <svg width="${pg.vb[2]}mm" height="${pg.vb[3]}mm" viewBox="${pg.vb.join(' ')}">${pg.inner}</svg>
+    </div>`).join('');
+  $('#printArea').innerHTML = pagesHtml;
+  track('export_print', { shape: state.shape, mode: state.mode || 'plaque', feuilles: pages.length });
+  window.print();
+  afterExport();
+};
+
+/* ---------------------------------------------------------------
+   Export PDF (jsPDF + svg2pdf, chargés à la demande)
+   --------------------------------------------------------------- */
+const PDF_STYLES = {
+  'piece-line':  'fill:none;stroke:#000000;stroke-width:0.5',
+  'cote':        'stroke:#4a7263;stroke-width:0.3;fill:#4a7263;font-size:4.2px',
+  'axe':         'stroke:#7a6753;stroke-width:0.3;stroke-dasharray:3,2;fill:none',
+  'constr':      'stroke:#7a6753;stroke-width:0.3;stroke-dasharray:2,1.5;fill:none',
+  'center-mark': 'stroke:#b8502a;stroke-width:0.5;fill:none',
+  'sector-info': 'fill:#33261a;font-size:4.2px;stroke:none',
+  'plabel':      'fill:#b8502a;font-size:4.6px;stroke:none',
+  'tilebox':     'stroke:#cdb99a;stroke-width:0.3;stroke-dasharray:3,2;fill:none',
+  'mark':        'stroke:#33261a;stroke-width:0.3;fill:none',
+};
+let pdfLibsReady = false;
+async function ensurePdfLibs(){
+  if(pdfLibsReady) return true;
+  const load = src => new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+  try{
+    await load('https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js');
+    await load('https://unpkg.com/svg2pdf.js@2.2.4/dist/svg2pdf.umd.min.js');
+    pdfLibsReady = !!(window.jspdf && window.jspdf.jsPDF);
+  }catch(e){ pdfLibsReady = false; }
+  return pdfLibsReady;
+}
+/* bandeau commun des pages PDF ; retourne le y où commencer le contenu */
+function pdfHead(doc, info, pageW){
+  pageW = pageW || 210;
+  const barX = pageW - 60;
+  doc.setFont('helvetica','bold'); doc.setFontSize(12);
+  doc.setTextColor(51,38,26); doc.text('Gabarits', 10, 13);
+  doc.setTextColor(184,80,42); doc.text('céramique', 10 + doc.getTextWidth('Gabarits '), 13);
+  doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(51,38,26);
+  doc.text(doc.splitTextToSize(info, barX - 60), 58, 10.5);
+  doc.setDrawColor(122,103,83); doc.setLineWidth(0.3);
+  doc.line(barX, 11, barX + 50, 11);                                 // barre témoin de 50 mm exactement
+  doc.line(barX, 9.5, barX, 12.5); doc.line(barX + 50, 9.5, barX + 50, 12.5);
+  doc.setFontSize(6); doc.setTextColor(122,103,83);
+  doc.text('= 50 mm · à 100 %', barX, 16);
+  doc.setDrawColor(51,38,26); doc.setLineWidth(0.4);
+  doc.line(10, 19, pageW - 10, 19);
+  // pied de page discret — boucle de croissance (chaque PDF partagé ramène du monde)
+  const pageH = pageW > 210 ? 210 : 297;
+  doc.setFont('helvetica','normal'); doc.setFontSize(6.5); doc.setTextColor(150,130,105);
+  doc.text('Fait avec gabarit-ceramique.fr', pageW / 2, pageH - 6, { align: 'center' });
+  return 24;
+}
+function pdfFiche(doc, pieces, pages, title){
+  const sName = SHAPES[state.shape].name;
+  let y = pdfHead(doc, `Fiche d'atelier — ${sName}`) + 6;
+  const k = kFactor(), poids = clayWeight(pieces), feuilles = pages.length;
+  const where = whereMap(pages);
+  const line = (txt, opts={}) => {
+    if(y > 275){ doc.addPage(); y = pdfHead(doc, `Fiche d'atelier — ${sName} (suite)`) + 6; }
+    doc.setFont('helvetica', opts.bold ? 'bold' : 'normal');
+    doc.setFontSize(opts.size || 8.5);
+    const c = opts.color || [51,38,26]; doc.setTextColor(...c);
+    const rows = doc.splitTextToSize(txt, 182);
+    doc.text(rows, opts.x || 12, y);
+    y += rows.length * (opts.lh || 4.2) + (opts.gap || 0);
+  };
+  doc.setFont('helvetica','bold'); doc.setFontSize(19); doc.setTextColor(51,38,26);
+  doc.text(title, 10, y); y += 6;
+  line(`${sName} — fiche à garder à côté de la plaque`, {color:[122,103,83], gap:4});
+  if(isKur()){
+    const kd = kurData();
+    line(`Kurinuki — bloc à préparer : ${kd.blocTxt}      Paroi visée : ${fmt(state.dims[state.shape].paroi)} mm`, {gap:1});
+    line(`Retrait : ${fmt(state.retrait)} % ${state.coteType==='fini'?`(gabarits agrandis ×${k.toLocaleString('fr-FR',{maximumFractionDigits:3})})`:'(cotes crues)'} · ${pieces.length} gabarits papier · ${feuilles} feuille${feuilles>1?'s':''} A4`, {gap:5});
+  } else {
+    line(`Épaisseur de plaque : ${fmt(state.ep)} mm      Retrait : ${fmt(state.retrait)} % ${state.coteType==='fini'?`(gabarits agrandis ×${k.toLocaleString('fr-FR',{maximumFractionDigits:3})})`:'(cotes crues)'}`, {gap:1});
+    line(`${pieces.length} gabarits · ${feuilles} feuille${feuilles>1?'s':''} A4 · ${pieces.filter(p=>!p.noClay).reduce((n,p)=>n+p.qty,0)} pièce(s) à découper dans la plaque`, {gap:5});
+  }
+  line(isKur()?'GABARITS PAPIER — COCHER AU FUR ET À MESURE':'PIÈCES À DÉCOUPER — COCHER AU FUR ET À MESURE', {bold:true, color:[184,80,42], gap:2});
+  pieces.forEach(p => line(`[  ]  ${p.tag} · ${p.name} × ${p.qty} — ${p.dims[0]}${p.noClay?' (gabarit de contrôle, pas de terre)':''} — ${where[p.tag]||''}`, {gap:.8}));
+  y += 4;
+  line(isKur()?'CREUSAGE — RAPPELS ÉTAPE PAR ÉTAPE':'MONTAGE — RAPPELS PIÈCE PAR PIÈCE', {bold:true, color:[184,80,42], gap:2});
+  let n = 0;
+  pieces.forEach(p => p.notes.forEach(note => line(`${++n}. ${p.tag} — ${note}`, {gap:.8})));
+  y += 3;
+  if(y > 262){ doc.addPage(); y = pdfHead(doc, `Fiche d'atelier — ${sName} (suite)`) + 6; }
+  doc.setDrawColor(184,80,42); doc.setLineWidth(0.5);
+  doc.roundedRect(10, y-4, 190, 11, 1, 1);
+  doc.setFont('helvetica','bold'); doc.setFontSize(9.5); doc.setTextColor(51,38,26);
+  doc.text(isKur()
+    ? `Bloc de terre ≈ ${fmtPoids(poids)}   ·   pièce finie ≈ ${fmtPoids(kurData().pieceW)}   ·   à évider ≈ ${fmtPoids(poids - kurData().pieceW)}`
+    : `Terre à préparer ≈ ${fmtPoids(poids)}   ·   avec 15 % de marge : ${fmtPoids(poids*1.15)}   ·   (surfaces × ${fmt(state.ep)} mm × 1,9 g/cm³)`, 14, y+2.5);
+}
+$('#btnPdf').onclick = async () => {
+  const pieces = selectedPieces();
+  if(!pieces.length) return;
+  const btn = $('#btnPdf'); btn.disabled = true; btn.textContent = 'PDF…';
+  try{
+    if(!await ensurePdfLibs()){
+      alert('Impossible de charger le générateur PDF (connexion ?). Alternative : « Imprimer » puis choisir « Enregistrer au format PDF ».');
+      return;
+    }
+    const title = state.projectName || SHAPES[state.shape].name;
+    const pages = collectPages(planPrint(pieces));
+    const doc = new window.jspdf.jsPDF({ unit:'mm', format:'a4', compress:true });
+    pdfFiche(doc, pieces, pages, title);
+    for(const pg of pages){
+      const land = pg.orient === 'L';
+      const pageW = land ? 297 : 210;
+      doc.addPage('a4', land ? 'landscape' : 'portrait');
+      const y0 = pdfHead(doc, `${title} — ${pg.info}`, pageW);
+      const tw = pg.vb[2], th = pg.vb[3];
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:0;height:0;overflow:hidden';
+      wrap.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="${tw}mm" height="${th}mm" viewBox="${pg.vb.join(' ')}">${
+        pg.inner
+          .replace(/class="([\w-]+)"/g, (m,c) => `style="${PDF_STYLES[c]||''}"`)
+          .replace(/<text /g, '<text font-family="Courier" ')
+      }</svg>`;
+      document.body.appendChild(wrap);
+      await doc.svg(wrap.firstChild, { x:10, y:y0, width:tw, height:th });
+      wrap.remove();
+    }
+    doc.save(`gabarits-${title.toLowerCase().replace(/[^a-z0-9à-ÿ]+/gi,'-')}.pdf`);
+    track('export_pdf', { shape: state.shape, mode: state.mode || 'plaque', feuilles: pages.length });
+    afterExport();
+  } finally {
+    btn.disabled = false; btn.textContent = 'PDF';
+  }
+};
+
+/* ---------------------------------------------------------------
+   Pourboire — « offrez-moi un pain de terre »
+   --------------------------------------------------------------- */
+const BMAC_URL = 'https://buymeacoffee.com/louiscoffin';
+$('#tipBtn').href = BMAC_URL;
+$('#tipFootLink').href = BMAC_URL;
+$('#tipBtn').onclick = () => track('tip_click', { source: 'bandeau' });
+$('#tipFootLink').onclick = () => track('tip_click', { source: 'footer' });
+$('#fbFootLink').onclick = () => track('feedback_click', { source: 'footer' });
+$('#newsFootLink').onclick = () => track('newsletter_click', { source: 'footer' });
+$('#newsBtn').onclick = () => { track('newsletter_click', { source: 'bandeau' }); localStorage.setItem('gabarits-news-off','1'); };
+let tipShown = false, tipTimer = null, newsShown = false;
+function maybeThanks(){
+  if(tipShown) return;                                               // 1×/visite (réapparaît aux visites suivantes)
+  tipShown = true;
+  $('#news').classList.remove('show');                              // une seule bannière à la fois
+  const t = $('#tipbar');
+  setTimeout(() => t.classList.add('show'), 600);                    // laisse le dialogue d'impression passer
+  clearTimeout(tipTimer);
+  tipTimer = setTimeout(() => t.classList.remove('show'), 13000);
+}
+$('#tipClose').onclick = () => $('#tipbar').classList.remove('show');
+
+/* invite newsletter : 1 seule fois, pour un utilisateur déjà engagé (≥ 2 exports),
+   jamais en même temps que le pourboire ni le bandeau cookies */
+function showNews(){
+  if(newsShown) return;
+  newsShown = true;
+  $('#tipbar').classList.remove('show');
+  const el = $('#news');
+  el.hidden = false;
+  setTimeout(() => el.classList.add('show'), 600);
+  setTimeout(() => el.classList.remove('show'), 15000);
+}
+$('#newsClose').onclick = () => { $('#news').classList.remove('show'); localStorage.setItem('gabarits-news-off','1'); };
+
+/* appelé après chaque export : choisit AU PLUS une sollicitation */
+function afterExport(){
+  const n = (+localStorage.getItem('gabarits-exports') || 0) + 1;
+  localStorage.setItem('gabarits-exports', String(n));
+  const consentEl = $('#consent');
+  const consentVisible = consentEl && !consentEl.hidden && consentEl.classList.contains('show');
+  if(!consentVisible && n >= 2 && !localStorage.getItem('gabarits-news-off') && !newsShown){
+    showNews();          // invite newsletter (une fois, utilisateur engagé)
+  } else {
+    maybeThanks();       // sinon, le pourboire (1×/visite)
+  }
+}
+
+/* ---------------------------------------------------------------
+   Consentement cookies (RGPD) — l'analytics ne démarre qu'après « Accepter »
+   --------------------------------------------------------------- */
+(function(){
+  const KEY = 'gabarits-consent';
+  const el = $('#consent');
+  const showBanner = () => { el.hidden = false; setTimeout(() => el.classList.add('show'), 30); };
+  const hideBanner = () => { el.classList.remove('show'); setTimeout(() => { el.hidden = true; }, 400); };
+  if(localStorage.getItem(KEY) === 'granted') window.loadAnalytics && window.loadAnalytics();
+  // le bandeau cookies ne s'affiche plus tout seul : il est déclenché après le tour d'onboarding
+  window.showConsentIfNeeded = () => {
+    const c = localStorage.getItem(KEY);
+    if(c !== 'granted' && c !== 'denied') showBanner();
+  };
+  function decide(v){
+    localStorage.setItem(KEY, v);
+    hideBanner();
+    if(v === 'granted' && !window.__analyticsLoaded) window.loadAnalytics && window.loadAnalytics();
+    if(v === 'denied' && window.__analyticsLoaded) location.reload();   // stoppe l'analytics déjà chargé
+  }
+  $('#consentYes').onclick = () => decide('granted');
+  $('#consentNo').onclick  = () => decide('denied');
+  $('#cookiesLink').onclick = e => { e.preventDefault(); showBanner(); };
+})();
+
+/* ---------------------------------------------------------------
+   Tour d'onboarding — spotlight par bloc, mobile + desktop, replayable
+   --------------------------------------------------------------- */
+const TOUR = [
+  { sel:null, title:'Bienvenue 👋', html:'Cet outil crée les <b>gabarits</b> (patrons à découper) pour réaliser une forme en céramique. Un petit tour de 30&nbsp;s&nbsp;?' },
+  { sel:'#panel-forme', title:'1 · Forme & cotes', html:'Choisis la <b>technique</b> (plaque ou kurinuki), la <b>forme</b>, puis saisis les <b>cotes en mm</b>. Le bloc « Ma terre » gère le retrait de cuisson et l’épaisseur de plaque.' },
+  { sel:'#panel-apercu', title:'2 · Aperçu', html:'Ta pièce s’affiche <b>en direct</b> quand tu changes les cotes. Tu peux même superposer une <b>photo</b> pour caler les proportions.' },
+  { sel:'#panel-pieces', title:'3 · Pièces à découper', html:'Voici tes <b>gabarits</b>, cotés à taille réelle. Décoche ceux que tu ne veux pas imprimer.' },
+  { sel:'.synth', title:'Enregistrer & exporter', html:'<b>Enregistre</b> ta pièce dans ton carnet, puis exporte en <b>SVG</b>, <b>PDF</b>, ou <b>imprime à 100&nbsp;%</b> — vérifie l’échelle avec la règle de 50&nbsp;mm sur la feuille.' },
+  { sel:'#carnetToggle', title:'Ton carnet', html:'Des <b>modèles de départ</b> (bol, mug, pichet…) et tes <b>pièces enregistrées</b> se retrouvent ici.' },
+  { sel:null, title:'À toi de jouer 🏺', html:'Tu peux <b>revoir ce tuto</b> quand tu veux via le bouton <b>? tuto</b> en haut. Bonne création&nbsp;!' },
+];
+let tourStep = -1, tourEls = null;
+function startTour(){
+  if(!tourEls){
+    const ov = document.createElement('div'); ov.id = 'tourOverlay';
+    const hole = document.createElement('div'); hole.id = 'tourHole';
+    const card = document.createElement('div'); card.id = 'tourCard';
+    document.body.append(ov, hole, card);
+    tourEls = { ov, hole, card };
+    ov.onclick = () => endTour();                 // clic hors carte = quitter
+    window.addEventListener('resize', onTourReflow);
+    window.addEventListener('scroll', onTourReflow, true);
+    window.addEventListener('keydown', onTourKey);
+  }
+  // un tour propre : on referme les autres sollicitations
+  ['#consent','#tipbar','#news'].forEach(s => { const e = $(s); if(e) e.classList.remove('show'); });
+  track('tour_start');
+  showStep(0);
+}
+function onTourReflow(){
+  if(tourStep < 0) return;
+  const s = TOUR[tourStep];
+  placeStep(s, s.sel ? document.querySelector(s.sel) : null);
+}
+function onTourKey(e){ if(e.key === 'Escape') endTour(); }
+function showStep(i){
+  tourStep = i;
+  const step = TOUR[i];
+  const target = step.sel ? document.querySelector(step.sel) : null;
+  if(target){
+    target.scrollIntoView({ block:'center', behavior:'smooth' });
+    setTimeout(() => placeStep(step, target), 380);
+  } else {
+    placeStep(step, null);
+  }
+}
+function placeStep(step, target){
+  if(!tourEls) return;
+  const { hole, card } = tourEls;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const last = tourStep === TOUR.length - 1;
+  card.innerHTML =
+    `<button class="tour-x" id="tourX" title="quitter le tuto">×</button>
+     <h4>${step.title}</h4><div>${step.html}</div>
+     <div class="tour-nav">
+       <span class="tour-step">${tourStep+1} / ${TOUR.length}</span>
+       ${tourStep > 0 ? '<button class="small tour-prev" id="tourPrev">Précédent</button>' : ''}
+       <button class="small tour-next" id="tourNext">${last ? 'Terminer' : 'Suivant'}</button>
+     </div>`;
+  card.querySelector('#tourX').onclick = () => endTour();
+  card.querySelector('#tourNext').onclick = () => last ? endTour() : showStep(tourStep + 1);
+  const prev = card.querySelector('#tourPrev'); if(prev) prev.onclick = () => showStep(tourStep - 1);
+
+  // spotlight
+  const pad = 6;
+  if(target){
+    const r = target.getBoundingClientRect();
+    let top = Math.max(4, r.top - pad);
+    let h = r.height + pad*2;
+    const maxH = vh - 150;                     // laisse la place à la carte
+    if(h > maxH){ h = maxH; top = Math.max(4, r.top - pad); }
+    hole.style.top = top + 'px';
+    hole.style.left = Math.max(4, r.left - pad) + 'px';
+    hole.style.width = Math.min(vw - 8, r.width + pad*2) + 'px';
+    hole.style.height = h + 'px';
+  } else {
+    hole.style.top = (vh/2) + 'px'; hole.style.left = (vw/2) + 'px';
+    hole.style.width = '0px'; hole.style.height = '0px';
+  }
+
+  // carte : sous la cible si possible, sinon au-dessus, sinon centrée
+  const cr = card.getBoundingClientRect();
+  const cw = cr.width, ch = cr.height;
+  let cx, cy;
+  if(target){
+    const r = target.getBoundingClientRect();
+    if(r.bottom + 12 + ch <= vh) cy = r.bottom + 12;
+    else if(r.top - 12 - ch >= 0) cy = r.top - 12 - ch;
+    else cy = Math.max(8, (vh - ch) / 2);
+    cx = Math.min(Math.max(8, r.left + r.width/2 - cw/2), vw - cw - 8);
+  } else {
+    cx = (vw - cw) / 2; cy = (vh - ch) / 2;
+  }
+  card.style.left = cx + 'px';
+  card.style.top = cy + 'px';
+}
+function endTour(){
+  if(tourEls){ tourEls.ov.remove(); tourEls.hole.remove(); tourEls.card.remove(); tourEls = null; }
+  window.removeEventListener('resize', onTourReflow);
+  window.removeEventListener('scroll', onTourReflow, true);
+  window.removeEventListener('keydown', onTourKey);
+  tourStep = -1;
+  localStorage.setItem('gabarits-onboarded', '1');
+  track('tour_done');
+  window.showConsentIfNeeded && window.showConsentIfNeeded();   // cookies après le tour
+}
+$('#tourBtn').onclick = () => startTour();
+
+/* première connexion : tour d'abord, cookies ensuite ; sinon cookies directement */
+if(!localStorage.getItem('gabarits-onboarded')){
+  setTimeout(startTour, 650);
+} else {
+  setTimeout(() => window.showConsentIfNeeded && window.showConsentIfNeeded(), 500);
+}
+
+/* ---------------------------------------------------------------
+   go
+   --------------------------------------------------------------- */
+function presetSummary(p){
+  const d = Object.assign(defaultDims(p.shape), p.dims);
+  switch(p.shape){
+    case 'tasse': case 'pichet': case 'cone': return `Ø ${d.d1}→${d.d2} · h ${d.h}`;
+    case 'assiette': return `Ø ${d.d2} · fond ${d.d1}`;
+    case 'plat': return `${d.l} × ${d.w} · h ${d.h}`;
+    case 'bouteille': return `Ø ${d.d1} · h ${d.h1+d.h2+d.h3}`;
+    case 'boite': return `${d.l} × ${d.w} × ${d.h}`;
+    case 'prisme': return `${d.n} pans · h ${d.h}`;
+    case 'coussin': return `Ø ${d.df} · ép. ${d.p}`;
+    case 'profil': { const pts=d.pts; return `Ø max ${2*Math.max(...pts.map(q=>q.r))} · h ${pts.at(-1).y}`; }
+    default: return '';
+  }
+}
+function buildGallery(){
+  $('#galleryCards').innerHTML = PRESETS.map((p,i) => {
+    const sil = silhouetteFor(p.shape, Object.assign(defaultDims(p.shape), p.dims));
+    const m = Math.max(sil.w, sil.h) * 0.06;
+    return `<div class="gcard" data-i="${i}" title="${p.name} — ${presetSummary(p)} mm">
+      <svg viewBox="${-m} ${-m} ${sil.w+2*m} ${sil.h+2*m}" preserveAspectRatio="xMidYMid meet">
+        <g stroke-width="${Math.max(sil.w,sil.h)/40}">${sil.svg}</g>
+      </svg>
+      <div class="gname">${p.name}</div>
+      <div class="gdims">${presetSummary(p)} mm</div>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('.gcard').forEach(el => el.onclick = () => {
+    const p = PRESETS[+el.dataset.i];
+    state.shape = p.shape;
+    state.mode = 'plaque';
+    printExcl.clear();
+    state.dims[p.shape] = Object.assign(defaultDims(p.shape), JSON.parse(JSON.stringify(p.dims)));
+    document.querySelectorAll('.gcard').forEach(c => c.classList.toggle('on', c === el));
+    track('preset_loaded', { preset: p.name, shape: p.shape });
+    buildMode(); buildShapeSelector(); buildDimFields(); refresh();
+  });
+}
+
+/* ---------------------------------------------------------------
+   Carnet de pièces (localStorage + export/import JSON)
+   --------------------------------------------------------------- */
+let carnet = [];
+try{ carnet = JSON.parse(localStorage.getItem('gabarits-carnet')) || []; }catch(e){}
+const saveCarnet = () => localStorage.setItem('gabarits-carnet', JSON.stringify(carnet));
+
+function buildCarnet(){
+  const box = $('#carnetCards');
+  if(!carnet.length){
+    box.innerHTML = `<div class="gempty">aucune pièce enregistrée — règle une forme puis « enregistrer la pièce actuelle »</div>`;
+    return;
+  }
+  box.innerHTML = carnet.map((c,i) => {
+    const sil = silhouetteFor(c.shape, Object.assign(defaultDims(c.shape), c.dims));
+    const m = Math.max(sil.w, sil.h) * 0.06;
+    return `<div class="gcard" data-i="${i}" title="${c.name} — ${SHAPES[c.shape].name}, retrait ${c.retrait} %, plaque ${c.ep} mm">
+      <span class="gact">
+        <button data-act="dup" data-i="${i}" title="dupliquer">⧉</button>
+        <button data-act="del" data-i="${i}" title="supprimer">×</button>
+      </span>
+      <svg viewBox="${-m} ${-m} ${sil.w+2*m} ${sil.h+2*m}" preserveAspectRatio="xMidYMid meet">
+        <g stroke-width="${Math.max(sil.w,sil.h)/40}">${sil.svg}</g>
+      </svg>
+      <div class="gname">${c.name}</div>
+      <div class="gdims">${SHAPES[c.shape].name} · ${c.retrait} %</div>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('.gcard').forEach(el => el.onclick = e => {
+    const act = e.target.dataset.act;
+    const i = +(e.target.dataset.i ?? el.dataset.i);
+    if(act === 'del'){
+      if(confirm(`Supprimer « ${carnet[i].name} » ?`)){ carnet.splice(i,1); saveCarnet(); buildCarnet(); }
+      return;
+    }
+    if(act === 'dup'){
+      const copy = JSON.parse(JSON.stringify(carnet[i]));
+      copy.id = 'p' + Math.random().toString(36).slice(2,9);
+      copy.name += ' (copie)';
+      carnet.splice(i+1, 0, copy); saveCarnet(); buildCarnet();
+      return;
+    }
+    loadProject(carnet[i]);
+  });
+}
+function loadProject(c){
+  state.shape = c.shape;
+  state.mode = SHAPES[c.shape]?.kurinuki ? 'kurinuki' : 'plaque';
+  buildMode();
+  printExcl.clear();
+  state.dims[c.shape] = Object.assign(defaultDims(c.shape), JSON.parse(JSON.stringify(c.dims)));
+  state.ep = c.ep; state.retrait = c.retrait; state.coteType = c.coteType;
+  state.projectName = c.name;
+  $('#inEp').value = c.ep; $('#inRetrait').value = c.retrait;
+  syncTerrePreset();
+  buildCoteType(); buildShapeSelector(); buildDimFields(); refresh();
+}
+function saveProjectAs(name){
+  name = (name || '').trim();
+  if(!name) return;
+  track('piece_saved', { shape: state.shape, mode: state.mode || 'plaque' });
+  const payload = {
+    name,
+    shape: state.shape,
+    dims: JSON.parse(JSON.stringify(state.dims[state.shape])),
+    ep: state.ep, retrait: state.retrait, coteType: state.coteType,
+  };
+  // si une pièce du même nom existe déjà → on la met à jour (pas de doublon)
+  const existing = carnet.find(c => c.name.trim().toLowerCase() === name.toLowerCase());
+  if(existing) Object.assign(existing, payload);
+  else carnet.unshift(Object.assign({ id: 'p' + Math.random().toString(36).slice(2,9) }, payload));
+  state.projectName = name;
+  $('#projName').value = name;
+  saveCarnet(); buildCarnet(); saveState();
+  const btn = $('#btnSaveBar');
+  if(btn){ const t = btn.textContent; btn.textContent = existing ? 'mis à jour ✓' : 'enregistré ✓'; setTimeout(()=>btn.textContent = t, 1400); }
+}
+$('#btnSaveProj').onclick = () =>
+  saveProjectAs(prompt('Nom de la pièce (ex. « mug Léa Ø85 ») :', state.projectName || SHAPES[state.shape].name));
+$('#btnSaveBar').onclick = () =>
+  saveProjectAs($('#projName').value.trim() || SHAPES[state.shape].name);
+$('#projName').value = state.projectName || '';
+$('#projName').oninput = e => { state.projectName = e.target.value; saveState(); };
+$('#btnExportCarnet').onclick = () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(carnet, null, 2)], {type:'application/json'}));
+  a.download = 'gabarits-carnet.json';
+  a.click(); URL.revokeObjectURL(a.href);
+};
+$('#btnImportCarnet').onclick = () => $('#carnetFile').click();
+$('#carnetFile').onchange = () => {
+  const f = $('#carnetFile').files[0];
+  if(!f) return;
+  f.text().then(t => {
+    try{
+      const arr = JSON.parse(t);
+      if(!Array.isArray(arr)) throw 0;
+      const ids = new Set(carnet.map(c=>c.id));
+      const ok = arr.filter(c => c && c.shape && SHAPES[c.shape] && c.dims && !ids.has(c.id));
+      carnet = [...ok, ...carnet];
+      saveCarnet(); buildCarnet();
+      alert(`${ok.length} pièce(s) importée(s).`);
+    }catch(e){ alert('Fichier invalide — attendu : un export JSON du carnet.'); }
+    $('#carnetFile').value = '';
+  });
+};
+
+/* repli du carnet (état persisté) */
+function applyCarnetOpen(){
+  const closed = state.carnetOpen === false;
+  $('#carnetWrap').classList.toggle('closed', closed);
+  $('#carnetToggle').classList.toggle('collapsed', closed);
+}
+$('#carnetToggle').onclick = () => {
+  state.carnetOpen = state.carnetOpen === false;
+  applyCarnetOpen(); saveState();
+};
+// par défaut : ouvert sur desktop, replié sur mobile (jusqu'à ce que l'utilisateur choisisse)
+if(state.carnetOpen === undefined) state.carnetOpen = window.innerWidth > 760;
+applyCarnetOpen();
+
+// cohérence mode ↔ forme au chargement
+state.mode = SHAPES[state.shape]?.kurinuki ? 'kurinuki' : (state.mode === 'kurinuki' ? 'kurinuki' : 'plaque');
+if(state.mode === 'kurinuki' && !SHAPES[state.shape]?.kurinuki) state.shape = 'kur_cyl';
+
+buildMode();
+buildCarnet();
+buildGallery();
+buildShapeSelector();
+buildDimFields();
+buildCoteType();
+refresh();
+window.addEventListener('resize', renderOverlay);
+</script>
+</body>
+</html>
