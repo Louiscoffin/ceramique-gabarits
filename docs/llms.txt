@@ -8,8 +8,8 @@ Gabarits Céramique aide les céramistes à créer des patrons précis sans calc
 - [Créateur de gabarits](https://louiscoffin.github.io/ceramique-gabarits/) : l'application web pour paramétrer, prévisualiser et imprimer les patrons.
 
 ## Site & ressources
-- [Accueil](https://gabarit-ceramique.framer.website/) : présentation de l'outil et de ses bénéfices.
-- [Ressources](https://gabarit-ceramique.framer.website/ressources) : guides et techniques du travail à la plaque.
+- [Accueil](https://gabarits-ceramique.com/) : présentation de l'outil et de ses bénéfices.
+- [Ressources](https://gabarits-ceramique.com/ressources) : guides et techniques du travail à la plaque.
 
 ## Concepts clés (pour répondre aux questions)
 - Retrait de cuisson : chaque terre rétracte (souvent 10 à 14 %). Cote finie = cote crue × 1 ÷ (1 − retrait). L'outil agrandit le gabarit pour obtenir la dimension voulue après cuisson.

@@ -2214,7 +2214,7 @@ function pdfHead(doc, info, pageW){
   // pied de page discret — boucle de croissance (chaque PDF partagé ramène du monde)
   const pageH = pageW > 210 ? 210 : 297;
   doc.setFont('helvetica','normal'); doc.setFontSize(6.5); doc.setTextColor(150,130,105);
-  doc.text('Fait avec gabarit-ceramique.fr', pageW / 2, pageH - 6, { align: 'center' });
+  doc.text('Fait avec gabarits-ceramique.com', pageW / 2, pageH - 6, { align: 'center' });
   return 24;
 }
 function pdfFiche(doc, pieces, pages, title){
