@@ -86,7 +86,12 @@ header{
 h1{font-size:34px;line-height:1;letter-spacing:-.5px}
 h1 em{font-style:normal;color:var(--terra)}
 .tagline{color:var(--ink2);margin-top:6px;font-size:12px}
-.actions{display:flex;gap:10px;align-items:center}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.seg{display:inline-flex;border:1.5px solid var(--ink);border-radius:3px;overflow:hidden;box-shadow:2px 2px 0 rgba(51,38,26,.18)}
+.seg button{border:none;box-shadow:none;border-radius:0;padding:6px 10px;font-size:12px;background:var(--card);color:var(--ink2)}
+.seg button + button{border-left:1.5px solid var(--line)}
+.seg button.on{background:var(--terra);color:#fdf6ea}
+.seg button:hover{transform:none}
 button,.btn{
   font-family:'Fragment Mono',monospace;font-size:12.5px;cursor:pointer;
   border:1.5px solid var(--ink);background:var(--card);color:var(--ink);
@@ -500,12 +505,14 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
     </svg>
     <div>
       <h1>Gabarits <em>céramique</em></h1>
-      <div class="tagline">patrons à découper pour le travail à la plaque — toutes les cotes en millimètres</div>
+      <div class="tagline" data-i18n="tagline">patrons à découper pour le travail à la plaque</div>
     </div>
   </div>
   <div class="actions">
-    <button id="tourBtn" class="tour-btn" title="revoir le tuto">? tuto</button>
-    <button id="carnetToggle" class="carnet-btn"><span class="caret">▾</span> Mon carnet de pièces</button>
+    <div class="seg" id="langSeg" title="langue / language"><button data-lang="fr">FR</button><button data-lang="en">EN</button></div>
+    <div class="seg" id="unitSeg" title="unités / units"><button data-unit="cm">cm</button><button data-unit="in">in</button></div>
+    <button id="tourBtn" class="tour-btn" data-i18n="hdr_tuto" title="revoir le tuto">? tuto</button>
+    <button id="carnetToggle" class="carnet-btn"><span class="caret">▾</span> <span data-i18n="hdr_carnet">Mon carnet de pièces</span></button>
   </div>
 </header>
 
@@ -528,45 +535,45 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
 <main>
   <!-- ============ 1. FORME & COTES ============ -->
   <section class="panel" id="panel-forme">
-    <div class="ptitle"><span><span class="num">1.</span>Forme &amp; cotes</span></div>
+    <div class="ptitle"><span><span class="num">1.</span><span data-i18n="p1_title">Forme &amp; cotes</span></span></div>
     <div class="pbody">
       <div class="radio-row" id="modeRow" style="margin-bottom:12px">
-        <div class="opt" data-v="plaque">à la plaque</div>
-        <div class="opt" data-v="kurinuki">kurinuki</div>
+        <div class="opt" data-v="plaque" data-i18n="mode_plaque">à la plaque</div>
+        <div class="opt" data-v="kurinuki" data-i18n="mode_kur">kurinuki</div>
       </div>
       <button class="spick" id="spickBtn" title="changer de forme"></button>
       <div class="shapes" id="shapeSel" style="display:none"></div>
       <div id="dimFields"></div>
       <div class="terre closed" id="terreWrap">
         <button class="terretoggle" id="terreToggle">
-          <span class="terretitle">Ma terre</span>
+          <span class="terretitle" data-i18n="terre_title">Ma terre</span>
           <span id="terreSummary"></span>
           <span class="caret">▾</span>
         </button>
         <div id="terreBody">
         <div class="field">
-          <label>Terre</label>
+          <label data-i18n="terre_label">Terre</label>
           <select id="terrePreset">
-            <option value="8">faïence · 8 %</option>
-            <option value="12">grès · 12 %</option>
-            <option value="14">porcelaine · 14 %</option>
-            <option value="perso">retrait mesuré</option>
+            <option value="8" data-i18n="terre_faience">faïence · 8 %</option>
+            <option value="12" data-i18n="terre_gres">grès · 12 %</option>
+            <option value="14" data-i18n="terre_porcelaine">porcelaine · 14 %</option>
+            <option value="perso" data-i18n="terre_mesure">retrait mesuré</option>
           </select>
         </div>
         <div class="field">
-          <label>Retrait de cuisson</label>
+          <label data-i18n="retrait">Retrait de cuisson</label>
           <span><input type="number" id="inRetrait" min="0" max="25" step="0.5"><span class="unit">%</span></span>
         </div>
         <div class="field">
-          <label>Épaisseur de plaque</label>
-          <span><input type="number" id="inEp" min="1" max="30" step="0.5"><span class="unit">mm</span></span>
+          <label data-i18n="epaisseur">Épaisseur de plaque</label>
+          <span><input type="number" id="inEp" min="0" step="0.1" inputmode="decimal"><span class="unit" id="inEpUnit">mm</span></span>
         </div>
         <div class="radio-row" id="coteType">
-          <div class="opt" data-v="fini">cotes pièce finie</div>
-          <div class="opt" data-v="cru">cotes pièce crue</div>
+          <div class="opt" data-v="fini" data-i18n="cote_fini">cotes pièce finie</div>
+          <div class="opt" data-v="cru" data-i18n="cote_cru">cotes pièce crue</div>
         </div>
-        <div class="hint">En <b>pièce finie</b>, les gabarits sont agrandis pour compenser le retrait (séchage + cuisson). En <b>pièce crue</b>, ils sont tracés tels quels.</div>
-        <div class="krow"><span>facteur d’agrandissement</span><b id="kVal">×1,000</b></div>
+        <div class="hint" data-i18n-html="terre_hint">En <b>pièce finie</b>, les gabarits sont agrandis pour compenser le retrait (séchage + cuisson). En <b>pièce crue</b>, ils sont tracés tels quels.</div>
+        <div class="krow"><span data-i18n="facteur">facteur d’agrandissement</span><b id="kVal">×1,000</b></div>
         </div>
       </div>
     </div>
@@ -574,7 +581,7 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
 
   <!-- ============ 2. PHOTO ============ -->
   <section class="panel" id="panel-apercu">
-    <div class="ptitle"><span><span class="num">2.</span>Aperçu</span><button class="small" id="btnClearPhoto" style="display:none">retirer la photo</button></div>
+    <div class="ptitle"><span><span class="num">2.</span><span data-i18n="p2_title">Aperçu</span></span><button class="small" id="btnClearPhoto" data-i18n="apercu_retirer" style="display:none">retirer la photo</button></div>
     <div class="pbody">
       <div id="previewBox">
         <div id="prevSil"></div>
@@ -584,7 +591,7 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
         <svg width="22" height="22" viewBox="0 0 38 38" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="7" width="32" height="24" rx="2"/><circle cx="13" cy="16" r="3.5"/><path d="M3 27 l9-8 7 6 6-5 10 8"/>
         </svg>
-        <div>superposer une photo (optionnel) — glisse ou clique</div>
+        <div data-i18n="apercu_photo">superposer une photo (optionnel) — glisse ou clique</div>
       </div>
       <input type="file" id="fileInput" accept="image/*" style="display:none">
       <div id="photoBox" style="display:none">
@@ -607,7 +614,7 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
 
   <!-- ============ 3. PATRONS ============ -->
   <section class="panel col-patterns" id="panel-pieces">
-    <div class="ptitle"><span><span class="num">3.</span>Pièces à découper</span><span id="pageEstimate" style="font-size:11px;color:var(--ink2)"></span></div>
+    <div class="ptitle"><span><span class="num">3.</span><span data-i18n="p3_title">Pièces à découper</span></span><span id="pageEstimate" style="font-size:11px;color:var(--ink2)"></span></div>
     <div class="pbody">
       <div class="summary" id="summary"></div>
       <div id="pieces"></div>
@@ -801,30 +808,115 @@ const KUR_GROUPS = [
 ];
 const isKur = () => !!SHAPES[state.shape].kurinuki;
 
+const detectLang = () => (navigator.language || 'fr').toLowerCase().startsWith('en') ? 'en' : 'fr';
 const DEFAULT_STATE = {
   shape: 'cone',
   dims: Object.fromEntries(Object.entries(SHAPES).map(([id,s]) =>
     [id, Object.assign(Object.fromEntries(s.fields.map(f=>[f.k,f.def])), JSON.parse(JSON.stringify(s.init||{})))])),
   ep: 5, retrait: 12, coteType: 'fini',
+  unit: 'cm', lang: null,                 // lang null = auto-détection au 1er chargement
   ov: { x: 30, y: 20, scale: 55, op: 75 },
 };
 let state = loadState();
 let photoURL = null;
 
 function loadState(){
-  try{
-    const s = JSON.parse(localStorage.getItem('gabarits-state'));
-    if(s && s.dims) return Object.assign({}, DEFAULT_STATE, s, {
-      dims: Object.assign({}, DEFAULT_STATE.dims, s.dims),
-      ov: Object.assign({}, DEFAULT_STATE.ov, s.ov),
-    });
-  }catch(e){}
-  return JSON.parse(JSON.stringify(DEFAULT_STATE));
+  let s = null;
+  try{ s = JSON.parse(localStorage.getItem('gabarits-state')); }catch(e){}
+  const st = (s && s.dims)
+    ? Object.assign({}, DEFAULT_STATE, s, { dims: Object.assign({}, DEFAULT_STATE.dims, s.dims), ov: Object.assign({}, DEFAULT_STATE.ov, s.ov) })
+    : JSON.parse(JSON.stringify(DEFAULT_STATE));
+  if(!st.lang) st.lang = detectLang();     // anglais si navigateur EN, français sinon
+  if(!st.unit) st.unit = 'cm';
+  return st;
 }
 function saveState(){ localStorage.setItem('gabarits-state', JSON.stringify(state)); }
 
-const fmt = v => (Math.round(v*10)/10).toLocaleString('fr-FR');
-const fmt0 = v => Math.round(v).toLocaleString('fr-FR');
+const fmt = v => (Math.round(v*10)/10).toLocaleString(numLoc());
+const fmt0 = v => Math.round(v).toLocaleString(numLoc());
+
+/* ---- Unités d'affichage (le calcul reste TOUJOURS en mm en interne) ----
+   state.unit : 'cm' (métrique) ou 'in' (pouces décimaux). */
+const UNITS = { cm: { f: 0.1, lbl: 'cm', dec: 1 }, in: { f: 1/25.4, lbl: '″', dec: 2 } };
+const uCfg = () => UNITS[state.unit] || UNITS.cm;
+const numLoc = () => state.lang === 'en' ? 'en-US' : 'fr-FR';   // point (EN) / virgule (FR)
+const toU   = mm => mm * uCfg().f;                       // mm -> valeur dans l'unité courante
+const fromU = v  => v / uCfg().f;                        // valeur unité -> mm
+const roundU = mm => { const p = Math.pow(10, uCfg().dec); return Math.round(toU(mm)*p)/p; };
+const Lv = mm => roundU(mm).toLocaleString(numLoc());    // nombre seul, dans l'unité + locale
+const Lu = () => uCfg().lbl;                             // libellé d'unité (cm / ″)
+const L  = mm => `${Lv(mm)} ${Lu()}`;                    // ex. « 8 cm », « 3.15 ″ »
+
+/* ---------------- i18n : dictionnaire + t() ----------------
+   On remplit STR bloc par bloc. t(clé) renvoie la trad de la langue
+   courante (repli FR, puis la clé brute si absente). Les éléments HTML
+   statiques portent data-i18n="clé" et sont traduits par applyI18n(). */
+const STR = {
+  fr: {
+    tagline: 'patrons à découper pour le travail à la plaque',
+    hdr_carnet: 'Mon carnet de pièces', hdr_tuto: '? tuto',
+    p1_title: 'Forme & cotes', p2_title: 'Aperçu', p3_title: 'Pièces à découper',
+    mode_plaque: 'à la plaque', mode_kur: 'kurinuki', change: 'changer',
+    g_base: 'Formes de base', g_vaisselle: 'Vaisselle & objets', g_dessiner: 'À dessiner', g_kur: 'Creusage dans la masse',
+    terre_title: 'Ma terre', terre_label: 'Terre',
+    terre_faience: 'faïence · 8 %', terre_gres: 'grès · 12 %', terre_porcelaine: 'porcelaine · 14 %', terre_mesure: 'retrait mesuré',
+    retrait: 'Retrait de cuisson', epaisseur: 'Épaisseur de plaque',
+    cote_fini: 'cotes pièce finie', cote_cru: 'cotes pièce crue',
+    terre_hint: 'En <b>pièce finie</b>, les gabarits sont agrandis pour compenser le retrait (séchage + cuisson). En <b>pièce crue</b>, ils sont tracés tels quels.',
+    facteur: 'facteur d’agrandissement',
+    apercu_photo: 'superposer une photo (optionnel) — glisse ou clique',
+    apercu_retirer: 'retirer la photo',
+  },
+  en: {
+    tagline: 'printable cutting templates for slab building',
+    hdr_carnet: 'My pieces', hdr_tuto: '? tour',
+    p1_title: 'Shape & size', p2_title: 'Preview', p3_title: 'Pieces to cut',
+    mode_plaque: 'slab building', mode_kur: 'kurinuki', change: 'change',
+    g_base: 'Basic shapes', g_vaisselle: 'Tableware & objects', g_dessiner: 'Draw your own', g_kur: 'Carving from a block',
+    terre_title: 'My clay', terre_label: 'Clay',
+    terre_faience: 'earthenware · 8%', terre_gres: 'stoneware · 12%', terre_porcelaine: 'porcelain · 14%', terre_mesure: 'measured shrinkage',
+    retrait: 'Firing shrinkage', epaisseur: 'Slab thickness',
+    cote_fini: 'finished-piece size', cote_cru: 'wet-clay size',
+    terre_hint: 'With <b>finished size</b>, templates are scaled up to offset shrinkage (drying + firing). With <b>wet-clay size</b>, they are drawn as entered.',
+    facteur: 'scale-up factor',
+    apercu_photo: 'overlay a photo (optional) — drag or click',
+    apercu_retirer: 'remove photo',
+  },
+};
+function t(k){ const d = STR[state.lang] || STR.fr; return (k in d) ? d[k] : (k in STR.fr ? STR.fr[k] : k); }
+
+/* Traductions des noms de formes + labels de champs (EN ; FR = valeurs SHAPES) */
+const I18N_SHAPES = {
+  cylindre:{name:'Cylinder',f:{d:'Ø outer',h:'Height'}},
+  cone:{name:'Truncated cone',f:{d1:'Ø base',d2:'Ø top (0 = point)',h:'Height'}},
+  boite:{name:'Box',f:{l:'Length',w:'Width',h:'Height'}},
+  pyramide:{name:'Truncated pyramid',f:{l1:'Base length',w1:'Base width',l2:'Top length',w2:'Top width',h:'Height'}},
+  ovale:{name:'Oval',f:{da:'Major Ø',db:'Minor Ø',h:'Height'}},
+  prisme:{name:'Faceted prism',f:{n:'Number of sides',d:'Ø corner to corner',h:'Height'}},
+  facettes:{name:'Faceted vase',f:{n:'Number of sides',d1:'Ø base (corner to corner)',d2:'Ø top (0 = point)',h:'Height'}},
+  tasse:{name:'Cup & mug',f:{d1:'Ø base',d2:'Ø rim',h:'Height',ah:'Handle: height',ap:'Handle: projection',aw:'Handle: strap width'}},
+  profil:{name:'Free profile',f:{}},
+  libre:{name:'Free base',f:{h:'Wall height'}},
+  bouteille:{name:'Bottle',f:{d1:'Ø body',h1:'Body height',d2:'Ø neck',h2:'Shoulder height',h3:'Neck height'}},
+  pichet:{name:'Pitcher',f:{d1:'Ø base',d2:'Ø rim',h:'Height',db:'Spout: disc Ø',ah:'Handle: height',ap:'Handle: projection',aw:'Handle: strap width'}},
+  assiette:{name:'Plate',f:{d1:'Ø of base',d2:'Ø total',h:'Rim height'}},
+  plat:{name:'Rimmed dish',f:{l:'Base length',w:'Base width',h:'Rim height',db:'Flare (overhang)'}},
+  coussin:{name:'Pillow vase',f:{df:'Ø of faces',p:'Depth (side band)',dc:'Ø neck (0 = none)',hc:'Neck height'}},
+  kur_cyl:{name:'Cylindrical block',f:{paroi:'Target wall thickness',marge:'Carving margin (per face)'}},
+  kur_rect:{name:'Rectangular block',f:{paroi:'Target wall thickness',marge:'Carving margin (per face)'}},
+};
+const shapeName = id => (state.lang==='en' && I18N_SHAPES[id]) ? I18N_SHAPES[id].name : SHAPES[id].name;
+const fieldLab = (id, fk, frLab) => (state.lang==='en' && I18N_SHAPES[id]?.f?.[fk]) ? I18N_SHAPES[id].f[fk] : frLab;
+function applyI18n(){
+  document.documentElement.lang = state.lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
+  document.querySelectorAll('#langSeg [data-lang]').forEach(b => b.classList.toggle('on', b.dataset.lang === state.lang));
+  document.querySelectorAll('#unitSeg [data-unit]').forEach(b => b.classList.toggle('on', b.dataset.unit === state.unit));
+}
+
 const kFactor = () => state.coteType==='fini' ? 1/(1 - state.retrait/100) : 1;
 
 /* ---------------------------------------------------------------
@@ -855,7 +947,13 @@ function clayWeight(pieces){
     .reduce((s,p) => s + p.qty * pieceArea(p.geo) * state.ep, 0);
   return mm3 * 0.0019;   // g
 }
-const fmtPoids = g => g >= 1000 ? (g/1000).toLocaleString('fr-FR',{maximumFractionDigits:2})+' kg' : Math.round(g/10)*10+' g';
+const fmtPoids = g => {
+  if(state.unit === 'in'){                                  // impérial → oz / lb
+    const oz = g / 28.3495;
+    return oz >= 16 ? (oz/16).toLocaleString(numLoc(),{maximumFractionDigits:2})+' lb' : Math.round(oz)+' oz';
+  }
+  return g >= 1000 ? (g/1000).toLocaleString(numLoc(),{maximumFractionDigits:2})+' kg' : Math.round(g/10)*10+' g';
+};
 
 /* anse : bande développée (demi-périmètre d'ellipse Ramanujan + pattes) + gabarit de profil */
 function ansePieces(AH, AP, AW, e){
@@ -864,12 +962,17 @@ function ansePieces(AH, AP, AW, e){
   const Lb = demiPer + 12;
   return [
     { name:'Anse — bande', qty:1, geo:{t:'rect', w:Lb, h:AW},
-      dims:[`bande ${fmt(Lb)} × ${fmt(AW)} mm (courbe développée + 12 mm de pattes d'attache)`],
-      notes:[`découper dans la plaque, laisser raffermir un peu, puis cintrer en suivant le gabarit de profil`,
-             `attaches : scarifier + barbotine, bien souder aux deux points`] },
+      dims:[D(`bande ${Lv(Lb)} × ${L(AW)} (courbe développée + ${L(12)} de pattes d'attache)`,
+              `strap ${Lv(Lb)} × ${L(AW)} (developed curve + ${L(12)} for attachment tabs)`)],
+      notes:[D(`découper dans la plaque, laisser raffermir un peu, puis cintrer en suivant le gabarit de profil`,
+               `cut from the slab, let it firm up a little, then bend to follow the profile template`),
+             D(`attaches : scarifier + barbotine, bien souder aux deux points`,
+               `joints: score + slip, weld firmly at both ends`)] },
     { name:'Anse — profil', qty:1, noClay:true, geo:{t:'anse', a:AH/2, b:AP, e},
-      dims:[`hauteur ${fmt(AH)} mm entre attaches — saillie ${fmt(AP)} mm`],
-      notes:[`gabarit de contrôle : ne se découpe pas dans la terre, sert à vérifier la courbure de la bande cintrée`] },
+      dims:[D(`hauteur ${L(AH)} entre attaches — saillie ${L(AP)}`,
+              `height ${L(AH)} between joints — projection ${L(AP)}`)],
+      notes:[D(`gabarit de contrôle : ne se découpe pas dans la terre, sert à vérifier la courbure de la bande cintrée`,
+               `check template: not cut from clay, used to check the curve of the bent strap`)] },
   ];
 }
 
@@ -879,8 +982,10 @@ function coneWall(D1, D2, H, e){
   if(Math.abs(r1 - r2) < 0.5){
     const C = Math.PI * (D1 - e);
     return { name:'Paroi', qty:1, geo:{t:'rect', w:C, h:H},
-      dims:[`Ø base ≈ Ø haut : la paroi est un simple rectangle ${fmt(C)} × ${fmt(H)} mm`],
-      notes:[`joint vertical : biseauter les deux petits côtés à 45°`] };
+      dims:[D(`Ø base ≈ Ø haut : la paroi est un simple rectangle ${Lv(C)} × ${L(H)}`,
+              `Ø base ≈ Ø top: the wall is a simple rectangle ${Lv(C)} × ${L(H)}`)],
+      notes:[D(`joint vertical : biseauter les deux petits côtés à 45°`,
+               `vertical seam: bevel the two short edges at 45°`)] };
   }
   const rMax = Math.max(r1,r2), rMin = Math.min(r1,r2);
   const s = Math.hypot(H, r1 - r2);            // hauteur d'inclinaison (apothème du tronc)
@@ -888,19 +993,24 @@ function coneWall(D1, D2, H, e){
   const Rin  = Rout - s;
   const theta = 2*Math.PI * rMax / Rout;
   const corde = 2 * Rout * Math.sin(Math.min(theta,Math.PI)/2);
-  const bigSide = r1 >= r2 ? 'base' : 'haut';
-  const smallSide = r1 >= r2 ? 'haut' : 'base';
+  const bigSide = r1 >= r2 ? D('base','base') : D('haut','top');
+  const smallSide = r1 >= r2 ? D('haut','top') : D('base','base');
   const dims = [
-    `rayon extérieur R = ${fmt(Rout)} mm — rayon intérieur r = ${fmt(Rin)} mm`,
-    `angle du secteur = ${fmt(theta*180/Math.PI)}°`,
-    `grand arc (côté ${bigSide}, Ø ${fmt(2*rMax + e)}) = ${fmt(theta*Rout)} mm — petit arc (côté ${smallSide}, Ø ${fmt(2*rMin + e)}) = ${fmt(theta*Rin)} mm`,
+    D(`rayon extérieur R = ${L(Rout)} — rayon intérieur r = ${L(Rin)}`,
+      `outer radius R = ${L(Rout)} — inner radius r = ${L(Rin)}`),
+    D(`angle du secteur = ${fmt(theta*180/Math.PI)}°`, `sector angle = ${fmt(theta*180/Math.PI)}°`),
+    D(`grand arc (côté ${bigSide}, Ø ${Lv(2*rMax + e)}) = ${L(theta*Rout)} — petit arc (côté ${smallSide}, Ø ${Lv(2*rMin + e)}) = ${L(theta*Rin)}`,
+      `long arc (${bigSide} side, Ø ${Lv(2*rMax + e)}) = ${L(theta*Rout)} — short arc (${smallSide} side, Ø ${Lv(2*rMin + e)}) = ${L(theta*Rin)}`),
   ];
-  if(theta < Math.PI*1.02) dims.push(`corde du grand arc = ${fmt(corde)} mm (pour vérifier le tracé)`);
+  if(theta < Math.PI*1.02) dims.push(D(`corde du grand arc = ${L(corde)} (pour vérifier le tracé)`, `chord of the long arc = ${L(corde)} (to check the layout)`));
   const notes = [Rout <= 600
-                   ? `tracer au compas depuis la croix centrale : deux arcs de rayons R et r, puis les deux rayons droits`
-                   : `centre hors gabarit : marquer un point au sol et tracer les deux arcs de rayons R et r au compas à ficelle (ou imprimer la mosaïque)`,
-                 `joint : biseauter les deux bords droits à 45°`];
-  if(Rout > 1200) notes.push(`rayon très grand (cône presque cylindrique) — utiliser un compas à ficelle, ou vérifier les Ø saisis`);
+                   ? D(`tracer au compas depuis la croix centrale : deux arcs de rayons R et r, puis les deux rayons droits`,
+                       `draw with a compass from the centre cross: two arcs of radius R and r, then the two straight edges`)
+                   : D(`centre hors gabarit : marquer un point au sol et tracer les deux arcs de rayons R et r au compas à ficelle (ou imprimer la mosaïque)`,
+                       `centre off the sheet: mark a point on the floor and draw the two arcs (radius R and r) with a string compass (or print the tiled sheets)`),
+                 D(`joint : biseauter les deux bords droits à 45°`, `seam: bevel the two straight edges at 45°`)];
+  if(Rout > 1200) notes.push(D(`rayon très grand (cône presque cylindrique) — utiliser un compas à ficelle, ou vérifier les Ø saisis`,
+                               `very large radius (almost a cylinder) — use a string compass, or double-check the entered Ø`));
   return { name:'Paroi (secteur)', qty:1, geo:{t:'sector', Rout, Rin, theta}, dims, notes, warn: Rout > 1200 };
 }
 
@@ -942,7 +1052,7 @@ function kurData(){
   const Vbloc = rect ? side*side*hB : Math.PI*(side/2)**2*hB;
   const { pieceW } = kurVolumes(pts, d.paroi);
   return { rect, side, hB,
-    blocTxt: rect ? `${fmt(side)} × ${fmt(side)} × ${fmt(hB)} mm` : `Ø ${fmt(side)} × ${fmt(hB)} mm`,
+    blocTxt: rect ? `${Lv(side)} × ${Lv(side)} × ${L(hB)}` : `Ø ${Lv(side)} × ${L(hB)}`,
     blocW: Vbloc*0.0019, pieceW };
 }
 function kurPieces(d, rectBloc){
@@ -957,32 +1067,44 @@ function kurPieces(d, rectBloc){
                    ...[...pts].reverse().map(p => ({x: maxR - p.r, y: Y - p.y}))];
   const dOut = pathFrom(outline, true);
   P.push({ name:'Profil extérieur', qty:2, noClay:true,
-    geo:{t:'path', d:dOut, bx:0, by:0, bw:2*maxR, bh:H, label:`profil ${fmt(2*maxR)} × ${fmt(H)} mm`},
-    dims:[`silhouette ${fmt(2*maxR)} × ${fmt(H)} mm — à reporter sur 2 faces opposées du bloc`],
-    notes:[`poser sur la face, tracer à la pointe, puis tailler l'extérieur par facettes du haut vers le bas (terre à consistance cuir)`] });
+    geo:{t:'path', d:dOut, bx:0, by:0, bw:2*maxR, bh:H, label:`${D('profil','profile')} ${Lv(2*maxR)} × ${L(H)}`},
+    dims:[D(`silhouette ${Lv(2*maxR)} × ${L(H)} — à reporter sur 2 faces opposées du bloc`,
+            `silhouette ${Lv(2*maxR)} × ${L(H)} — trace onto 2 opposite faces of the block`)],
+    notes:[D(`poser sur la face, tracer à la pointe, puis tailler l'extérieur par facettes du haut vers le bas (terre à consistance cuir)`,
+             `set on the face, scribe the outline, then carve the outside in facets from top to bottom (leather-hard clay)`)] });
   // dessus : contour extérieur + ouverture
   const rTop = pts.at(-1).r, rIn = Math.max(0, rTop - paroi);
   const circ = (cx,cy,r) => `M ${(cx-r).toFixed(1)} ${cy.toFixed(1)} a ${r.toFixed(1)} ${r.toFixed(1)} 0 1 0 ${(2*r).toFixed(1)} 0 a ${r.toFixed(1)} ${r.toFixed(1)} 0 1 0 ${(-2*r).toFixed(1)} 0`;
   P.push({ name:'Dessus — contour & ouverture', qty:1, noClay:true,
-    geo:{t:'path', d: circ(rTop,rTop,rTop) + ' ' + (rIn>1 ? circ(rTop,rTop,rIn) : ''), bx:0, by:0, bw:2*rTop, bh:2*rTop, label:`Ø ${fmt(2*rTop)} / ${fmt(2*rIn)} mm`},
-    dims:[`contour extérieur Ø ${fmt(2*rTop)} mm — ouverture à creuser Ø ${fmt(2*rIn)} mm`],
-    notes:[`à tracer sur le dessus du bloc : grand cercle = contour de la pièce, petit cercle = ouverture du creusage`] });
+    geo:{t:'path', d: circ(rTop,rTop,rTop) + ' ' + (rIn>1 ? circ(rTop,rTop,rIn) : ''), bx:0, by:0, bw:2*rTop, bh:2*rTop, label:`Ø ${Lv(2*rTop)} / ${L(2*rIn)}`},
+    dims:[D(`contour extérieur Ø ${Lv(2*rTop)} — ouverture à creuser Ø ${L(2*rIn)}`,
+            `outer outline Ø ${Lv(2*rTop)} — opening to carve Ø ${L(2*rIn)}`)],
+    notes:[D(`à tracer sur le dessus du bloc : grand cercle = contour de la pièce, petit cercle = ouverture du creusage`,
+             `trace on top of the block: big circle = piece outline, small circle = carving opening`)] });
   // coupe de creusage
   const { pieceW, inner } = kurVolumes(pts, paroi);
   if(inner.length >= 2){
     const dCav = pathFrom([...inner.map(p => ({x: maxR + p.r, y: Y - p.y})),
                            ...[...inner].reverse().map(p => ({x: maxR - p.r, y: Y - p.y}))], true);
     P.push({ name:'Coupe de creusage (contrôle)', qty:1, noClay:true,
-      geo:{t:'path', d: dOut + ' ' + dCav, bx:0, by:0, bw:2*maxR, bh:H, label:`paroi ${fmt(paroi)} mm`},
-      dims:[`paroi et fond visés ${fmt(paroi)} mm — profondeur de cavité ${fmt(H - paroi)} mm`,
-            `pièce finie ≈ ${fmtPoids(pieceW)} de terre — le reste du bloc s'évide`],
-      notes:[`gabarit de contrôle : garder à côté en creusant, vérifier au compas d'épaisseur`,
-             `creuser à la mirette par étages, du centre vers les bords, le fond en dernier — séchage très lent sous plastique`,
-             `l'épaisseur est mesurée horizontalement : sur les zones très inclinées, viser un peu plus épais`] });
+      geo:{t:'path', d: dOut + ' ' + dCav, bx:0, by:0, bw:2*maxR, bh:H, label:`${D('paroi','wall')} ${L(paroi)}`},
+      dims:[D(`paroi et fond visés ${L(paroi)} — profondeur de cavité ${L(H - paroi)}`,
+              `target wall & base ${L(paroi)} — cavity depth ${L(H - paroi)}`),
+            D(`pièce finie ≈ ${fmtPoids(pieceW)} de terre — le reste du bloc s'évide`,
+              `finished piece ≈ ${fmtPoids(pieceW)} of clay — the rest of the block is hollowed out`)],
+      notes:[D(`gabarit de contrôle : garder à côté en creusant, vérifier au compas d'épaisseur`,
+               `check template: keep it beside you while carving, check with a wall-thickness caliper`),
+             D(`creuser à la mirette par étages, du centre vers les bords, le fond en dernier — séchage très lent sous plastique`,
+               `carve with a loop tool in stages, from centre to edges, base last — dry very slowly under plastic`),
+             D(`l'épaisseur est mesurée horizontalement : sur les zones très inclinées, viser un peu plus épais`,
+               `thickness is measured horizontally: on steep areas, aim a little thicker`)] });
   }
   return P;
 }
 
+const baseNote = () => D(`la paroi se pose sur le fond, au ras du bord`, `the wall sits on the base, flush with the edge`);
+const baseDisc = D1 => ({ name:'Fond', qty:1, geo:{t:'disc', d:D1},
+  dims:[D(`disque Ø ${L(D1)}`, `disc Ø ${L(D1)}`)], notes:[baseNote()] });
 function computePieces(){
   const k = kFactor(), e = state.ep;
   const d = state.dims[state.shape];
@@ -998,20 +1120,17 @@ function computePieces(){
     const D = d.d*k, H = d.h*k;
     const C = Math.PI * (D - e);
     add({ name:'Paroi', qty:1, geo:{t:'rect', w:C, h:H},
-      dims:[`rectangle ${fmt(C)} × ${fmt(H)} mm`,
-            `longueur = circonférence médiane π × (Ø − épaisseur)`],
-      notes:[`enrouler autour du fond, joint vertical : biseauter les deux petits côtés à 45°`] });
-    add({ name:'Fond', qty:1, geo:{t:'disc', d:D},
-      dims:[`disque Ø ${fmt(D)} mm`],
-      notes:[`la paroi se pose sur le fond, au ras du bord`] });
+      dims:[D(`rectangle ${Lv(C)} × ${L(H)}`, `rectangle ${Lv(C)} × ${L(H)}`),
+            D(`longueur = circonférence médiane π × (Ø − épaisseur)`, `length = mid-line circumference π × (Ø − thickness)`)],
+      notes:[D(`enrouler autour du fond, joint vertical : biseauter les deux petits côtés à 45°`,
+               `wrap around the base; vertical seam: bevel the two short edges at 45°`)] });
+    add(baseDisc(D));
   }
 
   if(state.shape === 'cone'){
     const D1 = d.d1*k, D2 = d.d2*k, H = d.h*k;
     add(coneWall(D1, D2, H, e));
-    add({ name:'Fond', qty:1, geo:{t:'disc', d:D1},
-      dims:[`disque Ø ${fmt(D1)} mm`],
-      notes:[`la paroi se pose sur le fond, au ras du bord`] });
+    add(baseDisc(D1));
   }
 
   if(state.shape === 'ovale'){
@@ -1019,25 +1138,27 @@ function computePieces(){
     const a = Math.max(0,(A - e)/2), b = Math.max(0,(B - e)/2);   // demi-axes médians
     const per = Math.PI * (3*(a + b) - Math.sqrt((3*a + b)*(a + 3*b)));  // Ramanujan
     add({ name:'Paroi', qty:1, geo:{t:'rect', w:per, h:H},
-      dims:[`rectangle ${fmt(per)} × ${fmt(H)} mm`,
-            `longueur = périmètre médian de l'ellipse (Ø − épaisseur)`],
-      notes:[`cintrer autour du fond en suivant la courbe — joint vertical : biseauter les deux petits côtés à 45°`,
-             `placer le joint sur un côté plat (grand rayon), pas dans un bout serré`] });
+      dims:[D(`rectangle ${Lv(per)} × ${L(H)}`, `rectangle ${Lv(per)} × ${L(H)}`),
+            D(`longueur = périmètre médian de l'ellipse (Ø − épaisseur)`, `length = mid-line perimeter of the ellipse (Ø − thickness)`)],
+      notes:[D(`cintrer autour du fond en suivant la courbe — joint vertical : biseauter les deux petits côtés à 45°`,
+               `bend around the base following the curve — vertical seam: bevel the two short edges at 45°`),
+             D(`placer le joint sur un côté plat (grand rayon), pas dans un bout serré`,
+               `put the seam on a flat side (large radius), not on a tight end`)] });
     add({ name:'Fond', qty:1, geo:{t:'ellipse', A, B},
-      dims:[`ellipse ${fmt(A)} × ${fmt(B)} mm`],
-      notes:[`la paroi se pose sur le fond, au ras du bord`] });
+      dims:[D(`ellipse ${Lv(A)} × ${L(B)}`, `ellipse ${Lv(A)} × ${L(B)}`)],
+      notes:[baseNote()] });
   }
 
   if(state.shape === 'prisme'){
     const N = clampN(d.n), D = d.d*k, H = d.h*k;
     const R = D/2, S = 2*R*Math.sin(Math.PI/N);
     add({ name:'Pan', qty:N, geo:{t:'rect', w:S, h:H-e},
-      dims:[`rectangle ${fmt(S)} × ${fmt(H-e)} mm — ${N} pans identiques`],
-      notes:[`posé debout sur le fond (d'où la hauteur − 1 épaisseur)`,
-             `biseauter les bords verticaux à ${fmt(180/N)}° pour fermer le polygone`] });
+      dims:[D(`rectangle ${Lv(S)} × ${L(H-e)} — ${N} pans identiques`, `rectangle ${Lv(S)} × ${L(H-e)} — ${N} identical panels`)],
+      notes:[D(`posé debout sur le fond (d'où la hauteur − 1 épaisseur)`, `stood on the base (hence height − 1 thickness)`),
+             D(`biseauter les bords verticaux à ${fmt(180/N)}° pour fermer le polygone`, `bevel the vertical edges at ${fmt(180/N)}° to close the polygon`)] });
     add({ name:'Fond', qty:1, geo:{t:'poly', n:N, R},
-      dims:[`polygone régulier à ${N} côtés — Ø ${fmt(D)} mm sommet à sommet, côté ${fmt(S)} mm`],
-      notes:[`les pans se posent sur le fond, au ras des bords`] });
+      dims:[D(`polygone régulier à ${N} côtés — Ø ${Lv(D)} sommet à sommet, côté ${L(S)}`, `regular ${N}-sided polygon — Ø ${Lv(D)} corner to corner, side ${L(S)}`)],
+      notes:[D(`les pans se posent sur le fond, au ras des bords`, `the panels sit on the base, flush with the edges`)] });
   }
 
   if(state.shape === 'facettes'){
@@ -1047,10 +1168,12 @@ function computePieces(){
     const a1 = R1*Math.cos(Math.PI/N), a2 = R2*Math.cos(Math.PI/N);   // apothèmes
     const s = Math.hypot(H, a1 - a2);
     add({ name:'Facette', qty:N, geo:{t:'trap', b1, b2, h:s},
-      dims:[`trapèze : base ${fmt(b1)}, sommet ${fmt(b2)}, hauteur inclinée ${fmt(s)} mm — ${N} facettes identiques`],
-      notes:[`biseauter les bords inclinés (~${fmt(180/N)}° en haut de forme) et ajuster à la pose — cotes hors épaisseur`] });
+      dims:[D(`trapèze : base ${Lv(b1)}, sommet ${Lv(b2)}, hauteur inclinée ${L(s)} — ${N} facettes identiques`,
+              `trapezoid: base ${Lv(b1)}, top ${Lv(b2)}, slant height ${L(s)} — ${N} identical facets`)],
+      notes:[D(`biseauter les bords inclinés (~${fmt(180/N)}° en haut de forme) et ajuster à la pose — cotes hors épaisseur`,
+               `bevel the slanted edges (~${fmt(180/N)}° near the top) and fine-tune on assembly — sizes exclude thickness`)] });
     add({ name:'Fond', qty:1, geo:{t:'poly', n:N, R:R1},
-      dims:[`polygone régulier à ${N} côtés — Ø ${fmt(D1)} mm sommet à sommet, côté ${fmt(b1)} mm`],
+      dims:[D(`polygone régulier à ${N} côtés — Ø ${Lv(D1)} sommet à sommet, côté ${L(b1)}`, `regular ${N}-sided polygon — Ø ${Lv(D1)} corner to corner, side ${L(b1)}`)],
       notes:[] });
   }
 
@@ -1058,32 +1181,31 @@ function computePieces(){
     const D1 = d.d1*k, D2 = d.d2*k, H = d.h*k;
     const AH = d.ah*k, AP = d.ap*k, AW = d.aw*k;
     add(coneWall(D1, D2, H, e));
-    add({ name:'Fond', qty:1, geo:{t:'disc', d:D1},
-      dims:[`disque Ø ${fmt(D1)} mm`],
-      notes:[`la paroi se pose sur le fond, au ras du bord`] });
+    add(baseDisc(D1));
     ansePieces(AH, AP, AW, e).forEach(add);
   }
 
   if(state.shape === 'pichet'){
     const D1 = d.d1*k, D2 = d.d2*k, H = d.h*k, DB = d.db*k;
     add(coneWall(D1, D2, H, e));
-    add({ name:'Fond', qty:1, geo:{t:'disc', d:D1},
-      dims:[`disque Ø ${fmt(D1)} mm`],
-      notes:[`la paroi se pose sur le fond, au ras du bord`] });
+    add(baseDisc(D1));
     add({ name:'Bec verseur', qty:1, geo:{t:'sector', Rout:DB/2, Rin:0, theta:Math.PI},
-      dims:[`demi-disque Ø ${fmt(DB)} mm`],
-      notes:[`cintrer en gouttière sur le manche d'un outil, puis souder sur une encoche taillée dans le buvant`,
-             `lisser l'arête de coulée au doigt mouillé (c'est elle qui coupe la goutte)`] });
+      dims:[D(`demi-disque Ø ${L(DB)}`, `half-disc Ø ${L(DB)}`)],
+      notes:[D(`cintrer en gouttière sur le manche d'un outil, puis souder sur une encoche taillée dans le buvant`,
+               `shape into a gutter over a tool handle, then weld onto a notch cut in the rim`),
+             D(`lisser l'arête de coulée au doigt mouillé (c'est elle qui coupe la goutte)`,
+               `smooth the pouring edge with a wet finger (it's what cuts the drip)`)] });
     ansePieces(d.ah*k, d.ap*k, d.aw*k, e).forEach(add);
   }
 
   if(state.shape === 'assiette'){
     const D1 = d.d1*k, D2 = d.d2*k, H = d.h*k;
     add({ name:'Fond', qty:1, geo:{t:'disc', d:D1},
-      dims:[`disque Ø ${fmt(D1)} mm`], notes:[] });
+      dims:[D(`disque Ø ${L(D1)}`, `disc Ø ${L(D1)}`)], notes:[] });
     const p = coneWall(D1, D2, H, e);
     p.name = 'Bord (marli)';
-    p.notes = [...p.notes, `souder le marli sur le pourtour du fond, joint scarifié + barbotine, puis adoucir l'angle intérieur`];
+    p.notes = [...p.notes, D(`souder le marli sur le pourtour du fond, joint scarifié + barbotine, puis adoucir l'angle intérieur`,
+                             `weld the rim around the base, scored + slip joint, then soften the inside angle`)];
     add(p);
   }
 
@@ -1091,41 +1213,41 @@ function computePieces(){
     const L = d.l*k, W = d.w*k, H = d.h*k, DB = d.db*k;
     const s = Math.hypot(H, DB);   // hauteur inclinée du bord
     add({ name:'Fond', qty:1, geo:{t:'rect', w:L, h:W},
-      dims:[`rectangle ${fmt(L)} × ${fmt(W)} mm`], notes:[] });
+      dims:[D(`rectangle ${Lv(L)} × ${L(W)}`, `rectangle ${Lv(L)} × ${L(W)}`)], notes:[] });
     add({ name:'Bord long', qty:2, geo:{t:'trap', b1:L, b2:L+2*DB, h:s},
-      dims:[`trapèze : base ${fmt(L)}, haut ${fmt(L+2*DB)}, hauteur inclinée ${fmt(s)} mm`],
-      notes:[`la petite base se soude au fond, le bord s'évase vers l'extérieur`] });
+      dims:[D(`trapèze : base ${Lv(L)}, haut ${Lv(L+2*DB)}, hauteur inclinée ${L(s)}`, `trapezoid: base ${Lv(L)}, top ${Lv(L+2*DB)}, slant height ${L(s)}`)],
+      notes:[D(`la petite base se soude au fond, le bord s'évase vers l'extérieur`, `the short base welds to the base, the rim flares outward`)] });
     add({ name:'Bord court', qty:2, geo:{t:'trap', b1:W, b2:W+2*DB, h:s},
-      dims:[`trapèze : base ${fmt(W)}, haut ${fmt(W+2*DB)}, hauteur inclinée ${fmt(s)} mm`],
-      notes:[`biseauter les bords inclinés à ~45° et ajuster les coins à la pose`] });
+      dims:[D(`trapèze : base ${Lv(W)}, haut ${Lv(W+2*DB)}, hauteur inclinée ${L(s)}`, `trapezoid: base ${Lv(W)}, top ${Lv(W+2*DB)}, slant height ${L(s)}`)],
+      notes:[D(`biseauter les bords inclinés à ~45° et ajuster les coins à la pose`, `bevel the slanted edges at ~45° and fit the corners on assembly`)] });
   }
 
   if(state.shape === 'coussin'){
     const DF = d.df*k, P = d.p*k, DC = d.dc*k, HC = d.hc*k;
     const C = Math.PI * (DF - e);
     add({ name:'Face', qty:2, geo:{t:'disc', d:DF},
-      dims:[`disque Ø ${fmt(DF)} mm — 2 faces identiques`],
-      notes:[`laisser raffermir à plat (ou bomber légèrement sur un moule souple)`] });
+      dims:[D(`disque Ø ${L(DF)} — 2 faces identiques`, `disc Ø ${L(DF)} — 2 identical faces`)],
+      notes:[D(`laisser raffermir à plat (ou bomber légèrement sur un moule souple)`, `let firm up flat (or dome slightly over a soft mould)`)] });
     add({ name:'Bande (tranche)', qty:1, geo:{t:'rect', w:C, h:P},
-      dims:[`bande ${fmt(C)} × ${fmt(P)} mm (circonférence médiane × profondeur)`],
-      notes:[`cintrer la bande autour d'une face, souder, puis refermer avec la seconde face`,
-             `percer un petit trou d'évent avant de refermer (air emprisonné = casse à la cuisson)`] });
+      dims:[D(`bande ${Lv(C)} × ${L(P)} (circonférence médiane × profondeur)`, `band ${Lv(C)} × ${L(P)} (mid-line circumference × depth)`)],
+      notes:[D(`cintrer la bande autour d'une face, souder, puis refermer avec la seconde face`, `bend the band around one face, weld, then close with the second face`),
+             D(`percer un petit trou d'évent avant de refermer (air emprisonné = casse à la cuisson)`, `pierce a small vent hole before closing (trapped air = cracks when fired)`)] });
     if(DC > e && HC > 0.5) add({ name:'Col', qty:1, geo:{t:'rect', w:Math.PI*(DC - e), h:HC},
-      dims:[`rectangle ${fmt(Math.PI*(DC - e))} × ${fmt(HC)} mm`],
-      notes:[`découper l'ouverture Ø ${fmt(DC - 2*e)} dans la tranche (en haut), rouler le col et le souder dessus`] });
+      dims:[D(`rectangle ${Lv(Math.PI*(DC - e))} × ${L(HC)}`, `rectangle ${Lv(Math.PI*(DC - e))} × ${L(HC)}`)],
+      notes:[D(`découper l'ouverture Ø ${L(DC - 2*e)} dans la tranche (en haut), rouler le col et le souder dessus`, `cut the opening Ø ${L(DC - 2*e)} in the band (at the top), roll the neck and weld it on`)] });
   }
 
   if(state.shape === 'profil'){
     const pts = d.pts;
     if(pts[0].r*k > 1) add({ name:'Fond', qty:1, geo:{t:'disc', d:2*pts[0].r*k},
-      dims:[`disque Ø ${fmt(2*pts[0].r*k)} mm`],
-      notes:[`la première section se pose sur le fond, au ras du bord`] });
+      dims:[D(`disque Ø ${L(2*pts[0].r*k)}`, `disc Ø ${L(2*pts[0].r*k)}`)],
+      notes:[D(`la première section se pose sur le fond, au ras du bord`, `the first section sits on the base, flush with the edge`)] });
     for(let i=0; i<pts.length-1; i++){
       const H = (pts[i+1].y - pts[i].y)*k;
       if(H < 1) continue;
       const p = coneWall(2*pts[i].r*k, 2*pts[i+1].r*k, H, e);
       p.name = `Section ${i+1}${i===0?' (bas)':i===pts.length-2?' (haut)':''}`;
-      p.notes = [...p.notes, `joints horizontaux entre sections : biseauter à 45° et souder scarifié + barbotine`];
+      p.notes = [...p.notes, D(`joints horizontaux entre sections : biseauter à 45° et souder scarifié + barbotine`, `horizontal joints between sections: bevel at 45° and weld scored + slip`)];
       add(p);
     }
     // gabarit de contrôle du profil (vue en coupe, à ne pas découper dans la terre)
@@ -1134,9 +1256,9 @@ function computePieces(){
     const dPath = pathFrom(prof, false) + ` L 0 ${(Y-pts.at(-1).y)*k} L 0 ${(Y-pts[0].y)*k} Z`;
     const maxR = Math.max(...prof.map(p=>p.x));
     add({ name:'Profil (contrôle)', qty:1, noClay:true,
-      geo:{t:'path', d:dPath, bx:0, by:0, bw:maxR, bh:(Y-pts[0].y)*k, label:`profil — h ${fmt((Y-pts[0].y)*k)} mm`},
-      dims:[`demi-profil complet : Ø max ${fmt(2*maxR)} mm, hauteur ${fmt((Y-pts[0].y)*k)} mm`],
-      notes:[`gabarit de contrôle : ne se découpe pas dans la terre, sert à vérifier la forme pendant le montage des sections`] });
+      geo:{t:'path', d:dPath, bx:0, by:0, bw:maxR, bh:(Y-pts[0].y)*k, label:`${D('profil','profile')} — h ${L((Y-pts[0].y)*k)}`},
+      dims:[D(`demi-profil complet : Ø max ${Lv(2*maxR)}, hauteur ${L((Y-pts[0].y)*k)}`, `full half-profile: max Ø ${Lv(2*maxR)}, height ${L((Y-pts[0].y)*k)}`)],
+      notes:[D(`gabarit de contrôle : ne se découpe pas dans la terre, sert à vérifier la forme pendant le montage des sections`, `check template: not cut from clay, used to check the shape while stacking the sections`)] });
   }
 
   if(state.shape === 'libre'){
@@ -1150,52 +1272,52 @@ function computePieces(){
     for(let i=0;i<sm.length;i++){ const q = sm[(i+1)%sm.length]; area += sm[i].x*q.y - q.x*sm[i].y; }
     area = Math.abs(area)/2;
     add({ name:'Fond', qty:1,
-      geo:{t:'path', d:pathFrom(sm.map(p=>({x:p.x-bx, y:p.y-by})), true), bx:0, by:0, bw, bh, area, label:`${fmt(bw)} × ${fmt(bh)} mm`},
-      dims:[`contour libre — encombrement ${fmt(bw)} × ${fmt(bh)} mm`, `périmètre ${fmt(per)} mm`],
-      notes:[`découper au couteau en suivant le gabarit posé sur la plaque`] });
+      geo:{t:'path', d:pathFrom(sm.map(p=>({x:p.x-bx, y:p.y-by})), true), bx:0, by:0, bw, bh, area, label:`${Lv(bw)} × ${L(bh)}`},
+      dims:[D(`contour libre — encombrement ${Lv(bw)} × ${L(bh)}`, `free outline — bounding box ${Lv(bw)} × ${L(bh)}`), D(`périmètre ${L(per)}`, `perimeter ${L(per)}`)],
+      notes:[D(`découper au couteau en suivant le gabarit posé sur la plaque`, `cut with a knife following the template laid on the slab`)] });
     add({ name:'Paroi', qty:1, geo:{t:'rect', w:per, h:H},
-      dims:[`bande ${fmt(per)} × ${fmt(H)} mm (périmètre du fond × hauteur)`],
-      notes:[`cintrer debout le long du bord du fond — joint vertical : biseauter les deux petits côtés à 45°`,
-             `placer le joint dans une zone peu courbée ; recouper l'excédent à la pose si besoin`] });
+      dims:[D(`bande ${Lv(per)} × ${L(H)} (périmètre du fond × hauteur)`, `band ${Lv(per)} × ${L(H)} (base perimeter × height)`)],
+      notes:[D(`cintrer debout le long du bord du fond — joint vertical : biseauter les deux petits côtés à 45°`, `bend upright along the base edge — vertical seam: bevel the two short edges at 45°`),
+             D(`placer le joint dans une zone peu courbée ; recouper l'excédent à la pose si besoin`, `place the seam in a low-curve area; trim any excess on assembly if needed`)] });
   }
 
   if(state.shape === 'bouteille'){
     const D1 = d.d1*k, H1 = d.h1*k, D2 = d.d2*k, H2 = d.h2*k, H3 = d.h3*k;
     const C1 = Math.PI * (D1 - e), C2 = Math.PI * Math.max(1, D2 - e);
     add({ name:'Corps', qty:1, geo:{t:'rect', w:C1, h:H1},
-      dims:[`rectangle ${fmt(C1)} × ${fmt(H1)} mm (circonférence médiane × hauteur du corps)`],
-      notes:[`joint vertical : biseauter les deux petits côtés à 45°`] });
+      dims:[D(`rectangle ${Lv(C1)} × ${L(H1)} (circonférence médiane × hauteur du corps)`, `rectangle ${Lv(C1)} × ${L(H1)} (mid-line circumference × body height)`)],
+      notes:[D(`joint vertical : biseauter les deux petits côtés à 45°`, `vertical seam: bevel the two short edges at 45°`)] });
     if(H2 > 0.5) add(Object.assign(coneWall(D1, D2, H2, e), { name:'Épaule (secteur)' }));
     if(H3 > 0.5 && D2 > e) add({ name:'Col', qty:1, geo:{t:'rect', w:C2, h:H3},
-      dims:[`rectangle ${fmt(C2)} × ${fmt(H3)} mm`],
-      notes:[`rouler autour d'un mandrin (Ø ${fmt(D2 - 2*e)} intérieur) — joint biseauté à 45°`] });
+      dims:[D(`rectangle ${Lv(C2)} × ${L(H3)}`, `rectangle ${Lv(C2)} × ${L(H3)}`)],
+      notes:[D(`rouler autour d'un mandrin (Ø ${L(D2 - 2*e)} intérieur) — joint biseauté à 45°`, `roll around a mandrel (Ø ${L(D2 - 2*e)} inside) — 45° bevelled seam`)] });
     add({ name:'Fond', qty:1, geo:{t:'disc', d:D1},
-      dims:[`disque Ø ${fmt(D1)} mm`],
-      notes:[`monter le corps sur le fond, poser l'épaule, finir par le col`] });
+      dims:[D(`disque Ø ${L(D1)}`, `disc Ø ${L(D1)}`)],
+      notes:[D(`monter le corps sur le fond, poser l'épaule, finir par le col`, `build the body onto the base, add the shoulder, finish with the neck`)] });
   }
 
   if(state.shape === 'boite'){
     const L = d.l*k, W = d.w*k, H = d.h*k;
-    add({ name:'Fond', qty:1, geo:{t:'rect', w:L, h:W}, dims:[`rectangle ${fmt(L)} × ${fmt(W)} mm`], notes:[] });
+    add({ name:'Fond', qty:1, geo:{t:'rect', w:L, h:W}, dims:[D(`rectangle ${Lv(L)} × ${L(W)}`, `rectangle ${Lv(L)} × ${L(W)}`)], notes:[] });
     add({ name:'Paroi longue', qty:2, geo:{t:'rect', w:L, h:H-e},
-      dims:[`rectangle ${fmt(L)} × ${fmt(H-e)} mm`],
-      notes:[`posée debout sur le fond (d’où la hauteur − 1 épaisseur)`,`biseauter les bords verticaux à 45° pour les angles`] });
+      dims:[D(`rectangle ${Lv(L)} × ${L(H-e)}`, `rectangle ${Lv(L)} × ${L(H-e)}`)],
+      notes:[D(`posée debout sur le fond (d’où la hauteur − 1 épaisseur)`, `stood on the base (hence height − 1 thickness)`), D(`biseauter les bords verticaux à 45° pour les angles`, `bevel the vertical edges at 45° for the corners`)] });
     add({ name:'Paroi courte', qty:2, geo:{t:'rect', w:Math.max(1,W-2*e), h:H-e},
-      dims:[`rectangle ${fmt(Math.max(1,W-2*e))} × ${fmt(H-e)} mm`],
-      notes:[`s’insère entre les deux parois longues (d’où la largeur − 2 épaisseurs)`,`biseauter les bords verticaux à 45°`] });
+      dims:[D(`rectangle ${Lv(Math.max(1,W-2*e))} × ${L(H-e)}`, `rectangle ${Lv(Math.max(1,W-2*e))} × ${L(H-e)}`)],
+      notes:[D(`s’insère entre les deux parois longues (d’où la largeur − 2 épaisseurs)`, `fits between the two long walls (hence width − 2 thicknesses)`), D(`biseauter les bords verticaux à 45°`, `bevel the vertical edges at 45°`)] });
   }
 
   if(state.shape === 'pyramide'){
     const L1 = d.l1*k, W1 = d.w1*k, L2 = d.l2*k, W2 = d.w2*k, H = d.h*k;
     const sL = Math.hypot(H, (W1 - W2)/2);   // hauteur des faces côté longueur
     const sW = Math.hypot(H, (L1 - L2)/2);   // hauteur des faces côté largeur
-    add({ name:'Fond', qty:1, geo:{t:'rect', w:L1, h:W1}, dims:[`rectangle ${fmt(L1)} × ${fmt(W1)} mm`], notes:[] });
+    add({ name:'Fond', qty:1, geo:{t:'rect', w:L1, h:W1}, dims:[D(`rectangle ${Lv(L1)} × ${L(W1)}`, `rectangle ${Lv(L1)} × ${L(W1)}`)], notes:[] });
     add({ name:'Face longueur', qty:2, geo:{t:'trap', b1:L1, b2:L2, h:sL},
-      dims:[`trapèze : base ${fmt(L1)}, sommet ${fmt(L2)}, hauteur inclinée ${fmt(sL)} mm`],
-      notes:[`la hauteur du trapèze est la hauteur *inclinée* de la face, déjà calculée`] });
+      dims:[D(`trapèze : base ${Lv(L1)}, sommet ${Lv(L2)}, hauteur inclinée ${L(sL)}`, `trapezoid: base ${Lv(L1)}, top ${Lv(L2)}, slant height ${L(sL)}`)],
+      notes:[D(`la hauteur du trapèze est la hauteur *inclinée* de la face, déjà calculée`, `the trapezoid height is the *slant* height of the face, already computed`)] });
     add({ name:'Face largeur', qty:2, geo:{t:'trap', b1:W1, b2:W2, h:sW},
-      dims:[`trapèze : base ${fmt(W1)}, sommet ${fmt(W2)}, hauteur inclinée ${fmt(sW)} mm`],
-      notes:[`biseauter les bords inclinés à ~45° et ajuster à la pose — les cotes sont hors épaisseur`] });
+      dims:[D(`trapèze : base ${Lv(W1)}, sommet ${Lv(W2)}, hauteur inclinée ${L(sW)}`, `trapezoid: base ${Lv(W1)}, top ${Lv(W2)}, slant height ${L(sW)}`)],
+      notes:[D(`biseauter les bords inclinés à ~45° et ajuster à la pose — les cotes sont hors épaisseur`, `bevel the slanted edges at ~45° and fit on assembly — sizes exclude thickness`)] });
   }
 
   return P;
@@ -1364,13 +1486,14 @@ function buildMode(){
   });
 }
 
+const GROUP_KEY = {'Formes de base':'g_base','Vaisselle & objets':'g_vaisselle','À dessiner':'g_dessiner','Creusage dans la masse':'g_kur'};
 function buildShapeSelector(){
   $('#spickBtn').innerHTML = SHAPES[state.shape].glyph +
-    `<span class="spname">${SHAPES[state.shape].name}</span><span class="caret">${shapeGridOpen?'▴':'▾'} changer</span>`;
+    `<span class="spname">${shapeName(state.shape)}</span><span class="caret">${shapeGridOpen?'▴':'▾'} ${t('change')}</span>`;
   $('#shapeSel').style.display = shapeGridOpen ? 'grid' : 'none';
   $('#shapeSel').innerHTML = (state.mode === 'kurinuki' ? KUR_GROUPS : SHAPE_GROUPS).map(g =>
-    `<div class="shgroup">${g.label}</div>` +
-    g.ids.map(id => `<div class="shape${id===state.shape?' on':''}" data-id="${id}">${SHAPES[id].glyph}${SHAPES[id].name}</div>`).join('')
+    `<div class="shgroup">${t(GROUP_KEY[g.label] || g.label)}</div>` +
+    g.ids.map(id => `<div class="shape${id===state.shape?' on':''}" data-id="${id}">${SHAPES[id].glyph}${shapeName(id)}</div>`).join('')
   ).join('');
   document.querySelectorAll('.shape').forEach(el => el.onclick = () => {
     state.shape = el.dataset.id; printExcl.clear(); shapeGridOpen = false;
@@ -1381,14 +1504,19 @@ function buildShapeSelector(){
 $('#spickBtn').onclick = () => { shapeGridOpen = !shapeGridOpen; buildShapeSelector(); };
 function buildDimFields(){
   const s = SHAPES[state.shape];
-  $('#dimFields').innerHTML = (s.editor ? editorHTML(s.editor) : '') + s.fields.map(f =>
-    `<div class="field"><label>${f.lab}</label><span><input type="number" inputmode="decimal" data-k="${f.k}" min="${f.min ?? 0}"${f.max ? ` max="${f.max}"` : ''} step="1" value="${state.dims[state.shape][f.k]}"><span class="unit">${f.min ? '' : 'mm'}</span></span></div>`).join('');
+  const stepU = state.unit === 'in' ? 0.1 : 0.1;
+  $('#dimFields').innerHTML = (s.editor ? editorHTML(s.editor) : '') + s.fields.map(f => {
+    const count = !!f.min;                       // « nombre de pans » = un compte, pas une longueur
+    const raw = state.dims[state.shape][f.k];
+    const val = count ? raw : roundU(raw);       // longueur → affichée dans l'unité courante
+    return `<div class="field"><label>${fieldLab(state.shape, f.k, f.lab)}</label><span><input type="number" inputmode="decimal" data-k="${f.k}" data-count="${count?1:0}" min="${count ? f.min : 0}"${count ? ` max="${f.max}"` : ''} step="${count ? 1 : stepU}" value="${val}"><span class="unit">${count ? '' : Lu()}</span></span></div>`;
+  }).join('');
   document.querySelectorAll('#dimFields input').forEach(inp => inp.oninput = () => {
     let v = parseFloat(inp.value);
     const f = s.fields.find(x => x.k === inp.dataset.k);
     if(!isNaN(v)){
-      if(f.min) v = Math.min(f.max, Math.max(f.min, Math.round(v)));
-      if(v >= 0) state.dims[state.shape][inp.dataset.k] = v;
+      if(inp.dataset.count === '1'){ v = Math.min(f.max, Math.max(f.min, Math.round(v))); if(v >= 0) state.dims[state.shape][f.k] = v; }
+      else { const mm = fromU(v); if(mm >= 0) state.dims[state.shape][f.k] = Math.round(mm*10)/10; }   // stocké en mm (0,1 mm près)
     }
     refresh();
   });
@@ -1594,9 +1722,26 @@ function redrawEditor(type){
 function syncTerrePreset(){
   $('#terrePreset').value = [8,12,14].includes(state.retrait) ? String(state.retrait) : 'perso';
 }
-const TERRE_NAMES = {8:'faïence', 12:'grès', 14:'porcelaine'};
+Object.assign(STR.fr, { ts_shrink:'retrait', ts_solid:'bloc plein', ts_slab:'plaque', ts_finished:'pièce finie', ts_wet:'pièce crue' });
+Object.assign(STR.en, { ts_shrink:'shrinkage', ts_solid:'solid block', ts_slab:'slab', ts_finished:'finished size', ts_wet:'wet size' });
+Object.assign(STR.fr, { no_piece:'aucune pièce sélectionnée — coche au moins un gabarit', print_this:'imprimer cette pièce' });
+Object.assign(STR.en, { no_piece:'no piece selected — tick at least one template', print_this:'print this piece' });
+const isEN = () => state.lang === 'en';
+const D = (fr, en) => isEN() ? en : fr;   // texte selon la langue (instructions de pièces)
+/* noms de pièces (EN) — statiques via table, dynamiques (Section N…) via remplacement */
+const PIECE_NAME = {
+  'Paroi':'Wall','Fond':'Base','Paroi (secteur)':'Wall (sector)','Paroi longue':'Long wall','Paroi courte':'Short wall',
+  'Face longueur':'Length face','Face largeur':'Width face','Pan':'Panel','Facette':'Facet','Profil (contrôle)':'Profile (check)',
+  'Corps':'Body','Épaule (secteur)':'Shoulder (sector)','Col':'Neck','Anse — bande':'Handle — strap','Anse — profil':'Handle — profile',
+  'Bec verseur':'Spout','Bord (marli)':'Rim (marli)','Bord long':'Long rim','Bord court':'Short rim','Face':'Face','Bande (tranche)':'Side band',
+  'Profil extérieur':'Outer profile','Dessus — contour & ouverture':'Top — outline & opening','Coupe de creusage (contrôle)':'Carving section (check)',
+};
+const pieceName = nm => !isEN() ? nm : (PIECE_NAME[nm] || nm.replace('(bas)','(bottom)').replace('(haut)','(top)'));
+const TERRE_NAMES = { fr:{8:'faïence',12:'grès',14:'porcelaine'}, en:{8:'earthenware',12:'stoneware',14:'porcelain'} };
 function terreSummaryTxt(){
-  return `${TERRE_NAMES[state.retrait] || 'retrait'} ${fmt(state.retrait)} % · ${isKur() ? 'bloc plein' : `plaque ${fmt(state.ep)} mm`} · pièce ${state.coteType==='fini'?'finie':'crue'}`;
+  const nm = (TERRE_NAMES[state.lang] || TERRE_NAMES.fr)[state.retrait] || t('ts_shrink');
+  const body = isKur() ? t('ts_solid') : `${t('ts_slab')} ${L(state.ep)}`;
+  return `${nm} ${fmt(state.retrait)} % · ${body} · ${t(state.coteType==='fini'?'ts_finished':'ts_wet')}`;
 }
 $('#terreToggle').onclick = () => {
   state.terreOpen = !state.terreOpen;
@@ -1604,10 +1749,11 @@ $('#terreToggle').onclick = () => {
   saveState();
 };
 $('#terreWrap').classList.toggle('closed', !state.terreOpen);
-$('#inEp').value = state.ep;
+function refreshEpUnit(){ $('#inEp').value = roundU(state.ep); $('#inEp').step = state.unit==='in'?0.05:0.1; $('#inEpUnit').textContent = Lu(); }
+refreshEpUnit();
 $('#inRetrait').value = state.retrait;
 syncTerrePreset();
-$('#inEp').oninput = e => { const v=parseFloat(e.target.value); if(v>0) state.ep=v; refresh(); };
+$('#inEp').oninput = e => { const mm=fromU(parseFloat(e.target.value)); if(mm>0) state.ep=Math.round(mm*10)/10; refresh(); };
 $('#inRetrait').oninput = e => {
   const v=parseFloat(e.target.value);
   if(!isNaN(v)&&v>=0&&v<40) state.retrait=v;
@@ -1950,20 +2096,25 @@ function refresh(){
   // résumé
   const s = SHAPES[state.shape];
   const cuts = pieces.reduce((n,p)=>n+p.qty,0);
+  const kfmt = k.toLocaleString(numLoc(),{maximumFractionDigits:3});
   const retraitTxt = state.coteType==='fini'
-    ? ` Cotes tracées <b>en cru</b> : agrandies de ${fmt(state.retrait)} % de retrait (facteur ×${k.toLocaleString('fr-FR',{maximumFractionDigits:3})}).`
-    : ` Cotes tracées telles que saisies (pièce crue).`;
+    ? (isEN() ? ` Drawn <b>at wet size</b>: scaled up by ${fmt(state.retrait)}% shrinkage (factor ×${kfmt}).`
+              : ` Cotes tracées <b>en cru</b> : agrandies de ${fmt(state.retrait)} % de retrait (facteur ×${kfmt}).`)
+    : (isEN() ? ` Drawn at the sizes entered (wet clay).`
+              : ` Cotes tracées telles que saisies (pièce crue).`);
   if(isKur()){
     const kd = kurData();
-    $('#summary').innerHTML =
-      `<b>Kurinuki — ${s.name}</b> — ${pieces.length} gabarits papier de traçage et de contrôle (rien à découper dans la terre).` +
-      retraitTxt +
-      ` Bloc à préparer : <b>${kd.blocTxt}</b> ≈ <b>${fmtPoids(kd.blocW)}</b> — pièce finie ≈ <b>${fmtPoids(kd.pieceW)}</b>, à évider ≈ <b>${fmtPoids(kd.blocW - kd.pieceW)}</b>.`;
+    $('#summary').innerHTML = (isEN()
+      ? `<b>Kurinuki — ${shapeName(state.shape)}</b> — ${pieces.length} paper templates for tracing & checking (nothing to cut from clay).` + retraitTxt +
+        ` Block to prepare: <b>${kd.blocTxt}</b> ≈ <b>${fmtPoids(kd.blocW)}</b> — finished piece ≈ <b>${fmtPoids(kd.pieceW)}</b>, to carve out ≈ <b>${fmtPoids(kd.blocW - kd.pieceW)}</b>.`
+      : `<b>Kurinuki — ${shapeName(state.shape)}</b> — ${pieces.length} gabarits papier de traçage et de contrôle (rien à découper dans la terre).` + retraitTxt +
+        ` Bloc à préparer : <b>${kd.blocTxt}</b> ≈ <b>${fmtPoids(kd.blocW)}</b> — pièce finie ≈ <b>${fmtPoids(kd.pieceW)}</b>, à évider ≈ <b>${fmtPoids(kd.blocW - kd.pieceW)}</b>.`);
   } else {
-    $('#summary').innerHTML =
-      `<b>${s.name}</b> — ${pieces.length} gabarit${pieces.length>1?'s':''}, <b>${cuts} pièce${cuts>1?'s':''} à découper</b> dans une plaque de <b>${fmt(state.ep)} mm</b>.` +
-      retraitTxt +
-      ` Terre nécessaire ≈ <b>${fmtPoids(clayWeight(pieces))}</b> (hors marge).`;
+    $('#summary').innerHTML = (isEN()
+      ? `<b>${shapeName(state.shape)}</b> — ${pieces.length} template${pieces.length>1?'s':''}, <b>${cuts} piece${cuts>1?'s':''} to cut</b> from a <b>${L(state.ep)}</b> slab.` + retraitTxt +
+        ` Clay needed ≈ <b>${fmtPoids(clayWeight(pieces))}</b> (excl. margin).`
+      : `<b>${shapeName(state.shape)}</b> — ${pieces.length} gabarit${pieces.length>1?'s':''}, <b>${cuts} pièce${cuts>1?'s':''} à découper</b> dans une plaque de <b>${L(state.ep)}</b>.` + retraitTxt +
+        ` Terre nécessaire ≈ <b>${fmtPoids(clayWeight(pieces))}</b> (hors marge).`);
   }
 
   // cartes
@@ -1974,9 +2125,9 @@ function refresh(){
     const dims = p.dims.map(x=>`<li>${x}</li>`).join('') + p.notes.map(x=>`<li class="warn">${x}</li>`).join('');
     return `<div class="piece-card${printExcl.has(p.tag)?' excluded':''}">
       <div class="piece-head">
-        <input type="checkbox" class="pchk" data-tag="${p.tag}" title="imprimer cette pièce"${printExcl.has(p.tag)?'':' checked'}>
+        <input type="checkbox" class="pchk" data-tag="${p.tag}" title="${t('print_this')}"${printExcl.has(p.tag)?'':' checked'}>
         <span class="tag">${p.tag}</span>
-        <span class="pname">${p.name}</span>
+        <span class="pname">${pieceName(p.name)}</span>
         <span class="qty">× ${p.qty}</span>
         <button class="small dl" data-tag="${p.tag}">SVG</button>
       </div>
@@ -1984,11 +2135,13 @@ function refresh(){
       <ul class="piece-dims">${dims}</ul>
     </div>`;
   }).join('');
-  $('#pageEstimate').textContent = `impression : ${totalPages} feuille${totalPages>1?'s':''} A4`;
+  $('#pageEstimate').textContent = isEN()
+    ? `printing: ${totalPages} A4 sheet${totalPages>1?'s':''}`
+    : `impression : ${totalPages} feuille${totalPages>1?'s':''} A4`;
   const nSel = included.reduce((n,p)=>n+p.qty,0);
-  $('#synthInfo').innerHTML = included.length
-    ? `<b>${nSel} gabarit${nSel>1?'s':''}</b> · <b>${totalPages} feuille${totalPages>1?'s':''} A4</b> · ${isKur()?'bloc':'terre'} ≈ <b>${fmtPoids(clayWeight(pieces))}</b>`
-    : `aucune pièce sélectionnée — coche au moins un gabarit`;
+  $('#synthInfo').innerHTML = !included.length ? t('no_piece') : (isEN()
+    ? `<b>${nSel} template${nSel>1?'s':''}</b> · <b>${totalPages} A4 sheet${totalPages>1?'s':''}</b> · ${isKur()?'block':'clay'} ≈ <b>${fmtPoids(clayWeight(pieces))}</b>`
+    : `<b>${nSel} gabarit${nSel>1?'s':''}</b> · <b>${totalPages} feuille${totalPages>1?'s':''} A4</b> · ${isKur()?'bloc':'terre'} ≈ <b>${fmtPoids(clayWeight(pieces))}</b>`);
   if($('#projName').value !== (state.projectName || '')) $('#projName').value = state.projectName || '';
 
   document.querySelectorAll('.piece-card .dl').forEach(btn => btn.onclick = () => downloadPiece(pieces.find(p=>p.tag===btn.dataset.tag)));
@@ -2009,7 +2162,9 @@ function renderPreview(){
   const m = Math.max(sil.w, sil.h) * 0.06;
   $('#prevSil').innerHTML = `<svg viewBox="${-m} ${-m} ${sil.w+2*m} ${sil.h+2*m}" preserveAspectRatio="xMidYMid meet">
     <g class="prevsil" stroke-width="${Math.max(sil.w,sil.h)/110}">${sil.svg}</g></svg>`;
-  $('#prevDims').textContent = `encombrement ${fmt(sil.w)} × ${fmt(sil.h)} mm — pièce ${state.coteType==='fini'?'finie':'crue'}`;
+  $('#prevDims').textContent = isEN()
+    ? `bounding box ${Lv(sil.w)} × ${L(sil.h)} — ${state.coteType==='fini'?'finished':'wet'} piece`
+    : `encombrement ${Lv(sil.w)} × ${L(sil.h)} — pièce ${state.coteType==='fini'?'finie':'crue'}`;
 }
 
 function svgDoc(vb, body){
@@ -2214,7 +2369,7 @@ function pdfHead(doc, info, pageW){
   // pied de page discret — boucle de croissance (chaque PDF partagé ramène du monde)
   const pageH = pageW > 210 ? 210 : 297;
   doc.setFont('helvetica','normal'); doc.setFontSize(6.5); doc.setTextColor(150,130,105);
-  doc.text('Fait avec gabarit-ceramique.fr', pageW / 2, pageH - 6, { align: 'center' });
+  doc.text('Fait avec gabarits-ceramique.com', pageW / 2, pageH - 6, { align: 'center' });
   return 24;
 }
 function pdfFiche(doc, pieces, pages, title){
@@ -2372,14 +2527,15 @@ function afterExport(){
 /* ---------------------------------------------------------------
    Tour d'onboarding — spotlight par bloc, mobile + desktop, replayable
    --------------------------------------------------------------- */
+const tt = o => (typeof o === 'string') ? o : (isEN() ? o.en : o.fr);
 const TOUR = [
-  { sel:null, title:'Bienvenue 👋', html:'Cet outil crée les <b>gabarits</b> (patrons à découper) pour réaliser une forme en céramique. Un petit tour de 30&nbsp;s&nbsp;?' },
-  { sel:'#panel-forme', title:'1 · Forme & cotes', html:'Choisis la <b>technique</b> (plaque ou kurinuki), la <b>forme</b>, puis saisis les <b>cotes en mm</b>. Le bloc « Ma terre » gère le retrait de cuisson et l’épaisseur de plaque.' },
-  { sel:'#panel-apercu', title:'2 · Aperçu', html:'Ta pièce s’affiche <b>en direct</b> quand tu changes les cotes. Tu peux même superposer une <b>photo</b> pour caler les proportions.' },
-  { sel:'#panel-pieces', title:'3 · Pièces à découper', html:'Voici tes <b>gabarits</b>, cotés à taille réelle. Décoche ceux que tu ne veux pas imprimer.' },
-  { sel:'.synth', title:'Enregistrer & exporter', html:'<b>Enregistre</b> ta pièce dans ton carnet, puis exporte en <b>SVG</b>, <b>PDF</b>, ou <b>imprime à 100&nbsp;%</b> — vérifie l’échelle avec la règle de 50&nbsp;mm sur la feuille.' },
-  { sel:'#carnetToggle', title:'Ton carnet', html:'Des <b>modèles de départ</b> (bol, mug, pichet…) et tes <b>pièces enregistrées</b> se retrouvent ici.' },
-  { sel:null, title:'À toi de jouer 🏺', html:'Tu peux <b>revoir ce tuto</b> quand tu veux via le bouton <b>? tuto</b> en haut. Bonne création&nbsp;!' },
+  { sel:null, title:{fr:'Bienvenue 👋',en:'Welcome 👋'}, html:{fr:'Cet outil crée les <b>gabarits</b> (patrons à découper) pour réaliser une forme en céramique. Un petit tour de 30&nbsp;s&nbsp;?', en:'This tool creates the <b>templates</b> (cutting patterns) to build a ceramic shape. A quick 30-sec tour?'} },
+  { sel:'#panel-forme', title:{fr:'1 · Forme & cotes',en:'1 · Shape & size'}, html:{fr:'Choisis la <b>technique</b> (plaque ou kurinuki), la <b>forme</b>, puis saisis les <b>cotes</b>. Le bloc « Ma terre » gère le retrait de cuisson et l’épaisseur. Bascule <b>cm / pouces</b> en haut à droite.', en:'Pick the <b>technique</b> (slab or kurinuki), the <b>shape</b>, then enter the <b>dimensions</b>. The “My clay” block handles firing shrinkage and thickness. Switch <b>cm / inches</b> at the top right.'} },
+  { sel:'#panel-apercu', title:{fr:'2 · Aperçu',en:'2 · Preview'}, html:{fr:'Ta pièce s’affiche <b>en direct</b> quand tu changes les cotes. Tu peux même superposer une <b>photo</b> pour caler les proportions.', en:'Your piece updates <b>live</b> as you change the dimensions. You can even overlay a <b>photo</b> to match proportions.'} },
+  { sel:'#panel-pieces', title:{fr:'3 · Pièces à découper',en:'3 · Pieces to cut'}, html:{fr:'Voici tes <b>gabarits</b>, cotés à taille réelle. Décoche ceux que tu ne veux pas imprimer.', en:'Here are your <b>templates</b>, dimensioned at real size. Untick any you don’t want to print.'} },
+  { sel:'.synth', title:{fr:'Enregistrer & exporter',en:'Save & export'}, html:{fr:'<b>Enregistre</b> ta pièce dans ton carnet, puis exporte en <b>SVG</b>, <b>PDF</b>, ou <b>imprime à 100&nbsp;%</b> — vérifie l’échelle avec la règle de 50&nbsp;mm sur la feuille.', en:'<b>Save</b> your piece to your notebook, then export as <b>SVG</b>, <b>PDF</b>, or <b>print at 100%</b> — check the scale with the 50&nbsp;mm ruler on the sheet.'} },
+  { sel:'#carnetToggle', title:{fr:'Ton carnet',en:'Your notebook'}, html:{fr:'Des <b>modèles de départ</b> (bol, mug, pichet…) et tes <b>pièces enregistrées</b> se retrouvent ici.', en:'<b>Starter presets</b> (bowl, mug, pitcher…) and your <b>saved pieces</b> live here.'} },
+  { sel:null, title:{fr:'À toi de jouer 🏺',en:'Over to you 🏺'}, html:{fr:'Tu peux <b>revoir ce tuto</b> quand tu veux via le bouton <b>? tuto</b> en haut. Bonne création&nbsp;!', en:'You can <b>replay this tour</b> anytime via the <b>? tour</b> button at the top. Happy making!'} },
 ];
 let tourStep = -1, tourEls = null;
 function startTour(){
@@ -2422,12 +2578,12 @@ function placeStep(step, target){
   const vw = window.innerWidth, vh = window.innerHeight;
   const last = tourStep === TOUR.length - 1;
   card.innerHTML =
-    `<button class="tour-x" id="tourX" title="quitter le tuto">×</button>
-     <h4>${step.title}</h4><div>${step.html}</div>
+    `<button class="tour-x" id="tourX" title="${D('quitter le tuto','close tour')}">×</button>
+     <h4>${tt(step.title)}</h4><div>${tt(step.html)}</div>
      <div class="tour-nav">
        <span class="tour-step">${tourStep+1} / ${TOUR.length}</span>
-       ${tourStep > 0 ? '<button class="small tour-prev" id="tourPrev">Précédent</button>' : ''}
-       <button class="small tour-next" id="tourNext">${last ? 'Terminer' : 'Suivant'}</button>
+       ${tourStep > 0 ? `<button class="small tour-prev" id="tourPrev">${D('Précédent','Back')}</button>` : ''}
+       <button class="small tour-next" id="tourNext">${last ? D('Terminer','Done') : D('Suivant','Next')}</button>
      </div>`;
   card.querySelector('#tourX').onclick = () => endTour();
   card.querySelector('#tourNext').onclick = () => last ? endTour() : showStep(tourStep + 1);
@@ -2579,7 +2735,7 @@ function loadProject(c){
   state.dims[c.shape] = Object.assign(defaultDims(c.shape), JSON.parse(JSON.stringify(c.dims)));
   state.ep = c.ep; state.retrait = c.retrait; state.coteType = c.coteType;
   state.projectName = c.name;
-  $('#inEp').value = c.ep; $('#inRetrait').value = c.retrait;
+  refreshEpUnit(); $('#inRetrait').value = c.retrait;
   syncTerrePreset();
   buildCoteType(); buildShapeSelector(); buildDimFields(); refresh();
 }
@@ -2651,12 +2807,29 @@ applyCarnetOpen();
 state.mode = SHAPES[state.shape]?.kurinuki ? 'kurinuki' : (state.mode === 'kurinuki' ? 'kurinuki' : 'plaque');
 if(state.mode === 'kurinuki' && !SHAPES[state.shape]?.kurinuki) state.shape = 'kur_cyl';
 
+/* ---- langue & unités : sélecteurs + re-rendu global ---- */
+function rerenderAll(){
+  applyI18n();
+  buildMode(); buildCarnet(); buildGallery(); buildShapeSelector(); buildDimFields(); buildCoteType();
+  refreshEpUnit(); syncTerrePreset();
+  refresh();
+}
+document.querySelectorAll('#langSeg [data-lang]').forEach(b => b.onclick = () => {
+  if(state.lang === b.dataset.lang) return;
+  state.lang = b.dataset.lang; saveState(); track('lang_changed', { lang: state.lang }); rerenderAll();
+});
+document.querySelectorAll('#unitSeg [data-unit]').forEach(b => b.onclick = () => {
+  if(state.unit === b.dataset.unit) return;
+  state.unit = b.dataset.unit; saveState(); track('unit_changed', { unit: state.unit }); rerenderAll();
+});
+
 buildMode();
 buildCarnet();
 buildGallery();
 buildShapeSelector();
 buildDimFields();
 buildCoteType();
+applyI18n();
 refresh();
 window.addEventListener('resize', renderOverlay);
 </script>
