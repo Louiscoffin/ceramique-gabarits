@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gabarits — patrons pour céramique à la plaque</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 
 <!-- ===================== Mesure d'audience =====================
      PostHog (EU) + Google Analytics 4. Colle tes identifiants ci-dessous.
@@ -266,6 +269,8 @@ select:focus{outline:none;border-color:var(--glaze)}
 .srow{display:flex;gap:8px}
 .srow + .srow{margin-top:8px}
 .srow-export{justify-content:flex-end}
+.srow-paper{align-items:center;justify-content:flex-end}
+.srow-paper .paperlab{font-size:11.5px;color:var(--ink2)}
 #projName{
   flex:1;min-width:0;font-family:'Fragment Mono',monospace;font-size:12px;color:var(--ink);
   padding:7px 9px;border:1.5px solid var(--line);border-radius:2px;background:#fbf6ea;
@@ -298,13 +303,58 @@ select:focus{outline:none;border-color:var(--glaze)}
   position:absolute;top:7px;right:10px;background:none;border:none;box-shadow:none;
   color:var(--ink2);font-size:17px;line-height:1;padding:0;cursor:pointer;
 }
+/* ---------- modale newsletter (pop-up frontale, fond flouté) ---------- */
+.newsmodal{
+  position:fixed;inset:0;z-index:600;display:flex;align-items:center;justify-content:center;
+  padding:20px;background:rgba(51,38,26,.34);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+  opacity:0;transition:opacity .28s ease;
+}
+.newsmodal.show{opacity:1}
+.newsmodal[hidden]{display:none}
+.newsmodal-card{
+  position:relative;width:min(92vw,400px);box-sizing:border-box;
+  background:var(--card);border:1.5px solid var(--ink);border-radius:6px;
+  box-shadow:7px 7px 0 rgba(51,38,26,.22);padding:26px 24px 20px;text-align:center;
+  transform:translateY(12px) scale(.98);transition:transform .28s cubic-bezier(.2,.9,.3,1.25);
+}
+.newsmodal.show .newsmodal-card{transform:none}
+.newsmodal-ico{font-size:34px;line-height:1;display:block;margin-bottom:6px}
+.newsmodal-title{font-family:'Young Serif',serif;font-size:21px;color:var(--ink);margin:0 0 8px}
+.newsmodal-txt{font-size:13px;line-height:1.5;color:var(--ink);margin:0 0 16px}
+.newsmodal-txt b{color:var(--terra-d)}
+.newsmodal .tipclose{
+  position:absolute;top:8px;right:12px;background:none;border:none;box-shadow:none;
+  color:var(--ink2);font-size:19px;line-height:1;padding:0;cursor:pointer;
+}
+.newsmodal .newsform{display:flex;gap:8px}
+.newsmodal .newsform input{
+  flex:1 1 auto;min-width:0;font-family:inherit;font-size:13px;
+  padding:10px 12px;border:1.5px solid var(--ink);border-radius:2px;
+  background:var(--paper);color:var(--ink);
+}
+.newsmodal .newsform input:focus{outline:none;border-color:var(--terra-d);box-shadow:0 0 0 2px rgba(184,80,42,.18)}
+.newsmodal button.tipbtn{
+  flex:0 0 auto;cursor:pointer;text-align:center;font-size:13px;font-weight:bold;
+  background:var(--terra);border:1.5px solid var(--terra-d);color:#fdf6ea;
+  padding:10px 16px;border-radius:2px;box-shadow:2px 2px 0 rgba(51,38,26,.22);
+}
+.newsmodal button.tipbtn:hover{transform:translate(-1px,-1px)}
+.newsmodal .newsconsent{display:block;font-size:10.5px;line-height:1.4;color:var(--ink2);margin-top:10px}
+.newsmodal .newsconsent a{color:var(--terra-d)}
+.newsmodal .newslater{
+  display:block;margin:12px auto 0;background:none;border:none;box-shadow:none;padding:4px;
+  color:var(--ink2);font-size:12px;text-decoration:underline;cursor:pointer;
+}
+.newsmodal .newsdone{display:none;font-size:15px;font-weight:bold;color:var(--terra-d);padding:6px 0}
+.newsmodal.done .newsform,.newsmodal.done .newsconsent,.newsmodal.done .newslater,.newsmodal.done .newsmodal-txt{display:none}
+.newsmodal.done .newsdone{display:block}
 .tipfoot{
   text-align:center;padding:26px 30px 38px;font-size:11.5px;color:var(--ink2);
   border-top:1.5px dashed var(--line);margin-top:10px;
 }
 .tipfoot a{color:var(--terra-d);font-weight:bold}
 .tipfoot-fb{margin-top:6px}
-@media print{ .tipbar,.tipfoot,.consent{display:none !important} }
+@media print{ .tipbar,.tipfoot,.consent,.newsmodal{display:none !important} }
 
 /* ---------- consentement cookies ---------- */
 .consent{
@@ -510,21 +560,20 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
   </div>
   <div class="actions">
     <div class="seg" id="langSeg" title="langue / language"><button data-lang="fr">FR</button><button data-lang="en">EN</button></div>
-    <div class="seg" id="unitSeg" title="unités / units"><button data-unit="cm">cm</button><button data-unit="in">in</button></div>
-    <button id="tourBtn" class="tour-btn" data-i18n="hdr_tuto" title="revoir le tuto">? tuto</button>
+    <button id="tourBtn" class="tour-btn" data-i18n="hdr_tuto" data-i18n-title="tuto_title" title="revoir le tuto">? tuto</button>
     <button id="carnetToggle" class="carnet-btn"><span class="caret">▾</span> <span data-i18n="hdr_carnet">Mon carnet de pièces</span></button>
   </div>
 </header>
 
 <section class="gallery" id="carnetWrap">
   <div id="carnetBody">
-    <div class="glabel">Galerie de départ — clique pour charger la forme et les cotes</div>
+    <div class="glabel" data-i18n="gal_start">Galerie de départ — clique pour charger la forme et les cotes</div>
     <div class="gcards" id="galleryCards"></div>
-    <div class="glabel" style="margin-top:14px">Mes pièces enregistrées
+    <div class="glabel" style="margin-top:14px"><span data-i18n="gal_saved">Mes pièces enregistrées</span>
       <span class="gbtns">
-        <button class="small" id="btnSaveProj">＋ enregistrer la pièce actuelle</button>
-        <button class="small" id="btnExportCarnet">exporter</button>
-        <button class="small" id="btnImportCarnet">importer</button>
+        <button class="small" id="btnSaveProj" data-i18n="gal_save_current">＋ enregistrer la pièce actuelle</button>
+        <button class="small" id="btnExportCarnet" data-i18n="gal_export">exporter</button>
+        <button class="small" id="btnImportCarnet" data-i18n="gal_import">importer</button>
         <input type="file" id="carnetFile" accept="application/json" style="display:none">
       </span>
     </div>
@@ -535,13 +584,13 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
 <main>
   <!-- ============ 1. FORME & COTES ============ -->
   <section class="panel" id="panel-forme">
-    <div class="ptitle"><span><span class="num">1.</span><span data-i18n="p1_title">Forme &amp; cotes</span></span></div>
+    <div class="ptitle"><span><span class="num">1.</span><span data-i18n="p1_title">Forme &amp; cotes</span></span><div class="seg" id="unitSeg" title="unités / units"><button data-unit="cm">cm</button><button data-unit="in">in</button></div></div>
     <div class="pbody">
       <div class="radio-row" id="modeRow" style="margin-bottom:12px">
         <div class="opt" data-v="plaque" data-i18n="mode_plaque">à la plaque</div>
         <div class="opt" data-v="kurinuki" data-i18n="mode_kur">kurinuki</div>
       </div>
-      <button class="spick" id="spickBtn" title="changer de forme"></button>
+      <button class="spick" id="spickBtn" data-i18n-title="spick_title" title="changer de forme"></button>
       <div class="shapes" id="shapeSel" style="display:none"></div>
       <div id="dimFields"></div>
       <div class="terre closed" id="terreWrap">
@@ -600,14 +649,14 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
           <div id="ovl"></div>
         </div>
         <div class="ovl-controls">
-          <div class="row"><label>opacité</label><input type="range" id="ovOp" min="10" max="100" value="75"></div>
+          <div class="row"><label data-i18n="ov_op">opacité</label><input type="range" id="ovOp" min="10" max="100" value="75"></div>
           <div class="row">
-            <button class="small" id="ovReset">recaler sur les cotes</button>
-            <button class="small" id="ovApply">appliquer aux cotes</button>
+            <button class="small" id="ovReset" data-i18n="ov_reset">recaler sur les cotes</button>
+            <button class="small" id="ovApply" data-i18n="ov_apply">appliquer aux cotes</button>
             <span id="ovInfo" style="font-size:10.5px;color:var(--ink2)"></span>
           </div>
         </div>
-        <div class="photo-note">Déplace la silhouette <b style="color:var(--terra)">terracotta</b>, redimensionne-la avec la poignée d’angle et <b>étire-la</b> avec les poignées de bord pour épouser la photo. « Appliquer aux cotes » reporte les proportions obtenues dans les cotes du panneau 1 (la hauteur saisie reste la référence).</div>
+        <div class="photo-note" data-i18n-html="photo_note">Déplace la silhouette <b style="color:var(--terra)">terracotta</b>, redimensionne-la avec la poignée d’angle et <b>étire-la</b> avec les poignées de bord pour épouser la photo. « Appliquer aux cotes » reporte les proportions obtenues dans les cotes du panneau 1 (la hauteur saisie reste la référence).</div>
       </div>
     </div>
   </section>
@@ -621,13 +670,17 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
       <div class="synth">
         <div id="synthInfo"></div>
         <div class="srow">
-          <input type="text" id="projName" placeholder="nom de la pièce (pour le carnet)…" maxlength="60">
-          <button class="small" id="btnSaveBar">enregistrer</button>
+          <input type="text" id="projName" data-i18n-ph="proj_ph" placeholder="nom de la pièce (pour le carnet)…" maxlength="60">
+          <button class="small" id="btnSaveBar" data-i18n="btn_save">enregistrer</button>
+        </div>
+        <div class="srow srow-paper">
+          <span class="paperlab" data-i18n="paper_lab">format d'impression</span>
+          <div class="seg" id="paperSeg" title="format de papier / paper size"><button data-paper="a4">A4</button><button data-paper="letter">Letter</button></div>
         </div>
         <div class="srow srow-export">
-          <button class="small" id="btnSvg" title="télécharger chaque gabarit en fichier SVG">SVG</button>
-          <button class="small" id="btnPdf" title="télécharger les gabarits en PDF">PDF</button>
-          <button class="primary" id="btnPrint">Imprimer les gabarits</button>
+          <button class="small" id="btnSvg" data-i18n-title="svg_title" title="télécharger chaque gabarit en fichier SVG">SVG</button>
+          <button class="small" id="btnPdf" data-i18n-title="pdf_title" title="télécharger les gabarits en PDF">PDF</button>
+          <button class="primary" id="btnPrint" data-i18n="btn_print">Imprimer les gabarits</button>
         </div>
       </div>
     </div>
@@ -635,31 +688,40 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
 </main>
 
 <footer class="tipfoot">
-  Outil gratuit, fait avec 🤎 — <a id="tipFootLink" href="#" target="_blank" rel="noopener noreferrer">offrez-moi un pain de terre ☕</a> <span style="opacity:.7">(montant libre)</span>
-  <div class="tipfoot-fb"><a id="newsFootLink" href="https://tally.so/r/7ROYeP" target="_blank" rel="noopener noreferrer">✉️ recevez les (rares) nouveautés</a> · <a id="fbFootLink" href="https://tally.so/r/ZjKADz" target="_blank" rel="noopener noreferrer">donnez votre avis ✍️</a> · <a id="cookiesLink" href="#">cookies</a></div>
+  <span data-i18n="foot_made">Outil gratuit, fait avec 🤎 —</span> <a id="tipFootLink" href="#" target="_blank" rel="noopener noreferrer" data-i18n="foot_tip_link">offrez-moi un pain de terre ☕</a> <span style="opacity:.7" data-i18n="foot_free">(montant libre)</span>
+  <div class="tipfoot-fb"><a id="newsFootLink" href="https://69a1d944.sibforms.com/serve/MUIFAN7K5Y-M3NorrPe98ttopcj5n92TsQ8VVyVuyk0CkfuYpkbILFKorLERZuTqJpQxE1Qqc97MFHFkAP-r3PHI5A9qwQmyxSK61drlEPJRUStlFBndKiPIEQCAE8CP6Vv7ZlaMvzh-tYdnXSds_l2VnyJybTE6DbttRlKXqLZNFn7d6Q-2EnG3LL0aHEjydNHIOsbXuycFiTz4zg==" target="_blank" rel="noopener noreferrer" data-i18n="foot_news">✉️ recevez les nouveautés</a> · <a id="fbFootLink" href="https://tally.so/r/ZjKADz" target="_blank" rel="noopener noreferrer" data-i18n="foot_fb">donnez votre avis ✍️</a> · <a id="cookiesLink" href="#" data-i18n="foot_cookies">cookies</a></div>
 </footer>
 
 <div class="consent" id="consent" hidden>
-  <b>Un petit cookie&nbsp;?</b>
-  Une mesure d'audience anonyme m'aide à voir quelles formes servent et à améliorer l'outil. Rien n'est chargé sans votre accord.
+  <span data-i18n-html="consent_txt"><b>Un petit cookie&nbsp;?</b>
+  Une mesure d'audience anonyme m'aide à voir quelles formes servent et à améliorer l'outil. Rien n'est chargé sans votre accord.</span>
   <div class="consent-btns">
-    <button class="consent-no" id="consentNo">Refuser</button>
-    <button class="consent-yes" id="consentYes">Accepter</button>
+    <button class="consent-no" id="consentNo" data-i18n="consent_no">Refuser</button>
+    <button class="consent-yes" id="consentYes" data-i18n="consent_yes">Accepter</button>
   </div>
 </div>
 
 <div class="tipbar" id="tipbar">
   <span class="tipico">🏺</span>
-  <span class="tiptxt">Cet outil vous a fait gagner du temps&nbsp;?<br><b>Offrez-moi un pain de terre</b> (ou un café) — <b>montant libre</b>.</span>
-  <a class="tipbtn" id="tipBtn" href="#" target="_blank" rel="noopener noreferrer">🏺 offrir un pain de terre</a>
-  <button class="tipclose" id="tipClose" title="fermer">×</button>
+  <span class="tiptxt" data-i18n-html="tip_txt">Cet outil vous a fait gagner du temps&nbsp;?<br><b>Offrez-moi un pain de terre</b> (ou un café) — <b>montant libre</b>.</span>
+  <a class="tipbtn" id="tipBtn" href="#" target="_blank" rel="noopener noreferrer" data-i18n="tip_btn">🏺 offrir un pain de terre</a>
+  <button class="tipclose" id="tipClose" title="fermer" data-i18n-title="close">×</button>
 </div>
 
-<div class="tipbar" id="news">
-  <span class="tipico">✉️</span>
-  <span class="tiptxt">Je communique <b>très peu</b> — seulement pour annoncer les nouveautés de l'outil (le tournage arrive 👀) et partager. Envie d'être prévenu·e&nbsp;?</span>
-  <a class="tipbtn" id="newsBtn" href="https://tally.so/r/7ROYeP" target="_blank" rel="noopener noreferrer">M'inscrire</a>
-  <button class="tipclose" id="newsClose" title="fermer">×</button>
+<div class="newsmodal" id="news" hidden>
+  <div class="newsmodal-card">
+    <button class="tipclose" id="newsClose" title="fermer" data-i18n-title="close">×</button>
+    <span class="newsmodal-ico">✉️</span>
+    <h3 class="newsmodal-title" data-i18n="news_title">Reste dans la boucle</h3>
+    <p class="newsmodal-txt" data-i18n-html="news_txt">Ajoute ton email pour être prévenu·e des nouveautés (nouvelles formes, le tournage 👀). <b>Je communique très peu</b> — et c'est un vrai moyen de <b>soutenir le projet</b> 🤎</p>
+    <form class="newsform" id="newsForm" novalidate>
+      <input type="email" id="newsEmail" required autocomplete="email" placeholder="ton@email.com" data-i18n-ph="news_ph">
+      <button class="tipbtn" type="submit" id="newsBtn" data-i18n="news_btn">M'inscrire</button>
+    </form>
+    <span class="newsconsent" data-i18n="news_consent">En t'inscrivant, tu acceptes de recevoir les nouveautés de l'outil. Désinscription en 1 clic.</span>
+    <button class="newslater" id="newsLater" data-i18n="news_later">Plus tard</button>
+    <div class="newsdone" data-i18n="news_success">Merci — c'est noté ✓ Regarde ta boîte mail 📩</div>
+  </div>
 </div>
 
 <div id="printArea"></div>
@@ -759,6 +821,13 @@ const SHAPES = {
     fields: [ {k:'df', lab:'Ø des faces', def:160}, {k:'p', lab:'Profondeur (tranche)', def:60},
               {k:'dc', lab:'Ø col (0 = sans col)', def:45}, {k:'hc', lab:'Hauteur col', def:35} ],
   },
+  tore: {
+    name: 'Vase anneau',
+    glyph: '<svg width="34" height="34" viewBox="0 0 34 34"><path d="M14 5 h6 v3" fill="none"/><circle cx="17" cy="18" r="11.5"/><circle cx="17" cy="18" r="4.5"/></svg>',
+    fields: [ {k:'de', lab:'Ø extérieur', def:200}, {k:'dtrou', lab:'Ø du trou', def:70},
+              {k:'p', lab:'Profondeur (tranche)', def:65},
+              {k:'do', lab:'Ø ouverture (0 = fermé)', def:42}, {k:'hc', lab:'Hauteur du col', def:28} ],
+  },
 };
 
 /* ---------------- galerie de départ ---------------- */
@@ -774,6 +843,7 @@ const PRESETS = [
   { name:'Boîte à thé',     shape:'boite',    dims:{l:92, w:92, h:125} },
   { name:'Vase hexagonal',  shape:'prisme',   dims:{n:6, d:98, h:185} },
   { name:'Vase coussin',    shape:'coussin',  dims:{df:170, p:55, dc:40, hc:35} },
+  { name:'Vase anneau',     shape:'tore',     dims:{de:200, dtrou:70, p:65, do:42, hc:28} },
   { name:'Vase courbe',     shape:'profil',   dims:{pts:[{r:30,y:0},{r:52,y:35},{r:56,y:75},{r:34,y:115},{r:21,y:140},{r:26,y:158}]} },
 ];
 
@@ -800,7 +870,7 @@ SHAPES.kur_rect = {
 
 const SHAPE_GROUPS = [
   { label:'Formes de base', ids:['cylindre','cone','boite','pyramide','ovale','prisme','facettes'] },
-  { label:'Vaisselle & objets', ids:['tasse','pichet','assiette','plat','bouteille','coussin'] },
+  { label:'Vaisselle & objets', ids:['tasse','pichet','assiette','plat','bouteille','coussin','tore'] },
   { label:'À dessiner', ids:['profil','libre'] },
 ];
 const KUR_GROUPS = [
@@ -814,7 +884,7 @@ const DEFAULT_STATE = {
   dims: Object.fromEntries(Object.entries(SHAPES).map(([id,s]) =>
     [id, Object.assign(Object.fromEntries(s.fields.map(f=>[f.k,f.def])), JSON.parse(JSON.stringify(s.init||{})))])),
   ep: 5, retrait: 12, coteType: 'fini',
-  unit: 'cm', lang: null,                 // lang null = auto-détection au 1er chargement
+  unit: 'cm', lang: null, paper: 'a4',    // lang null = auto-détection au 1er chargement
   ov: { x: 30, y: 20, scale: 55, op: 75 },
 };
 let state = loadState();
@@ -823,11 +893,16 @@ let photoURL = null;
 function loadState(){
   let s = null;
   try{ s = JSON.parse(localStorage.getItem('gabarits-state')); }catch(e){}
+  // fusion par forme : les champs ajoutés à une forme (nouvelle version) reprennent
+  // leur valeur par défaut au lieu de rester absents des dims sauvegardées
+  const mergeDims = saved => Object.fromEntries(Object.entries(DEFAULT_STATE.dims).map(([id, def]) =>
+    [id, Object.assign(JSON.parse(JSON.stringify(def)), (saved && saved[id]) || {})]));
   const st = (s && s.dims)
-    ? Object.assign({}, DEFAULT_STATE, s, { dims: Object.assign({}, DEFAULT_STATE.dims, s.dims), ov: Object.assign({}, DEFAULT_STATE.ov, s.ov) })
+    ? Object.assign({}, DEFAULT_STATE, s, { dims: mergeDims(s.dims), ov: Object.assign({}, DEFAULT_STATE.ov, s.ov) })
     : JSON.parse(JSON.stringify(DEFAULT_STATE));
   if(!st.lang) st.lang = detectLang();     // anglais si navigateur EN, français sinon
   if(!st.unit) st.unit = 'cm';
+  if(!st.paper) st.paper = 'a4';
   return st;
 }
 function saveState(){ localStorage.setItem('gabarits-state', JSON.stringify(state)); }
@@ -902,6 +977,7 @@ const I18N_SHAPES = {
   assiette:{name:'Plate',f:{d1:'Ø of base',d2:'Ø total',h:'Rim height'}},
   plat:{name:'Rimmed dish',f:{l:'Base length',w:'Base width',h:'Rim height',db:'Flare (overhang)'}},
   coussin:{name:'Pillow vase',f:{df:'Ø of faces',p:'Depth (side band)',dc:'Ø neck (0 = none)',hc:'Neck height'}},
+  tore:{name:'Ring vase',f:{de:'Outer Ø',dtrou:'Hole Ø',p:'Depth (side band)',do:'Opening Ø (0 = closed)',hc:'Neck height'}},
   kur_cyl:{name:'Cylindrical block',f:{paroi:'Target wall thickness',marge:'Carving margin (per face)'}},
   kur_rect:{name:'Rectangular block',f:{paroi:'Target wall thickness',marge:'Carving margin (per face)'}},
 };
@@ -909,6 +985,7 @@ const shapeName = id => (state.lang==='en' && I18N_SHAPES[id]) ? I18N_SHAPES[id]
 const fieldLab = (id, fk, frLab) => (state.lang==='en' && I18N_SHAPES[id]?.f?.[fk]) ? I18N_SHAPES[id].f[fk] : frLab;
 function applyI18n(){
   document.documentElement.lang = state.lang;
+  document.title = t('doc_title');
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
   document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
@@ -1117,14 +1194,14 @@ function computePieces(){
   }
 
   if(state.shape === 'cylindre'){
-    const D = d.d*k, H = d.h*k;
-    const C = Math.PI * (D - e);
+    const Dg = d.d*k, H = d.h*k;
+    const C = Math.PI * (Dg - e);
     add({ name:'Paroi', qty:1, geo:{t:'rect', w:C, h:H},
       dims:[D(`rectangle ${Lv(C)} × ${L(H)}`, `rectangle ${Lv(C)} × ${L(H)}`),
             D(`longueur = circonférence médiane π × (Ø − épaisseur)`, `length = mid-line circumference π × (Ø − thickness)`)],
       notes:[D(`enrouler autour du fond, joint vertical : biseauter les deux petits côtés à 45°`,
                `wrap around the base; vertical seam: bevel the two short edges at 45°`)] });
-    add(baseDisc(D));
+    add(baseDisc(Dg));
   }
 
   if(state.shape === 'cone'){
@@ -1150,14 +1227,14 @@ function computePieces(){
   }
 
   if(state.shape === 'prisme'){
-    const N = clampN(d.n), D = d.d*k, H = d.h*k;
-    const R = D/2, S = 2*R*Math.sin(Math.PI/N);
+    const N = clampN(d.n), Dg = d.d*k, H = d.h*k;
+    const R = Dg/2, S = 2*R*Math.sin(Math.PI/N);
     add({ name:'Pan', qty:N, geo:{t:'rect', w:S, h:H-e},
       dims:[D(`rectangle ${Lv(S)} × ${L(H-e)} — ${N} pans identiques`, `rectangle ${Lv(S)} × ${L(H-e)} — ${N} identical panels`)],
       notes:[D(`posé debout sur le fond (d'où la hauteur − 1 épaisseur)`, `stood on the base (hence height − 1 thickness)`),
              D(`biseauter les bords verticaux à ${fmt(180/N)}° pour fermer le polygone`, `bevel the vertical edges at ${fmt(180/N)}° to close the polygon`)] });
     add({ name:'Fond', qty:1, geo:{t:'poly', n:N, R},
-      dims:[D(`polygone régulier à ${N} côtés — Ø ${Lv(D)} sommet à sommet, côté ${L(S)}`, `regular ${N}-sided polygon — Ø ${Lv(D)} corner to corner, side ${L(S)}`)],
+      dims:[D(`polygone régulier à ${N} côtés — Ø ${Lv(Dg)} sommet à sommet, côté ${L(S)}`, `regular ${N}-sided polygon — Ø ${Lv(Dg)} corner to corner, side ${L(S)}`)],
       notes:[D(`les pans se posent sur le fond, au ras des bords`, `the panels sit on the base, flush with the edges`)] });
   }
 
@@ -1210,12 +1287,12 @@ function computePieces(){
   }
 
   if(state.shape === 'plat'){
-    const L = d.l*k, W = d.w*k, H = d.h*k, DB = d.db*k;
+    const Lg = d.l*k, W = d.w*k, H = d.h*k, DB = d.db*k;
     const s = Math.hypot(H, DB);   // hauteur inclinée du bord
-    add({ name:'Fond', qty:1, geo:{t:'rect', w:L, h:W},
-      dims:[D(`rectangle ${Lv(L)} × ${L(W)}`, `rectangle ${Lv(L)} × ${L(W)}`)], notes:[] });
-    add({ name:'Bord long', qty:2, geo:{t:'trap', b1:L, b2:L+2*DB, h:s},
-      dims:[D(`trapèze : base ${Lv(L)}, haut ${Lv(L+2*DB)}, hauteur inclinée ${L(s)}`, `trapezoid: base ${Lv(L)}, top ${Lv(L+2*DB)}, slant height ${L(s)}`)],
+    add({ name:'Fond', qty:1, geo:{t:'rect', w:Lg, h:W},
+      dims:[D(`rectangle ${Lv(Lg)} × ${L(W)}`, `rectangle ${Lv(Lg)} × ${L(W)}`)], notes:[] });
+    add({ name:'Bord long', qty:2, geo:{t:'trap', b1:Lg, b2:Lg+2*DB, h:s},
+      dims:[D(`trapèze : base ${Lv(Lg)}, haut ${Lv(Lg+2*DB)}, hauteur inclinée ${L(s)}`, `trapezoid: base ${Lv(Lg)}, top ${Lv(Lg+2*DB)}, slant height ${L(s)}`)],
       notes:[D(`la petite base se soude au fond, le bord s'évase vers l'extérieur`, `the short base welds to the base, the rim flares outward`)] });
     add({ name:'Bord court', qty:2, geo:{t:'trap', b1:W, b2:W+2*DB, h:s},
       dims:[D(`trapèze : base ${Lv(W)}, haut ${Lv(W+2*DB)}, hauteur inclinée ${L(s)}`, `trapezoid: base ${Lv(W)}, top ${Lv(W+2*DB)}, slant height ${L(s)}`)],
@@ -1235,6 +1312,39 @@ function computePieces(){
     if(DC > e && HC > 0.5) add({ name:'Col', qty:1, geo:{t:'rect', w:Math.PI*(DC - e), h:HC},
       dims:[D(`rectangle ${Lv(Math.PI*(DC - e))} × ${L(HC)}`, `rectangle ${Lv(Math.PI*(DC - e))} × ${L(HC)}`)],
       notes:[D(`découper l'ouverture Ø ${L(DC - 2*e)} dans la tranche (en haut), rouler le col et le souder dessus`, `cut the opening Ø ${L(DC - 2*e)} in the band (at the top), roll the neck and weld it on`)] });
+  }
+
+  if(state.shape === 'tore'){
+    const DE = d.de*k, DTR = d.dtrou*k, P = d.p*k, DO = d.do*k, HC = d.hc*k;
+    const Cout = Math.PI * (DE - e);                  // circonférence extérieure médiane
+    const Cin  = Math.PI * (DTR + e);                 // circonférence du trou (médiane)
+    const R = DE/2, rh = Math.max(1, DTR/2), c = DE/2;
+    const circ = (cx,cy,rad,sw) => `M ${cx-rad} ${cy} a ${rad} ${rad} 0 1 ${sw} ${2*rad} 0 a ${rad} ${rad} 0 1 ${sw} ${-2*rad} 0 Z`;
+    const annD = circ(c, c, R, 1) + ' ' + circ(c, c, rh, 0);   // sens opposés → trou évidé
+    add({ name:'Face', qty:2,
+      geo:{t:'path', d:annD, bx:0, by:0, bw:DE, bh:DE, area:Math.PI*(R*R - rh*rh), label:`Ø ${Lv(DE)} / ${L(DTR)}`},
+      dims:[D(`anneau plein Ø ${Lv(DE)} avec trou Ø ${L(DTR)} — 2 faces identiques`,
+              `full ring Ø ${Lv(DE)} with hole Ø ${L(DTR)} — 2 identical faces`)],
+      notes:[D(`laisser raffermir à plat avant montage`, `let firm up flat before assembly`)] });
+    add({ name:'Bande extérieure', qty:1, geo:{t:'rect', w:Cout, h:P},
+      dims:[D(`bande ${Lv(Cout)} × ${L(P)} (circonférence extérieure × profondeur)`,
+              `strip ${Lv(Cout)} × ${L(P)} (outer circumference × depth)`)],
+      notes:[D(`cintrer autour du bord extérieur des deux faces et souder`,
+               `bend around the outer edge of both faces and weld`),
+             D(`prévoir l'ouverture du col en haut avant de refermer`,
+               `leave the neck opening at the top before closing`)] });
+    add({ name:'Bande intérieure', qty:1, geo:{t:'rect', w:Cin, h:P},
+      dims:[D(`bande ${Lv(Cin)} × ${L(P)} (circonférence du trou × profondeur)`,
+              `strip ${Lv(Cin)} × ${L(P)} (hole circumference × depth)`)],
+      notes:[D(`cintrer à l'intérieur du trou, entre les deux faces, et souder — c'est ce qui rend l'anneau creux`,
+               `bend inside the hole, between the two faces, and weld — this is what makes the ring hollow`),
+             D(`percer un petit trou d'évent avant de refermer (air emprisonné = casse à la cuisson)`,
+               `pierce a small vent hole before closing (trapped air = cracks when fired)`)] });
+    if(DO > e && HC > 0.5) add({ name:'Col', qty:1, geo:{t:'rect', w:Math.PI*(DO - e), h:HC},
+      dims:[D(`rectangle ${Lv(Math.PI*(DO - e))} × ${L(HC)} — cylindre du col`,
+              `rectangle ${Lv(Math.PI*(DO - e))} × ${L(HC)} — neck cylinder`)],
+      notes:[D(`découper l'ouverture Ø ${L(DO)} au sommet de la bande extérieure, rouler le col en cylindre et le souder dessus`,
+               `cut the opening Ø ${L(DO)} at the top of the outer strip, roll the neck into a cylinder and weld it on`)] });
   }
 
   if(state.shape === 'profil'){
@@ -1297,10 +1407,10 @@ function computePieces(){
   }
 
   if(state.shape === 'boite'){
-    const L = d.l*k, W = d.w*k, H = d.h*k;
-    add({ name:'Fond', qty:1, geo:{t:'rect', w:L, h:W}, dims:[D(`rectangle ${Lv(L)} × ${L(W)}`, `rectangle ${Lv(L)} × ${L(W)}`)], notes:[] });
-    add({ name:'Paroi longue', qty:2, geo:{t:'rect', w:L, h:H-e},
-      dims:[D(`rectangle ${Lv(L)} × ${L(H-e)}`, `rectangle ${Lv(L)} × ${L(H-e)}`)],
+    const Lg = d.l*k, W = d.w*k, H = d.h*k;
+    add({ name:'Fond', qty:1, geo:{t:'rect', w:Lg, h:W}, dims:[D(`rectangle ${Lv(Lg)} × ${L(W)}`, `rectangle ${Lv(Lg)} × ${L(W)}`)], notes:[] });
+    add({ name:'Paroi longue', qty:2, geo:{t:'rect', w:Lg, h:H-e},
+      dims:[D(`rectangle ${Lv(Lg)} × ${L(H-e)}`, `rectangle ${Lv(Lg)} × ${L(H-e)}`)],
       notes:[D(`posée debout sur le fond (d’où la hauteur − 1 épaisseur)`, `stood on the base (hence height − 1 thickness)`), D(`biseauter les bords verticaux à 45° pour les angles`, `bevel the vertical edges at 45° for the corners`)] });
     add({ name:'Paroi courte', qty:2, geo:{t:'rect', w:Math.max(1,W-2*e), h:H-e},
       dims:[D(`rectangle ${Lv(Math.max(1,W-2*e))} × ${L(H-e)}`, `rectangle ${Lv(Math.max(1,W-2*e))} × ${L(H-e)}`)],
@@ -1343,17 +1453,17 @@ function renderGeo(geo, mode){
     const {w,h} = geo;
     let body = `<rect class="piece-line" x="0" y="0" width="${w}" height="${h}"/>`;
     if(print){
-      body += `<text class="sector-info" x="${w/2}" y="${h/2}" text-anchor="middle">${fmt(w)} × ${fmt(h)} mm</text>`;
+      body += `<text class="sector-info" x="${w/2}" y="${h/2}" text-anchor="middle">${Lv(w)} × ${L(h)}</text>`;
       return { vb:{x:-3,y:-3,w:w+6,h:h+6}, body };
     }
-    body += hcote(0,w,h+8,`${fmt(w)} mm`) + vcote(0,h,-8,`${fmt(h)} mm`);
+    body += hcote(0,w,h+8,`${L(w)}`) + vcote(0,h,-8,`${L(h)}`);
     return { vb:{x:-18,y:-4,w:w+26,h:h+18}, body };
   }
   if(geo.t === 'disc'){
     const r = geo.d/2;
     const body = `<circle class="piece-line" cx="${r}" cy="${r}" r="${r}"/>`+
       `<line class="axe" x1="0" y1="${r}" x2="${geo.d}" y2="${r}"/>`+
-      `<g class="cote"><text x="${r}" y="${r-2}" text-anchor="middle">Ø ${fmt(geo.d)} mm</text></g>`+
+      `<g class="cote"><text x="${r}" y="${r-2}" text-anchor="middle">Ø ${L(geo.d)}</text></g>`+
       `<g class="center-mark"><line x1="${r-3}" y1="${r}" x2="${r+3}" y2="${r}"/><line x1="${r}" y1="${r-3}" x2="${r}" y2="${r+3}"/></g>`;
     return { vb:{x:-4,y:-4,w:geo.d+8,h:geo.d+8}, body };
   }
@@ -1364,10 +1474,10 @@ function renderGeo(geo, mode){
       `<line class="axe" x1="${rx}" y1="0" x2="${rx}" y2="${B}"/>`+
       `<g class="center-mark"><line x1="${rx-3}" y1="${ry}" x2="${rx+3}" y2="${ry}"/><line x1="${rx}" y1="${ry-3}" x2="${rx}" y2="${ry+3}"/></g>`;
     if(print){
-      body += `<text class="sector-info" x="${rx}" y="${ry-3}" text-anchor="middle">${fmt(A)} × ${fmt(B)} mm</text>`;
+      body += `<text class="sector-info" x="${rx}" y="${ry-3}" text-anchor="middle">${Lv(A)} × ${L(B)}</text>`;
       return { vb:{x:-3,y:-3,w:A+6,h:B+6}, body };
     }
-    body += hcote(0,A,B+8,`${fmt(A)} mm`) + vcote(0,B,-8,`${fmt(B)} mm`);
+    body += hcote(0,A,B+8,`${L(A)}`) + vcote(0,B,-8,`${L(B)}`);
     return { vb:{x:-18,y:-4,w:A+26,h:B+18}, body };
   }
   if(geo.t === 'poly'){
@@ -1383,9 +1493,9 @@ function renderGeo(geo, mode){
     const yb = R*Math.cos(Math.PI/n);                     // y du côté du bas
     let body = `<path class="piece-line" d="M ${pts.map(p=>p.join(' ')).join(' L ')} Z"/>`+
       `<g class="center-mark"><line x1="-3" y1="0" x2="3" y2="0"/><line x1="0" y1="-3" x2="0" y2="3"/></g>`+
-      `<text class="sector-info" x="0" y="-6" text-anchor="middle">Ø ${fmt(2*R)} mm</text>`;
+      `<text class="sector-info" x="0" y="-6" text-anchor="middle">Ø ${L(2*R)}</text>`;
     if(print) return { vb:{x:minX-3,y:minY-3,w:maxX-minX+6,h:maxY-minY+6}, body };
-    body += hcote(-S/2, S/2, yb+8, `côté ${fmt(S)} mm`);
+    body += hcote(-S/2, S/2, yb+8, `${D('côté','side')} ${L(S)}`);
     return { vb:{x:minX-6,y:minY-6,w:maxX-minX+12,h:yb-minY+24}, body };
   }
   if(geo.t === 'path'){
@@ -1395,7 +1505,7 @@ function renderGeo(geo, mode){
       body += `<text class="sector-info" x="${bx+bw/2}" y="${by+bh/2}" text-anchor="middle">${label}</text>`;
       return { vb:{x:bx-3, y:by-3, w:bw+6, h:bh+6}, body };
     }
-    body += hcote(bx, bx+bw, by+bh+8, `${fmt(bw)} mm`) + vcote(by, by+bh, bx-8, `${fmt(bh)} mm`);
+    body += hcote(bx, bx+bw, by+bh+8, `${L(bw)}`) + vcote(by, by+bh, bx-8, `${L(bh)}`);
     return { vb:{x:bx-18, y:by-4, w:bw+26, h:bh+18}, body };
   }
   if(geo.t === 'anse'){
@@ -1405,10 +1515,10 @@ function renderGeo(geo, mode){
     let body = `<path class="piece-line" d="M 0 ${-ao} A ${bo} ${ao} 0 0 1 0 ${ao} L 0 ${ai} A ${bi} ${ai} 0 0 0 0 ${-ai} Z"/>`+
       `<line class="axe" x1="0" y1="${-ao}" x2="0" y2="${ao}"/>`;
     if(print){
-      body += `<text class="sector-info" x="${bo+3}" y="0">h ${fmt(2*a)} · saillie ${fmt(b)} mm</text>`;
+      body += `<text class="sector-info" x="${bo+3}" y="0">h ${Lv(2*a)} · ${D('saillie','proj.')} ${L(b)}</text>`;
       return { vb:{x:-3, y:-ao-3, w:bo+55, h:2*ao+6}, body };
     }
-    body += vcote(-a, a, -8, `${fmt(2*a)} mm`) + hcote(0, b, ao+8, `${fmt(b)} mm`);
+    body += vcote(-a, a, -8, `${L(2*a)}`) + hcote(0, b, ao+8, `${L(b)}`);
     return { vb:{x:-18, y:-ao-4, w:bo+26, h:2*ao+20}, body };
   }
   if(geo.t === 'trap'){
@@ -1417,12 +1527,12 @@ function renderGeo(geo, mode){
     const bl=[(bm-b1)/2, h], br=[(bm+b1)/2, h], tl=[(bm-b2)/2, 0], tr=[(bm+b2)/2, 0];
     let body = `<path class="piece-line" d="M ${tl} L ${tr} L ${br} L ${bl} Z"/>`;
     if(print){
-      body += `<text class="sector-info" x="${bm/2}" y="${h/2}" text-anchor="middle">base ${fmt(b1)} · haut ${fmt(b2)} · h ${fmt(h)} mm</text>`;
+      body += `<text class="sector-info" x="${bm/2}" y="${h/2}" text-anchor="middle">${D('base','base')} ${Lv(b1)} · ${D('haut','top')} ${Lv(b2)} · h ${L(h)}</text>`;
       return { vb:{x:-3,y:-3,w:bm+6,h:h+6}, body };
     }
-    body += hcote(bl[0],br[0],h+8,`${fmt(b1)} mm`) +
-      vcote(0,h,Math.min(tl[0],bl[0])-8,`${fmt(h)} mm`);
-    if(b2 > 1) body += hcote(tl[0],tr[0],-6,`${fmt(b2)} mm`);
+    body += hcote(bl[0],br[0],h+8,`${L(b1)}`) +
+      vcote(0,h,Math.min(tl[0],bl[0])-8,`${L(h)}`);
+    if(b2 > 1) body += hcote(tl[0],tr[0],-6,`${L(b2)}`);
     return { vb:{x:-18, y:-12, w:bm+26, h:h+32}, body };
   }
   if(geo.t === 'sector'){
@@ -1447,7 +1557,7 @@ function renderGeo(geo, mode){
     }
     // bloc d'infos au centre de la bande
     const midR = Rin > 0.5 ? (Rin+Rout)/2 : Rout*0.62;
-    const info = [`R ext = ${fmt(Rout)}`, Rin>0.5?`R int = ${fmt(Rin)}`:null, `angle = ${fmt(theta*180/Math.PI)}°`].filter(Boolean);
+    const info = [`${D('R ext','R out')} = ${L(Rout)}`, Rin>0.5?`${D('R int','R in')} = ${L(Rin)}`:null, `angle = ${fmt(theta*180/Math.PI)}°`].filter(Boolean);
     body += info.map((t,i)=>`<text class="sector-info" x="0" y="${midR - (info.length-1)*3 + i*6}" text-anchor="middle">${t}</text>`).join('');
     const minX=Math.min(...xs), maxX=Math.max(...xs), minY=Math.min(...ys), maxY=Math.max(...ys);
     return { vb:{x:minX-6, y:minY-6, w:maxX-minX+12, h:maxY-minY+12}, body };
@@ -1542,16 +1652,19 @@ function editorHTML(type){
   return `<div class="editor">
     <svg id="edSvg" viewBox="${ED[type].vb}"></svg>
     <div class="edbtns">
-      <button type="button" class="small" id="edAdd">+ point</button>
-      <button type="button" class="small" id="edDel" disabled>− supprimer le point</button>
-      <button type="button" class="small" id="edReset">réinitialiser</button>
+      <button type="button" class="small" id="edAdd">${D('+ point','+ point')}</button>
+      <button type="button" class="small" id="edDel" disabled>${D('− supprimer le point','− delete point')}</button>
+      <button type="button" class="small" id="edReset">${D('réinitialiser','reset')}</button>
     </div>
     <div class="edreadout" id="edReadout"></div>
     <div class="hint">${type==='profil'
       ? (isKur()
-        ? `dessine le <b>demi-profil extérieur</b> de la pièce (l'axe est à gauche) : glisse les points, tape sur la courbe pour en ajouter. Le bloc s'ajuste autour avec la marge de taille.`
-        : `dessine le <b>demi-profil</b> (l'axe est à gauche) : glisse les points, tape sur la courbe pour en ajouter. Chaque segment devient une section de cône à empiler.`)
-      : `dessine le contour du fond : glisse les points, tape sur la courbe pour en ajouter. La courbe est lissée automatiquement.`}<br>Pour <b>supprimer</b> un point : tape-le puis « − supprimer le point ».</div>
+        ? D(`dessine le <b>demi-profil extérieur</b> de la pièce (l'axe est à gauche) : glisse les points, tape sur la courbe pour en ajouter. Le bloc s'ajuste autour avec la marge de taille.`,
+            `draw the piece's <b>outer half-profile</b> (the axis is on the left): drag the points, tap the curve to add one. The block adjusts around it with the size margin.`)
+        : D(`dessine le <b>demi-profil</b> (l'axe est à gauche) : glisse les points, tape sur la courbe pour en ajouter. Chaque segment devient une section de cône à empiler.`,
+            `draw the <b>half-profile</b> (the axis is on the left): drag the points, tap the curve to add one. Each segment becomes a cone section to stack.`))
+      : D(`dessine le contour du fond : glisse les points, tape sur la courbe pour en ajouter. La courbe est lissée automatiquement.`,
+          `draw the base outline: drag the points, tap the curve to add one. The curve is smoothed automatically.`)}<br>${D('Pour <b>supprimer</b> un point : tape-le puis « − supprimer le point ».','To <b>delete</b> a point: tap it then “− delete point”.')}</div>
   </div>`;
 }
 
@@ -1704,7 +1817,7 @@ function redrawEditor(type){
     pts.forEach((p,i)=> g += edPoint(p.r, Y(p.y), i));
     const maxR = Math.max(...pts.map(p=>p.r));
     $('#edReadout') && ($('#edReadout').innerHTML =
-      `Ø base ${fmt(2*pts[0].r)} · Ø max ${fmt(2*maxR)} · Ø haut ${fmt(2*pts.at(-1).r)} · hauteur ${fmt(pts.at(-1).y-pts[0].y)} mm (fini) — ${pts.length-1} section${pts.length>2?'s':''}`);
+      `${D('Ø base','base Ø')} ${Lv(2*pts[0].r)} · ${D('Ø max','max Ø')} ${Lv(2*maxR)} · ${D('Ø haut','top Ø')} ${Lv(2*pts.at(-1).r)} · ${D('hauteur','height')} ${L(pts.at(-1).y-pts[0].y)} ${D('(fini)','(finished)')} — ${pts.length-1} ${D('section','section')}${pts.length>2?'s':''}`);
   } else {
     for(let x=0; x<=200; x+=20) g += `<line class="edgrid" x1="${x}" y1="0" x2="${x}" y2="200"/>`;
     for(let y=0; y<=200; y+=20) g += `<line class="edgrid" x1="0" y1="${y}" x2="200" y2="${y}"/>`;
@@ -1715,7 +1828,7 @@ function redrawEditor(type){
     pts.forEach((p,i)=> g += edPoint(p.x, p.y, i));
     const xs = sm.map(p=>p.x), ys = sm.map(p=>p.y);
     $('#edReadout') && ($('#edReadout').innerHTML =
-      `encombrement ${fmt(Math.max(...xs)-Math.min(...xs))} × ${fmt(Math.max(...ys)-Math.min(...ys))} mm · périmètre ${fmt(perim(sm,true))} mm (fini)`);
+      `${D('encombrement','bounding box')} ${Lv(Math.max(...xs)-Math.min(...xs))} × ${L(Math.max(...ys)-Math.min(...ys))} · ${D('périmètre','perimeter')} ${L(perim(sm,true))} ${D('(fini)','(finished)')}`);
   }
   svg.innerHTML = g;
 }
@@ -1726,6 +1839,56 @@ Object.assign(STR.fr, { ts_shrink:'retrait', ts_solid:'bloc plein', ts_slab:'pla
 Object.assign(STR.en, { ts_shrink:'shrinkage', ts_solid:'solid block', ts_slab:'slab', ts_finished:'finished size', ts_wet:'wet size' });
 Object.assign(STR.fr, { no_piece:'aucune pièce sélectionnée — coche au moins un gabarit', print_this:'imprimer cette pièce' });
 Object.assign(STR.en, { no_piece:'no piece selected — tick at least one template', print_this:'print this piece' });
+Object.assign(STR.fr, {
+  gal_start:'Galerie de départ — clique pour charger la forme et les cotes', gal_saved:'Mes pièces enregistrées',
+  gal_save_current:'＋ enregistrer la pièce actuelle', gal_export:'exporter', gal_import:'importer',
+  proj_ph:'nom de la pièce (pour le carnet)…', btn_save:'enregistrer', btn_print:'Imprimer les gabarits',
+  svg_title:'télécharger chaque gabarit en fichier SVG', pdf_title:'télécharger les gabarits en PDF',
+  carnet_empty:'aucune pièce enregistrée — règle une forme puis « enregistrer la pièce actuelle »',
+});
+Object.assign(STR.en, {
+  gal_start:'Starter gallery — click to load the shape & sizes', gal_saved:'My saved pieces',
+  gal_save_current:'＋ save current piece', gal_export:'export', gal_import:'import',
+  proj_ph:'piece name (for your notebook)…', btn_save:'save', btn_print:'Print templates',
+  svg_title:'download each template as an SVG file', pdf_title:'download the templates as a PDF',
+  carnet_empty:'no saved pieces — set up a shape then “save current piece”',
+});
+Object.assign(STR.fr, {
+  ov_op:'opacité', ov_reset:'recaler sur les cotes', ov_apply:'appliquer aux cotes',
+  photo_note:'Déplace la silhouette <b style="color:var(--terra)">terracotta</b>, redimensionne-la avec la poignée d’angle et <b>étire-la</b> avec les poignées de bord pour épouser la photo. « Appliquer aux cotes » reporte les proportions obtenues dans les cotes du panneau 1 (la hauteur saisie reste la référence).',
+  foot_made:'Outil gratuit, fait avec 🤎 —', foot_tip_link:'offrez-moi un pain de terre ☕', foot_free:'(montant libre)',
+  foot_news:'✉️ recevez les nouveautés', foot_fb:'donnez votre avis ✍️', foot_cookies:'cookies',
+  consent_txt:'<b>Un petit cookie&nbsp;?</b> Une mesure d\'audience anonyme m\'aide à voir quelles formes servent et à améliorer l\'outil. Rien n\'est chargé sans votre accord.',
+  consent_no:'Refuser', consent_yes:'Accepter', close:'fermer',
+  tip_txt:'Cet outil vous a fait gagner du temps&nbsp;?<br><b>Offrez-moi un pain de terre</b> (ou un café) — <b>montant libre</b>.',
+  tip_btn:'🏺 offrir un pain de terre',
+  news_title:'Reste dans la boucle',
+  news_txt:'Ajoute ton email pour être prévenu·e des nouveautés (nouvelles formes, le tournage 👀). <b>Je communique très peu</b> — et c\'est un vrai moyen de <b>soutenir le projet</b> 🤎',
+  news_later:'Plus tard',
+  news_btn:'M\'inscrire', doc_title:'Gabarits — patrons pour céramique à la plaque',
+  tuto_title:'revoir le tuto', spick_title:'changer de forme',
+  news_ph:'ton@email.com', news_consent:'En t\'inscrivant, tu acceptes de recevoir les nouveautés de l\'outil. Désinscription en 1 clic.',
+  news_success:'Merci — c\'est noté ✓ Regarde ta boîte mail 📩',
+  paper_lab:'format d\'impression',
+});
+Object.assign(STR.en, {
+  ov_op:'opacity', ov_reset:'reset to sizes', ov_apply:'apply to sizes',
+  photo_note:'Move the <b style="color:var(--terra)">terracotta</b> silhouette, resize it with the corner handle and <b>stretch</b> it with the edge handles to match your photo. “Apply to sizes” carries the resulting proportions into panel 1 (the height you typed stays the reference).',
+  foot_made:'Free tool, made with 🤎 —', foot_tip_link:'buy me a block of clay ☕', foot_free:'(any amount)',
+  foot_news:'✉️ get the updates', foot_fb:'give feedback ✍️', foot_cookies:'cookies',
+  consent_txt:'<b>A little cookie?</b> Anonymous analytics help me see which shapes get used and improve the tool. Nothing is loaded without your consent.',
+  consent_no:'Decline', consent_yes:'Accept', close:'close',
+  tip_txt:'Did this tool save you time?<br><b>Buy me a block of clay</b> (or a coffee) — <b>any amount</b>.',
+  tip_btn:'🏺 buy a block of clay',
+  news_title:'Stay in the loop',
+  news_txt:'Add your email to hear about what\'s new (new shapes, wheel-throwing 👀). <b>I email very rarely</b> — and it\'s a real way to <b>support the project</b> 🤎',
+  news_later:'Later',
+  news_btn:'Sign up', doc_title:'Ceramic templates — cutting patterns for slab work',
+  tuto_title:'replay the tutorial', spick_title:'change shape',
+  news_ph:'you@email.com', news_consent:'By signing up you agree to receive updates about the tool. Unsubscribe in 1 click.',
+  news_success:'Thanks — you\'re in ✓ Check your inbox 📩',
+  paper_lab:'print size',
+});
 const isEN = () => state.lang === 'en';
 const D = (fr, en) => isEN() ? en : fr;   // texte selon la langue (instructions de pièces)
 /* noms de pièces (EN) — statiques via table, dynamiques (Section N…) via remplacement */
@@ -1734,6 +1897,7 @@ const PIECE_NAME = {
   'Face longueur':'Length face','Face largeur':'Width face','Pan':'Panel','Facette':'Facet','Profil (contrôle)':'Profile (check)',
   'Corps':'Body','Épaule (secteur)':'Shoulder (sector)','Col':'Neck','Anse — bande':'Handle — strap','Anse — profil':'Handle — profile',
   'Bec verseur':'Spout','Bord (marli)':'Rim (marli)','Bord long':'Long rim','Bord court':'Short rim','Face':'Face','Bande (tranche)':'Side band',
+  'Bande extérieure':'Outer strip','Bande intérieure':'Inner strip',
   'Profil extérieur':'Outer profile','Dessus — contour & ouverture':'Top — outline & opening','Coupe de creusage (contrôle)':'Carving section (check)',
 };
 const pieceName = nm => !isEN() ? nm : (PIECE_NAME[nm] || nm.replace('(bas)','(bottom)').replace('(haut)','(top)'));
@@ -1852,6 +2016,14 @@ function silhouetteFor(shape, d){
       svg:`<circle cx="${d.df/2}" cy="${d.hc + d.df/2}" r="${d.df/2}"/>`+
           (d.dc>1?`<rect x="${xl}" y="0" width="${d.dc}" height="${d.hc + 4}"/>`:'') };
   }
+  if(shape==='tore'){
+    const R = d.de/2, r = Math.max(0.5, d.dtrou/2), c = d.de/2;
+    const hc = d.hc || 0, dop = d.do || 0, nx = c - dop/2, ny = hc + 4;
+    const ring = (cx,cy,rad) => `M ${cx-rad} ${cy} a ${rad} ${rad} 0 1 0 ${2*rad} 0 a ${rad} ${rad} 0 1 0 ${-2*rad} 0 Z`;
+    const neck = (dop > 1 && hc > 0.5) ? `<rect x="${nx}" y="0" width="${dop}" height="${ny}"/>` : '';
+    return { w:d.de, h:d.de + (dop>1?hc:0),
+      svg:`${neck}<g transform="translate(0 ${dop>1?hc:0})"><path fill-rule="evenodd" d="${ring(c,c,R)} ${ring(c,c,r)}"/></g>` };
+  }
   if(shape==='profil' || SHAPES[shape].kurinuki){
     const pts = d.pts, Y = Math.max(...pts.map(p=>p.y));
     const maxR = Math.max(...pts.map(p=>p.r));
@@ -1877,7 +2049,7 @@ function silhouetteFor(shape, d){
 const WIDTH_FIELDS = {
   cylindre:['d'], cone:['d1','d2'], boite:['l'], pyramide:['l1','l2'], ovale:['da'],
   prisme:['d'], facettes:['d1','d2'], tasse:['d1','d2'], pichet:['d1','d2'],
-  assiette:['d1','d2'], plat:['l'], coussin:['df'], bouteille:['d1','d2'],
+  assiette:['d1','d2'], plat:['l'], coussin:['df'], bouteille:['d1','d2'], tore:['de','dtrou'],
 };
 
 function renderOverlay(){
@@ -1963,11 +2135,31 @@ $('#ovApply').onclick = () => {
    UI : patrons
    --------------------------------------------------------------- */
 /* zones utiles A4 (mm) — marges ~10 mm + bandeau ; portrait ET paysage */
-const PG = { P: { w: 190, h: 260 }, L: { w: 277, h: 176 } };   // hauteurs avec marge de sécurité anti-coupure à l'impression
+/* formats de papier : PG = zone utile (mm) pour le placement ; page = dimensions
+   de la feuille imprimée (mm) ; size = valeur CSS @page. Marges de sécurité
+   anti-coupure comprises. */
+const PAPERS = {
+  a4:     { PG:{ P:{ w:190, h:260 }, L:{ w:277, h:176 } }, page:{ P:[210,293],   L:[297,203]   }, size:'A4' },
+  letter: { PG:{ P:{ w:196, h:242 }, L:{ w:259, h:176 } }, page:{ P:[215.9,275], L:[279.4,202] }, size:'letter' },
+};
+let PG = PAPERS.a4.PG;                                          // réassigné par applyPaper()
+const paperLabel = () => state.paper === 'letter' ? 'Letter' : 'A4';
 const GAP = 8, LBL = 7;   // espacement entre pièces / réserve d'étiquette (mm)
-const TILE_W = PG.P.w, TILE_H = PG.P.h;
 
-function tilesFor(vb){ return { cols: Math.ceil(vb.w/TILE_W), rows: Math.ceil(vb.h/TILE_H) }; }
+function applyPaper(){
+  const p = PAPERS[state.paper] || PAPERS.a4;
+  PG = p.PG;
+  const [pw, ph] = p.page.P, [lw, lh] = p.page.L;
+  let st = document.getElementById('paperCSS');
+  if(!st){ st = document.createElement('style'); st.id = 'paperCSS'; document.head.appendChild(st); }
+  st.textContent =
+    `@page portrait{size:${p.size} portrait;margin:0}` +
+    `@page landscape{size:${p.size} landscape;margin:0}` +
+    `@media print{.page{width:${pw}mm;height:${ph}mm}.page.landscape{width:${lw}mm;height:${lh}mm}}`;
+  document.querySelectorAll('#paperSeg [data-paper]').forEach(b => b.classList.toggle('on', b.dataset.paper === state.paper));
+}
+
+function tilesFor(vb){ return { cols: Math.ceil(vb.w/PG.P.w), rows: Math.ceil(vb.h/PG.P.h) }; }
 
 /* meilleure disposition d'une pièce : essaie portrait/paysage × pivot 0/90°,
    garde le moins de feuilles (à égalité : portrait, puis raccord vertical) */
@@ -1988,53 +2180,85 @@ function pieceLayout(r){
   return opts[0];
 }
 
+/* fits(w,h,orient) : la pièce (avec réserve d'étiquette) tient-elle sur une feuille,
+   dans un sens ou l'autre ? renvoie l'orientation de pose ou null */
+function sheetFit(w, h, orient){
+  const { w:W, h:H } = PG[orient];
+  if(w <= W && h + LBL <= H) return { rot:false, bw:w,       bh:h + LBL };
+  if(h <= W && w + LBL <= H) return { rot:true,  bw:h,       bh:w + LBL };
+  return null;
+}
+
+/* Packing 2D « MaxRects » (best-short-side-fit) avec rotation, sur une taille
+   de feuille donnée. Regroupe un maximum de pièces par feuille. */
+function packMaxRects(items, orient){
+  const { w:W, h:H } = PG[orient];
+  const EPS = 0.01;
+  // grandes pièces d'abord → meilleur remplissage
+  const order = items.slice().sort((a,b) => (b.w*b.h) - (a.w*a.h));
+  const bins = [];
+  const splitFree = (free, R) => {
+    const out = [];
+    for(const F of free){
+      const noOverlap = R.x >= F.x + F.w - EPS || R.x + R.w <= F.x + EPS ||
+                        R.y >= F.y + F.h - EPS || R.y + R.h <= F.y + EPS;
+      if(noOverlap){ out.push(F); continue; }
+      if(R.x > F.x + EPS)             out.push({ x:F.x, y:F.y, w:R.x - F.x, h:F.h });
+      if(R.x + R.w < F.x + F.w - EPS) out.push({ x:R.x + R.w, y:F.y, w:F.x + F.w - R.x - R.w, h:F.h });
+      if(R.y > F.y + EPS)             out.push({ x:F.x, y:F.y, w:F.w, h:R.y - F.y });
+      if(R.y + R.h < F.y + F.h - EPS) out.push({ x:F.x, y:R.y + R.h, w:F.w, h:F.y + F.h - R.y - R.h });
+    }
+    // élaguer les rectangles libres contenus dans un autre
+    return out.filter((a, i) => !out.some((b, j) => i !== j &&
+      b.x <= a.x + EPS && b.y <= a.y + EPS &&
+      b.x + b.w >= a.x + a.w - EPS && b.y + b.h >= a.y + a.h - EPS &&
+      (b.w*b.h > a.w*a.h + EPS || j < i)));
+  };
+  for(const it of order){
+    // boîte = emprise réelle (pièce + réserve d'étiquette), SANS la marge :
+    // la marge GAP est réservée seulement entre les pièces (au découpage des rects libres),
+    // pour qu'une pièce presque aussi large que la feuille tienne quand même.
+    const orients = [
+      { rot:false, bw:it.w, bh:it.h + LBL },
+      { rot:true,  bw:it.h, bh:it.w + LBL },
+    ].filter(o => o.bw <= W + EPS && o.bh <= H + EPS);
+    if(!orients.length) continue;   // sécurité (ne devrait pas arriver : déjà filtré)
+    let best = null;
+    for(const bin of bins)
+      for(const fr of bin.free)
+        for(const o of orients)
+          if(o.bw <= fr.w + EPS && o.bh <= fr.h + EPS){
+            const score = Math.min(fr.w - o.bw, fr.h - o.bh);   // best short side fit
+            if(!best || score < best.score) best = { bin, x:fr.x, y:fr.y, o, score };
+          }
+    if(!best){
+      const bin = { orient, free:[{ x:0, y:0, w:W, h:H }], items:[] };
+      bins.push(bin);
+      best = { bin, x:0, y:0, o:orients[0], score:0 };
+    }
+    const R = { x:best.x, y:best.y, w:best.o.bw, h:best.o.bh };
+    best.bin.items.push({ p:it.p, r:it.r, rot:best.o.rot, x:R.x, y:R.y });
+    best.bin.free = splitFree(best.bin.free, { x:R.x, y:R.y, w:R.w + GAP, h:R.h + GAP });   // + marge entre pièces
+  }
+  return bins;
+}
+
 /* ---------------------------------------------------------------
    Planification d'impression :
-   - les pièces qui tiennent sur UNE feuille portrait sont imbriquées
-     ensemble sur des « planches » communes ;
-   - les autres sont posées sur leur meilleure orientation (portrait
-     ou paysage) puis, si trop grandes, débitées en mosaïque centrée.
+   - toutes les pièces qui tiennent sur UNE feuille (portrait de préférence,
+     sinon paysage) sont regroupées au maximum par le packer MaxRects ;
+   - les pièces plus grandes qu'une feuille sont débitées en mosaïque centrée.
    --------------------------------------------------------------- */
 function planPrint(pieces){
-  const smalls = [], bigs = [];
+  const port = [], land = [], bigs = [];
   pieces.forEach(p => {
     const r = pieceRender(p, 'print');
-    const {w, h} = r.vb;
-    const fitN = w <= PG.P.w && h <= PG.P.h - LBL;
-    const fitR = h <= PG.P.w && w <= PG.P.h - LBL;
-    if(fitN || fitR){
-      const rot = !fitN;
-      smalls.push({ p, r, rot, w: (rot ? h : w), h: (rot ? w : h) + LBL });
-    } else {
-      bigs.push({ p, r, layout: pieceLayout(r) });
-    }
+    const { w, h } = r.vb;
+    if(sheetFit(w, h, 'P'))      port.push({ p, r, w, h });
+    else if(sheetFit(w, h, 'L')) land.push({ p, r, w, h });
+    else                          bigs.push({ p, r, layout: pieceLayout(r) });
   });
-  // imbrication en étagères, pièces les plus hautes d'abord
-  smalls.sort((a,b) => b.h - a.h);
-  const bins = [];
-  smalls.forEach(s => {
-    let placed = false;
-    for(const bin of bins){
-      for(const shelf of bin.shelves){
-        if(s.h <= shelf.h && shelf.x + s.w <= PG.P.w){
-          s.x = shelf.x; s.y = shelf.y;
-          shelf.x += s.w + GAP;
-          bin.items.push(s); placed = true; break;
-        }
-      }
-      if(placed) break;
-      if(bin.y + s.h <= PG.P.h){
-        s.x = 0; s.y = bin.y;
-        bin.shelves.push({ x: s.w + GAP, y: bin.y, h: s.h });
-        bin.y += s.h + GAP;
-        bin.items.push(s); placed = true; break;
-      }
-    }
-    if(!placed){
-      s.x = 0; s.y = 0;
-      bins.push({ shelves:[{ x: s.w + GAP, y: 0, h: s.h }], y: s.h + GAP, items:[s] });
-    }
-  });
+  const bins = [ ...packMaxRects(port, 'P'), ...packMaxRects(land, 'L') ];
   return { bins, bigs };
 }
 const sheetsCount = plan => plan.bins.length + plan.bigs.reduce((n,b) => n + b.layout.cols*b.layout.rows, 0);
@@ -2050,7 +2274,7 @@ function normTransform(r, rot){
    doute on garde la tuile. */
 function tileOccupancy(r, layout){
   const { orient, rot, cols, rows } = layout;
-  if(cols*rows <= 1) return [[true]];
+  if(!(cols >= 1) || !(rows >= 1) || cols*rows <= 1) return [[true]];   // garde-fou : layout dégénéré / NaN
   const { w:tw, h:th } = PG[orient];
   const vb = r.vb;
   const pw = rot ? vb.h : vb.w, ph = rot ? vb.w : vb.h;
@@ -2136,12 +2360,12 @@ function refresh(){
     </div>`;
   }).join('');
   $('#pageEstimate').textContent = isEN()
-    ? `printing: ${totalPages} A4 sheet${totalPages>1?'s':''}`
-    : `impression : ${totalPages} feuille${totalPages>1?'s':''} A4`;
+    ? `printing: ${totalPages} ${paperLabel()} sheet${totalPages>1?'s':''}`
+    : `impression : ${totalPages} feuille${totalPages>1?'s':''} ${paperLabel()}`;
   const nSel = included.reduce((n,p)=>n+p.qty,0);
   $('#synthInfo').innerHTML = !included.length ? t('no_piece') : (isEN()
-    ? `<b>${nSel} template${nSel>1?'s':''}</b> · <b>${totalPages} A4 sheet${totalPages>1?'s':''}</b> · ${isKur()?'block':'clay'} ≈ <b>${fmtPoids(clayWeight(pieces))}</b>`
-    : `<b>${nSel} gabarit${nSel>1?'s':''}</b> · <b>${totalPages} feuille${totalPages>1?'s':''} A4</b> · ${isKur()?'bloc':'terre'} ≈ <b>${fmtPoids(clayWeight(pieces))}</b>`);
+    ? `<b>${nSel} template${nSel>1?'s':''}</b> · <b>${totalPages} ${paperLabel()} sheet${totalPages>1?'s':''}</b> · ${isKur()?'block':'clay'} ≈ <b>${fmtPoids(clayWeight(pieces))}</b>`
+    : `<b>${nSel} gabarit${nSel>1?'s':''}</b> · <b>${totalPages} feuille${totalPages>1?'s':''} ${paperLabel()}</b> · ${isKur()?'bloc':'terre'} ≈ <b>${fmtPoids(clayWeight(pieces))}</b>`);
   if($('#projName').value !== (state.projectName || '')) $('#projName').value = state.projectName || '';
 
   document.querySelectorAll('.piece-card .dl').forEach(btn => btn.onclick = () => downloadPiece(pieces.find(p=>p.tag===btn.dataset.tag)));
@@ -2191,7 +2415,7 @@ $('#btnSvg').onclick = () => {
    Impression mosaïque A4 à taille réelle
    --------------------------------------------------------------- */
 function fichePage(pieces, pages){
-  const sName = SHAPES[state.shape].name;
+  const sName = shapeName(state.shape);
   const k = kFactor();
   const sil = silhouette();
   const sc = Math.min(52/sil.h, 62/sil.w);
@@ -2200,34 +2424,37 @@ function fichePage(pieces, pages){
   const feuilles = pages.length;
   const where = whereMap(pages);   // pièce → « planche N » ou « X feuilles »
   const checklist = pieces.map(p =>
-    `<li class="chk"><b>${p.tag}</b> ${p.name} × ${p.qty} — ${p.dims[0]}${p.noClay?' <i>(gabarit de contrôle, pas de terre)</i>':''} — <i>${where[p.tag]||''}</i></li>`
+    `<li class="chk"><b>${p.tag}</b> ${pieceName(p.name)} × ${p.qty} — ${p.dims[0]}${p.noClay?D(' <i>(gabarit de contrôle, pas de terre)</i>',' <i>(control template, no clay)</i>'):''} — <i>${where[p.tag]||''}</i></li>`
   ).join('');
   const montage = pieces.flatMap(p => p.notes.map(n => `<li><b>${p.tag}</b> — ${n}</li>`)).join('');
+  const kx = `×${k.toLocaleString(numLoc(),{maximumFractionDigits:3})}`;
   return `<div class="page fiche">
-    ${pageHead(`Fiche d'atelier — ${sName}`)}
+    ${pageHead(D(`Fiche d'atelier — ${sName}`,`Workshop sheet — ${sName}`))}
     <h2>${state.projectName || sName}</h2>
-    <div class="fsub">${sName} — fiche à garder à côté de la plaque</div>
+    <div class="fsub">${D(`${sName} — fiche à garder à côté de la plaque`,`${sName} — sheet to keep next to your slab`)}</div>
     <div class="frow">
       <div class="fsil"><svg width="${(sil.w*sc).toFixed(1)}mm" height="${(sil.h*sc).toFixed(1)}mm" viewBox="0 0 ${sil.w} ${sil.h}">
         <g fill="none" stroke="#000" stroke-width="${Math.max(sil.w,sil.h)/60}">${sil.svg}</g></svg></div>
       <div class="fparams">
         ${isKur()
-          ? `<div><b>technique</b> kurinuki (creusage dans la masse)</div>
-             <div><b>bloc à préparer</b> ${kurData().blocTxt}</div>
-             <div><b>paroi visée</b> ${fmt(state.dims[state.shape].paroi)} mm</div>`
-          : `<div><b>épaisseur de plaque</b> ${fmt(state.ep)} mm</div>
-             <div><b>pièces à découper</b> ${pieces.filter(p=>!p.noClay).reduce((n,p)=>n+p.qty,0)} dans la plaque</div>`}
-        <div><b>retrait de cuisson</b> ${fmt(state.retrait)} % ${state.coteType==='fini' ? `(gabarits agrandis ×${k.toLocaleString('fr-FR',{maximumFractionDigits:3})})` : '(cotes crues, non agrandies)'}</div>
-        <div><b>gabarits</b> ${pieces.length} pièces · ${feuilles} feuilles A4</div>
+          ? `<div><b>${D('technique','technique')}</b> ${D('kurinuki (creusage dans la masse)','kurinuki (carved from a solid block)')}</div>
+             <div><b>${D('bloc à préparer','block to prepare')}</b> ${kurData().blocTxt}</div>
+             <div><b>${D('paroi visée','target wall')}</b> ${L(state.dims[state.shape].paroi)}</div>`
+          : `<div><b>${D('épaisseur de plaque','slab thickness')}</b> ${L(state.ep)}</div>
+             <div><b>${D('pièces à découper','pieces to cut')}</b> ${pieces.filter(p=>!p.noClay).reduce((n,p)=>n+p.qty,0)} ${D('dans la plaque','from the slab')}</div>`}
+        <div><b>${D('retrait de cuisson','firing shrinkage')}</b> ${fmt(state.retrait)} % ${state.coteType==='fini' ? D(`(gabarits agrandis ${kx})`,`(templates scaled up ${kx})`) : D('(cotes crues, non agrandies)','(wet dims, not scaled)')}</div>
+        <div><b>${D('gabarits','templates')}</b> ${pieces.length} ${D('pièces','pieces')} · ${feuilles} ${D('feuilles','sheets')} ${paperLabel()}</div>
       </div>
     </div>
-    <div class="fsec">${isKur()?'Gabarits papier — cocher au fur et à mesure':'Pièces à découper — cocher au fur et à mesure'}</div>
+    <div class="fsec">${isKur()?D('Gabarits papier — cocher au fur et à mesure','Paper templates — tick as you go'):D('Pièces à découper — cocher au fur et à mesure','Pieces to cut — tick as you go')}</div>
     <ul>${checklist}</ul>
-    <div class="fsec">${isKur()?'Creusage — rappels étape par étape':'Montage — rappels pièce par pièce'}</div>
+    <div class="fsec">${isKur()?D('Creusage — rappels étape par étape','Carving — step-by-step reminders'):D('Montage — rappels pièce par pièce','Assembly — piece-by-piece reminders')}</div>
     <ol>${montage}</ol>
     <div class="fpoids">${isKur()
-      ? `Bloc de terre ≈ <b>${fmtPoids(poids)}</b> &nbsp;·&nbsp; pièce finie ≈ <b>${fmtPoids(kurData().pieceW)}</b> &nbsp;·&nbsp; à évider ≈ <b>${fmtPoids(poids - kurData().pieceW)}</b>`
-      : `Terre à préparer ≈ <b>${fmtPoids(poids)}</b> &nbsp;·&nbsp; avec 15 % de marge : <b>${fmtPoids(poids*1.15)}</b> &nbsp;·&nbsp; (surfaces × ${fmt(state.ep)} mm × 1,9 g/cm³)`}</div>
+      ? D(`Bloc de terre ≈ <b>${fmtPoids(poids)}</b> &nbsp;·&nbsp; pièce finie ≈ <b>${fmtPoids(kurData().pieceW)}</b> &nbsp;·&nbsp; à évider ≈ <b>${fmtPoids(poids - kurData().pieceW)}</b>`,
+          `Clay block ≈ <b>${fmtPoids(poids)}</b> &nbsp;·&nbsp; finished piece ≈ <b>${fmtPoids(kurData().pieceW)}</b> &nbsp;·&nbsp; to hollow out ≈ <b>${fmtPoids(poids - kurData().pieceW)}</b>`)
+      : D(`Terre à préparer ≈ <b>${fmtPoids(poids)}</b> &nbsp;·&nbsp; avec 15 % de marge : <b>${fmtPoids(poids*1.15)}</b> &nbsp;·&nbsp; (surfaces × ${L(state.ep)} × 1,9 g/cm³)`,
+          `Clay to prepare ≈ <b>${fmtPoids(poids)}</b> &nbsp;·&nbsp; with 15% margin: <b>${fmtPoids(poids*1.15)}</b> &nbsp;·&nbsp; (areas × ${L(state.ep)} × 1.9 g/cm³)`)}</div>
   </div>`;
 }
 
@@ -2238,24 +2465,25 @@ const BRAND_SVG = `<svg width="7mm" height="7mm" viewBox="0 0 46 46">
 const pageHead = info => `<div class="phead">
   <div class="pbrand">${BRAND_SVG}<span>Gabarits <em>céramique</em></span></div>
   <div class="pinfo">${info}</div>
-  <div class="cal"><svg width="50mm" height="4mm" viewBox="0 0 50 4"><line x1="0" y1="2" x2="50" y2="2" stroke="#7a6753" stroke-width=".4"/><line x1="0" y1="0" x2="0" y2="4" stroke="#7a6753" stroke-width=".4"/><line x1="50" y1="0" x2="50" y2="4" stroke="#7a6753" stroke-width=".4"/></svg><span>= 50 mm · à 100 %</span></div>
+  <div class="cal"><svg width="50mm" height="4mm" viewBox="0 0 50 4"><line x1="0" y1="2" x2="50" y2="2" stroke="#7a6753" stroke-width=".4"/><line x1="0" y1="0" x2="0" y2="4" stroke="#7a6753" stroke-width=".4"/><line x1="50" y1="0" x2="50" y2="4" stroke="#7a6753" stroke-width=".4"/></svg><span>= ${L(50)} · ${D('à 100 %','at 100%')}</span></div>
 </div>`;
 
 /* pages de gabarits (planches + mosaïques) → [{info, vb:[x,y,w,h], inner}] */
 function collectPages(plan){
   const pages = [];
   plan.bins.forEach((bin, bi) => {
+    const pg = PG[bin.orient || 'P'];
     const items = bin.items.map(s => {
       const tf = s.rot
         ? `translate(${s.x + s.r.vb.y + s.r.vb.h} ${s.y + 7 - s.r.vb.x}) rotate(90)`
         : `translate(${s.x - s.r.vb.x} ${s.y + 7 - s.r.vb.y})`;
-      return `<text class="plabel" x="${s.x}" y="${s.y + 4.5}">${s.p.tag} · ${s.p.name} × ${s.p.qty}${s.rot?' (pivotée 90°)':''}</text>`+
+      return `<text class="plabel" x="${s.x + 1}" y="${s.y + 4.5}">${s.p.tag} · ${pieceName(s.p.name)} × ${s.p.qty}${s.rot?D(' (pivotée 90°)',' (rotated 90°)'):''}</text>`+
              `<g transform="${tf}">${s.r.body}</g>`;
     }).join('');
     pages.push({
-      info: `planche ${bi+1}/${plan.bins.length} · pièces ${bin.items.map(s=>s.p.tag).join(', ')}`,
-      orient: 'P', vb: [0, 0, PG.P.w, PG.P.h], tags: bin.items.map(s=>s.p.tag), planche: bi+1,
-      inner: `<rect class="tilebox" x="0" y="0" width="${PG.P.w}" height="${PG.P.h}"/>` + items,
+      info: D(`planche ${bi+1}/${plan.bins.length} · pièces ${bin.items.map(s=>s.p.tag).join(', ')}`,`sheet ${bi+1}/${plan.bins.length} · pieces ${bin.items.map(s=>s.p.tag).join(', ')}`),
+      orient: bin.orient || 'P', vb: [0, 0, pg.w, pg.h], tags: bin.items.map(s=>s.p.tag), planche: bi+1,
+      inner: `<rect class="tilebox" x="0" y="0" width="${pg.w}" height="${pg.h}"/>` + items,
     });
   });
   plan.bigs.forEach(b => {
@@ -2270,7 +2498,7 @@ function collectPages(plan){
       const mx = x0 + cc*tw, my = y0 + rr*th;
       marks += `<g class="mark"><line x1="${mx-4}" y1="${my}" x2="${mx+4}" y2="${my}"/><line x1="${mx}" y1="${my-4}" x2="${mx}" y2="${my+4}"/></g>`;
     }
-    const orTxt = L.orient==='L' ? (L.rot?' (paysage, pivotée 90°)':' (paysage)') : (L.rot?' (pivotée 90°)':'');
+    const orTxt = L.orient==='L' ? (L.rot?D(' (paysage, pivotée 90°)',' (landscape, rotated 90°)'):D(' (paysage)',' (landscape)')) : (L.rot?D(' (pivotée 90°)',' (rotated 90°)'):'');
     const occ = tileOccupancy(b.r, L);
     const total = occ.flat().filter(Boolean).length;   // feuilles réellement utiles
     let n = 0;
@@ -2279,7 +2507,7 @@ function collectPages(plan){
       n++;
       const vx = x0 + cc*tw, vy = y0 + rr*th;
       pages.push({
-        info: `pièce ${b.p.tag} · ${b.p.name} ×${b.p.qty}${orTxt}${total>1?` — feuille ${n}/${total}`:''}`,
+        info: D(`pièce ${b.p.tag} · ${b.p.name} ×${b.p.qty}${orTxt}${total>1?` — feuille ${n}/${total}`:''}`,`piece ${b.p.tag} · ${pieceName(b.p.name)} ×${b.p.qty}${orTxt}${total>1?` — sheet ${n}/${total}`:''}`),
         orient: L.orient, vb: [vx, vy, tw, th], tags: [b.p.tag],
         inner: `<rect class="tilebox" x="${vx}" y="${vy}" width="${tw}" height="${th}"/>${marks}${gBody}`,
       });
@@ -2292,16 +2520,16 @@ function collectPages(plan){
 function whereMap(pages){
   const where = {}, big = {};
   pages.forEach(pg => {
-    if(pg.planche) pg.tags.forEach(t => where[t] = `planche ${pg.planche}`);
+    if(pg.planche) pg.tags.forEach(t => where[t] = D(`planche ${pg.planche}`,`sheet ${pg.planche}`));
     else { const t = pg.tags[0]; big[t] = big[t] || { n:0, l: pg.orient==='L' }; big[t].n++; }
   });
-  Object.keys(big).forEach(t => where[t] = `${big[t].n} feuille${big[t].n>1?'s':''}${big[t].l?' paysage':''}`);
+  Object.keys(big).forEach(t => where[t] = D(`${big[t].n} feuille${big[t].n>1?'s':''}${big[t].l?' paysage':''}`,`${big[t].n} sheet${big[t].n>1?'s':''}${big[t].l?' landscape':''}`));
   return where;
 }
 
 function selectedPieces(){
   const pieces = computePieces().filter(p => !printExcl.has(p.tag));
-  if(!pieces.length) alert('Aucune pièce sélectionnée — coche au moins un gabarit dans la liste.');
+  if(!pieces.length) alert(D('Aucune pièce sélectionnée — coche au moins un gabarit dans la liste.','No piece selected — tick at least one template in the list.'));
   return pieces;
 }
 
@@ -2363,7 +2591,7 @@ function pdfHead(doc, info, pageW){
   doc.line(barX, 11, barX + 50, 11);                                 // barre témoin de 50 mm exactement
   doc.line(barX, 9.5, barX, 12.5); doc.line(barX + 50, 9.5, barX + 50, 12.5);
   doc.setFontSize(6); doc.setTextColor(122,103,83);
-  doc.text('= 50 mm · à 100 %', barX, 16);
+  doc.text(`= ${L(50)} · ${D('à 100 %','at 100%')}`, barX, 16);
   doc.setDrawColor(51,38,26); doc.setLineWidth(0.4);
   doc.line(10, 19, pageW - 10, 19);
   // pied de page discret — boucle de croissance (chaque PDF partagé ramène du monde)
@@ -2373,12 +2601,13 @@ function pdfHead(doc, info, pageW){
   return 24;
 }
 function pdfFiche(doc, pieces, pages, title){
-  const sName = SHAPES[state.shape].name;
-  let y = pdfHead(doc, `Fiche d'atelier — ${sName}`) + 6;
+  const sName = shapeName(state.shape);
+  const ficheHd = D(`Fiche d'atelier — ${sName}`, `Workshop sheet — ${sName}`);
+  let y = pdfHead(doc, ficheHd) + 6;
   const k = kFactor(), poids = clayWeight(pieces), feuilles = pages.length;
   const where = whereMap(pages);
   const line = (txt, opts={}) => {
-    if(y > 275){ doc.addPage(); y = pdfHead(doc, `Fiche d'atelier — ${sName} (suite)`) + 6; }
+    if(y > 275){ doc.addPage(); y = pdfHead(doc, ficheHd + D(' (suite)',' (cont.)')) + 6; }
     doc.setFont('helvetica', opts.bold ? 'bold' : 'normal');
     doc.setFontSize(opts.size || 8.5);
     const c = opts.color || [51,38,26]; doc.setTextColor(...c);
@@ -2388,29 +2617,36 @@ function pdfFiche(doc, pieces, pages, title){
   };
   doc.setFont('helvetica','bold'); doc.setFontSize(19); doc.setTextColor(51,38,26);
   doc.text(title, 10, y); y += 6;
-  line(`${sName} — fiche à garder à côté de la plaque`, {color:[122,103,83], gap:4});
+  line(D(`${sName} — fiche à garder à côté de la plaque`, `${sName} — sheet to keep next to your slab`), {color:[122,103,83], gap:4});
+  const kx = `×${k.toLocaleString(numLoc(),{maximumFractionDigits:3})}`;
+  const coteTxt = state.coteType==='fini' ? D(`(gabarits agrandis ${kx})`,`(templates scaled up ${kx})`) : D('(cotes crues)','(wet dims)');
+  const shTxt = D('Retrait','Shrinkage'), sheets = `${feuilles} ${D('feuille','sheet')}${feuilles>1?'s':''} ${paperLabel()}`;
   if(isKur()){
     const kd = kurData();
-    line(`Kurinuki — bloc à préparer : ${kd.blocTxt}      Paroi visée : ${fmt(state.dims[state.shape].paroi)} mm`, {gap:1});
-    line(`Retrait : ${fmt(state.retrait)} % ${state.coteType==='fini'?`(gabarits agrandis ×${k.toLocaleString('fr-FR',{maximumFractionDigits:3})})`:'(cotes crues)'} · ${pieces.length} gabarits papier · ${feuilles} feuille${feuilles>1?'s':''} A4`, {gap:5});
+    line(D(`Kurinuki — bloc à préparer : ${kd.blocTxt}      Paroi visée : ${L(state.dims[state.shape].paroi)}`,
+           `Kurinuki — block to prepare: ${kd.blocTxt}      Target wall: ${L(state.dims[state.shape].paroi)}`), {gap:1});
+    line(`${shTxt} : ${fmt(state.retrait)} % ${coteTxt} · ${pieces.length} ${D('gabarits papier','paper templates')} · ${sheets}`, {gap:5});
   } else {
-    line(`Épaisseur de plaque : ${fmt(state.ep)} mm      Retrait : ${fmt(state.retrait)} % ${state.coteType==='fini'?`(gabarits agrandis ×${k.toLocaleString('fr-FR',{maximumFractionDigits:3})})`:'(cotes crues)'}`, {gap:1});
-    line(`${pieces.length} gabarits · ${feuilles} feuille${feuilles>1?'s':''} A4 · ${pieces.filter(p=>!p.noClay).reduce((n,p)=>n+p.qty,0)} pièce(s) à découper dans la plaque`, {gap:5});
+    line(D(`Épaisseur de plaque : ${L(state.ep)}      Retrait : ${fmt(state.retrait)} % ${coteTxt}`,
+           `Slab thickness: ${L(state.ep)}      Shrinkage: ${fmt(state.retrait)} % ${coteTxt}`), {gap:1});
+    line(`${pieces.length} ${D('gabarits','templates')} · ${sheets} · ${pieces.filter(p=>!p.noClay).reduce((n,p)=>n+p.qty,0)} ${D('pièce(s) à découper dans la plaque','piece(s) to cut from the slab')}`, {gap:5});
   }
-  line(isKur()?'GABARITS PAPIER — COCHER AU FUR ET À MESURE':'PIÈCES À DÉCOUPER — COCHER AU FUR ET À MESURE', {bold:true, color:[184,80,42], gap:2});
-  pieces.forEach(p => line(`[  ]  ${p.tag} · ${p.name} × ${p.qty} — ${p.dims[0]}${p.noClay?' (gabarit de contrôle, pas de terre)':''} — ${where[p.tag]||''}`, {gap:.8}));
+  line(isKur()?D('GABARITS PAPIER — COCHER AU FUR ET À MESURE','PAPER TEMPLATES — TICK AS YOU GO'):D('PIÈCES À DÉCOUPER — COCHER AU FUR ET À MESURE','PIECES TO CUT — TICK AS YOU GO'), {bold:true, color:[184,80,42], gap:2});
+  pieces.forEach(p => line(`[  ]  ${p.tag} · ${pieceName(p.name)} × ${p.qty} — ${p.dims[0]}${p.noClay?D(' (gabarit de contrôle, pas de terre)',' (control template, no clay)'):''} — ${where[p.tag]||''}`, {gap:.8}));
   y += 4;
-  line(isKur()?'CREUSAGE — RAPPELS ÉTAPE PAR ÉTAPE':'MONTAGE — RAPPELS PIÈCE PAR PIÈCE', {bold:true, color:[184,80,42], gap:2});
+  line(isKur()?D('CREUSAGE — RAPPELS ÉTAPE PAR ÉTAPE','CARVING — STEP-BY-STEP REMINDERS'):D('MONTAGE — RAPPELS PIÈCE PAR PIÈCE','ASSEMBLY — PIECE-BY-PIECE REMINDERS'), {bold:true, color:[184,80,42], gap:2});
   let n = 0;
   pieces.forEach(p => p.notes.forEach(note => line(`${++n}. ${p.tag} — ${note}`, {gap:.8})));
   y += 3;
-  if(y > 262){ doc.addPage(); y = pdfHead(doc, `Fiche d'atelier — ${sName} (suite)`) + 6; }
+  if(y > 262){ doc.addPage(); y = pdfHead(doc, ficheHd + D(' (suite)',' (cont.)')) + 6; }
   doc.setDrawColor(184,80,42); doc.setLineWidth(0.5);
   doc.roundedRect(10, y-4, 190, 11, 1, 1);
   doc.setFont('helvetica','bold'); doc.setFontSize(9.5); doc.setTextColor(51,38,26);
   doc.text(isKur()
-    ? `Bloc de terre ≈ ${fmtPoids(poids)}   ·   pièce finie ≈ ${fmtPoids(kurData().pieceW)}   ·   à évider ≈ ${fmtPoids(poids - kurData().pieceW)}`
-    : `Terre à préparer ≈ ${fmtPoids(poids)}   ·   avec 15 % de marge : ${fmtPoids(poids*1.15)}   ·   (surfaces × ${fmt(state.ep)} mm × 1,9 g/cm³)`, 14, y+2.5);
+    ? D(`Bloc de terre ≈ ${fmtPoids(poids)}   ·   pièce finie ≈ ${fmtPoids(kurData().pieceW)}   ·   à évider ≈ ${fmtPoids(poids - kurData().pieceW)}`,
+        `Clay block ≈ ${fmtPoids(poids)}   ·   finished piece ≈ ${fmtPoids(kurData().pieceW)}   ·   to hollow out ≈ ${fmtPoids(poids - kurData().pieceW)}`)
+    : D(`Terre à préparer ≈ ${fmtPoids(poids)}   ·   avec 15 % de marge : ${fmtPoids(poids*1.15)}   ·   (surfaces × ${L(state.ep)} × 1,9 g/cm³)`,
+        `Clay to prepare ≈ ${fmtPoids(poids)}   ·   with 15% margin: ${fmtPoids(poids*1.15)}   ·   (areas × ${L(state.ep)} × 1.9 g/cm³)`), 14, y+2.5);
 }
 $('#btnPdf').onclick = async () => {
   const pieces = selectedPieces();
@@ -2418,7 +2654,7 @@ $('#btnPdf').onclick = async () => {
   const btn = $('#btnPdf'); btn.disabled = true; btn.textContent = 'PDF…';
   try{
     if(!await ensurePdfLibs()){
-      alert('Impossible de charger le générateur PDF (connexion ?). Alternative : « Imprimer » puis choisir « Enregistrer au format PDF ».');
+      alert(D('Impossible de charger le générateur PDF (connexion ?). Alternative : « Imprimer » puis choisir « Enregistrer au format PDF ».','Could not load the PDF generator (connection?). Alternative: use “Print” then choose “Save as PDF”.'));
       return;
     }
     const title = state.projectName || SHAPES[state.shape].name;
@@ -2460,8 +2696,7 @@ $('#tipBtn').onclick = () => track('tip_click', { source: 'bandeau' });
 $('#tipFootLink').onclick = () => track('tip_click', { source: 'footer' });
 $('#fbFootLink').onclick = () => track('feedback_click', { source: 'footer' });
 $('#newsFootLink').onclick = () => track('newsletter_click', { source: 'footer' });
-$('#newsBtn').onclick = () => { track('newsletter_click', { source: 'bandeau' }); localStorage.setItem('gabarits-news-off','1'); };
-let tipShown = false, tipTimer = null, newsShown = false;
+let tipShown = false, tipTimer = null, newsShown = false, newsTimer = null;
 function maybeThanks(){
   if(tipShown) return;                                               // 1×/visite (réapparaît aux visites suivantes)
   tipShown = true;
@@ -2473,29 +2708,73 @@ function maybeThanks(){
 }
 $('#tipClose').onclick = () => $('#tipbar').classList.remove('show');
 
-/* invite newsletter : 1 seule fois, pour un utilisateur déjà engagé (≥ 2 exports),
-   jamais en même temps que le pourboire ni le bandeau cookies */
+/* invite newsletter : modale frontale (fond flouté). Ré-affichable (relancée une
+   impression sur deux tant que l'email n'est pas rempli). Idempotente : ne fait
+   rien si elle est déjà ouverte. Jamais en même temps que le pourboire/cookies. */
 function showNews(){
-  if(newsShown) return;
+  const el = $('#news');
+  if(el.classList.contains('show')) return;   // déjà ouverte
   newsShown = true;
   $('#tipbar').classList.remove('show');
-  const el = $('#news');
+  const btn = $('#newsBtn'); if(btn) btn.disabled = false;   // réactive si fermée après un envoi
+  el.classList.remove('done');
   el.hidden = false;
-  setTimeout(() => el.classList.add('show'), 600);
-  setTimeout(() => el.classList.remove('show'), 15000);
+  setTimeout(() => el.classList.add('show'), 30);
 }
-$('#newsClose').onclick = () => { $('#news').classList.remove('show'); localStorage.setItem('gabarits-news-off','1'); };
+function hideNews(){
+  const el = $('#news');
+  el.classList.remove('show');
+  setTimeout(() => { el.hidden = true; }, 300);
+}
+/* « Plus tard » / croix : on ferme sans marquer off → l'invite pourra revenir
+   à une prochaine visite (mais plus pendant cette session). */
+$('#newsLater').onclick = () => { track('newsletter_later', { source: 'modale' }); hideNews(); };
+$('#newsClose').onclick = () => hideNews();
 
-/* appelé après chaque export : choisit AU PLUS une sollicitation */
+/* Inscription newsletter → Brevo (double opt-in).
+   NEWS_ACTION : coller l'URL "action=" du formulaire Brevo (https://sibforms.com/serve/...).
+   Vide = repli provisoire vers le formulaire hébergé, le temps de brancher Brevo. */
+const NEWS_ACTION = 'https://69a1d944.sibforms.com/serve/MUIFAN7K5Y-M3NorrPe98ttopcj5n92TsQ8VVyVuyk0CkfuYpkbILFKorLERZuTqJpQxE1Qqc97MFHFkAP-r3PHI5A9qwQmyxSK61drlEPJRUStlFBndKiPIEQCAE8CP6Vv7ZlaMvzh-tYdnXSds_l2VnyJybTE6DbttRlKXqLZNFn7d6Q-2EnG3LL0aHEjydNHIOsbXuycFiTz4zg==';
+const NEWS_FALLBACK = 'https://69a1d944.sibforms.com/serve/MUIFAN7K5Y-M3NorrPe98ttopcj5n92TsQ8VVyVuyk0CkfuYpkbILFKorLERZuTqJpQxE1Qqc97MFHFkAP-r3PHI5A9qwQmyxSK61drlEPJRUStlFBndKiPIEQCAE8CP6Vv7ZlaMvzh-tYdnXSds_l2VnyJybTE6DbttRlKXqLZNFn7d6Q-2EnG3LL0aHEjydNHIOsbXuycFiTz4zg==';
+function subscribeNews(email){
+  track('newsletter_submit', { source: 'modale' });
+  const bar = $('#news'), btn = $('#newsBtn');
+  btn.disabled = true;
+  const done = () => {
+    localStorage.setItem('gabarits-news-off', '1');
+    localStorage.setItem('gabarits-news-sub', '1');
+    bar.classList.add('done');
+    clearTimeout(newsTimer); newsTimer = setTimeout(hideNews, 2600);
+  };
+  const body = new URLSearchParams({ EMAIL: email, email_address_check: '', locale: state.lang });
+  fetch(NEWS_ACTION + '?isAjax=1', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body })
+    .then(r => r.json())
+    .then(j => { if(j && j.success) done(); else throw new Error('brevo'); })
+    .catch(() => { btn.disabled = false; window.open(NEWS_FALLBACK, '_blank', 'noopener'); });   // repli : formulaire hébergé
+}
+$('#newsForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const email = $('#newsEmail').value.trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ $('#newsEmail').focus(); $('#newsEmail').style.borderColor = 'var(--terra-d)'; return; }
+  subscribeNews(email);
+});
+$('#newsEmail').addEventListener('focus', () => clearTimeout(newsTimer));   // ne pas masquer pendant la saisie
+
+/* appelé après chaque export : choisit AU PLUS une sollicitation.
+   Priorité : d'abord capter l'email (modale), puis — seulement pour ceux qui
+   ont laissé leur email — proposer le don. Qui n'a pas laissé d'email n'est
+   jamais sollicité pour un don. */
 function afterExport(){
   const n = (+localStorage.getItem('gabarits-exports') || 0) + 1;
   localStorage.setItem('gabarits-exports', String(n));
   const consentEl = $('#consent');
   const consentVisible = consentEl && !consentEl.hidden && consentEl.classList.contains('show');
-  if(!consentVisible && n >= 2 && !localStorage.getItem('gabarits-news-off') && !newsShown){
-    showNews();          // invite newsletter (une fois, utilisateur engagé)
-  } else {
-    maybeThanks();       // sinon, le pourboire (1×/visite)
+  if(consentVisible) return;                                   // ne rien empiler sur le bandeau cookies
+  const subscribed = localStorage.getItem('gabarits-news-sub');
+  if(subscribed){
+    maybeThanks();        // 2) don proposé UNIQUEMENT aux abonnés
+  } else if(n % 2 === 1){
+    showNews();           // 1) email : relancé une impression sur deux (exports 1, 3, 5…) tant que non rempli
   }
 }
 
@@ -2644,17 +2923,25 @@ if(!localStorage.getItem('gabarits-onboarded')){
 /* ---------------------------------------------------------------
    go
    --------------------------------------------------------------- */
+const PRESET_NAME = {
+  'Tasse espresso':'Espresso cup','Mug droit':'Straight mug','Bol à ramen':'Ramen bowl','Chawan':'Chawan',
+  'Assiette dessert':'Dessert plate','Plat de service':'Serving dish','Bouteille haute':'Tall bottle','Pichet à eau':'Water pitcher',
+  'Boîte à thé':'Tea caddy','Vase hexagonal':'Hexagonal vase','Vase coussin':'Pillow vase','Vase courbe':'Curved vase',
+  'Vase anneau':'Ring vase',
+};
+const presetName = nm => (isEN() && PRESET_NAME[nm]) ? PRESET_NAME[nm] : nm;
 function presetSummary(p){
   const d = Object.assign(defaultDims(p.shape), p.dims);
   switch(p.shape){
-    case 'tasse': case 'pichet': case 'cone': return `Ø ${d.d1}→${d.d2} · h ${d.h}`;
-    case 'assiette': return `Ø ${d.d2} · fond ${d.d1}`;
-    case 'plat': return `${d.l} × ${d.w} · h ${d.h}`;
-    case 'bouteille': return `Ø ${d.d1} · h ${d.h1+d.h2+d.h3}`;
-    case 'boite': return `${d.l} × ${d.w} × ${d.h}`;
-    case 'prisme': return `${d.n} pans · h ${d.h}`;
-    case 'coussin': return `Ø ${d.df} · ép. ${d.p}`;
-    case 'profil': { const pts=d.pts; return `Ø max ${2*Math.max(...pts.map(q=>q.r))} · h ${pts.at(-1).y}`; }
+    case 'tasse': case 'pichet': case 'cone': return `Ø ${Lv(d.d1)}→${Lv(d.d2)} · h ${L(d.h)}`;
+    case 'assiette': return `Ø ${Lv(d.d2)} · ${D('fond','base')} ${L(d.d1)}`;
+    case 'plat': return `${Lv(d.l)} × ${Lv(d.w)} · h ${L(d.h)}`;
+    case 'bouteille': return `Ø ${Lv(d.d1)} · h ${L(d.h1+d.h2+d.h3)}`;
+    case 'boite': return `${Lv(d.l)} × ${Lv(d.w)} × ${L(d.h)}`;
+    case 'prisme': return `${d.n} ${D('pans','sides')} · h ${L(d.h)}`;
+    case 'coussin': return `Ø ${Lv(d.df)} · ${D('ép.','depth')} ${L(d.p)}`;
+    case 'tore': return `Ø ${Lv(d.de)} · ${D('trou','hole')} ${L(d.dtrou)}`;
+    case 'profil': { const pts=d.pts; return `Ø max ${Lv(2*Math.max(...pts.map(q=>q.r)))} · h ${L(pts.at(-1).y)}`; }
     default: return '';
   }
 }
@@ -2662,12 +2949,12 @@ function buildGallery(){
   $('#galleryCards').innerHTML = PRESETS.map((p,i) => {
     const sil = silhouetteFor(p.shape, Object.assign(defaultDims(p.shape), p.dims));
     const m = Math.max(sil.w, sil.h) * 0.06;
-    return `<div class="gcard" data-i="${i}" title="${p.name} — ${presetSummary(p)} mm">
+    return `<div class="gcard" data-i="${i}" title="${presetName(p.name)} — ${presetSummary(p)}">
       <svg viewBox="${-m} ${-m} ${sil.w+2*m} ${sil.h+2*m}" preserveAspectRatio="xMidYMid meet">
         <g stroke-width="${Math.max(sil.w,sil.h)/40}">${sil.svg}</g>
       </svg>
-      <div class="gname">${p.name}</div>
-      <div class="gdims">${presetSummary(p)} mm</div>
+      <div class="gname">${presetName(p.name)}</div>
+      <div class="gdims">${presetSummary(p)}</div>
     </div>`;
   }).join('');
   document.querySelectorAll('.gcard').forEach(el => el.onclick = () => {
@@ -2692,29 +2979,29 @@ const saveCarnet = () => localStorage.setItem('gabarits-carnet', JSON.stringify(
 function buildCarnet(){
   const box = $('#carnetCards');
   if(!carnet.length){
-    box.innerHTML = `<div class="gempty">aucune pièce enregistrée — règle une forme puis « enregistrer la pièce actuelle »</div>`;
+    box.innerHTML = `<div class="gempty">${t('carnet_empty')}</div>`;
     return;
   }
   box.innerHTML = carnet.map((c,i) => {
     const sil = silhouetteFor(c.shape, Object.assign(defaultDims(c.shape), c.dims));
     const m = Math.max(sil.w, sil.h) * 0.06;
-    return `<div class="gcard" data-i="${i}" title="${c.name} — ${SHAPES[c.shape].name}, retrait ${c.retrait} %, plaque ${c.ep} mm">
+    return `<div class="gcard" data-i="${i}" title="${c.name} — ${shapeName(c.shape)}, ${D('retrait','shrinkage')} ${c.retrait} %, ${D('plaque','slab')} ${L(c.ep)}">
       <span class="gact">
-        <button data-act="dup" data-i="${i}" title="dupliquer">⧉</button>
-        <button data-act="del" data-i="${i}" title="supprimer">×</button>
+        <button data-act="dup" data-i="${i}" title="${D('dupliquer','duplicate')}">⧉</button>
+        <button data-act="del" data-i="${i}" title="${D('supprimer','delete')}">×</button>
       </span>
       <svg viewBox="${-m} ${-m} ${sil.w+2*m} ${sil.h+2*m}" preserveAspectRatio="xMidYMid meet">
         <g stroke-width="${Math.max(sil.w,sil.h)/40}">${sil.svg}</g>
       </svg>
       <div class="gname">${c.name}</div>
-      <div class="gdims">${SHAPES[c.shape].name} · ${c.retrait} %</div>
+      <div class="gdims">${shapeName(c.shape)} · ${c.retrait} %</div>
     </div>`;
   }).join('');
   box.querySelectorAll('.gcard').forEach(el => el.onclick = e => {
     const act = e.target.dataset.act;
     const i = +(e.target.dataset.i ?? el.dataset.i);
     if(act === 'del'){
-      if(confirm(`Supprimer « ${carnet[i].name} » ?`)){ carnet.splice(i,1); saveCarnet(); buildCarnet(); }
+      if(confirm(D(`Supprimer « ${carnet[i].name} » ?`,`Delete “${carnet[i].name}”?`))){ carnet.splice(i,1); saveCarnet(); buildCarnet(); }
       return;
     }
     if(act === 'dup'){
@@ -2757,12 +3044,12 @@ function saveProjectAs(name){
   $('#projName').value = name;
   saveCarnet(); buildCarnet(); saveState();
   const btn = $('#btnSaveBar');
-  if(btn){ const t = btn.textContent; btn.textContent = existing ? 'mis à jour ✓' : 'enregistré ✓'; setTimeout(()=>btn.textContent = t, 1400); }
+  if(btn){ const prev = btn.textContent; btn.textContent = existing ? D('mis à jour ✓','updated ✓') : D('enregistré ✓','saved ✓'); setTimeout(()=>btn.textContent = prev, 1400); }
 }
 $('#btnSaveProj').onclick = () =>
   saveProjectAs(prompt('Nom de la pièce (ex. « mug Léa Ø85 ») :', state.projectName || SHAPES[state.shape].name));
 $('#btnSaveBar').onclick = () =>
-  saveProjectAs($('#projName').value.trim() || SHAPES[state.shape].name);
+  saveProjectAs($('#projName').value.trim() || shapeName(state.shape));
 $('#projName').value = state.projectName || '';
 $('#projName').oninput = e => { state.projectName = e.target.value; saveState(); };
 $('#btnExportCarnet').onclick = () => {
@@ -2783,8 +3070,8 @@ $('#carnetFile').onchange = () => {
       const ok = arr.filter(c => c && c.shape && SHAPES[c.shape] && c.dims && !ids.has(c.id));
       carnet = [...ok, ...carnet];
       saveCarnet(); buildCarnet();
-      alert(`${ok.length} pièce(s) importée(s).`);
-    }catch(e){ alert('Fichier invalide — attendu : un export JSON du carnet.'); }
+      alert(D(`${ok.length} pièce(s) importée(s).`,`${ok.length} piece(s) imported.`));
+    }catch(e){ alert(D('Fichier invalide — attendu : un export JSON du carnet.','Invalid file — expected a JSON export of the notebook.')); }
     $('#carnetFile').value = '';
   });
 };
@@ -2811,7 +3098,7 @@ if(state.mode === 'kurinuki' && !SHAPES[state.shape]?.kurinuki) state.shape = 'k
 function rerenderAll(){
   applyI18n();
   buildMode(); buildCarnet(); buildGallery(); buildShapeSelector(); buildDimFields(); buildCoteType();
-  refreshEpUnit(); syncTerrePreset();
+  refreshEpUnit(); syncTerrePreset(); applyPaper();
   refresh();
 }
 document.querySelectorAll('#langSeg [data-lang]').forEach(b => b.onclick = () => {
@@ -2822,6 +3109,11 @@ document.querySelectorAll('#unitSeg [data-unit]').forEach(b => b.onclick = () =>
   if(state.unit === b.dataset.unit) return;
   state.unit = b.dataset.unit; saveState(); track('unit_changed', { unit: state.unit }); rerenderAll();
 });
+document.querySelectorAll('#paperSeg [data-paper]').forEach(b => b.onclick = () => {
+  if(state.paper === b.dataset.paper) return;
+  state.paper = b.dataset.paper; saveState(); track('paper_changed', { paper: state.paper });
+  applyPaper(); refresh();
+});
 
 buildMode();
 buildCarnet();
@@ -2830,6 +3122,7 @@ buildShapeSelector();
 buildDimFields();
 buildCoteType();
 applyI18n();
+applyPaper();
 refresh();
 window.addEventListener('resize', renderOverlay);
 </script>
