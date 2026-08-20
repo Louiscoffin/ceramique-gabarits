@@ -322,6 +322,8 @@ select:focus{outline:none;border-color:var(--glaze)}
 .newsmodal-title{font-family:'Young Serif',serif;font-size:21px;color:var(--ink);margin:0 0 8px}
 .newsmodal-txt{font-size:13px;line-height:1.5;color:var(--ink);margin:0 0 16px}
 .newsmodal-txt b{color:var(--terra-d)}
+.newsmodal-txt ul{list-style:none;margin:10px 0 0;padding:0;display:inline-block;text-align:left}
+.newsmodal-txt li{margin:6px 0;font-size:12.5px;line-height:1.4}
 .newsmodal .tipclose{
   position:absolute;top:8px;right:12px;background:none;border:none;box-shadow:none;
   color:var(--ink2);font-size:19px;line-height:1;padding:0;cursor:pointer;
@@ -713,14 +715,14 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
     <button class="tipclose" id="newsClose" title="fermer" data-i18n-title="close">×</button>
     <span class="newsmodal-ico">✉️</span>
     <h3 class="newsmodal-title" data-i18n="news_title">Reste dans la boucle</h3>
-    <p class="newsmodal-txt" data-i18n-html="news_txt">Ajoute ton email pour être prévenu·e des nouveautés (nouvelles formes, le tournage 👀). <b>Je communique très peu</b> — et c'est un vrai moyen de <b>soutenir le projet</b> 🤎</p>
+    <div class="newsmodal-txt" data-i18n-html="news_txt">Laisse ton email pour :<ul><li>🎁 recevoir bientôt un <b>gabarit exclusif en PDF</b></li><li>✉️ les nouveautés — prochainement, les <b>gabarits pour le tour</b> ! (je communique très peu)</li><li>🤎 <b>soutenir le projet</b></li></ul></div>
     <form class="newsform" id="newsForm" novalidate>
       <input type="email" id="newsEmail" required autocomplete="email" placeholder="ton@email.com" data-i18n-ph="news_ph">
       <button class="tipbtn" type="submit" id="newsBtn" data-i18n="news_btn">M'inscrire</button>
     </form>
     <span class="newsconsent" data-i18n="news_consent">En t'inscrivant, tu acceptes de recevoir les nouveautés de l'outil. Désinscription en 1 clic.</span>
     <button class="newslater" id="newsLater" data-i18n="news_later">Plus tard</button>
-    <div class="newsdone" data-i18n="news_success">Merci — c'est noté ✓ Regarde ta boîte mail 📩</div>
+    <div class="newsdone" data-i18n="news_success">Merci — bien inscrit·e ✓ Le gabarit exclusif arrive bientôt 🎁</div>
   </div>
 </div>
 
@@ -1863,12 +1865,12 @@ Object.assign(STR.fr, {
   tip_txt:'Cet outil vous a fait gagner du temps&nbsp;?<br><b>Offrez-moi un pain de terre</b> (ou un café) — <b>montant libre</b>.',
   tip_btn:'🏺 offrir un pain de terre',
   news_title:'Reste dans la boucle',
-  news_txt:'Ajoute ton email pour être prévenu·e des nouveautés (nouvelles formes, le tournage 👀). <b>Je communique très peu</b> — et c\'est un vrai moyen de <b>soutenir le projet</b> 🤎',
+  news_txt:'Laisse ton email pour :<ul><li>🎁 recevoir bientôt un <b>gabarit exclusif en PDF</b></li><li>✉️ les nouveautés — prochainement, les <b>gabarits pour le tour</b> ! (je communique très peu)</li><li>🤎 <b>soutenir le projet</b></li></ul>',
   news_later:'Plus tard',
   news_btn:'M\'inscrire', doc_title:'Gabarits — patrons pour céramique à la plaque',
   tuto_title:'revoir le tuto', spick_title:'changer de forme',
   news_ph:'ton@email.com', news_consent:'En t\'inscrivant, tu acceptes de recevoir les nouveautés de l\'outil. Désinscription en 1 clic.',
-  news_success:'Merci — c\'est noté ✓ Regarde ta boîte mail 📩',
+  news_success:'Merci — bien inscrit·e ✓ Le gabarit exclusif arrive bientôt 🎁',
   paper_lab:'format d\'impression',
 });
 Object.assign(STR.en, {
@@ -1881,12 +1883,12 @@ Object.assign(STR.en, {
   tip_txt:'Did this tool save you time?<br><b>Buy me a block of clay</b> (or a coffee) — <b>any amount</b>.',
   tip_btn:'🏺 buy a block of clay',
   news_title:'Stay in the loop',
-  news_txt:'Add your email to hear about what\'s new (new shapes, wheel-throwing 👀). <b>I email very rarely</b> — and it\'s a real way to <b>support the project</b> 🤎',
+  news_txt:'Drop your email to:<ul><li>🎁 get an <b>exclusive PDF template</b> soon</li><li>✉️ hear what\'s new — soon, <b>wheel-throwing templates</b>! (I email very rarely)</li><li>🤎 <b>support the project</b></li></ul>',
   news_later:'Later',
   news_btn:'Sign up', doc_title:'Ceramic templates — cutting patterns for slab work',
   tuto_title:'replay the tutorial', spick_title:'change shape',
   news_ph:'you@email.com', news_consent:'By signing up you agree to receive updates about the tool. Unsubscribe in 1 click.',
-  news_success:'Thanks — you\'re in ✓ Check your inbox 📩',
+  news_success:'Thanks — you\'re in ✓ Your exclusive template is coming soon 🎁',
   paper_lab:'print size',
 });
 const isEN = () => state.lang === 'en';
