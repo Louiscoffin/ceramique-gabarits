@@ -2781,12 +2781,11 @@ function afterExport(){
   localStorage.setItem('gabarits-exports', String(n));
   const consentEl = $('#consent');
   const consentVisible = consentEl && !consentEl.hidden && consentEl.classList.contains('show');
-  if(consentVisible) return;                                   // ne rien empiler sur le bandeau cookies
   const subscribed = localStorage.getItem('gabarits-news-sub');
   if(subscribed){
-    maybeThanks();        // 2) don proposé UNIQUEMENT aux abonnés
+    if(!consentVisible) maybeThanks();   // 2) don (barre du bas) — pas en même temps que le bandeau cookies (barre du bas aussi)
   } else if(n % 2 === 1){
-    showNews();           // 1) email : relancé une impression sur deux (exports 1, 3, 5…) tant que non rempli
+    showNews();           // 1) email : modale centrée (z600) → s'affiche même si les cookies ne sont pas encore répondus
   }
 }
 
