@@ -2740,17 +2740,27 @@ function subscribeNews(email){
   track('newsletter_submit', { source: 'modale' });
   const bar = $('#news'), btn = $('#newsBtn');
   btn.disabled = true;
-  const done = () => {
-    localStorage.setItem('gabarits-news-off', '1');
-    localStorage.setItem('gabarits-news-sub', '1');
-    bar.classList.add('done');
-    clearTimeout(newsTimer); newsTimer = setTimeout(hideNews, 2600);
-  };
-  const body = new URLSearchParams({ EMAIL: email, email_address_check: '', locale: state.lang });
-  fetch(NEWS_ACTION + '?isAjax=1', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body })
-    .then(r => r.json())
-    .then(j => { if(j && j.success) done(); else throw new Error('brevo'); })
-    .catch(() => { btn.disabled = false; window.open(NEWS_FALLBACK, '_blank', 'noopener'); });   // repli : formulaire hébergé
+  // Envoi via une iframe cachée : POST de formulaire classique → aucune dépendance
+  // CORS, on reste sur la page, JAMAIS de redirection (même si un bloqueur/anti-tracker
+  // gêne les requêtes cross-site). En simple opt-in le contact est ajouté directement.
+  let sink = document.getElementById('newsSink');
+  if(!sink){
+    sink = document.createElement('iframe');
+    sink.id = 'newsSink'; sink.name = 'newsSink'; sink.style.display = 'none';
+    document.body.appendChild(sink);
+  }
+  const f = document.createElement('form');
+  f.method = 'POST'; f.action = NEWS_ACTION; f.target = 'newsSink'; f.style.display = 'none';
+  const add = (n, v) => { const i = document.createElement('input'); i.name = n; i.value = v; f.appendChild(i); };
+  add('EMAIL', email); add('email_address_check', ''); add('locale', state.lang);   // champs Brevo
+  document.body.appendChild(f);
+  f.submit();
+  setTimeout(() => f.remove(), 4000);
+  // succès optimiste (simple opt-in)
+  localStorage.setItem('gabarits-news-off', '1');
+  localStorage.setItem('gabarits-news-sub', '1');
+  bar.classList.add('done');
+  clearTimeout(newsTimer); newsTimer = setTimeout(hideNews, 2600);
 }
 $('#newsForm').addEventListener('submit', e => {
   e.preventDefault();
