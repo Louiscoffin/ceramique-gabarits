@@ -129,6 +129,10 @@ button.small{padding:4px 10px;font-size:11px;box-shadow:2px 2px 0 rgba(51,38,26,
 .gcard .tzph{height:52px;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:5px;opacity:.9}
 .gcard .gbadge{display:inline-block;font-family:'Fragment Mono',monospace;font-size:7.5px;letter-spacing:.09em;text-transform:uppercase;color:#fdf6ea;background:var(--terra);border-radius:2px;padding:2px 6px;margin-bottom:5px}
 .gcard .tzcta{font-size:9.5px;color:var(--terra-d);margin-top:4px;font-weight:bold}
+.newsmini{width:100%;margin-top:14px;padding:10px 2px 0;border:none;border-top:1px dashed var(--line);
+  background:none;box-shadow:none;font-family:'Fragment Mono',monospace;font-size:11px;
+  color:var(--ink2);cursor:pointer;text-align:left;transition:color .15s}
+.newsmini:hover{color:var(--terra-d);transform:none}
 
 .gallery .glabel .gbtns{display:flex;gap:6px}
 .carnet-btn{display:flex;align-items:center;gap:8px}
@@ -631,6 +635,7 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
         <div class="krow"><span data-i18n="facteur">facteur d’agrandissement</span><b id="kVal">×1,000</b></div>
         </div>
       </div>
+      <button class="newsmini" id="newsMini" data-i18n="news_mini">✉️ Être prévenu·e des nouveautés →</button>
     </div>
   </section>
 
@@ -1879,6 +1884,7 @@ Object.assign(STR.fr, {
   news_success:'Merci — bien inscrit·e ✓ Le gabarit exclusif arrive bientôt 🎁',
   paper_lab:'format d\'impression',
   coll_badge:'Bientôt', coll_name:'De nouveaux modèles', coll_cta:'Inscris-toi →',
+  news_mini:'✉️ Être prévenu·e des nouveautés →',
 });
 Object.assign(STR.en, {
   ov_op:'opacity', ov_reset:'reset to sizes', ov_apply:'apply to sizes',
@@ -1898,6 +1904,7 @@ Object.assign(STR.en, {
   news_success:'Thanks — you\'re in ✓ Your exclusive template is coming soon 🎁',
   paper_lab:'print size',
   coll_badge:'Soon', coll_name:'New models', coll_cta:'Sign up →',
+  news_mini:'✉️ Get notified of what\'s new →',
 });
 const isEN = () => state.lang === 'en';
 const D = (fr, en) => isEN() ? en : fr;   // texte selon la langue (instructions de pièces)
@@ -2740,6 +2747,7 @@ function hideNews(){
    à une prochaine visite (mais plus pendant cette session). */
 $('#newsLater').onclick = () => { track('newsletter_later', { source: 'modale' }); hideNews(); };
 $('#newsClose').onclick = () => hideNews();
+$('#newsMini').onclick = () => { track('newsletter_click', { source: 'panneau' }); showNews(); };   // entrée discrète panneau 1
 
 /* Inscription newsletter → Brevo (double opt-in).
    NEWS_ACTION : coller l'URL "action=" du formulaire Brevo (https://sibforms.com/serve/...).
