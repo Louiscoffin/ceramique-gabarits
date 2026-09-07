@@ -9,12 +9,14 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
 <!-- ===================== Mesure d'audience =====================
-     PostHog (EU) + Google Analytics 4. Colle tes identifiants ci-dessous.
-     RIEN n'est chargé au démarrage : loadAnalytics() n'est appelé
-     qu'APRÈS consentement (voir le bandeau cookies, script en bas). -->
+     PostHog (EU), en mode ANONYME et SANS COOKIE :
+       - persistence 'memory'  → aucun cookie, rien dans localStorage
+       - person_profiles 'never' → pas de profil, pas d'identifiant persistant
+       - $ip retiré côté client + session replay/surveys coupés
+     Rien d'identifiant n'est stocké sur le poste du visiteur → pas de
+     bandeau de consentement (mesure d'audience strictement interne). -->
 <script>
   window.PH_KEY = 'phc_o5CMC3YiV6vf2ByYNxwTx3mE8uS6hEVNXZ9tdnmUKdNM';  // PostHog (eu.posthog.com → Settings → Project API Key)
-  window.GA_ID  = 'G-XXXXXXXXXX';                                       // GA4 (Admin → Flux de données → Web → ID de mesure)
   window.__analyticsLoaded = false;
   window.loadAnalytics = function(){
     if (window.__analyticsLoaded) return;
@@ -23,21 +25,31 @@
       var _ph = document.createElement('script');
       _ph.src = 'https://eu-assets.i.posthog.com/static/array.js';
       _ph.onload = function(){
-        posthog.init(PH_KEY, { api_host:'https://eu.i.posthog.com', defaults:'2026-05-30', person_profiles:'identified_only' });
+        posthog.init(PH_KEY, {
+          api_host: 'https://eu.i.posthog.com',
+          defaults: '2026-05-30',
+          persistence: 'memory',            // aucun stockage sur le terminal
+          person_profiles: 'never',         // événements anonymes uniquement
+          disable_session_recording: true,
+          disable_surveys: true,
+          property_denylist: ['$ip', '$initial_referrer', '$initial_referring_domain']
+        });
       };
       document.head.appendChild(_ph);
     }
-    if (window.GA_ID && GA_ID.indexOf('G-') === 0 && GA_ID !== 'G-XXXXXXXXXX') {
-      var _ga = document.createElement('script');
-      _ga.async = true;
-      _ga.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
-      document.head.appendChild(_ga);
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = function(){ dataLayer.push(arguments); };
-      gtag('js', new Date());
-      gtag('config', GA_ID);
-    }
   };
+  // ménage : supprime les traces de l'ancien système (cookie PostHog + choix de consentement)
+  try{
+    document.cookie.split(';').forEach(function(c){
+      var n = c.split('=')[0].trim();
+      if(n.indexOf('ph_') === 0 || n.indexOf('_ga') === 0){
+        document.cookie = n + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+        document.cookie = n + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=.' + location.hostname;
+      }
+    });
+    localStorage.removeItem('gabarits-consent');
+  }catch(e){}
+  window.loadAnalytics();
 </script>
 <!-- =========================================================== -->
 
@@ -187,6 +199,18 @@ main{
   gap:22px;padding:22px 30px 60px;align-items:start;
 }
 @media (max-width:1150px){main{grid-template-columns:290px 1fr}.col-patterns{grid-column:1/-1}}
+/* L'aperçu suit le défilement : l'éditeur de profil est haut, sans ça on
+   déplace les points de la forme sans avoir la silhouette sous les yeux.
+   (En une seule colonne, l'aperçu est sous le formulaire : sticky n'y
+   apporterait rien, d'où le seuil.) */
+@media (min-width:761px){
+  #panel-apercu{
+    position:sticky;top:16px;
+    max-height:calc(100vh - 32px);
+    display:flex;flex-direction:column;min-height:0;
+  }
+  #panel-apercu>.pbody{overflow:auto;min-height:0}
+}
 .panel{
   background:var(--card);border:1.5px solid var(--ink);border-radius:3px;
   box-shadow:5px 5px 0 rgba(51,38,26,.15);
@@ -224,6 +248,13 @@ main{
 .field{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
 .field label{font-size:12px;color:var(--ink2);flex:1}
 .field .unit{color:var(--ink2);font-size:11px;margin-left:4px}
+.field.fslider{flex-wrap:wrap}
+.field.fslider > span{display:flex;align-items:center;gap:9px;flex:1 1 150px;min-width:0}
+.field.fslider input[type=range]{min-width:0}
+.field .rngval{
+  font-family:'Fragment Mono',monospace;font-size:12px;color:var(--ink);
+  flex:none;width:30px;text-align:right;
+}
 input[type=number]{
   font-family:'Fragment Mono',monospace;font-size:13px;color:var(--ink);
   width:76px;padding:5px 7px;border:1.5px solid var(--line);border-radius:2px;background:#fbf6ea;text-align:right;
@@ -236,6 +267,12 @@ input[type=number]:focus{outline:none;border-color:var(--terra)}
   border-radius:2px;cursor:pointer;color:var(--ink2);background:var(--paper);
 }
 .radio-row .opt.on{border-color:var(--glaze);color:var(--glaze);background:#e4ebe2;font-weight:bold}
+/* option teaser : même langage que les autres « bientôt », en retrait */
+.radio-row .opt.soon{flex:0 1 auto;display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  padding:5px 9px;font-size:10.5px;border-style:dashed;border-color:var(--line);color:var(--terra-d)}
+.radio-row .opt.soon:hover{background:#faf1e6}
+/* ici le « bientôt » n'est qu'une mention : pas de pastille pleine */
+.radio-row .opt.soon .soonbadge{background:none;color:var(--ink2);padding:0;font-size:8px;font-weight:normal}
 .hint{font-size:10.5px;color:var(--ink2);margin-top:2px;line-height:1.45}
 .hint b{color:var(--terra-d)}
 .krow{display:flex;justify-content:space-between;align-items:baseline;background:var(--card);border:1.5px dashed var(--line);border-radius:2px;padding:6px 9px;margin-top:10px;font-size:11px;color:var(--ink2)}
@@ -263,6 +300,14 @@ select:focus{outline:none;border-color:var(--glaze)}
 #prevSil svg{display:block;width:100%;max-height:300px}
 #prevSil .prevsil{stroke:var(--terra-d);fill:rgba(184,80,42,.08)}
 #prevDims{text-align:center;font-size:11px;color:var(--ink2);margin-top:8px}
+.ptools{display:inline-flex;align-items:center;gap:8px}
+/* bouton teaser « bientôt » — même langage que la carte teaser de la galerie */
+.soonbtn{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;
+  border:1.5px dashed var(--terra);border-radius:3px;background:#faf1e6;box-shadow:none;
+  font-family:'Fragment Mono',monospace;font-size:11px;color:var(--terra-d);cursor:pointer}
+.soonbtn:hover{background:#f6e7d6;transform:none}
+.soonbadge{font-size:7.5px;letter-spacing:.09em;text-transform:uppercase;
+  color:#fdf6ea;background:var(--terra);border-radius:2px;padding:2px 5px}
 #previewBox + .dropzone{margin-top:12px}
 .dropzone{min-height:0;flex-direction:row;gap:10px;padding:11px 14px;font-size:11px;text-align:left}
 
@@ -286,6 +331,19 @@ select:focus{outline:none;border-color:var(--glaze)}
 #projName:focus{outline:none;border-color:var(--terra)}
 .pchk{width:15px;height:15px;accent-color:var(--terra);flex:none;cursor:pointer}
 .piece-card.excluded{opacity:.45}
+
+/* ---------- menu du bouton SVG ---------- */
+.svgmenu{
+  position:fixed;z-index:400;min-width:212px;padding:4px;
+  background:var(--card);border:1.5px solid var(--ink);border-radius:3px;
+  box-shadow:3px 3px 0 rgba(51,38,26,.18);
+}
+.svgmenu button{
+  display:block;width:100%;text-align:left;border:none;box-shadow:none;border-radius:2px;
+  background:none;padding:8px 9px;font-family:inherit;font-size:12px;color:var(--ink);cursor:pointer;
+}
+.svgmenu button:hover{background:var(--paper)}
+.svgmenu button span{display:block;font-size:10.5px;color:var(--ink2);margin-top:2px;line-height:1.35}
 
 /* ---------- pourboire ---------- */
 .tipbar{
@@ -364,21 +422,8 @@ select:focus{outline:none;border-color:var(--glaze)}
 }
 .tipfoot a{color:var(--terra-d);font-weight:bold}
 .tipfoot-fb{margin-top:6px}
-@media print{ .tipbar,.tipfoot,.consent,.newsmodal{display:none !important} }
-
-/* ---------- consentement cookies ---------- */
-.consent{
-  position:fixed;left:20px;bottom:20px;z-index:320;width:min(92vw,330px);
-  transform:translateY(160%);transition:transform .4s cubic-bezier(.2,.9,.3,1.2);
-  background:var(--card);border:1.5px solid var(--ink);border-radius:4px;
-  box-shadow:5px 5px 0 rgba(51,38,26,.22);padding:14px 15px;
-  font-size:11.5px;line-height:1.5;color:var(--ink);
-}
-.consent.show{transform:translateY(0)}
-.consent b{font-family:'Young Serif',serif;font-weight:400;font-size:13.5px;color:var(--terra-d);display:block;margin-bottom:4px}
-.consent-btns{display:flex;gap:8px;margin-top:11px}
-.consent-btns button{flex:1;font-size:12px;padding:8px 6px}
-.consent .consent-yes{background:var(--terra);border-color:var(--terra-d);color:#fdf6ea}
+.tipfoot-privacy{opacity:.7}
+@media print{ .tipbar,.tipfoot,.newsmodal{display:none !important} }
 
 /* ---------- tour d'onboarding ---------- */
 .tour-btn{padding:6px 11px}
@@ -451,6 +496,7 @@ input[type=range]{flex:1;accent-color:var(--terra);height:18px}
 }
 .piece-head .pname{font-size:13.5px;font-weight:bold}
 .piece-head .qty{color:var(--terra-d);font-size:12px}
+.piece-head .psize{font-family:'Fragment Mono',monospace;font-size:11px;color:var(--ink2)}
 .piece-head .dl{margin-left:auto}
 .piece-svg{padding:12px 14px 6px;overflow:auto}
 .piece-svg svg{display:block;max-width:100%;height:auto}
@@ -551,7 +597,6 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
   /* bandeaux plein largeur, bas d'écran */
   .tipbar{left:12px;right:12px;bottom:12px;width:auto;transform:translateY(160%)}
   .tipbar.show{transform:translateY(0)}
-  .consent{left:12px;right:12px;bottom:12px;width:auto}
 }
 </style>
 </head>
@@ -599,6 +644,7 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
       <div class="radio-row" id="modeRow" style="margin-bottom:12px">
         <div class="opt" data-v="plaque" data-i18n="mode_plaque">à la plaque</div>
         <div class="opt" data-v="kurinuki" data-i18n="mode_kur">kurinuki</div>
+        <div class="opt" data-v="tour" data-i18n-title="tour_title" title="gabarits de tournage : profils, jauge de hauteur, pied" data-i18n="mode_tour">au tour</div>
       </div>
       <button class="spick" id="spickBtn" data-i18n-title="spick_title" title="changer de forme"></button>
       <div class="shapes" id="shapeSel" style="display:none"></div>
@@ -641,7 +687,7 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
 
   <!-- ============ 2. PHOTO ============ -->
   <section class="panel" id="panel-apercu">
-    <div class="ptitle"><span><span class="num">2.</span><span data-i18n="p2_title">Aperçu</span></span><button class="small" id="btnClearPhoto" data-i18n="apercu_retirer" style="display:none">retirer la photo</button></div>
+    <div class="ptitle"><span><span class="num">2.</span><span data-i18n="p2_title">Aperçu</span></span><span class="ptools"><button class="soonbtn" id="view3dSoon" data-i18n-title="v3d_title" title="voir sa pièce en volume — en préparation"><span class="soonbadge" data-i18n="coll_badge">Bientôt</span><span data-i18n="v3d_label">vue 3D →</span></button><button class="small" id="btnClearPhoto" data-i18n="apercu_retirer" style="display:none">retirer la photo</button></span></div>
     <div class="pbody">
       <div id="previewBox">
         <div id="prevSil"></div>
@@ -689,7 +735,7 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
           <div class="seg" id="paperSeg" title="format de papier / paper size"><button data-paper="a4">A4</button><button data-paper="letter">Letter</button></div>
         </div>
         <div class="srow srow-export">
-          <button class="small" id="btnSvg" data-i18n-title="svg_title" title="télécharger chaque gabarit en fichier SVG">SVG</button>
+          <button class="small" id="btnSvg" data-i18n-title="svg_title" title="télécharger chaque gabarit en fichier SVG">SVG ▾</button>
           <button class="small" id="btnPdf" data-i18n-title="pdf_title" title="télécharger les gabarits en PDF">PDF</button>
           <button class="primary" id="btnPrint" data-i18n="btn_print">Imprimer les gabarits</button>
         </div>
@@ -700,17 +746,8 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
 
 <footer class="tipfoot">
   <span data-i18n="foot_made">Outil gratuit, fait avec 🤎 —</span> <a id="tipFootLink" href="#" target="_blank" rel="noopener noreferrer" data-i18n="foot_tip_link">offrez-moi un pain de terre ☕</a> <span style="opacity:.7" data-i18n="foot_free">(montant libre)</span>
-  <div class="tipfoot-fb"><a id="newsFootLink" href="https://69a1d944.sibforms.com/serve/MUIFAN7K5Y-M3NorrPe98ttopcj5n92TsQ8VVyVuyk0CkfuYpkbILFKorLERZuTqJpQxE1Qqc97MFHFkAP-r3PHI5A9qwQmyxSK61drlEPJRUStlFBndKiPIEQCAE8CP6Vv7ZlaMvzh-tYdnXSds_l2VnyJybTE6DbttRlKXqLZNFn7d6Q-2EnG3LL0aHEjydNHIOsbXuycFiTz4zg==" target="_blank" rel="noopener noreferrer" data-i18n="foot_news">✉️ recevez les nouveautés</a> · <a id="fbFootLink" href="https://tally.so/r/ZjKADz" target="_blank" rel="noopener noreferrer" data-i18n="foot_fb">donnez votre avis ✍️</a> · <a id="cookiesLink" href="#" data-i18n="foot_cookies">cookies</a></div>
+  <div class="tipfoot-fb"><a id="newsFootLink" href="https://69a1d944.sibforms.com/serve/MUIFAN7K5Y-M3NorrPe98ttopcj5n92TsQ8VVyVuyk0CkfuYpkbILFKorLERZuTqJpQxE1Qqc97MFHFkAP-r3PHI5A9qwQmyxSK61drlEPJRUStlFBndKiPIEQCAE8CP6Vv7ZlaMvzh-tYdnXSds_l2VnyJybTE6DbttRlKXqLZNFn7d6Q-2EnG3LL0aHEjydNHIOsbXuycFiTz4zg==" target="_blank" rel="noopener noreferrer" data-i18n="foot_news">✉️ recevez les nouveautés</a> · <a id="fbFootLink" href="https://tally.so/r/ZjKADz" target="_blank" rel="noopener noreferrer" data-i18n="foot_fb">donnez votre avis ✍️</a> · <span class="tipfoot-privacy" data-i18n="foot_privacy">mesure d'audience anonyme, sans cookie</span></div>
 </footer>
-
-<div class="consent" id="consent" hidden>
-  <span data-i18n-html="consent_txt"><b>Un petit cookie&nbsp;?</b>
-  Une mesure d'audience anonyme m'aide à voir quelles formes servent et à améliorer l'outil. Rien n'est chargé sans votre accord.</span>
-  <div class="consent-btns">
-    <button class="consent-no" id="consentNo" data-i18n="consent_no">Refuser</button>
-    <button class="consent-yes" id="consentYes" data-i18n="consent_yes">Accepter</button>
-  </div>
-</div>
 
 <div class="tipbar" id="tipbar">
   <span class="tipico">🏺</span>
@@ -879,6 +916,51 @@ SHAPES.kur_rect = {
   init: { pts: [{r:36,y:0},{r:50,y:25},{r:53,y:58},{r:45,y:85}] },
 };
 
+SHAPES.tour_bol = {
+  name: 'Bol',
+  tour: true,
+  glyph: '<svg width="34" height="34" viewBox="0 0 34 34"><path d="M4 12 c0 10 6 15 13 15 7 0 13-5 13-15 Z"/><path d="M13 27 h8" /></svg>',
+  fields: [ {k:'galbe', lab:'Galbe du profil', def:60, min:0, max:100, slider:true},
+            {k:'paroi', lab:'Épaisseur de paroi visée', def:6},
+            {k:'hpied', lab:'Hauteur du pied (creux sous la pièce)', def:7},
+            {k:'lpied', lab:"Largeur de l'anneau de pied", def:9} ],
+  editor: 'profil',
+  init: { pts: [{r:26,y:0},{r:44,y:16},{r:60,y:42},{r:67,y:68}] },
+};
+SHAPES.tour_pot = {
+  name: 'Pot droit / mug',
+  tour: true,
+  glyph: '<svg width="34" height="34" viewBox="0 0 34 34"><path d="M9 6 v20 a8 3 0 0 0 16 0 V6"/><ellipse cx="17" cy="6" rx="8" ry="2.6"/></svg>',
+  fields: [ {k:'galbe', lab:'Galbe du profil', def:60, min:0, max:100, slider:true},
+            {k:'paroi', lab:'Épaisseur de paroi visée', def:6},
+            {k:'hpied', lab:'Hauteur du pied (creux sous la pièce)', def:7},
+            {k:'lpied', lab:"Largeur de l'anneau de pied", def:9} ],
+  editor: 'profil',
+  init: { pts: [{r:38,y:0},{r:41,y:35},{r:42,y:75},{r:42,y:105}] },
+};
+SHAPES.tour_vase = {
+  name: 'Vase à col',
+  tour: true,
+  glyph: '<svg width="34" height="34" viewBox="0 0 34 34"><path d="M13 4 c0 6 -8 8 -8 16 a12 10 0 0 0 24 0 c0-8 -8-10 -8-16"/><path d="M13 4 h8"/></svg>',
+  fields: [ {k:'galbe', lab:'Galbe du profil', def:60, min:0, max:100, slider:true},
+            {k:'paroi', lab:'Épaisseur de paroi visée', def:6},
+            {k:'hpied', lab:'Hauteur du pied (creux sous la pièce)', def:7},
+            {k:'lpied', lab:"Largeur de l'anneau de pied", def:9} ],
+  editor: 'profil',
+  init: { pts: [{r:32,y:0},{r:55,y:38},{r:58,y:78},{r:36,y:128},{r:30,y:150},{r:35,y:166}] },
+};
+SHAPES.tour_assiette = {
+  name: 'Assiette',
+  tour: true,
+  glyph: '<svg width="34" height="34" viewBox="0 0 34 34"><path d="M3 14 c4 8 24 8 28 0"/><path d="M11 20 h12"/></svg>',
+  fields: [ {k:'galbe', lab:'Galbe du profil', def:60, min:0, max:100, slider:true},
+            {k:'paroi', lab:'Épaisseur de paroi visée', def:6},
+            {k:'hpied', lab:'Hauteur du pied (creux sous la pièce)', def:7},
+            {k:'lpied', lab:"Largeur de l'anneau de pied", def:9} ],
+  editor: 'profil',
+  init: { pts: [{r:46,y:0},{r:72,y:9},{r:102,y:22},{r:114,y:30}] },
+};
+
 const SHAPE_GROUPS = [
   { label:'Formes de base', ids:['cylindre','cone','boite','pyramide','ovale','prisme','facettes'] },
   { label:'Vaisselle & objets', ids:['tasse','pichet','assiette','plat','bouteille','coussin','tore'] },
@@ -887,7 +969,13 @@ const SHAPE_GROUPS = [
 const KUR_GROUPS = [
   { label:'Creusage dans la masse', ids:['kur_cyl','kur_rect'] },
 ];
+const TOUR_GROUPS = [
+  { label:'Tourné au tour', ids:['tour_bol','tour_pot','tour_vase','tour_assiette'] },
+];
 const isKur = () => !!SHAPES[state.shape].kurinuki;
+const isTour = () => !!SHAPES[state.shape].tour;
+/* mode auquel appartient une forme (source de vérité : la forme, pas l'état) */
+const modeOf = id => SHAPES[id]?.kurinuki ? 'kurinuki' : SHAPES[id]?.tour ? 'tour' : 'plaque';
 
 const detectLang = () => (navigator.language || 'fr').toLowerCase().startsWith('en') ? 'en' : 'fr';
 const DEFAULT_STATE = {
@@ -895,7 +983,7 @@ const DEFAULT_STATE = {
   dims: Object.fromEntries(Object.entries(SHAPES).map(([id,s]) =>
     [id, Object.assign(Object.fromEntries(s.fields.map(f=>[f.k,f.def])), JSON.parse(JSON.stringify(s.init||{})))])),
   ep: 5, retrait: 12, coteType: 'fini',
-  unit: 'cm', lang: null, paper: 'a4',    // lang null = auto-détection au 1er chargement
+  unit: 'cm', lang: null, paper: 'a4', view3d: false,   // lang null = auto-détection au 1er chargement
   ov: { x: 30, y: 20, scale: 55, op: 75 },
 };
 let state = loadState();
@@ -916,6 +1004,8 @@ function loadState(){
   else if(!st.lang) st.lang = detectLang();     // sinon : anglais si navigateur EN, français sinon
   if(!st.unit) st.unit = 'cm';
   if(!st.paper) st.paper = 'a4';
+  st.view3d = false;    // vue 3D prête mais pas encore ouverte (cf. #view3dSoon) :
+                        // jamais restaurée depuis le stockage, on l'active à la main
   return st;
 }
 function saveState(){ localStorage.setItem('gabarits-state', JSON.stringify(state)); }
@@ -945,7 +1035,9 @@ const STR = {
     hdr_carnet: 'Mon carnet de pièces', hdr_tuto: '? tuto',
     p1_title: 'Forme & cotes', p2_title: 'Aperçu', p3_title: 'Pièces à découper',
     mode_plaque: 'à la plaque', mode_kur: 'kurinuki', change: 'changer',
+    mode_tour: 'au tour', tour_title: 'gabarits de tournage : profils, jauge de hauteur, pied',
     g_base: 'Formes de base', g_vaisselle: 'Vaisselle & objets', g_dessiner: 'À dessiner', g_kur: 'Creusage dans la masse',
+    g_tour: 'Tourné au tour',
     terre_title: 'Ma terre', terre_label: 'Terre',
     terre_faience: 'faïence · 8 %', terre_gres: 'grès · 12 %', terre_porcelaine: 'porcelaine · 14 %', terre_mesure: 'retrait mesuré',
     retrait: 'Retrait de cuisson', epaisseur: 'Épaisseur de plaque',
@@ -953,6 +1045,7 @@ const STR = {
     terre_hint: 'En <b>pièce finie</b>, les gabarits sont agrandis pour compenser le retrait (séchage + cuisson). En <b>pièce crue</b>, ils sont tracés tels quels.',
     facteur: 'facteur d’agrandissement',
     apercu_photo: 'superposer une photo (optionnel) — glisse ou clique',
+    v3d_label: 'vue 3D →', v3d_title: 'voir sa pièce en volume — en préparation',
     apercu_retirer: 'retirer la photo',
   },
   en: {
@@ -960,7 +1053,9 @@ const STR = {
     hdr_carnet: 'My pieces', hdr_tuto: '? tour',
     p1_title: 'Shape & size', p2_title: 'Preview', p3_title: 'Pieces to cut',
     mode_plaque: 'slab building', mode_kur: 'kurinuki', change: 'change',
+    mode_tour: 'on the wheel', tour_title: 'throwing templates: profiles, height gauge, foot',
     g_base: 'Basic shapes', g_vaisselle: 'Tableware & objects', g_dessiner: 'Draw your own', g_kur: 'Carving from a block',
+    g_tour: 'Thrown on the wheel',
     terre_title: 'My clay', terre_label: 'Clay',
     terre_faience: 'earthenware · 8%', terre_gres: 'stoneware · 12%', terre_porcelaine: 'porcelain · 14%', terre_mesure: 'measured shrinkage',
     retrait: 'Firing shrinkage', epaisseur: 'Slab thickness',
@@ -968,6 +1063,7 @@ const STR = {
     terre_hint: 'With <b>finished size</b>, templates are scaled up to offset shrinkage (drying + firing). With <b>wet-clay size</b>, they are drawn as entered.',
     facteur: 'scale-up factor',
     apercu_photo: 'overlay a photo (optional) — drag or click',
+    v3d_label: '3D view →', v3d_title: 'see your piece as a volume — in the works',
     apercu_retirer: 'remove photo',
   },
 };
@@ -993,6 +1089,10 @@ const I18N_SHAPES = {
   tore:{name:'Ring vase',f:{de:'Outer Ø',dtrou:'Hole Ø',p:'Depth (side band)',do:'Opening Ø (0 = closed)',hc:'Neck height'}},
   kur_cyl:{name:'Cylindrical block',f:{paroi:'Target wall thickness',marge:'Carving margin (per face)'}},
   kur_rect:{name:'Rectangular block',f:{paroi:'Target wall thickness',marge:'Carving margin (per face)'}},
+  tour_bol:{name:'Bowl',f:{galbe:'Profile curve',paroi:'Target wall thickness',hpied:'Foot recess depth',lpied:'Foot ring width'}},
+  tour_pot:{name:'Straight pot / mug',f:{galbe:'Profile curve',paroi:'Target wall thickness',hpied:'Foot recess depth',lpied:'Foot ring width'}},
+  tour_vase:{name:'Necked vase',f:{galbe:'Profile curve',paroi:'Target wall thickness',hpied:'Foot recess depth',lpied:'Foot ring width'}},
+  tour_assiette:{name:'Plate',f:{galbe:'Profile curve',paroi:'Target wall thickness',hpied:'Foot recess depth',lpied:'Foot ring width'}},
 };
 const shapeName = id => (state.lang==='en' && I18N_SHAPES[id]) ? I18N_SHAPES[id].name : SHAPES[id].name;
 const fieldLab = (id, fk, frLab) => (state.lang==='en' && I18N_SHAPES[id]?.f?.[fk]) ? I18N_SHAPES[id].f[fk] : frLab;
@@ -1033,6 +1133,7 @@ function pieceArea(geo){
    (en kurinuki : poids du bloc plein à préparer) */
 function clayWeight(pieces){
   if(isKur()) return kurData().blocW;
+  if(isTour()) return tourClay();          // boule à centrer = paroi + fond, en volume de révolution
   const mm3 = pieces.filter(p => !p.noClay)
     .reduce((s,p) => s + p.qty * pieceArea(p.geo) * state.ep, 0);
   return mm3 * 0.0019;   // g
@@ -1072,8 +1173,8 @@ function coneWall(D1, D2, H, e){
   if(Math.abs(r1 - r2) < 0.5){
     const C = Math.PI * (D1 - e);
     return { name:'Paroi', qty:1, geo:{t:'rect', w:C, h:H},
-      dims:[D(`Ø base ≈ Ø haut : la paroi est un simple rectangle ${Lv(C)} × ${L(H)}`,
-              `Ø base ≈ Ø top: the wall is a simple rectangle ${Lv(C)} × ${L(H)}`)],
+      dims:[D(`Ø base = Ø haut : la paroi est un simple rectangle ${Lv(C)} × ${L(H)}`,
+              `Ø base = Ø top: the wall is a simple rectangle ${Lv(C)} × ${L(H)}`)],
       notes:[D(`joint vertical : biseauter les deux petits côtés à 45°`,
                `vertical seam: bevel the two short edges at 45°`)] };
   }
@@ -1180,14 +1281,118 @@ function kurPieces(d, rectBloc){
       geo:{t:'path', d: dOut + ' ' + dCav, bx:0, by:0, bw:2*maxR, bh:H, label:`${D('paroi','wall')} ${L(paroi)}`},
       dims:[D(`paroi et fond visés ${L(paroi)} — profondeur de cavité ${L(H - paroi)}`,
               `target wall & base ${L(paroi)} — cavity depth ${L(H - paroi)}`),
-            D(`pièce finie ≈ ${fmtPoids(pieceW)} de terre — le reste du bloc s'évide`,
-              `finished piece ≈ ${fmtPoids(pieceW)} of clay — the rest of the block is hollowed out`)],
+            D(`pièce finie : env. ${fmtPoids(pieceW)} de terre — le reste du bloc s'évide`,
+              `finished piece: approx. ${fmtPoids(pieceW)} of clay — the rest of the block is hollowed out`)],
       notes:[D(`gabarit de contrôle : garder à côté en creusant, vérifier au compas d'épaisseur`,
                `check template: keep it beside you while carving, check with a wall-thickness caliper`),
              D(`creuser à la mirette par étages, du centre vers les bords, le fond en dernier — séchage très lent sous plastique`,
                `carve with a loop tool in stages, from centre to edges, base last — dry very slowly under plastic`),
              D(`l'épaisseur est mesurée horizontalement : sur les zones très inclinées, viser un peu plus épais`,
                `thickness is measured horizontally: on steep areas, aim a little thicker`)] });
+  }
+  return P;
+}
+
+
+/* ---------- tournage : gabarits de tour ----------
+   Un gabarit de tour sert sur la terre humide : toutes les cotes sont donc
+   crues (× k), comme les patrons de plaque. Repère de dessin : x = rayon
+   depuis l'axe du tour, y vers le bas, le plateau du tour en bas (y = H). */
+function tourProfil(){
+  const k = kFactor();
+  const d = state.dims[state.shape];
+  const raw = d.pts.map(p => ({ r: p.r*k, y: p.y*k }));
+  const y0 = raw[0].y;
+  const ctrl = raw.map(p => ({ r: p.r, y: p.y - y0 }));     // base ramenée à y = 0
+  const pts = smoothProfil(ctrl, (d.galbe ?? 60)/100);     // le profil réellement découpé
+  return { d, ctrl, pts, H: pts.at(-1).y,
+    maxR : Math.max(...pts.map(p=>p.r)),
+    minR : Math.min(...pts.map(p=>p.r)),
+    rTop : pts.at(-1).r,
+    rBase: pts[0].r };
+}
+/* boule à centrer : volume de révolution de la paroi + du fond */
+function tourClay(){
+  const T = tourProfil();
+  return kurVolumes(T.pts, Math.max(1, T.d.paroi)).pieceW;
+}
+function tourPieces(){
+  const T = tourProfil(), P = [];
+  const yOf = p => T.H - p.y;                 // profil (y vers le haut) → dessin (y vers le bas)
+  const M = 22;                               // matière à droite du profil : la prise en main
+
+  /* A — calibre de profil extérieur : la plaque est la matière à droite du
+     profil, son bord gauche épouse la paroi, son bord bas repose sur le
+     plateau et son bord haut donne la hauteur crue à ne pas dépasser. */
+  const outer = [...T.pts].reverse().map(p => ({ x:p.r, y:yOf(p) }));   // du bord vers le pied
+  const xR = T.maxR + M;
+  P.push({ name:'Calibre de profil extérieur', qty:1, noClay:true,
+    geo:{ t:'path', d: pathFrom([...outer, {x:xR, y:T.H}, {x:xR, y:0}], true),
+          bx:T.minR, by:0, bw:xR - T.minR, bh:T.H,
+          label:`${D('profil ext.','outer profile')} — h ${L(T.H)} · Ø max ${Lv(2*T.maxR)}` },
+    dims:[D(`hauteur crue ${L(T.H)} — Ø maxi cru ${Lv(2*T.maxR)} — Ø au bord ${Lv(2*T.rTop)}`,
+            `wet height ${L(T.H)} — max wet Ø ${Lv(2*T.maxR)} — Ø at the rim ${Lv(2*T.rTop)}`),
+          D(`le bord gauche est le profil : c'est lui qui vient contre la paroi`,
+            `the left edge is the profile: that is the edge you hold against the wall`)],
+    notes:[D(`découper dans du carton fort, du plastique de classeur ou du contreplaqué 3 mm ; les gabarits mouillés se gondolent — plastifier le carton si tu tournes en série`,
+             `cut from stiff card, folder plastic or 3 mm plywood; wet templates warp — laminate the card if you throw a series`),
+           D(`tenir le bord bas à plat sur le plateau, main appuyée : la paroi est bonne quand le gabarit touche partout sans lumière`,
+             `keep the bottom edge flat on the wheel head; the wall is right when the template touches all along with no gap of light`),
+           D(`tourner d'abord la forme au plus près à la main, finir au gabarit à vitesse lente et paroi bien humide`,
+             `throw the shape close to size by hand first, finish with the template at low speed on a well-lubricated wall`)] });
+
+  /* B — profil intérieur : la coupe de l'intérieur, décalée de la paroi visée */
+  const paroi = Math.max(0, T.d.paroi);
+  const inner = paroi >= 1 ? kurCavity(T.pts, paroi) : [];               // haut → bas
+  const rIn = inner.length ? Math.max(...inner.map(q=>q.r)) : 0;
+  if(inner.length >= 2 && rIn > 5){
+    const yFloor = T.H - inner.at(-1).y;
+    P.push({ name:'Profil intérieur', qty:1, noClay:true,
+      geo:{ t:'path', d: pathFrom([{x:0, y:0}, ...inner.map(q=>({x:q.r, y:yOf(q)})), {x:0, y:yFloor}], true),
+            bx:0, by:0, bw:rIn, bh:yFloor,
+            label:`${D('profil int.','inner profile')} — ${D('paroi','wall')} ${L(paroi)}` },
+      dims:[D(`intérieur visé : rayon maxi ${L(rIn)} — fond à ${L(paroi)} du plateau`,
+              `target inside: max radius ${L(rIn)} — base ${L(paroi)} above the wheel head`),
+            D(`le bord vertical gauche du gabarit, c'est l'axe du tour`,
+              `the straight vertical edge of the template is the wheel axis`)],
+      notes:[D(`gabarit de contrôle : on le descend dans la pièce, bord vertical sur l'axe, pour vérifier le creux et l'épaisseur restante`,
+               `check template: lower it into the piece, straight edge on the axis, to check the inside curve and the wall left`),
+             D(`vérifier au compas d'épaisseur avant de tournasser : sous ${L(Math.max(2, paroi-2))} de paroi, le pied risque de percer`,
+               `check with a wall caliper before trimming: below ${L(Math.max(2, paroi-2))} of wall the foot may cut through`)] });
+  }
+
+  /* C — jauge en L : hauteur crue (bras vertical) et Ø d'ouverture (bras horizontal) */
+  const B = Math.max(8, Math.min(16, T.H/4));
+  const Dop = 2*T.rTop;
+  P.push({ name:'Jauge hauteur & Ø ouverture', qty:1, noClay:true,
+    geo:{ t:'path', d: pathFrom([{x:0,y:0},{x:Dop,y:0},{x:Dop,y:B},{x:B,y:B},{x:B,y:T.H},{x:0,y:T.H}], true),
+          bx:0, by:0, bw:Dop, bh:T.H,
+          label:`h ${L(T.H)} · Ø ${Lv(Dop)} (${D('cru','wet')})` },
+    dims:[D(`bras vertical = hauteur crue ${L(T.H)} — bras horizontal = Ø d'ouverture cru ${Lv(Dop)}`,
+            `vertical arm = wet height ${L(T.H)} — horizontal arm = wet rim Ø ${Lv(Dop)}`)],
+    notes:[D(`poser le pied du bras vertical sur le plateau, à côté de la pièce : le haut du bras est la hauteur à atteindre`,
+             `stand the vertical arm on the wheel head next to the piece: the top of the arm is the height to reach`),
+           D(`le bras horizontal se pose en travers du bord : il doit affleurer des deux côtés`,
+             `lay the horizontal arm across the rim: it should just touch on both sides`),
+           D(`en série, c'est cette jauge qui fait les pièces identiques — la garder accrochée au tour`,
+             `for a series this gauge is what makes the pieces match — keep it hanging on the wheel`)] });
+
+  /* D — profil de pied, pour le tournassage (pièce retournée) */
+  const hp = Math.max(0, T.d.hpied), lp = Math.max(0, T.d.lpied);
+  const rRing = Math.max(2, T.rBase - lp);
+  if(hp > 0.5 && rRing > 2){
+    const plate = 14;
+    P.push({ name:'Gabarit de pied (tournassage)', qty:1, noClay:true,
+      geo:{ t:'path', d: pathFrom([{x:0,y:0},{x:rRing,y:0},{x:rRing,y:hp},{x:T.rBase,y:hp},
+                                   {x:T.rBase,y:hp+plate},{x:0,y:hp+plate}], true),
+            bx:0, by:0, bw:T.rBase, bh:hp+plate,
+            label:`${D('pied','foot')} Ø ${Lv(2*T.rBase)} · ${D('anneau','ring')} ${L(lp)}` },
+      dims:[D(`Ø extérieur du pied ${Lv(2*T.rBase)} — anneau de ${L(lp)} de large — creux de ${L(hp)}`,
+              `foot outer Ø ${Lv(2*T.rBase)} — ${L(lp)} wide ring — ${L(hp)} recess`)],
+      notes:[D(`tournasser à consistance cuir, pièce centrée à l'envers : le bord haut du gabarit est la coupe du dessous à obtenir`,
+               `trim at leather-hard with the piece centred upside down: the top edge of the template is the underside section to reach`),
+             D(`garder au moins ${L(Math.max(3, paroi))} de terre sous le fond — c'est là qu'on perce`,
+               `leave at least ${L(Math.max(3, paroi))} of clay under the base — that is where pieces get pierced`)] });
   }
   return P;
 }
@@ -1205,6 +1410,7 @@ function computePieces(){
     kurPieces(d, SHAPES[state.shape].kurinuki === 'rect').forEach(add);
     return P;
   }
+  if(isTour()){ tourPieces().forEach(add); return P; }
 
   if(state.shape === 'cylindre'){
     const Dg = d.d*k, H = d.h*k;
@@ -1584,37 +1790,38 @@ function pieceRender(p, mode){ return renderGeo(p.geo, mode); }
    --------------------------------------------------------------- */
 const $ = s => document.querySelector(s);
 
-/* Suivi d'événements — défensif : envoie à PostHog ET GA4 s'ils sont
-   chargés, ne fait rien sinon (aucune erreur en local file://). */
+/* Suivi d'événements — défensif : envoie à PostHog s'il est chargé,
+   ne fait rien sinon (aucune erreur en local file://). */
 function track(event, props){
   try{ if(window.posthog && window.posthog.capture) window.posthog.capture(event, props || {}); }catch(e){}
-  try{ if(window.gtag) window.gtag('event', event, props || {}); }catch(e){}
 }
 
 const printExcl = new Set();   // pièces décochées pour l'impression (réinitialisé au changement de forme)
 let shapeGridOpen = false;
 
 function buildMode(){
-  document.querySelectorAll('#modeRow .opt').forEach(el => {
+  document.querySelectorAll('#modeRow .opt[data-v]').forEach(el => {
     el.classList.toggle('on', el.dataset.v === (state.mode || 'plaque'));
     el.onclick = () => {
       if(el.dataset.v === (state.mode || 'plaque')) return;
       state.lastShape = state.lastShape || {};
       state.lastShape[state.mode || 'plaque'] = state.shape;
       state.mode = el.dataset.v;
-      state.shape = state.lastShape[state.mode] || (state.mode === 'kurinuki' ? 'kur_cyl' : 'cone');
+      state.shape = state.lastShape[state.mode] ||
+        (state.mode === 'kurinuki' ? 'kur_cyl' : state.mode === 'tour' ? 'tour_bol' : 'cone');
       printExcl.clear(); shapeGridOpen = false;
       buildMode(); buildShapeSelector(); buildDimFields(); refresh();
     };
   });
 }
 
-const GROUP_KEY = {'Formes de base':'g_base','Vaisselle & objets':'g_vaisselle','À dessiner':'g_dessiner','Creusage dans la masse':'g_kur'};
+const GROUP_KEY = {'Formes de base':'g_base','Vaisselle & objets':'g_vaisselle','À dessiner':'g_dessiner','Creusage dans la masse':'g_kur','Tourné au tour':'g_tour'};
 function buildShapeSelector(){
   $('#spickBtn').innerHTML = SHAPES[state.shape].glyph +
     `<span class="spname">${shapeName(state.shape)}</span><span class="caret">${shapeGridOpen?'▴':'▾'} ${t('change')}</span>`;
   $('#shapeSel').style.display = shapeGridOpen ? 'grid' : 'none';
-  $('#shapeSel').innerHTML = (state.mode === 'kurinuki' ? KUR_GROUPS : SHAPE_GROUPS).map(g =>
+  const groups = state.mode === 'kurinuki' ? KUR_GROUPS : state.mode === 'tour' ? TOUR_GROUPS : SHAPE_GROUPS;
+  $('#shapeSel').innerHTML = groups.map(g =>
     `<div class="shgroup">${t(GROUP_KEY[g.label] || g.label)}</div>` +
     g.ids.map(id => `<div class="shape${id===state.shape?' on':''}" data-id="${id}">${SHAPES[id].glyph}${shapeName(id)}</div>`).join('')
   ).join('');
@@ -1629,10 +1836,13 @@ function buildDimFields(){
   const s = SHAPES[state.shape];
   const stepU = state.unit === 'in' ? 0.1 : 0.1;
   $('#dimFields').innerHTML = (s.editor ? editorHTML(s.editor) : '') + s.fields.map(f => {
-    const count = !!f.min;                       // « nombre de pans » = un compte, pas une longueur
+    const count = f.min !== undefined;           // borné (nombre de pans, galbe) = un compte, pas une longueur
     const raw = state.dims[state.shape][f.k];
     const val = count ? raw : roundU(raw);       // longueur → affichée dans l'unité courante
-    return `<div class="field"><label>${fieldLab(state.shape, f.k, f.lab)}</label><span><input type="number" inputmode="decimal" data-k="${f.k}" data-count="${count?1:0}" min="${count ? f.min : 0}"${count ? ` max="${f.max}"` : ''} step="${count ? 1 : stepU}" value="${val}"><span class="unit">${count ? '' : Lu()}</span></span></div>`;
+    const lab = fieldLab(state.shape, f.k, f.lab);
+    if(f.slider)                                 // réglage sans unité et sans valeur juste : une réglette
+      return `<div class="field fslider"><label>${lab}</label><span><input type="range" data-k="${f.k}" data-count="1" min="${f.min}" max="${f.max}" step="1" value="${val}"><output class="rngval">${val}</output></span></div>`;
+    return `<div class="field"><label>${lab}</label><span><input type="number" inputmode="decimal" data-k="${f.k}" data-count="${count?1:0}" min="${count ? f.min : 0}"${count ? ` max="${f.max}"` : ''} step="${count ? 1 : stepU}" value="${val}"><span class="unit">${count ? '' : Lu()}</span></span></div>`;
   }).join('');
   document.querySelectorAll('#dimFields input').forEach(inp => inp.oninput = () => {
     let v = parseFloat(inp.value);
@@ -1641,10 +1851,16 @@ function buildDimFields(){
       if(inp.dataset.count === '1'){ v = Math.min(f.max, Math.max(f.min, Math.round(v))); if(v >= 0) state.dims[state.shape][f.k] = v; }
       else { const mm = fromU(v); if(mm >= 0) state.dims[state.shape][f.k] = Math.round(mm*10)/10; }   // stocké en mm (0,1 mm près)
     }
+    if(inp.type === 'range'){
+      const o = inp.parentElement.querySelector('.rngval');
+      if(o) o.textContent = state.dims[state.shape][f.k];
+      if(s.editor) redrawEditor(s.editor);       // la courbe du profil suit la réglette
+    }
     refresh();
   });
   if(s.editor) initEditor(s.editor);
-  $('#inEp').closest('.field').style.display = isKur() ? 'none' : 'flex';   // en kurinuki, c'est la paroi visée qui compte
+  // en kurinuki comme au tour, ce n'est pas une plaque : c'est la paroi visée qui compte
+  $('#inEp').closest('.field').style.display = (isKur() || isTour()) ? 'none' : 'flex';
 }
 
 /* ---------------------------------------------------------------
@@ -1671,7 +1887,10 @@ function editorHTML(type){
     </div>
     <div class="edreadout" id="edReadout"></div>
     <div class="hint">${type==='profil'
-      ? (isKur()
+      ? (isTour()
+        ? D(`dessine le <b>demi-profil extérieur</b> de la pièce tournée (l'axe du tour est à gauche, le plateau en bas) : glisse les points, tape sur la courbe pour en ajouter. Les gabarits sont générés aux cotes crues.`,
+            `draw the <b>outer half-profile</b> of the thrown piece (the wheel axis is on the left, the wheel head at the bottom): drag the points, tap the curve to add one. Templates are generated at wet size.`)
+        : isKur()
         ? D(`dessine le <b>demi-profil extérieur</b> de la pièce (l'axe est à gauche) : glisse les points, tape sur la courbe pour en ajouter. Le bloc s'ajuste autour avec la marge de taille.`,
             `draw the piece's <b>outer half-profile</b> (the axis is on the left): drag the points, tap the curve to add one. The block adjusts around it with the size margin.`)
         : D(`dessine le <b>demi-profil</b> (l'axe est à gauche) : glisse les points, tape sur la courbe pour en ajouter. Chaque segment devient une section de cône à empiler.`,
@@ -1679,6 +1898,32 @@ function editorHTML(type){
       : D(`dessine le contour du fond : glisse les points, tape sur la courbe pour en ajouter. La courbe est lissée automatiquement.`,
           `draw the base outline: drag the points, tap the curve to add one. The curve is smoothed automatically.`)}<br>${D('Pour <b>supprimer</b> un point : tape-le puis « − supprimer le point ».','To <b>delete</b> a point: tap it then “− delete point”.')}</div>
   </div>`;
+}
+
+/* Catmull-Rom ouvert sur un demi-profil {r,y} → points échantillonnés.
+   `galbe` (0 → 1) mélange le segment droit et la spline : 0 rend la ligne
+   brisée d'origine, 1 le profil le plus rond que passent les points. */
+function smoothProfil(pts, galbe, seg = 10){
+  if(pts.length < 3 || galbe <= 0) return pts.map(p => ({...p}));
+  const P = [pts[0], ...pts, pts.at(-1)];      // extrémités doublées : tangentes propres
+  const rMin = 0.2;
+  const yLo = Math.min(...pts.map(p=>p.y)), yHi = Math.max(...pts.map(p=>p.y));
+  const out = [];
+  for(let i=1; i<P.length-2; i++){
+    const a = P[i-1], b = P[i], c = P[i+1], d = P[i+2];
+    for(let j=0; j<seg; j++){
+      const t = j/seg, t2 = t*t, t3 = t2*t;
+      const cr = (p0,p1,p2,p3) => 0.5*(2*p1 + (-p0+p2)*t + (2*p0-5*p1+4*p2-p3)*t2 + (-p0+3*p1-3*p2+p3)*t3);
+      const mix = (p0,p1,p2,p3) => {
+        const lin = p1 + (p2-p1)*t;                 // le segment droit d'origine
+        return lin + galbe*(cr(p0,p1,p2,p3) - lin); // … tiré vers la spline
+      };
+      out.push({ r: Math.max(rMin, mix(a.r,b.r,c.r,d.r)),
+                 y: Math.min(yHi, Math.max(yLo, mix(a.y,b.y,c.y,d.y))) });
+    }
+  }
+  out.push({...pts.at(-1)});
+  return out;
 }
 
 /* Catmull-Rom fermé → points échantillonnés (pour le fond libre) */
@@ -1822,15 +2067,18 @@ function redrawEditor(type){
     for(let x=0; x<=120; x+=20) g += `<line class="edgrid" x1="${x}" y1="0" x2="${x}" y2="${c.maxY}"/>`;
     for(let y=0; y<=c.maxY; y+=20) g += `<line class="edgrid" x1="-10" y1="${Y(y)}" x2="120" y2="${Y(y)}"/>`;
     g += `<line class="edaxis" x1="0" y1="-4" x2="0" y2="${c.maxY+4}"/>`;
-    // silhouette complète (miroir) pour lecture
-    const right = pts.map(p=>`${p.r} ${Y(p.y)}`).join(' L ');
-    g += `<path class="edmirror" d="M ${right} L 0 ${Y(pts.at(-1).y)} L 0 ${Y(pts[0].y)} Z"/>`;
+    // silhouette complète (miroir) pour lecture — au tour, la courbe lissée
+    const curve = isTour() ? smoothProfil(pts, (state.dims[state.shape].galbe ?? 60)/100) : pts;
+    const right = curve.map(p=>`${p.r.toFixed(2)} ${Y(p.y).toFixed(2)}`).join(' L ');
+    g += `<path class="edmirror" d="M ${right} L 0 ${Y(curve.at(-1).y)} L 0 ${Y(curve[0].y)} Z"/>`;
     g += `<path class="edline" d="M ${right}"/>`;
     g += `<path class="edline hit" d="M ${right}"/>`;
     pts.forEach((p,i)=> g += edPoint(p.r, Y(p.y), i));
-    const maxR = Math.max(...pts.map(p=>p.r));
+    const maxR = Math.max(...curve.map(p=>p.r));
     $('#edReadout') && ($('#edReadout').innerHTML =
-      `${D('Ø base','base Ø')} ${Lv(2*pts[0].r)} · ${D('Ø max','max Ø')} ${Lv(2*maxR)} · ${D('Ø haut','top Ø')} ${Lv(2*pts.at(-1).r)} · ${D('hauteur','height')} ${L(pts.at(-1).y-pts[0].y)} ${D('(fini)','(finished)')} — ${pts.length-1} ${D('section','section')}${pts.length>2?'s':''}`);
+      `${D('Ø base','base Ø')} ${Lv(2*pts[0].r)} · ${D('Ø max','max Ø')} ${Lv(2*maxR)} · ${D('Ø haut','top Ø')} ${Lv(2*pts.at(-1).r)} · ${D('hauteur','height')} ${L(pts.at(-1).y-pts[0].y)} ${D('(fini)','(finished)')} — ${isTour()
+        ? `${pts.length} ${D('point','point')}${pts.length>1?'s':''} ${D('de profil','on the profile')}`
+        : `${pts.length-1} ${D('section','section')}${pts.length>2?'s':''}`}`);
   } else {
     for(let x=0; x<=200; x+=20) g += `<line class="edgrid" x1="${x}" y1="0" x2="${x}" y2="200"/>`;
     for(let y=0; y<=200; y+=20) g += `<line class="edgrid" x1="0" y1="${y}" x2="200" y2="${y}"/>`;
@@ -1856,23 +2104,22 @@ Object.assign(STR.fr, {
   gal_start:'Galerie de départ — clique pour charger la forme et les cotes', gal_saved:'Mes pièces enregistrées',
   gal_save_current:'＋ enregistrer la pièce actuelle', gal_export:'exporter', gal_import:'importer',
   proj_ph:'nom de la pièce (pour le carnet)…', btn_save:'enregistrer', btn_print:'Imprimer les gabarits',
-  svg_title:'télécharger chaque gabarit en fichier SVG', pdf_title:'télécharger les gabarits en PDF',
+  svg_title:'télécharger les gabarits en SVG — avec les cotes, ou la pièce seule', pdf_title:'télécharger les gabarits en PDF',
   carnet_empty:'aucune pièce enregistrée — règle une forme puis « enregistrer la pièce actuelle »',
 });
 Object.assign(STR.en, {
   gal_start:'Starter gallery — click to load the shape & sizes', gal_saved:'My saved pieces',
   gal_save_current:'＋ save current piece', gal_export:'export', gal_import:'import',
   proj_ph:'piece name (for your notebook)…', btn_save:'save', btn_print:'Print templates',
-  svg_title:'download each template as an SVG file', pdf_title:'download the templates as a PDF',
+  svg_title:'download the templates as SVG — with dimensions, or the outline only', pdf_title:'download the templates as a PDF',
   carnet_empty:'no saved pieces — set up a shape then “save current piece”',
 });
 Object.assign(STR.fr, {
   ov_op:'opacité', ov_reset:'recaler sur les cotes', ov_apply:'appliquer aux cotes',
   photo_note:'Déplace la silhouette <b style="color:var(--terra)">terracotta</b>, redimensionne-la avec la poignée d’angle et <b>étire-la</b> avec les poignées de bord pour épouser la photo. « Appliquer aux cotes » reporte les proportions obtenues dans les cotes du panneau 1 (la hauteur saisie reste la référence).',
   foot_made:'Outil gratuit, fait avec 🤎 —', foot_tip_link:'offrez-moi un pain de terre ☕', foot_free:'(montant libre)',
-  foot_news:'✉️ recevez les nouveautés', foot_fb:'donnez votre avis ✍️', foot_cookies:'cookies',
-  consent_txt:'<b>Un petit cookie&nbsp;?</b> Une mesure d\'audience anonyme m\'aide à voir quelles formes servent et à améliorer l\'outil. Rien n\'est chargé sans votre accord.',
-  consent_no:'Refuser', consent_yes:'Accepter', close:'fermer',
+  foot_news:'✉️ recevez les nouveautés', foot_fb:'donnez votre avis ✍️', foot_privacy:'mesure d\'audience anonyme, sans cookie',
+  close:'fermer',
   tip_txt:'Cet outil vous a fait gagner du temps&nbsp;?<br><b>Offrez-moi un pain de terre</b> (ou un café) — <b>montant libre</b>.',
   tip_btn:'🏺 offrir un pain de terre',
   news_title:'Reste dans la boucle',
@@ -1890,9 +2137,8 @@ Object.assign(STR.en, {
   ov_op:'opacity', ov_reset:'reset to sizes', ov_apply:'apply to sizes',
   photo_note:'Move the <b style="color:var(--terra)">terracotta</b> silhouette, resize it with the corner handle and <b>stretch</b> it with the edge handles to match your photo. “Apply to sizes” carries the resulting proportions into panel 1 (the height you typed stays the reference).',
   foot_made:'Free tool, made with 🤎 —', foot_tip_link:'buy me a block of clay ☕', foot_free:'(any amount)',
-  foot_news:'✉️ get the updates', foot_fb:'give feedback ✍️', foot_cookies:'cookies',
-  consent_txt:'<b>A little cookie?</b> Anonymous analytics help me see which shapes get used and improve the tool. Nothing is loaded without your consent.',
-  consent_no:'Decline', consent_yes:'Accept', close:'close',
+  foot_news:'✉️ get the updates', foot_fb:'give feedback ✍️', foot_privacy:'anonymous analytics, no cookies',
+  close:'close',
   tip_txt:'Did this tool save you time?<br><b>Buy me a block of clay</b> (or a coffee) — <b>any amount</b>.',
   tip_btn:'🏺 buy a block of clay',
   news_title:'Stay in the loop',
@@ -1916,6 +2162,8 @@ const PIECE_NAME = {
   'Bec verseur':'Spout','Bord (marli)':'Rim (marli)','Bord long':'Long rim','Bord court':'Short rim','Face':'Face','Bande (tranche)':'Side band',
   'Bande extérieure':'Outer strip','Bande intérieure':'Inner strip',
   'Profil extérieur':'Outer profile','Dessus — contour & ouverture':'Top — outline & opening','Coupe de creusage (contrôle)':'Carving section (check)',
+  'Calibre de profil extérieur':'Outer profile template','Profil intérieur':'Inner profile template',
+  'Jauge hauteur & Ø ouverture':'Height & rim Ø gauge','Gabarit de pied (tournassage)':'Foot profile (trimming)',
 };
 const pieceName = nm => !isEN() ? nm : (PIECE_NAME[nm] || nm.replace('(bas)','(bottom)').replace('(haut)','(top)'));
 const TERRE_NAMES = { fr:{8:'faïence',12:'grès',14:'porcelaine'}, en:{8:'earthenware',12:'stoneware',14:'porcelain'} };
@@ -2041,8 +2289,9 @@ function silhouetteFor(shape, d){
     return { w:d.de, h:d.de + (dop>1?hc:0),
       svg:`${neck}<g transform="translate(0 ${dop>1?hc:0})"><path fill-rule="evenodd" d="${ring(c,c,R)} ${ring(c,c,r)}"/></g>` };
   }
-  if(shape==='profil' || SHAPES[shape].kurinuki){
-    const pts = d.pts, Y = Math.max(...pts.map(p=>p.y));
+  if(shape==='profil' || SHAPES[shape].kurinuki || SHAPES[shape].tour){
+    const pts = SHAPES[shape].tour ? smoothProfil(d.pts, (d.galbe ?? 60)/100) : d.pts;
+    const Y = Math.max(...pts.map(p=>p.y));
     const maxR = Math.max(...pts.map(p=>p.r));
     const kur = !!SHAPES[shape].kurinuki;
     const m = kur ? d.marge : 0;
@@ -2266,6 +2515,46 @@ function packMaxRects(items, orient){
      sinon paysage) sont regroupées au maximum par le packer MaxRects ;
    - les pièces plus grandes qu'une feuille sont débitées en mosaïque centrée.
    --------------------------------------------------------------- */
+/* Encombrement de la pièce dans les deux états. Les cotes saisies sont soit
+   finies soit crues (choix « cotes »), l'autre s'en déduit par le retrait. */
+function pieceDims(){
+  const sil = silhouette();
+  const shrink = Math.max(.4, 1 - state.retrait/100);
+  const fini = state.coteType === 'fini' ? { w:sil.w, h:sil.h } : { w:sil.w*shrink, h:sil.h*shrink };
+  const cru  = state.coteType === 'fini' ? { w:sil.w/shrink, h:sil.h/shrink } : { w:sil.w, h:sil.h };
+  return { fini, cru };
+}
+const dimsTxt = d => `${Lv(d.w)} × ${L(d.h)}`;
+
+/* Encombrement réel d'un gabarit : le tracé seul, marges d'impression exclues.
+   Mesuré au getBBox sur le rendu, donc juste quelle que soit la géométrie —
+   c'est la taille du fichier SVG et la place prise sur la feuille. */
+let sizeHost = null;
+function pieceBBox(piece){
+  const r = pieceRender(piece, 'print');
+  try{
+    if(!sizeHost){
+      sizeHost = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      sizeHost.setAttribute('style', 'position:absolute;left:-9999px;top:0;width:10px;height:10px;visibility:hidden');
+      document.body.appendChild(sizeHost);
+    }
+    sizeHost.innerHTML = r.body;
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    sizeHost.querySelectorAll('.piece-line').forEach(el => {
+      const b = el.getBBox();
+      x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y);
+      x1 = Math.max(x1, b.x + b.width); y1 = Math.max(y1, b.y + b.height);
+    });
+    sizeHost.innerHTML = '';
+    if(isFinite(x0) && x1 > x0 && y1 > y0) return { x:x0, y:y0, w:x1-x0, h:y1-y0, exact:true };
+  }catch(e){}
+  return { ...r.vb, exact:false };         // repli : la vue d'impression, marges comprises
+}
+const pieceSize = piece => {
+  const b = pieceBBox(piece);
+  return b.exact ? b : { w:b.w - 6, h:b.h - 6 };
+};
+
 function planPrint(pieces){
   const port = [], land = [], bigs = [];
   pieces.forEach(p => {
@@ -2370,7 +2659,8 @@ function refresh(){
         <span class="tag">${p.tag}</span>
         <span class="pname">${pieceName(p.name)}</span>
         <span class="qty">× ${p.qty}</span>
-        <button class="small dl" data-tag="${p.tag}">SVG</button>
+        <span class="psize" title="${D('encombrement du gabarit — taille du fichier SVG et place sur la feuille','template footprint — size of the SVG file and space used on the sheet')}">${dimsTxt(pieceSize(p))}</span>
+        <button class="small dl" data-tag="${p.tag}">SVG ▾</button>
       </div>
       <div class="piece-svg"><svg viewBox="${r.vb.x} ${r.vb.y} ${r.vb.w} ${r.vb.h}" style="aspect-ratio:${r.vb.w}/${r.vb.h};width:${Math.round(r.vb.w * Math.min(2.2, 500/r.vb.h))}px;max-width:100%">${r.body}</svg></div>
       <ul class="piece-dims">${dims}</ul>
@@ -2380,12 +2670,17 @@ function refresh(){
     ? `printing: ${totalPages} ${paperLabel()} sheet${totalPages>1?'s':''}`
     : `impression : ${totalPages} feuille${totalPages>1?'s':''} ${paperLabel()}`;
   const nSel = included.reduce((n,p)=>n+p.qty,0);
+  const sd = pieceDims();
   $('#synthInfo').innerHTML = !included.length ? t('no_piece') : (isEN()
-    ? `<b>${nSel} template${nSel>1?'s':''}</b> · <b>${totalPages} ${paperLabel()} sheet${totalPages>1?'s':''}</b> · ${isKur()?'block':'clay'} ≈ <b>${fmtPoids(clayWeight(pieces))}</b>`
-    : `<b>${nSel} gabarit${nSel>1?'s':''}</b> · <b>${totalPages} feuille${totalPages>1?'s':''} ${paperLabel()}</b> · ${isKur()?'bloc':'terre'} ≈ <b>${fmtPoids(clayWeight(pieces))}</b>`);
+    ? `<b>${nSel} template${nSel>1?'s':''}</b> · <b>${totalPages} ${paperLabel()} sheet${totalPages>1?'s':''}</b> · ${isKur()?'block':'clay'} ≈ <b>${fmtPoids(clayWeight(pieces))}</b> · finished <b>${dimsTxt(sd.fini)}</b> · wet <b>${dimsTxt(sd.cru)}</b>`
+    : `<b>${nSel} gabarit${nSel>1?'s':''}</b> · <b>${totalPages} feuille${totalPages>1?'s':''} ${paperLabel()}</b> · ${isKur()?'bloc':'terre'} ≈ <b>${fmtPoids(clayWeight(pieces))}</b> · pièce finie <b>${dimsTxt(sd.fini)}</b> · crue <b>${dimsTxt(sd.cru)}</b>`);
   if($('#projName').value !== (state.projectName || '')) $('#projName').value = state.projectName || '';
 
-  document.querySelectorAll('.piece-card .dl').forEach(btn => btn.onclick = () => downloadPiece(pieces.find(p=>p.tag===btn.dataset.tag)));
+  document.querySelectorAll('.piece-card .dl').forEach(btn => btn.onclick = () =>
+    svgMenu(btn, nu => {
+      downloadPiece(pieces.find(p => p.tag === btn.dataset.tag), nu);
+      track('export_svg_piece', { shape: state.shape, variant: nu ? 'nu' : 'cotes' });
+    }));
   document.querySelectorAll('.piece-card .pchk').forEach(cb => cb.onchange = () => {
     cb.checked ? printExcl.delete(cb.dataset.tag) : printExcl.add(cb.dataset.tag);
     refresh();
@@ -2394,39 +2689,202 @@ function refresh(){
   renderOverlay();
 }
 
-/* aperçu vivant de la pièce (quand aucune photo n'est chargée) */
+/* aperçu vivant de la pièce (quand aucune photo n'est chargée) — 2D ou volume */
+let prevJob = 0;                                   // jeton : ignore les rendus périmés
 function renderPreview(){
-  const box = $('#previewBox');
+  const box = $('#previewBox'), soon = $('#view3dSoon');
+  if(soon) soon.style.display = photoURL ? 'none' : '';   // le teaser accompagne l'aperçu
   if(photoURL){ box.style.display = 'none'; return; }
   box.style.display = 'block';
   const sil = silhouette();
-  const m = Math.max(sil.w, sil.h) * 0.06;
-  $('#prevSil').innerHTML = `<svg viewBox="${-m} ${-m} ${sil.w+2*m} ${sil.h+2*m}" preserveAspectRatio="xMidYMid meet">
-    <g class="prevsil" stroke-width="${Math.max(sil.w,sil.h)/110}">${sil.svg}</g></svg>`;
+  const cru = state.coteType === 'fini';
   $('#prevDims').textContent = isEN()
-    ? `bounding box ${Lv(sil.w)} × ${L(sil.h)} — ${state.coteType==='fini'?'finished':'wet'} piece`
-    : `encombrement ${Lv(sil.w)} × ${L(sil.h)} — pièce ${state.coteType==='fini'?'finie':'crue'}`;
+    ? `bounding box ${Lv(sil.w)} × ${L(sil.h)} — ${cru?'finished':'wet'} piece`
+    : `encombrement ${Lv(sil.w)} × ${L(sil.h)} — pièce ${cru?'finie':'crue'}`;
+  const job = ++prevJob;
+  if(!state.view3d){
+    const m = Math.max(sil.w, sil.h) * 0.06;
+    $('#prevSil').innerHTML = `<svg viewBox="${-m} ${-m} ${sil.w+2*m} ${sil.h+2*m}" preserveAspectRatio="xMidYMid meet">
+      <g class="prevsil" stroke-width="${Math.max(sil.w,sil.h)/110}">${sil.svg}</g></svg>`;
+    return;
+  }
+  /* le volume passe par une rasterisation : rendu asynchrone, le dessin en
+     place reste affiché jusqu'à ce que le nouveau soit prêt */
+  pieceViews(sil, state.shape, VIEW_SCREEN).then(v => {
+    if(job !== prevJob || state.view3d === false) return;
+    const view = v.vol || v.front;
+    $('#prevSil').innerHTML = `<svg viewBox="${view.vb}" preserveAspectRatio="xMidYMid meet">${view.body}</svg>`;
+  });
+}
+/* La vue 3D est complète mais pas encore ouverte : le bouton « bientôt »
+   mesure l'intérêt et récupère l'email (même modale que la carte teaser de la
+   galerie). Pour l'activer le jour venu : exposer state.view3d (l'aperçu sait
+   déjà le rendre) — en attendant, `state.view3d = true; renderPreview()` en
+   console suffit pour la voir. */
+const v3dBtn = $('#view3dSoon');
+if(v3dBtn) v3dBtn.onclick = () => { track('view3d_teaser_click', { shape: state.shape }); showNews(); };
+
+/* ---------------------------------------------------------------
+   Export SVG
+   Le bloc <style> suffit aux navigateurs, à Inkscape et à Illustrator, mais
+   beaucoup de logiciels de découpe (Cricut, Silhouette, LightBurn, Glowforge)
+   et de visionneuses ignorent le CSS interne : ils retombent alors sur les
+   valeurs SVG par défaut — fill noir, aucun contour — et le gabarit s'affiche
+   en aplat plein. On double donc chaque règle en attributs de présentation,
+   et on range le dessin en trois calques (ce qui se découpe / se trace /
+   s'annote) pour que la découpeuse ne taille pas dans les cotes.
+   --------------------------------------------------------------- */
+const SVG_ATTRS = {
+  'piece-line' : {fill:'none', stroke:'#000000', 'stroke-width':'0.5'},
+  'cote'       : {fill:'none', stroke:'#555555', 'stroke-width':'0.3'},
+  'constr'     : {fill:'none', stroke:'#888888', 'stroke-width':'0.3', 'stroke-dasharray':'2 1.5'},
+  'axe'        : {fill:'none', stroke:'#888888', 'stroke-width':'0.3', 'stroke-dasharray':'3 2'},
+  'center-mark': {fill:'none', stroke:'#000000', 'stroke-width':'0.5'},
+  'sector-info': {fill:'#000000', stroke:'none', 'font-family':'monospace', 'font-size':'4.2'},
+  'plabel'     : {fill:'#000000', stroke:'none', 'font-family':'monospace', 'font-size':'4.6'}
+};
+/* .cote text a ses propres règles : sans fill/stroke explicites le texte
+   hériterait du trait gris de la cote et sortirait en lettres cerclées */
+const SVG_TEXT_ATTRS = {fill:'#555555', stroke:'none', 'font-family':'monospace', 'font-size':'4.2'};
+const SVG_LAYER = {
+  'piece-line':'decoupe',
+  'axe':'reperes', 'constr':'reperes', 'center-mark':'reperes',
+  'cote':'annotations', 'sector-info':'annotations', 'plabel':'annotations'
+};
+const SVG_LAYER_NAME = { decoupe:'Découpe', reperes:'Repères à tracer', annotations:'Cotes' };
+const SVG_NUM_ATTRS = ['x','y','x1','y1','x2','y2','cx','cy','r','rx','ry','width','height','font-size'];
+
+/* 3 décimales : le micron. Au-delà c'est du bruit qui gonfle le fichier et
+   que certains importeurs digèrent mal. */
+const svgNum = n => {
+  const v = Math.round(parseFloat(n) * 1000) / 1000;
+  return Number.isFinite(v) ? String(v) : String(n);
+};
+const svgRoundStr = str => str.replace(/-?\d+\.\d+(e[-+]?\d+)?|-?\d+e[-+]?\d+/gi, m => svgNum(m));
+
+function svgClassOf(el){
+  const c = (el.getAttribute('class') || '').trim().split(/\s+/)[0];
+  return c || '';
+}
+/* attributs de présentation + arrondis, en place sur le document parsé */
+function svgInline(el){
+  const cls = svgClassOf(el);
+  let attrs = SVG_ATTRS[cls];
+  if(el.tagName === 'text' && !attrs && el.closest('.cote')) attrs = SVG_TEXT_ATTRS;
+  if(attrs) for(const k in attrs) if(!el.hasAttribute(k)) el.setAttribute(k, attrs[k]);
+  SVG_NUM_ATTRS.forEach(a => {
+    const v = el.getAttribute(a);
+    if(v && /^-?\d*\.?\d+(e[-+]?\d+)?$/i.test(v)) el.setAttribute(a, svgNum(v));
+  });
+  ['d','transform','points','stroke-dasharray'].forEach(a => {
+    const v = el.getAttribute(a);
+    if(v) el.setAttribute(a, svgRoundStr(v));
+  });
+  [...el.children].forEach(svgInline);
 }
 
-function svgDoc(vb, body){
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${vb.w}mm" height="${vb.h}mm" viewBox="${vb.x} ${vb.y} ${vb.w} ${vb.h}">`+
-    `<style>.piece-line{fill:none;stroke:#000;stroke-width:.5}.cote{stroke:#555;stroke-width:.3}.cote text{font:4.2px monospace;fill:#555;stroke:none}.constr{stroke:#888;stroke-width:.3;stroke-dasharray:2 1.5;fill:none}.axe{stroke:#888;stroke-width:.3;stroke-dasharray:3 2}.center-mark{stroke:#000;stroke-width:.5}.sector-info{font:4.2px monospace;fill:#000}</style>`+
+/* opts.nu : ne garder que le trait de découpe — ni cote, ni repère, ni texte,
+   ni feuille de style. Le fichier fait alors exactement la taille de la pièce,
+   prêt à passer dans un autre logiciel (découpe, emporte-pièce imprimé en 3D). */
+function svgDoc(vb, body, opts){
+  opts = opts || {};
+  const w = svgNum(vb.w), h = svgNum(vb.h);
+  const raw = `<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="${w}mm" height="${h}mm" viewBox="${svgNum(vb.x)} ${svgNum(vb.y)} ${w} ${h}">`+
+    `<style type="text/css">.piece-line{fill:none;stroke:#000;stroke-width:.5}.cote{stroke:#555;stroke-width:.3}.cote text{font:4.2px monospace;fill:#555;stroke:none}.constr{stroke:#888;stroke-width:.3;stroke-dasharray:2 1.5;fill:none}.axe{stroke:#888;stroke-width:.3;stroke-dasharray:3 2}.center-mark{stroke:#000;stroke-width:.5}.sector-info{font:4.2px monospace;fill:#000}.plabel{font:4.6px monospace;fill:#000}</style>`+
     body + `</svg>`;
+  try{
+    const doc = new DOMParser().parseFromString(raw, 'image/svg+xml');
+    if(doc.querySelector('parsererror')) return raw;
+    const svg = doc.documentElement;
+    const groups = {};
+    [...svg.children].forEach(el => {
+      if(el.tagName === 'style'){ if(opts.nu) el.remove(); return; }
+      svgInline(el);
+      /* un <g> sans classe est classé d'après son premier enfant ; un élément
+         inconnu part en découpe — mieux vaut une ligne à supprimer qu'un trait
+         de coupe perdu dans un calque désactivé */
+      const cls = svgClassOf(el) || (el.firstElementChild ? svgClassOf(el.firstElementChild) : '');
+      const layer = SVG_LAYER[cls] || 'decoupe';
+      if(opts.nu && layer !== 'decoupe'){ el.remove(); return; }
+      if(!groups[layer]){
+        const g = doc.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('id', layer);
+        g.setAttribute('data-layer', SVG_LAYER_NAME[layer]);
+        groups[layer] = g;
+      }
+      groups[layer].appendChild(el);
+    });
+    ['decoupe','reperes','annotations'].forEach(k => { if(groups[k]) svg.appendChild(groups[k]); });
+    return '<?xml version="1.0" encoding="UTF-8"?>\n' + new XMLSerializer().serializeToString(doc);
+  }catch(e){ return raw; }
 }
-function downloadPiece(p){
-  const r = pieceRender(p);
-  const blob = new Blob([svgDoc(r.vb, r.body)], {type:'image/svg+xml'});
+function downloadPiece(p, nu){
+  /* nu : on part du rendu d'impression (déjà sans les lignes de cote) et
+     svgDoc fait le ménage ; le cadre est alors le contour lui-même */
+  const r = pieceRender(p, nu ? 'print' : undefined);
+  const vb = nu ? pieceBBox(p) : r.vb;
+  const blob = new Blob([svgDoc(vb, r.body, {nu})], {type:'image/svg+xml;charset=utf-8'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `gabarit-${state.shape}-${p.tag}-${p.name.toLowerCase().replace(/[^a-z0-9]+/g,'-')}.svg`;
+  const slug = p.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+  a.download = `gabarit-${state.shape}-${p.tag}-${slug}${nu ? '-decoupe' : ''}.svg`;
   a.click(); URL.revokeObjectURL(a.href);
 }
-$('#btnSvg').onclick = () => {
+
+/* ---------------------------------------------------------------
+   Deux SVG possibles : celui qui correspond au PDF (cotes, repères) et la
+   pièce nue, pour enchaîner directement sur un autre logiciel.
+   --------------------------------------------------------------- */
+let svgMenuEl = null, svgMenuTick = null;
+function closeSvgMenu(){
+  if(svgMenuTick){ clearInterval(svgMenuTick); svgMenuTick = null; }
+  if(svgMenuEl){ svgMenuEl.remove(); svgMenuEl = null; }
+}
+/* Position en coordonnées d'écran : le bouton d'export vit dans la barre
+   fixe du bas, un menu posé dans le flux de la page s'en détacherait au
+   premier scroll. On bascule au-dessus du bouton quand le bas manque de
+   place — c'est le cas justement pour cette barre. */
+function placeSvgMenu(){
+  if(!svgMenuEl || !svgMenuEl.anchor) return;
+  const r = svgMenuEl.anchor.getBoundingClientRect();
+  const vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
+  if(r.bottom < 0 || r.top > vh){ closeSvgMenu(); return; }   // le bouton est sorti de l'écran
+  const w = svgMenuEl.offsetWidth, h = svgMenuEl.offsetHeight;
+  const below = r.bottom + 6, above = r.top - h - 6;
+  svgMenuEl.style.top  = Math.max(8, (below + h <= vh - 8 || above < 8) ? Math.min(below, vh - h - 8) : above) + 'px';
+  svgMenuEl.style.left = Math.max(8, Math.min(r.left, vw - w - 8)) + 'px';
+}
+document.addEventListener('click', e => { if(svgMenuEl && !svgMenuEl.contains(e.target)) closeSvgMenu(); }, true);
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeSvgMenu(); });
+window.addEventListener('scroll', placeSvgMenu, true);   // capture : aussi les conteneurs qui défilent
+window.addEventListener('resize', placeSvgMenu);
+function svgMenu(anchor, pick){
+  closeSvgMenu();
+  const m = document.createElement('div');
+  m.className = 'svgmenu';
+  m.innerHTML =
+    `<button type="button" data-nu="0">${D('avec les cotes','with dimensions')}<span>${D('identique au PDF','same as the PDF')}</span></button>`+
+    `<button type="button" data-nu="1">${D('la pièce seule','the outline only')}<span>${D('contour de découpe, sans cote ni repère','cut path only, no dimensions or marks')}</span></button>`;
+  m.anchor = anchor;
+  document.body.appendChild(m);
+  m.querySelectorAll('button').forEach(b => b.onclick = () => {
+    const nu = b.dataset.nu === '1';
+    closeSvgMenu();
+    pick(nu);
+  });
+  svgMenuEl = m;
+  placeSvgMenu();
+  /* filet de sécurité : tous les contextes ne remontent pas un événement de
+     défilement (conteneur interne, inertie mobile), et le menu ne vit que le
+     temps d'un choix — on le recale simplement en continu */
+  svgMenuTick = setInterval(placeSvgMenu, 100);
+}
+$('#btnSvg').onclick = () => svgMenu($('#btnSvg'), nu => {
   const ps = computePieces();
-  ps.forEach((p,i) => setTimeout(()=>downloadPiece(p), i*250));
-  track('export_svg', { shape: state.shape, mode: state.mode || 'plaque', pieces: ps.length });
+  ps.forEach((p,i) => setTimeout(()=>downloadPiece(p, nu), i*250));
+  track('export_svg', { shape: state.shape, mode: state.mode || 'plaque', pieces: ps.length, variant: nu ? 'nu' : 'cotes' });
   afterExport();
-};
+});
 
 /* ---------------------------------------------------------------
    Impression mosaïque A4 à taille réelle
@@ -2441,8 +2899,9 @@ function fichePage(pieces, pages){
   const feuilles = pages.length;
   const where = whereMap(pages);   // pièce → « planche N » ou « X feuilles »
   const checklist = pieces.map(p =>
-    `<li class="chk"><b>${p.tag}</b> ${pieceName(p.name)} × ${p.qty} — ${p.dims[0]}${p.noClay?D(' <i>(gabarit de contrôle, pas de terre)</i>',' <i>(control template, no clay)</i>'):''} — <i>${where[p.tag]||''}</i></li>`
+    `<li class="chk"><b>${p.tag}</b> ${pieceName(p.name)} × ${p.qty} — ${p.dims[0]}${p.noClay?D(' <i>(gabarit de contrôle, pas de terre)</i>',' <i>(control template, no clay)</i>'):''} — ${D('gabarit','template')} ${dimsTxt(pieceSize(p))} — <i>${where[p.tag]||''}</i></li>`
   ).join('');
+  const pd = pieceDims();
   const montage = pieces.flatMap(p => p.notes.map(n => `<li><b>${p.tag}</b> — ${n}</li>`)).join('');
   const kx = `×${k.toLocaleString(numLoc(),{maximumFractionDigits:3})}`;
   return `<div class="page fiche">
@@ -2453,21 +2912,29 @@ function fichePage(pieces, pages){
       <div class="fsil"><svg width="${(sil.w*sc).toFixed(1)}mm" height="${(sil.h*sc).toFixed(1)}mm" viewBox="0 0 ${sil.w} ${sil.h}">
         <g fill="none" stroke="#000" stroke-width="${Math.max(sil.w,sil.h)/60}">${sil.svg}</g></svg></div>
       <div class="fparams">
-        ${isKur()
+        ${isTour()
+          ? `<div><b>${D('technique','technique')}</b> ${D('tournage au tour','thrown on the wheel')}</div>
+             <div><b>${D('boule à centrer','ball to centre')}</b> ${fmtPoids(poids*1.15)} ${D('(chute de centrage comprise)','(centring waste included)')}</div>
+             <div><b>${D('paroi visée','target wall')}</b> ${L(state.dims[state.shape].paroi)}</div>`
+          : isKur()
           ? `<div><b>${D('technique','technique')}</b> ${D('kurinuki (creusage dans la masse)','kurinuki (carved from a solid block)')}</div>
              <div><b>${D('bloc à préparer','block to prepare')}</b> ${kurData().blocTxt}</div>
              <div><b>${D('paroi visée','target wall')}</b> ${L(state.dims[state.shape].paroi)}</div>`
           : `<div><b>${D('épaisseur de plaque','slab thickness')}</b> ${L(state.ep)}</div>
              <div><b>${D('pièces à découper','pieces to cut')}</b> ${pieces.filter(p=>!p.noClay).reduce((n,p)=>n+p.qty,0)} ${D('dans la plaque','from the slab')}</div>`}
+        <div><b>${D('pièce finie','finished piece')}</b> ${dimsTxt(pd.fini)} — ${D('crue','wet')} ${dimsTxt(pd.cru)}</div>
         <div><b>${D('retrait de cuisson','firing shrinkage')}</b> ${fmt(state.retrait)} % ${state.coteType==='fini' ? D(`(gabarits agrandis ${kx})`,`(templates scaled up ${kx})`) : D('(cotes crues, non agrandies)','(wet dims, not scaled)')}</div>
         <div><b>${D('gabarits','templates')}</b> ${pieces.length} ${D('pièces','pieces')} · ${feuilles} ${D('feuilles','sheets')} ${paperLabel()}</div>
       </div>
     </div>
-    <div class="fsec">${isKur()?D('Gabarits papier — cocher au fur et à mesure','Paper templates — tick as you go'):D('Pièces à découper — cocher au fur et à mesure','Pieces to cut — tick as you go')}</div>
+    <div class="fsec">${(isKur()||isTour())?D('Gabarits à découper — cocher au fur et à mesure','Templates to cut — tick as you go'):D('Pièces à découper — cocher au fur et à mesure','Pieces to cut — tick as you go')}</div>
     <ul>${checklist}</ul>
-    <div class="fsec">${isKur()?D('Creusage — rappels étape par étape','Carving — step-by-step reminders'):D('Montage — rappels pièce par pièce','Assembly — piece-by-piece reminders')}</div>
+    <div class="fsec">${isTour()?D('Au tour — rappels étape par étape','On the wheel — step-by-step reminders'):isKur()?D('Creusage — rappels étape par étape','Carving — step-by-step reminders'):D('Montage — rappels pièce par pièce','Assembly — piece-by-piece reminders')}</div>
     <ol>${montage}</ol>
-    <div class="fpoids">${isKur()
+    <div class="fpoids">${isTour()
+      ? D(`Boule à centrer ≈ <b>${fmtPoids(poids*1.15)}</b> &nbsp;·&nbsp; pièce crue ≈ <b>${fmtPoids(poids)}</b> &nbsp;·&nbsp; paroi visée ${L(state.dims[state.shape].paroi)} · cotes crues`,
+          `Ball to centre ≈ <b>${fmtPoids(poids*1.15)}</b> &nbsp;·&nbsp; wet piece ≈ <b>${fmtPoids(poids)}</b> &nbsp;·&nbsp; target wall ${L(state.dims[state.shape].paroi)} · wet dimensions`)
+      : isKur()
       ? D(`Bloc de terre ≈ <b>${fmtPoids(poids)}</b> &nbsp;·&nbsp; pièce finie ≈ <b>${fmtPoids(kurData().pieceW)}</b> &nbsp;·&nbsp; à évider ≈ <b>${fmtPoids(poids - kurData().pieceW)}</b>`,
           `Clay block ≈ <b>${fmtPoids(poids)}</b> &nbsp;·&nbsp; finished piece ≈ <b>${fmtPoids(kurData().pieceW)}</b> &nbsp;·&nbsp; to hollow out ≈ <b>${fmtPoids(poids - kurData().pieceW)}</b>`)
       : D(`Terre à préparer ≈ <b>${fmtPoids(poids)}</b> &nbsp;·&nbsp; avec 15 % de marge : <b>${fmtPoids(poids*1.15)}</b> &nbsp;·&nbsp; (surfaces × ${L(state.ep)} × 1,9 g/cm³)`,
@@ -2482,7 +2949,10 @@ const BRAND_SVG = `<svg width="7mm" height="7mm" viewBox="0 0 46 46">
 const pageHead = info => `<div class="phead">
   <div class="pbrand">${BRAND_SVG}<span>Gabarits <em>céramique</em></span></div>
   <div class="pinfo">${info}</div>
-  <div class="cal"><svg width="50mm" height="4mm" viewBox="0 0 50 4"><line x1="0" y1="2" x2="50" y2="2" stroke="#7a6753" stroke-width=".4"/><line x1="0" y1="0" x2="0" y2="4" stroke="#7a6753" stroke-width=".4"/><line x1="50" y1="0" x2="50" y2="4" stroke="#7a6753" stroke-width=".4"/></svg><span>= ${L(50)} · ${D('à 100 %','at 100%')}</span></div>
+  <div class="cal"><svg width="50mm" height="3.4mm" viewBox="0 0 50 3.4">
+    <line x1="0" y1="3.2" x2="50" y2="3.2" stroke="#33261a" stroke-width=".35"/>
+    ${[0,1,2,3,4,5].map(i => `<line x1="${i*10}" y1="${i%5?1.8:.8}" x2="${i*10}" y2="3.2" stroke="#33261a" stroke-width=".35"/>`).join('')}
+  </svg><span>${D('contrôle : cette barre = ','check: this bar = ')}${L(50)} · 100 %</span></div>
 </div>`;
 
 /* pages de gabarits (planches + mosaïques) → [{info, vb:[x,y,w,h], inner}] */
@@ -2494,38 +2964,64 @@ function collectPages(plan){
       const tf = s.rot
         ? `translate(${s.x + s.r.vb.y + s.r.vb.h} ${s.y + 7 - s.r.vb.x}) rotate(90)`
         : `translate(${s.x - s.r.vb.x} ${s.y + 7 - s.r.vb.y})`;
-      return `<text class="plabel" x="${s.x + 1}" y="${s.y + 4.5}">${s.p.tag} · ${pieceName(s.p.name)} × ${s.p.qty}${s.rot?D(' (pivotée 90°)',' (rotated 90°)'):''}</text>`+
+      /* étiquette : tronquée pour ne jamais déborder de la feuille (≈ 0,52 × la
+         taille de police par caractère, police 4,6 px) */
+      const rotTxt = s.rot ? D(' (pivotée 90°)',' (rotated 90°)') : '';
+      let lbl = `${s.p.tag} · ${pieceName(s.p.name)} × ${s.p.qty}${rotTxt}`;
+      const maxChars = Math.floor((pg.w - s.x - 2) / (4.6 * 0.52));
+      if(lbl.length > maxChars) lbl = `${s.p.tag} · ${pieceName(s.p.name)} × ${s.p.qty}`;
+      if(lbl.length > maxChars) lbl = lbl.slice(0, Math.max(4, maxChars - 1)) + '…';
+      return `<text class="plabel" x="${s.x + 1}" y="${s.y + 4.5}">${lbl}</text>`+
              `<g transform="${tf}">${s.r.body}</g>`;
     }).join('');
+    const tags = bin.items.map(s => s.p.tag);
     pages.push({
-      info: D(`planche ${bi+1}/${plan.bins.length} · pièces ${bin.items.map(s=>s.p.tag).join(', ')}`,`sheet ${bi+1}/${plan.bins.length} · pieces ${bin.items.map(s=>s.p.tag).join(', ')}`),
-      orient: bin.orient || 'P', vb: [0, 0, pg.w, pg.h], tags: bin.items.map(s=>s.p.tag), planche: bi+1,
+      info: D(`planche ${bi+1}/${plan.bins.length} · pièces ${tags.join(', ')}`,`sheet ${bi+1}/${plan.bins.length} · pieces ${tags.join(', ')}`),
+      orient: bin.orient || 'P', vb: [0, 0, pg.w, pg.h], tags, planche: bi+1,
+      chip: tags.length === 1 ? tags[0] : '',
+      subject: tags.length === 1
+        ? `${tags[0]} · ${pieceName(bin.items[0].p.name)} × ${bin.items[0].p.qty}`
+        : D(`Planche ${bi+1} — ${tags.length} gabarits`,`Sheet ${bi+1} — ${tags.length} templates`),
+      detail: D(`planche ${bi+1}/${plan.bins.length} · à découper : `,`sheet ${bi+1}/${plan.bins.length} · to cut: `)
+        + bin.items.map(s => `${s.p.tag} ×${s.p.qty}`).join(', '),
+      dims: bin.items.map(s => `${s.p.tag} ${s.p.dims[0]}`).join('   ·   '),
       inner: `<rect class="tilebox" x="0" y="0" width="${pg.w}" height="${pg.h}"/>` + items,
     });
   });
   plan.bigs.forEach(b => {
-    const L = b.layout, tw = PG[L.orient].w, th = PG[L.orient].h;
-    const pw = L.rot ? b.r.vb.h : b.r.vb.w;   // emprise de la pièce après pivot
-    const ph = L.rot ? b.r.vb.w : b.r.vb.h;
-    const x0 = -(L.cols*tw - pw)/2;    // grille centrée sur la pièce
-    const y0 = -(L.rows*th - ph)/2;
-    const gBody = `<g transform="${normTransform(b.r, L.rot)}">${b.r.body}</g>`;
+    const lay = b.layout, tw = PG[lay.orient].w, th = PG[lay.orient].h;
+    const pw = lay.rot ? b.r.vb.h : b.r.vb.w;   // emprise de la pièce après pivot
+    const ph = lay.rot ? b.r.vb.w : b.r.vb.h;
+    const x0 = -(lay.cols*tw - pw)/2;    // grille centrée sur la pièce
+    const y0 = -(lay.rows*th - ph)/2;
+    const gBody = `<g transform="${normTransform(b.r, lay.rot)}">${b.r.body}</g>`;
     let marks = '';
-    for(let rr=0; rr<=L.rows; rr++) for(let cc=0; cc<=L.cols; cc++){
+    for(let rr=0; rr<=lay.rows; rr++) for(let cc=0; cc<=lay.cols; cc++){
       const mx = x0 + cc*tw, my = y0 + rr*th;
       marks += `<g class="mark"><line x1="${mx-4}" y1="${my}" x2="${mx+4}" y2="${my}"/><line x1="${mx}" y1="${my-4}" x2="${mx}" y2="${my+4}"/></g>`;
     }
-    const orTxt = L.orient==='L' ? (L.rot?D(' (paysage, pivotée 90°)',' (landscape, rotated 90°)'):D(' (paysage)',' (landscape)')) : (L.rot?D(' (pivotée 90°)',' (rotated 90°)'):'');
-    const occ = tileOccupancy(b.r, L);
-    const total = occ.flat().filter(Boolean).length;   // feuilles réellement utiles
-    let n = 0;
-    for(let rr=0; rr<L.rows; rr++) for(let cc=0; cc<L.cols; cc++){
+    const orTxt = lay.orient==='L' ? (lay.rot?D(' (paysage, pivotée 90°)',' (landscape, rotated 90°)'):D(' (paysage)',' (landscape)')) : (lay.rot?D(' (pivotée 90°)',' (rotated 90°)'):'');
+    const occ = tileOccupancy(b.r, lay);
+    /* numérotation des tuiles utiles : sert au plan de collage (voisins + mini-carte) */
+    const num = []; let total = 0;
+    for(let rr=0; rr<lay.rows; rr++){ num[rr] = [];
+      for(let cc=0; cc<lay.cols; cc++) num[rr][cc] = occ[rr][cc] ? ++total : 0; }
+    for(let rr=0; rr<lay.rows; rr++) for(let cc=0; cc<lay.cols; cc++){
       if(!occ[rr][cc]) continue;
-      n++;
+      const n = num[rr][cc];
       const vx = x0 + cc*tw, vy = y0 + rr*th;
       pages.push({
         info: D(`pièce ${b.p.tag} · ${b.p.name} ×${b.p.qty}${orTxt}${total>1?` — feuille ${n}/${total}`:''}`,`piece ${b.p.tag} · ${pieceName(b.p.name)} ×${b.p.qty}${orTxt}${total>1?` — sheet ${n}/${total}`:''}`),
-        orient: L.orient, vb: [vx, vy, tw, th], tags: [b.p.tag],
+        orient: lay.orient, vb: [vx, vy, tw, th], tags: [b.p.tag],
+        chip: b.p.tag,
+        subject: `${b.p.tag} · ${pieceName(b.p.name)} × ${b.p.qty}`,
+        detail: (total>1 ? D(`feuille ${n}/${total} · colonne ${cc+1}, ligne ${rr+1}`,`sheet ${n}/${total} · column ${cc+1}, row ${rr+1}`) : D('gabarit pleine feuille','full-sheet template')) + orTxt,
+        dims: b.p.dims[0],
+        tile: total>1 ? { n, total, col:cc+1, row:rr+1, cols:lay.cols, rows:lay.rows, grid:num,
+          nav: { left:  cc>0            ? num[rr][cc-1] : 0,
+                 right: cc<lay.cols-1   ? num[rr][cc+1] : 0,
+                 up:    rr>0            ? num[rr-1][cc] : 0,
+                 down:  rr<lay.rows-1   ? num[rr+1][cc] : 0 } } : null,
         inner: `<rect class="tilebox" x="${vx}" y="${vy}" width="${tw}" height="${th}"/>${marks}${gBody}`,
       });
     }
@@ -2595,75 +3091,456 @@ async function ensurePdfLibs(){
   }catch(e){ pdfLibsReady = false; }
   return pdfLibsReady;
 }
-/* bandeau commun des pages PDF ; retourne le y où commencer le contenu */
-function pdfHead(doc, info, pageW){
+/* ---------------------------------------------------------------
+   Gabarit de mise en page PDF
+   Un seul modèle pour toutes les pages : bandeau (marque · sujet ·
+   barre témoin), zone de tracé inchangée (y = 24 → 24 + hauteur utile),
+   pied de page (source · cotes · plan de collage · pagination).
+   --------------------------------------------------------------- */
+const PDF_INK = [51,38,26], PDF_TERRA = [184,80,42], PDF_GREY = [122,103,83],
+      PDF_LINE = [205,185,154], PDF_WASH = [246,241,233];
+const pdfPageH = pageW => pageW > 250 ? 210 : 297;   // > 250 : le A4 paysage (la largeur mm peut valoir 210.0000001)
+
+/* Les polices standard du PDF sont en WinAnsi : tout caractère hors de ce jeu
+   sortirait en charabia (≈, ″, →, ≥…). On patche doc.text une fois pour toutes
+   afin d'écrire un équivalent lisible plutôt qu'un glyphe cassé. */
+const PDF_WINANSI_HIGH = '€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ';
+const PDF_SUBST = { '≈':'~', '≠':'!=', '≤':'<=', '≥':'>=', '−':'-', '×':'x', '″':'"', '′':"'",
+                    '→':'->', '←':'<-', '↔':'<->', '↑':'^', '↓':'v', 'π':'pi', 'Σ':'somme', '✓':'v', '⚠':'!' };
+function pdfSafeDoc(doc){
+  const fix = t => Array.isArray(t) ? t.map(fix)
+    : typeof t !== 'string' ? t
+    : t.replace(/[^\u0000-\u00ff]/g, c => PDF_SUBST[c] !== undefined ? PDF_SUBST[c]
+        : PDF_WINANSI_HIGH.includes(c) ? c : '');
+  const txt = doc.text.bind(doc), split = doc.splitTextToSize.bind(doc), wid = doc.getTextWidth.bind(doc);
+  doc.text = (t, ...rest) => txt(fix(t), ...rest);
+  doc.splitTextToSize = (t, ...rest) => split(fix(t), ...rest);
+  doc.getTextWidth = t => wid(fix(t));
+  return doc;
+}
+
+/* réduit (puis tronque) un texte pour qu'il tienne dans max mm ; renvoie le texte
+   à écrire, la taille de police restant celle appliquée au doc */
+function pdfFit(doc, txt, max, size, min){
+  let s = size; doc.setFontSize(s);
+  while(s > (min || 5.5) && doc.getTextWidth(txt) > max){ s -= .25; doc.setFontSize(s); }
+  if(doc.getTextWidth(txt) > max){
+    while(txt.length > 2 && doc.getTextWidth(txt + '…') > max) txt = txt.slice(0, -1);
+    txt += '…';
+  }
+  return txt;
+}
+
+/* barre témoin de 50 mm graduée au cm — le contrôle « imprimé à 100 % » */
+function pdfScaleBar(doc, x, y){
+  doc.setDrawColor(...PDF_INK); doc.setLineWidth(.35);
+  doc.line(x, y, x + 50, y);
+  for(let i = 0; i <= 5; i++){ const gx = x + i*10;
+    doc.line(gx, y - (i%5 ? 1.4 : 2.4), gx, y); }
+  doc.setFont('helvetica','normal'); doc.setFontSize(5.8); doc.setTextColor(...PDF_GREY);
+  doc.text(D(`contrôle : cette barre = ${L(50)}`, `check: this bar = ${L(50)}`), x, y + 3.2);
+  doc.text('100 %', x + 50, y + 3.2, { align:'right' });
+}
+
+/* pastille de repère de pièce (A, B, C…) */
+function pdfChip(doc, letter, x, y){
+  doc.setFillColor(...PDF_TERRA); doc.roundedRect(x, y, 6.2, 6.2, 1.4, 1.4, 'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(255,255,255);
+  doc.text(String(letter), x + 3.1, y + 4.4, { align:'center' });
+}
+
+/* bandeau haut ; hd = {chip, subject, detail} → renvoie le y de départ du contenu */
+function pdfBand(doc, hd, pageW){
   pageW = pageW || 210;
-  const barX = pageW - 60;
-  doc.setFont('helvetica','bold'); doc.setFontSize(12);
-  doc.setTextColor(51,38,26); doc.text('Gabarits', 10, 13);
-  doc.setTextColor(184,80,42); doc.text('céramique', 10 + doc.getTextWidth('Gabarits '), 13);
-  doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(51,38,26);
-  doc.text(doc.splitTextToSize(info, barX - 60), 58, 10.5);
-  doc.setDrawColor(122,103,83); doc.setLineWidth(0.3);
-  doc.line(barX, 11, barX + 50, 11);                                 // barre témoin de 50 mm exactement
-  doc.line(barX, 9.5, barX, 12.5); doc.line(barX + 50, 9.5, barX + 50, 12.5);
-  doc.setFontSize(6); doc.setTextColor(122,103,83);
-  doc.text(`= ${L(50)} · ${D('à 100 %','at 100%')}`, barX, 16);
-  doc.setDrawColor(51,38,26); doc.setLineWidth(0.4);
-  doc.line(10, 19, pageW - 10, 19);
-  // pied de page discret — boucle de croissance (chaque PDF partagé ramène du monde)
-  const pageH = pageW > 210 ? 210 : 297;
-  doc.setFont('helvetica','normal'); doc.setFontSize(6.5); doc.setTextColor(150,130,105);
-  doc.text('Fait avec gabarits-ceramique.com', pageW / 2, pageH - 6, { align: 'center' });
+  const M = 10, right = pageW - M;
+  doc.setFont('helvetica','bold'); doc.setFontSize(11);
+  doc.setTextColor(...PDF_INK); doc.text('Gabarits', M, 11.5);
+  doc.setTextColor(...PDF_TERRA); doc.text('céramique', M + doc.getTextWidth('Gabarits '), 11.5);
+  pdfScaleBar(doc, right - 50, 11);
+  const x0 = M + 40, xMax = right - 54;
+  if(hd.subject){
+    let x = x0;
+    if(hd.chip){ pdfChip(doc, hd.chip, x, 6.4); x += 8.4; }
+    doc.setFont('helvetica','bold'); doc.setTextColor(...PDF_INK);
+    doc.text(pdfFit(doc, hd.subject, xMax - x, 9.5), x, 11);
+    if(hd.detail){
+      doc.setFont('helvetica','normal'); doc.setTextColor(...PDF_GREY);
+      doc.text(pdfFit(doc, hd.detail, xMax - x, 6.8), x, 15);
+    }
+  }
+  doc.setDrawColor(...PDF_INK); doc.setLineWidth(.4); doc.line(M, 19, right, 19);
   return 24;
 }
-function pdfFiche(doc, pieces, pages, title){
+
+/* mini-carte d'assemblage : la grille des feuilles, celle-ci en plein */
+function pdfMiniMap(doc, t, xRight, yBase){
+  const c = 2.1, w = t.cols*c, h = t.rows*c, x = xRight - w, y = yBase - h + .6;
+  doc.setLineWidth(.15);
+  for(let r = 0; r < t.rows; r++) for(let q = 0; q < t.cols; q++){
+    const cx = x + q*c, cy = y + r*c;
+    doc.setDrawColor(...PDF_LINE);
+    if(r+1 === t.row && q+1 === t.col){ doc.setFillColor(...PDF_TERRA); doc.rect(cx, cy, c, c, 'F'); }
+    else if(t.grid[r][q]){ doc.setFillColor(...PDF_WASH); doc.rect(cx, cy, c, c, 'FD'); }
+    else doc.rect(cx, cy, c, c, 'D');
+  }
+  return x;
+}
+
+/* pied de page : source · cotes de la pièce · mini-carte (la pagination est
+   ajoutée à la fin, quand le nombre total de pages est connu) */
+function pdfFoot(doc, hd, pageW){
+  pageW = pageW || 210;
+  const M = 10, right = pageW - M, y = pdfPageH(pageW) - 5.5;
+  doc.setDrawColor(...PDF_LINE); doc.setLineWidth(.2); doc.line(M, y - 3.2, right, y - 3.2);
+  doc.setFont('helvetica','normal'); doc.setFontSize(6.2); doc.setTextColor(...PDF_GREY);
+  doc.text('gabarits-ceramique.com', M, y);
+  let xEnd = right - 16;
+  if(hd.tile) xEnd = pdfMiniMap(doc, hd.tile, xEnd, y) - 3;
+  if(hd.dims){
+    const x = M + doc.getTextWidth('gabarits-ceramique.com') + 6;
+    doc.setTextColor(...PDF_INK);
+    doc.text(pdfFit(doc, hd.dims, Math.max(20, xEnd - x), 6.8), x, y);
+  }
+}
+
+/* raccords de mosaïque : sur chaque bord qui continue, une flèche + le numéro
+   de la feuille voisine (posée dans la marge, hors du tracé) */
+function pdfTileNav(doc, t, x0, y0, tw, th){
+  if(!t) return;
+  const lab = n => D(`feuille ${n}`, `sheet ${n}`);
+  doc.setFont('helvetica','bold'); doc.setFontSize(6.4);
+  const arrow = (cx, cy, dir) => {
+    doc.setFillColor(...PDF_TERRA);
+    const s = 1.5;
+    if(dir === 'r') doc.triangle(cx, cy - s, cx, cy + s, cx + s*1.5, cy, 'F');
+    if(dir === 'l') doc.triangle(cx, cy - s, cx, cy + s, cx - s*1.5, cy, 'F');
+    if(dir === 'd') doc.triangle(cx - s, cy, cx + s, cy, cx, cy + s*1.5, 'F');
+    if(dir === 'u') doc.triangle(cx - s, cy, cx + s, cy, cx, cy - s*1.5, 'F');
+  };
+  doc.setTextColor(...PDF_TERRA);
+  const cy = y0 + th/2, cx = x0 + tw/2;
+  if(t.nav.right){ arrow(x0 + tw - 4.5, cy, 'r'); doc.text(lab(t.nav.right), x0 + tw - 6.5, cy, { align:'center', angle:90 }); }
+  if(t.nav.left){  arrow(x0 + 4.5, cy, 'l');      doc.text(lab(t.nav.left),  x0 + 6.5, cy, { align:'center', angle:90 }); }
+  if(t.nav.down){  arrow(cx, y0 + th - 4.5, 'd'); doc.text(lab(t.nav.down),  cx, y0 + th - 6, { align:'center' }); }
+  if(t.nav.up){    arrow(cx, y0 + 4.5, 'u');      doc.text(lab(t.nav.up),    cx, y0 + 8.5, { align:'center' }); }
+}
+
+/* pagination finale, une fois toutes les pages posées */
+function pdfPaginate(doc){
+  const N = doc.getNumberOfPages();
+  for(let i = 1; i <= N; i++){
+    doc.setPage(i);
+    const pageW = doc.internal.pageSize.getWidth();
+    doc.setFont('helvetica','normal'); doc.setFontSize(6.2); doc.setTextColor(...PDF_GREY);
+    doc.text(`${i}/${N}`, pageW - 10, pdfPageH(pageW) - 5.5, { align:'right' });
+  }
+}
+/* dessine un fragment SVG dans le PDF. La largeur/hauteur en mm est portée par
+   la balise <svg> elle-même : sans elle, svg2pdf retombe sur les unités du
+   viewBox et le dessin déborde sur le reste de la page. */
+async function pdfDrawSvg(doc, body, vb, x, y, w, h){
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:0;height:0;overflow:hidden';
+  wrap.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}mm" height="${h}mm" viewBox="${vb}">${body}</svg>`;
+  document.body.appendChild(wrap);
+  try{ await doc.svg(wrap.firstChild, { x, y, width:w, height:h }); }catch(e){}
+  wrap.remove();
+}
+
+/* ---------------------------------------------------------------
+   Vues de la pièce (fiche d'atelier) : vue de face + aperçu du volume.
+   Le profil est obtenu en rasterisant la silhouette puis en relevant les
+   bords de matière ligne par ligne — générique, aucune connaissance de la
+   forme n'est nécessaire (et les anses, tracées en fill:none, sont ignorées).
+   --------------------------------------------------------------- */
+const REVOLVE_3D = new Set(['cylindre','cone','ovale','prisme','facettes','tasse',
+                            'bouteille','pichet','assiette','profil','kur_cyl',
+                            'tour_bol','tour_pot','tour_vase','tour_assiette']);
+const VIEW_K = .26;   // écrasement des ellipses (perspective douce)
+/* palettes : impression (traits noirs sur blanc) et écran (DA du site) */
+const VIEW_PRINT  = { ink:'#33261a', back:'#cdb99a', fill:'#ffffff' };
+const VIEW_SCREEN = { ink:'var(--terra-d)', back:'var(--line)', fill:'var(--card)' };
+
+async function silProfile(sil, rows){
+  const W = 200, H = Math.max(20, Math.round(W * sil.h / sil.w));
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${sil.w} ${sil.h}"><g fill="#000">${sil.svg}</g></svg>`;
+  const img = new Image();
+  await new Promise((res, rej) => { img.onload = res; img.onerror = rej;
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg); });
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d'); ctx.drawImage(img, 0, 0, W, H);
+  const px = ctx.getImageData(0, 0, W, H).data;
+  const out = [], N = rows || 44;
+  for(let i = 0; i <= N; i++){
+    const py = Math.min(H - 1, Math.round(i * (H - 1) / N));
+    let l = -1, r = -1;
+    for(let x = 0; x < W; x++){ if(px[(py*W + x)*4 + 3] > 60){ if(l < 0) l = x; r = x; } }
+    if(l < 0) continue;
+    const xl = l * sil.w / W, xr = (r + 1) * sil.w / W;
+    out.push({ y: py * sil.h / H, r: (xr - xl)/2, c: (xr + xl)/2 });
+  }
+  return out;
+}
+
+/* points d'un arc d'ellipse, prêts à enchaîner dans un path (« x y L x y … ») */
+function arcPts(cx, cy, rx, ry, a0, a1, n){
+  const pts = [];
+  for(let i = 0; i <= n; i++){ const t = a0 + (a1 - a0)*i/n;
+    pts.push(`${(cx + rx*Math.cos(t)).toFixed(2)} ${(cy + ry*Math.sin(t)).toFixed(2)}`); }
+  return pts.join(' L ');
+}
+
+/* solide de révolution : profil relevé + ellipses de fond et d'ouverture */
+function view3DRevolve(sil, prof, C){
+  C = C || VIEW_PRINT;
+  let rows = prof.filter(p => p.r > sil.w*0.008);
+  if(rows.length < 3) return null;
+  /* la vue de face dessine souvent une ellipse de bord : sa calotte arrondie
+     ferait une épaule bombée en 3D → on démarre le profil à l'épaulement
+     (première tranche où le rayon cesse de croître), l'ouverture étant de
+     toute façon redessinée en ellipse. */
+  let s = 0;
+  while(s + 1 < rows.length && rows[s+1].r > rows[s].r*1.02) s++;
+  if(s > rows.length*0.4) s = 0;
+  rows = rows.slice(s);
+  if(rows.length < 3) return null;
+  const rmax = Math.max(...rows.map(p => p.r));
+  const mids = rows.filter(p => p.r > rmax*0.5).map(p => p.c).sort((a,b) => a - b);
+  const cx = mids[Math.floor(mids.length/2)];
+  const first = rows[0], last = rows[rows.length - 1];
+  const rt = first.r, rb = last.r, yT = first.y, yB = last.y;
+  const sw = Math.max(sil.w, sil.h)/95;
+  const left  = rows.map(p => `${(cx - p.r).toFixed(2)} ${p.y.toFixed(2)}`).join(' L ');
+  const right = [...rows].reverse().map(p => `${(cx + p.r).toFixed(2)} ${p.y.toFixed(2)}`).join(' L ');
+  const body = `M ${left} L ${arcPts(cx, yB, rb, rb*VIEW_K, Math.PI, 0, 16)} L ${right} L ${arcPts(cx, yT, rt, rt*VIEW_K, 0, -Math.PI, 16)} Z`;
+  const backBottom = `<path d="M ${arcPts(cx, yB, rb, rb*VIEW_K, Math.PI, 2*Math.PI, 16)}" fill="none" stroke="${C.back}" stroke-width="${sw}" stroke-dasharray="${sw*3} ${sw*2}"/>`;
+  const rim = rt > sil.w*0.03
+    ? `<ellipse cx="${cx.toFixed(2)}" cy="${yT.toFixed(2)}" rx="${rt.toFixed(2)}" ry="${(rt*VIEW_K).toFixed(2)}" fill="${C.fill}" stroke="${C.ink}" stroke-width="${sw}"/>` : '';
+  /* les éléments non remplis de la vue de face (anse, bec) ne sont pas dans le
+     profil : on les repose tels quels par-dessus le volume, aux mêmes cotes */
+  const extras = (sil.svg.match(/<path[^>]*fill="none"[^>]*\/>/g) || [])
+    .filter(el => !/stroke-dasharray/.test(el)).join('');
+  const add = extras ? `<g fill="none" stroke="${C.ink}" stroke-width="${sw}" stroke-linejoin="round">${extras}</g>` : '';
+  const x0 = cx - rmax - sw, x1 = Math.max(cx + rmax, extras ? sil.w : 0) + sw;
+  const y0 = yT - rt*VIEW_K - sw;
+  return {
+    body: backBottom + `<path d="${body}" fill="${C.fill}" stroke="${C.ink}" stroke-width="${sw}" stroke-linejoin="round"/>` + rim + add,
+    vb: `${x0.toFixed(2)} ${y0.toFixed(2)} ${(x1 - x0).toFixed(2)} ${(yB + rb*VIEW_K - y0 + sw).toFixed(2)}`,
+    w: x1 - x0, h: yB + rb*VIEW_K - y0 + sw,
+  };
+}
+
+/* volume extrudé (boîtes, plats, tores…) : face avant opaque + face arrière
+   décalée en trait clair, reliées par les arêtes visibles */
+function view3DExtrude(sil, prof, C){
+  C = C || VIEW_PRINT;
+  const dx = sil.w*0.26, dy = sil.h*0.16;          // décalage oblique (vers le haut à droite)
+  const sw = Math.max(sil.w, sil.h)/95;
+  const back  = `<g transform="translate(${dx.toFixed(2)} ${(-dy).toFixed(2)})" fill="none" stroke="${C.back}" stroke-width="${sw}" stroke-linejoin="round">${sil.svg}</g>`;
+  const edge = (x1, y1) => `<line x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${(x1+dx).toFixed(2)}" y2="${(y1-dy).toFixed(2)}" stroke="${C.back}" stroke-width="${sw}"/>`;
+  /* arêtes de liaison posées sur le contour réel (et non sur la boîte
+     englobante : sur un anneau ou un disque elles flotteraient dans le vide) */
+  const rows = (prof || []).filter(p => p.r > sil.w*0.004);
+  let pts;
+  if(rows.length > 2){
+    const first = rows[0], last = rows[rows.length - 1];
+    const wide = rows.reduce((a, b) => (b.c + b.r > a.c + a.r ? b : a));
+    pts = [[first.c - first.r, first.y], [first.c + first.r, first.y],
+           [wide.c + wide.r, wide.y], [last.c + last.r, last.y]]
+      .filter((p, i, arr) => !arr.slice(0, i).some(q => Math.hypot(q[0]-p[0], q[1]-p[1]) < sil.w*0.06));
+  } else {
+    pts = [[0, 0], [sil.w, 0], [sil.w, sil.h]];
+  }
+  const edges = pts.map(p => edge(p[0], p[1])).join('');
+  const front = `<g fill="${C.fill}" stroke="${C.ink}" stroke-width="${sw}" stroke-linejoin="round">${sil.svg}</g>`;
+  return {
+    body: `<g transform="translate(${sw.toFixed(2)} ${(dy + sw).toFixed(2)})">${back}${edges}${front}</g>`,
+    vb: `0 0 ${(sil.w + dx + 2*sw).toFixed(2)} ${(sil.h + dy + 2*sw).toFixed(2)}`,
+    w: sil.w + dx + 2*sw, h: sil.h + dy + 2*sw,
+  };
+}
+
+/* les deux vues de la fiche ; `vol` peut être null (repli sur la seule vue de face) */
+async function pieceViews(sil, shape, C){
+  C = C || VIEW_PRINT;
+  const sw = Math.max(sil.w, sil.h)/95;
+  const front = {
+    body: `<g transform="translate(${sw} ${sw})" fill="none" stroke="${C.ink}" stroke-width="${sw}" stroke-linejoin="round">${sil.svg}</g>`,
+    vb: `0 0 ${sil.w + 2*sw} ${sil.h + 2*sw}`, w: sil.w + 2*sw, h: sil.h + 2*sw,
+  };
+  let vol = null;
+  try{
+    const prof = await silProfile(sil);
+    vol = REVOLVE_3D.has(shape) ? view3DRevolve(sil, prof, C) : view3DExtrude(sil, prof, C);
+  }catch(e){ vol = null; }
+  return { front, vol };
+}
+
+/* pose une vue centrée dans un cadre (x, y, w, h en mm) */
+async function pdfDrawView(doc, view, x, y, w, h, scale){
+  if(!view) return;
+  const sc = scale || Math.min(w/view.w, h/view.h);
+  const vw = view.w*sc, vh = view.h*sc;
+  await pdfDrawSvg(doc, view.body, view.vb, x + (w - vw)/2, y + (h - vh)/2, vw, vh);
+}
+
+async function pdfFiche(doc, pieces, pages, title){
   const sName = shapeName(state.shape);
-  const ficheHd = D(`Fiche d'atelier — ${sName}`, `Workshop sheet — ${sName}`);
-  let y = pdfHead(doc, ficheHd) + 6;
+  const hd = { subject: D(`Fiche d'atelier`, `Workshop sheet`), detail: sName };
+  const M = 10, W = 190, right = M + W;
   const k = kFactor(), poids = clayWeight(pieces), feuilles = pages.length;
   const where = whereMap(pages);
-  const line = (txt, opts={}) => {
-    if(y > 275){ doc.addPage(); y = pdfHead(doc, ficheHd + D(' (suite)',' (cont.)')) + 6; }
-    doc.setFont('helvetica', opts.bold ? 'bold' : 'normal');
-    doc.setFontSize(opts.size || 8.5);
-    const c = opts.color || [51,38,26]; doc.setTextColor(...c);
-    const rows = doc.splitTextToSize(txt, 182);
-    doc.text(rows, opts.x || 12, y);
-    y += rows.length * (opts.lh || 4.2) + (opts.gap || 0);
-  };
-  doc.setFont('helvetica','bold'); doc.setFontSize(19); doc.setTextColor(51,38,26);
-  doc.text(title, 10, y); y += 6;
-  line(D(`${sName} — fiche à garder à côté de la plaque`, `${sName} — sheet to keep next to your slab`), {color:[122,103,83], gap:4});
   const kx = `×${k.toLocaleString(numLoc(),{maximumFractionDigits:3})}`;
-  const coteTxt = state.coteType==='fini' ? D(`(gabarits agrandis ${kx})`,`(templates scaled up ${kx})`) : D('(cotes crues)','(wet dims)');
-  const shTxt = D('Retrait','Shrinkage'), sheets = `${feuilles} ${D('feuille','sheet')}${feuilles>1?'s':''} ${paperLabel()}`;
-  if(isKur()){
-    const kd = kurData();
-    line(D(`Kurinuki — bloc à préparer : ${kd.blocTxt}      Paroi visée : ${L(state.dims[state.shape].paroi)}`,
-           `Kurinuki — block to prepare: ${kd.blocTxt}      Target wall: ${L(state.dims[state.shape].paroi)}`), {gap:1});
-    line(`${shTxt} : ${fmt(state.retrait)} % ${coteTxt} · ${pieces.length} ${D('gabarits papier','paper templates')} · ${sheets}`, {gap:5});
+  const kd = isKur() ? kurData() : null;
+
+  /* Corps de la fiche (tout ce qui suit les vues). Dessiné sur `dc` à partir de
+     `y0` ; en mode `measure` les sauts de page sont neutralisés pour que le y
+     final donne la hauteur réelle du corps. */
+  const renderBody = (dc, y0, measure) => {
+    let y = y0;
+    const BOT = 283;                       // dernière ligne utilisable avant le pied
+    const brk = need => { if(!measure && y + need > BOT){ dc.addPage('a4','portrait');
+      y = pdfBand(dc, { subject: hd.subject, detail: hd.detail + D(' (suite)',' (cont.)') }, 210) + 4;
+      pdfFoot(dc, {}, 210); } };
+    const section = txt => { brk(21); y += 3.5;
+      dc.setFont('helvetica','bold'); dc.setFontSize(7.4); dc.setTextColor(...PDF_TERRA);
+      dc.text(txt.toUpperCase(), M, y);
+      dc.setDrawColor(...PDF_LINE); dc.setLineWidth(.2); dc.line(M, y + 1.6, right, y + 1.6);
+      y += 6; };
+
+    /* — chiffres clés — */
+    const stats = isKur()
+      ? [ [D('bloc à préparer','block to prepare'), kd.blocTxt],
+          [D('paroi visée','target wall'), L(state.dims[state.shape].paroi)],
+          [D('retrait','shrinkage'), `${fmt(state.retrait)} % ${state.coteType==='fini'?kx:''}`],
+          [D('à imprimer','to print'), `${feuilles} ${D('feuille','sheet')}${feuilles>1?'s':''} ${paperLabel()}`] ]
+      : [ [D('épaisseur de plaque','slab thickness'), L(state.ep)],
+          [D('pièces à découper','pieces to cut'), String(pieces.filter(p=>!p.noClay).reduce((n,p)=>n+p.qty,0))],
+          [D('retrait','shrinkage'), `${fmt(state.retrait)} % ${state.coteType==='fini'?kx:''}`],
+          [D('à imprimer','to print'), `${feuilles} ${D('feuille','sheet')}${feuilles>1?'s':''} ${paperLabel()}`] ];
+    const bwid = (W - 3*3)/4;
+    stats.forEach(([lab, val], i) => {
+      const x = M + i*(bwid + 3);
+      dc.setFillColor(...PDF_WASH); dc.setDrawColor(...PDF_LINE); dc.setLineWidth(.2);
+      dc.roundedRect(x, y, bwid, 13.5, 1, 1, 'FD');
+      dc.setFont('helvetica','normal'); dc.setFontSize(5.6); dc.setTextColor(...PDF_GREY);
+      dc.text(pdfFit(dc, lab.toUpperCase(), bwid - 5, 5.6, 4.6), x + 2.5, y + 4.6);
+      dc.setFont('helvetica','bold'); dc.setTextColor(...PDF_INK);
+      dc.text(pdfFit(dc, val.trim(), bwid - 5, 9, 6), x + 2.5, y + 10.4);
+    });
+    y += 19.5;
+
+    /* — rappel d'impression — */
+    dc.setFillColor(...PDF_WASH); dc.setDrawColor(...PDF_TERRA); dc.setLineWidth(.3);
+    dc.roundedRect(M, y, W, 9.5, 1, 1, 'FD');
+    dc.setFont('helvetica','bold'); dc.setFontSize(7.4); dc.setTextColor(...PDF_TERRA);
+    dc.text(D('AVANT DE DÉCOUPER','BEFORE YOU CUT'), M + 3, y + 4);
+    dc.setFont('helvetica','normal'); dc.setFontSize(7.2); dc.setTextColor(...PDF_INK);
+    dc.text(D(`Imprimer à 100 % (aucun « ajuster à la page »), puis mesurer la barre témoin du bandeau : elle doit faire exactement ${L(50)}.`,
+               `Print at 100% (no “fit to page”), then measure the check bar in the header: it must be exactly ${L(50)}.`),
+      M + 3, y + 7.6);
+    y += 14;
+
+    /* — pièces à découper — */
+    section(isKur() ? D('Gabarits papier — cocher au fur et à mesure','Paper templates — tick as you go')
+                    : D('Pièces à découper — cocher au fur et à mesure','Pieces to cut — tick as you go'));
+    pieces.forEach(p => {
+      brk(5.4);
+      dc.setDrawColor(...PDF_GREY); dc.setLineWidth(.25);
+      dc.roundedRect(M, y - 2.9, 3.4, 3.4, .5, .5, 'D');
+      let x = M + 5.4;
+      dc.setFont('helvetica','bold'); dc.setFontSize(8.4); dc.setTextColor(...PDF_TERRA);
+      dc.text(p.tag, x, y); x += dc.getTextWidth(p.tag) + 1.8;
+      dc.setFont('helvetica','normal'); dc.setTextColor(...PDF_INK);
+      const nm = `${pieceName(p.name)} × ${p.qty}`;
+      dc.text(nm, x, y); x += dc.getTextWidth(nm) + 2.4;
+      dc.setFontSize(7.4); dc.setTextColor(...PDF_GREY);
+      const rest = `${p.dims[0]}${p.noClay?D(' · gabarit de contrôle, pas de terre',' · control template, no clay'):''}`;
+      dc.text(pdfFit(dc, rest, right - 26 - x, 7.4, 5.6), x, y);
+      dc.setFont('helvetica','bold'); dc.setFontSize(7); dc.setTextColor(...PDF_INK);
+      dc.text(where[p.tag] || '', right, y, { align:'right' });
+      y += 5.4;
+    });
+    if(pages.some(pg => pg.tile)){
+      brk(5);
+      dc.setFont('helvetica','normal'); dc.setFontSize(7); dc.setTextColor(...PDF_GREY);
+      dc.text(D('Gabarits sur plusieurs feuilles : suivre les numéros de feuille indiqués en marge, superposer les croix de repère, puis scotcher.',
+                 'Templates over several sheets: follow the sheet numbers printed in the margin, line up the registration crosses, then tape.'), M, y + .6);
+      y += 5;
+    }
+
+    /* — montage — */
+    section(isKur() ? D('Creusage — rappels étape par étape','Carving — step-by-step reminders')
+                    : D('Montage — rappels pièce par pièce','Assembly — piece-by-piece reminders'));
+    let n = 0;
+    pieces.forEach(p => p.notes.forEach(note => {
+      dc.setFont('helvetica','normal'); dc.setFontSize(8);
+      const rows = dc.splitTextToSize(note, W - 12);
+      brk(rows.length*3.9 + 1.4); n++;
+      dc.setFont('helvetica','normal'); dc.setFontSize(7.6); dc.setTextColor(...PDF_GREY);
+      dc.text(`${n}.`, M, y);
+      dc.setFont('helvetica','bold'); dc.setTextColor(...PDF_TERRA);
+      dc.text(p.tag, M + 6, y);
+      dc.setFont('helvetica','normal'); dc.setTextColor(...PDF_INK); dc.setFontSize(8);
+      dc.text(rows, M + 11, y);
+      y += rows.length * 3.9 + 1.4;
+    }));
+
+    /* — terre — */
+    y += 3; brk(12);
+    dc.setFillColor(...PDF_WASH); dc.setDrawColor(...PDF_TERRA); dc.setLineWidth(.5);
+    dc.roundedRect(M, y, W, 12, 1.2, 1.2, 'FD');
+    dc.setFont('helvetica','normal'); dc.setFontSize(5.8); dc.setTextColor(...PDF_GREY);
+    dc.text(D('TERRE','CLAY'), M + 4, y + 4.2);
+    dc.setFont('helvetica','bold'); dc.setFontSize(9.2); dc.setTextColor(...PDF_INK);
+    dc.text(isKur()
+      ? D(`Bloc : env. ${fmtPoids(poids)}   ·   pièce finie : ${fmtPoids(kd.pieceW)}   ·   à évider : ${fmtPoids(poids - kd.pieceW)}`,
+          `Block: approx. ${fmtPoids(poids)}   ·   finished piece: ${fmtPoids(kd.pieceW)}   ·   to hollow out: ${fmtPoids(poids - kd.pieceW)}`)
+      : D(`À préparer : env. ${fmtPoids(poids)}   ·   avec 15 % de marge : ${fmtPoids(poids*1.15)}   ·   (surfaces × ${L(state.ep)} × 1,9 g/cm³)`,
+          `To prepare: approx. ${fmtPoids(poids)}   ·   with 15% margin: ${fmtPoids(poids*1.15)}   ·   (areas × ${L(state.ep)} × 1.9 g/cm³)`),
+      M + 4, y + 9);
+    return y + 12;
+  };
+
+  /* — bandeau + titre — */
+  let y = pdfBand(doc, hd, 210);
+  pdfFoot(doc, { dims: D('à garder à côté de la plaque','keep it next to your slab') }, 210);
+  doc.setFont('helvetica','bold'); doc.setFontSize(20); doc.setTextColor(...PDF_INK);
+  doc.text(pdfFit(doc, title, W, 20, 12), M, y + 8.5);
+  doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(...PDF_GREY);
+  doc.text(D(`${sName} — tout ce qu'il faut avoir sous les yeux avant de découper`,
+             `${sName} — everything to have in view before you cut`), M, y + 14.5);
+  y += 19;
+
+  /* — vues de la pièce : le cadre prend toute la place que le corps laisse
+       libre (mesuré à blanc), pour remplir la page sans la faire déborder — */
+  const bodyH = renderBody(pdfSafeDoc(new window.jspdf.jsPDF({ unit:'mm', format:'a4' })), 0, true);
+  const hero = Math.max(30, Math.min(108, 276 - y - bodyH));   // 276 = bas utile - le blanc sous le cadre
+  const sil = silhouette();
+  const views = await pieceViews(sil, state.shape);
+  doc.setFillColor(...PDF_WASH); doc.setDrawColor(...PDF_LINE); doc.setLineWidth(.3);
+  doc.setLineDashPattern([1.4, 1.4], 0);
+  doc.roundedRect(M, y, W, hero, 1.5, 1.5, 'FD');
+  doc.setLineDashPattern([], 0);
+  const cap = (txt, cx2) => { doc.setFont('helvetica','normal'); doc.setFontSize(5.8);
+    doc.setTextColor(...PDF_GREY); doc.text(txt, cx2, y + hero - 3, { align:'center' }); };
+  const encTxt = D(`vue de face — ${Lv(sil.w)} × ${L(sil.h)}`, `front view — ${Lv(sil.w)} × ${L(sil.h)}`);
+  const cruTxt = D(`pièce ${state.coteType==='fini'?'finie':'crue'}`, `${state.coteType==='fini'?'finished':'wet'} piece`);
+  if(views.vol){
+    const sep = M + W*0.42;
+    doc.setDrawColor(...PDF_LINE); doc.setLineWidth(.2); doc.setLineDashPattern([1.2, 1.2], 0);
+    doc.line(sep, y + 5, sep, y + hero - 7); doc.setLineDashPattern([], 0);
+    const w1 = sep - M - 12, w2 = M + W - sep - 12, hv = hero - 13;
+    const sc = Math.min(w1/views.front.w, hv/views.front.h, w2/views.vol.w, hv/views.vol.h);
+    await pdfDrawView(doc, views.front, M + 6, y + 5, w1, hv, sc);
+    await pdfDrawView(doc, views.vol, sep + 6, y + 5, w2, hv, sc);
+    cap(encTxt, (M + sep)/2);
+    cap(D(`aperçu du volume — ${cruTxt}`, `volume preview — ${cruTxt}`), (sep + M + W)/2);
   } else {
-    line(D(`Épaisseur de plaque : ${L(state.ep)}      Retrait : ${fmt(state.retrait)} % ${coteTxt}`,
-           `Slab thickness: ${L(state.ep)}      Shrinkage: ${fmt(state.retrait)} % ${coteTxt}`), {gap:1});
-    line(`${pieces.length} ${D('gabarits','templates')} · ${sheets} · ${pieces.filter(p=>!p.noClay).reduce((n,p)=>n+p.qty,0)} ${D('pièce(s) à découper dans la plaque','piece(s) to cut from the slab')}`, {gap:5});
+    await pdfDrawView(doc, views.front, M + 6, y + 5, W - 12, hero - 13);
+    cap(`${encTxt} — ${cruTxt}`, M + W/2);
   }
-  line(isKur()?D('GABARITS PAPIER — COCHER AU FUR ET À MESURE','PAPER TEMPLATES — TICK AS YOU GO'):D('PIÈCES À DÉCOUPER — COCHER AU FUR ET À MESURE','PIECES TO CUT — TICK AS YOU GO'), {bold:true, color:[184,80,42], gap:2});
-  pieces.forEach(p => line(`[  ]  ${p.tag} · ${pieceName(p.name)} × ${p.qty} — ${p.dims[0]}${p.noClay?D(' (gabarit de contrôle, pas de terre)',' (control template, no clay)'):''} — ${where[p.tag]||''}`, {gap:.8}));
-  y += 4;
-  line(isKur()?D('CREUSAGE — RAPPELS ÉTAPE PAR ÉTAPE','CARVING — STEP-BY-STEP REMINDERS'):D('MONTAGE — RAPPELS PIÈCE PAR PIÈCE','ASSEMBLY — PIECE-BY-PIECE REMINDERS'), {bold:true, color:[184,80,42], gap:2});
-  let n = 0;
-  pieces.forEach(p => p.notes.forEach(note => line(`${++n}. ${p.tag} — ${note}`, {gap:.8})));
-  y += 3;
-  if(y > 262){ doc.addPage(); y = pdfHead(doc, ficheHd + D(' (suite)',' (cont.)')) + 6; }
-  doc.setDrawColor(184,80,42); doc.setLineWidth(0.5);
-  doc.roundedRect(10, y-4, 190, 11, 1, 1);
-  doc.setFont('helvetica','bold'); doc.setFontSize(9.5); doc.setTextColor(51,38,26);
-  doc.text(isKur()
-    ? D(`Bloc de terre ≈ ${fmtPoids(poids)}   ·   pièce finie ≈ ${fmtPoids(kurData().pieceW)}   ·   à évider ≈ ${fmtPoids(poids - kurData().pieceW)}`,
-        `Clay block ≈ ${fmtPoids(poids)}   ·   finished piece ≈ ${fmtPoids(kurData().pieceW)}   ·   to hollow out ≈ ${fmtPoids(poids - kurData().pieceW)}`)
-    : D(`Terre à préparer ≈ ${fmtPoids(poids)}   ·   avec 15 % de marge : ${fmtPoids(poids*1.15)}   ·   (surfaces × ${L(state.ep)} × 1,9 g/cm³)`,
-        `Clay to prepare ≈ ${fmtPoids(poids)}   ·   with 15% margin: ${fmtPoids(poids*1.15)}   ·   (areas × ${L(state.ep)} × 1.9 g/cm³)`), 14, y+2.5);
+  renderBody(doc, y + hero + 5, false);
 }
 $('#btnPdf').onclick = async () => {
   const pieces = selectedPieces();
@@ -2676,13 +3553,14 @@ $('#btnPdf').onclick = async () => {
     }
     const title = state.projectName || SHAPES[state.shape].name;
     const pages = collectPages(planPrint(pieces));
-    const doc = new window.jspdf.jsPDF({ unit:'mm', format:'a4', compress:true });
-    pdfFiche(doc, pieces, pages, title);
+    const doc = pdfSafeDoc(new window.jspdf.jsPDF({ unit:'mm', format:'a4', compress:true }));
+    await pdfFiche(doc, pieces, pages, title);
     for(const pg of pages){
       const land = pg.orient === 'L';
       const pageW = land ? 297 : 210;
       doc.addPage('a4', land ? 'landscape' : 'portrait');
-      const y0 = pdfHead(doc, `${title} — ${pg.info}`, pageW);
+      const y0 = pdfBand(doc, { chip: pg.chip, subject: pg.subject, detail: pg.detail }, pageW);
+      pdfFoot(doc, { dims: pg.dims, tile: pg.tile }, pageW);
       const tw = pg.vb[2], th = pg.vb[3];
       const wrap = document.createElement('div');
       wrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:0;height:0;overflow:hidden';
@@ -2694,8 +3572,10 @@ $('#btnPdf').onclick = async () => {
       document.body.appendChild(wrap);
       await doc.svg(wrap.firstChild, { x:10, y:y0, width:tw, height:th });
       wrap.remove();
+      pdfTileNav(doc, pg.tile, 10, y0, tw, th);
     }
-    doc.save(`gabarits-${title.toLowerCase().replace(/[^a-z0-9à-ÿ]+/gi,'-')}.pdf`);
+    pdfPaginate(doc);
+    doc.save(`gabarits-${title.toLowerCase().replace(/[^a-z0-9à-ÿ]+/gi,'-')}-${paperLabel().toLowerCase()}.pdf`);
     track('export_pdf', { shape: state.shape, mode: state.mode || 'plaque', feuilles: pages.length });
     afterExport();
   } finally {
@@ -2727,7 +3607,7 @@ $('#tipClose').onclick = () => $('#tipbar').classList.remove('show');
 
 /* invite newsletter : modale frontale (fond flouté). Ré-affichable (relancée une
    impression sur deux tant que l'email n'est pas rempli). Idempotente : ne fait
-   rien si elle est déjà ouverte. Jamais en même temps que le pourboire/cookies. */
+   rien si elle est déjà ouverte. Jamais en même temps que le pourboire. */
 function showNews(){
   const el = $('#news');
   if(el.classList.contains('show')) return;   // déjà ouverte
@@ -2795,40 +3675,13 @@ $('#newsEmail').addEventListener('focus', () => clearTimeout(newsTimer));   // n
 function afterExport(){
   const n = (+localStorage.getItem('gabarits-exports') || 0) + 1;
   localStorage.setItem('gabarits-exports', String(n));
-  const consentEl = $('#consent');
-  const consentVisible = consentEl && !consentEl.hidden && consentEl.classList.contains('show');
   const subscribed = localStorage.getItem('gabarits-news-sub');
   if(subscribed){
-    if(!consentVisible) maybeThanks();   // 2) don (barre du bas) — pas en même temps que le bandeau cookies (barre du bas aussi)
+    maybeThanks();        // 2) don (barre du bas)
   } else if(n % 2 === 1){
-    showNews();           // 1) email : modale centrée (z600) → s'affiche même si les cookies ne sont pas encore répondus
+    showNews();           // 1) email : modale centrée (z600)
   }
 }
-
-/* ---------------------------------------------------------------
-   Consentement cookies (RGPD) — l'analytics ne démarre qu'après « Accepter »
-   --------------------------------------------------------------- */
-(function(){
-  const KEY = 'gabarits-consent';
-  const el = $('#consent');
-  const showBanner = () => { el.hidden = false; setTimeout(() => el.classList.add('show'), 30); };
-  const hideBanner = () => { el.classList.remove('show'); setTimeout(() => { el.hidden = true; }, 400); };
-  if(localStorage.getItem(KEY) === 'granted') window.loadAnalytics && window.loadAnalytics();
-  // le bandeau cookies ne s'affiche plus tout seul : il est déclenché après le tour d'onboarding
-  window.showConsentIfNeeded = () => {
-    const c = localStorage.getItem(KEY);
-    if(c !== 'granted' && c !== 'denied') showBanner();
-  };
-  function decide(v){
-    localStorage.setItem(KEY, v);
-    hideBanner();
-    if(v === 'granted' && !window.__analyticsLoaded) window.loadAnalytics && window.loadAnalytics();
-    if(v === 'denied' && window.__analyticsLoaded) location.reload();   // stoppe l'analytics déjà chargé
-  }
-  $('#consentYes').onclick = () => decide('granted');
-  $('#consentNo').onclick  = () => decide('denied');
-  $('#cookiesLink').onclick = e => { e.preventDefault(); showBanner(); };
-})();
 
 /* ---------------------------------------------------------------
    Tour d'onboarding — spotlight par bloc, mobile + desktop, replayable
@@ -2836,7 +3689,7 @@ function afterExport(){
 const tt = o => (typeof o === 'string') ? o : (isEN() ? o.en : o.fr);
 const TOUR = [
   { sel:null, title:{fr:'Bienvenue 👋',en:'Welcome 👋'}, html:{fr:'Cet outil crée les <b>gabarits</b> (patrons à découper) pour réaliser une forme en céramique. Un petit tour de 30&nbsp;s&nbsp;?', en:'This tool creates the <b>templates</b> (cutting patterns) to build a ceramic shape. A quick 30-sec tour?'} },
-  { sel:'#panel-forme', title:{fr:'1 · Forme & cotes',en:'1 · Shape & size'}, html:{fr:'Choisis la <b>technique</b> (plaque ou kurinuki), la <b>forme</b>, puis saisis les <b>cotes</b>. Le bloc « Ma terre » gère le retrait de cuisson et l’épaisseur. Bascule <b>cm / pouces</b> en haut à droite.', en:'Pick the <b>technique</b> (slab or kurinuki), the <b>shape</b>, then enter the <b>dimensions</b>. The “My clay” block handles firing shrinkage and thickness. Switch <b>cm / inches</b> at the top right.'} },
+  { sel:'#panel-forme', title:{fr:'1 · Forme & cotes',en:'1 · Shape & size'}, html:{fr:'Choisis la <b>technique</b> (plaque, kurinuki ou tour), la <b>forme</b>, puis saisis les <b>cotes</b>. Le bloc « Ma terre » gère le retrait de cuisson et l’épaisseur. Bascule <b>cm / pouces</b> en haut à droite.', en:'Pick the <b>technique</b> (slab, kurinuki or wheel), the <b>shape</b>, then enter the <b>dimensions</b>. The “My clay” block handles firing shrinkage and thickness. Switch <b>cm / inches</b> at the top right.'} },
   { sel:'#panel-apercu', title:{fr:'2 · Aperçu',en:'2 · Preview'}, html:{fr:'Ta pièce s’affiche <b>en direct</b> quand tu changes les cotes. Tu peux même superposer une <b>photo</b> pour caler les proportions.', en:'Your piece updates <b>live</b> as you change the dimensions. You can even overlay a <b>photo</b> to match proportions.'} },
   { sel:'#panel-pieces', title:{fr:'3 · Pièces à découper',en:'3 · Pieces to cut'}, html:{fr:'Voici tes <b>gabarits</b>, cotés à taille réelle. Décoche ceux que tu ne veux pas imprimer.', en:'Here are your <b>templates</b>, dimensioned at real size. Untick any you don’t want to print.'} },
   { sel:'.synth', title:{fr:'Enregistrer & exporter',en:'Save & export'}, html:{fr:'<b>Enregistre</b> ta pièce dans ton carnet, puis exporte en <b>SVG</b>, <b>PDF</b>, ou <b>imprime à 100&nbsp;%</b> — vérifie l’échelle avec la règle de 50&nbsp;mm sur la feuille.', en:'<b>Save</b> your piece to your notebook, then export as <b>SVG</b>, <b>PDF</b>, or <b>print at 100%</b> — check the scale with the 50&nbsp;mm ruler on the sheet.'} },
@@ -2857,7 +3710,7 @@ function startTour(){
     window.addEventListener('keydown', onTourKey);
   }
   // un tour propre : on referme les autres sollicitations
-  ['#consent','#tipbar','#news'].forEach(s => { const e = $(s); if(e) e.classList.remove('show'); });
+  ['#tipbar','#news'].forEach(s => { const e = $(s); if(e) e.classList.remove('show'); });
   track('tour_start');
   showStep(0);
 }
@@ -2936,15 +3789,12 @@ function endTour(){
   tourStep = -1;
   localStorage.setItem('gabarits-onboarded', '1');
   track('tour_done');
-  window.showConsentIfNeeded && window.showConsentIfNeeded();   // cookies après le tour
 }
 $('#tourBtn').onclick = () => startTour();
 
-/* première connexion : tour d'abord, cookies ensuite ; sinon cookies directement */
+/* première connexion : tour d'onboarding */
 if(!localStorage.getItem('gabarits-onboarded')){
   setTimeout(startTour, 650);
-} else {
-  setTimeout(() => window.showConsentIfNeeded && window.showConsentIfNeeded(), 500);
 }
 
 /* ---------------------------------------------------------------
@@ -3055,7 +3905,7 @@ function buildCarnet(){
 }
 function loadProject(c){
   state.shape = c.shape;
-  state.mode = SHAPES[c.shape]?.kurinuki ? 'kurinuki' : 'plaque';
+  state.mode = modeOf(c.shape);
   buildMode();
   printExcl.clear();
   state.dims[c.shape] = Object.assign(defaultDims(c.shape), JSON.parse(JSON.stringify(c.dims)));
@@ -3130,8 +3980,8 @@ if(state.carnetOpen === undefined) state.carnetOpen = window.innerWidth > 760;
 applyCarnetOpen();
 
 // cohérence mode ↔ forme au chargement
-state.mode = SHAPES[state.shape]?.kurinuki ? 'kurinuki' : (state.mode === 'kurinuki' ? 'kurinuki' : 'plaque');
-if(state.mode === 'kurinuki' && !SHAPES[state.shape]?.kurinuki) state.shape = 'kur_cyl';
+state.mode = modeOf(state.shape);
+if(!SHAPES[state.shape]) { state.shape = 'cone'; state.mode = 'plaque'; }
 
 /* ---- langue & unités : sélecteurs + re-rendu global ---- */
 function rerenderAll(){
