@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gabarits — patrons pour céramique à la plaque</title>
-<link rel="icon" type="image/png" href="favicon.png">
+<link rel="icon" type="image/png" sizes="512x512" href="favicon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
@@ -978,6 +978,25 @@ const isTour = () => !!SHAPES[state.shape].tour;
 const modeOf = id => SHAPES[id]?.kurinuki ? 'kurinuki' : SHAPES[id]?.tour ? 'tour' : 'plaque';
 
 const detectLang = () => (navigator.language || 'fr').toLowerCase().startsWith('en') ? 'en' : 'fr';
+/* Premières valeurs selon la RÉGION du navigateur : les États-Unis, le Canada, le Mexique
+   et les Philippines impriment en Letter ; seuls les États-Unis raisonnent en pouces.
+   Sans région exploitable, on retombe sur le fuseau horaire, puis sur A4 + cm. */
+function regionDefaults(){
+  const tags = (navigator.languages && navigator.languages.length ? navigator.languages
+                                                                 : [navigator.language || '']).join(',');
+  let region = (tags.toUpperCase().match(/-([A-Z]{2})\b/) || [])[1] || '';
+  if(!region){
+    try{
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+      if(/^America\/(New_York|Chicago|Denver|Los_Angeles|Phoenix|Anchorage|Detroit|Indiana|Kentucky|Boise|Juneau|Honolulu)/.test(tz)) region = 'US';
+      else if(/^America\/(Toronto|Vancouver|Edmonton|Winnipeg|Halifax|St_Johns|Regina|Montreal)/.test(tz)) region = 'CA';
+    }catch(e){}
+  }
+  return {
+    paper: ['US','CA','MX','PH'].includes(region) ? 'letter' : 'a4',
+    unit:  region === 'US' ? 'in' : 'cm',
+  };
+}
 const DEFAULT_STATE = {
   shape: 'cone',
   dims: Object.fromEntries(Object.entries(SHAPES).map(([id,s]) =>
@@ -998,7 +1017,7 @@ function loadState(){
     [id, Object.assign(JSON.parse(JSON.stringify(def)), (saved && saved[id]) || {})]));
   const st = (s && s.dims)
     ? Object.assign({}, DEFAULT_STATE, s, { dims: mergeDims(s.dims), ov: Object.assign({}, DEFAULT_STATE.ov, s.ov) })
-    : JSON.parse(JSON.stringify(DEFAULT_STATE));
+    : Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), regionDefaults());
   const urlLang = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
   if(urlLang === 'en' || urlLang === 'fr') st.lang = urlLang;   // priorité : ?lang= envoyé par le site (ex. /en → ?lang=en)
   else if(!st.lang) st.lang = detectLang();     // sinon : anglais si navigateur EN, français sinon
@@ -2722,7 +2741,7 @@ function renderPreview(){
    déjà le rendre) — en attendant, `state.view3d = true; renderPreview()` en
    console suffit pour la voir. */
 const v3dBtn = $('#view3dSoon');
-if(v3dBtn) v3dBtn.onclick = () => { track('view3d_teaser_click', { shape: state.shape }); showNews(); };
+if(v3dBtn) v3dBtn.onclick = () => { track('view3d_teaser_click', { shape: state.shape }); showNews('teaser_3d'); };
 
 /* ---------------------------------------------------------------
    Export SVG
@@ -3594,6 +3613,7 @@ $('#tipFootLink').onclick = () => track('tip_click', { source: 'footer' });
 $('#fbFootLink').onclick = () => track('feedback_click', { source: 'footer' });
 $('#newsFootLink').onclick = () => track('newsletter_click', { source: 'footer' });
 let tipShown = false, tipTimer = null, newsShown = false, newsTimer = null;
+let newsSource = 'inconnu';   // d'où vient l'invite email actuellement ouverte
 function maybeThanks(){
   if(tipShown) return;                                               // 1×/visite (réapparaît aux visites suivantes)
   tipShown = true;
@@ -3608,10 +3628,12 @@ $('#tipClose').onclick = () => $('#tipbar').classList.remove('show');
 /* invite newsletter : modale frontale (fond flouté). Ré-affichable (relancée une
    impression sur deux tant que l'email n'est pas rempli). Idempotente : ne fait
    rien si elle est déjà ouverte. Jamais en même temps que le pourboire. */
-function showNews(){
+function showNews(source){
   const el = $('#news');
   if(el.classList.contains('show')) return;   // déjà ouverte
   newsShown = true;
+  newsSource = source || 'inconnu';
+  track('newsletter_shown', { source: newsSource, shape: state.shape });
   $('#tipbar').classList.remove('show');
   const btn = $('#newsBtn'); if(btn) btn.disabled = false;   // réactive si fermée après un envoi
   el.classList.remove('done');
@@ -3625,9 +3647,9 @@ function hideNews(){
 }
 /* « Plus tard » / croix : on ferme sans marquer off → l'invite pourra revenir
    à une prochaine visite (mais plus pendant cette session). */
-$('#newsLater').onclick = () => { track('newsletter_later', { source: 'modale' }); hideNews(); };
-$('#newsClose').onclick = () => hideNews();
-$('#newsMini').onclick = () => { track('newsletter_click', { source: 'panneau' }); showNews(); };   // entrée discrète panneau 1
+$('#newsLater').onclick = () => { track('newsletter_later', { source: newsSource }); hideNews(); };
+$('#newsClose').onclick = () => { track('newsletter_dismiss', { source: newsSource }); hideNews(); };
+$('#newsMini').onclick = () => { track('newsletter_click', { source: 'panneau' }); showNews('panneau'); };   // entrée discrète panneau 1
 
 /* Inscription newsletter → Brevo (double opt-in).
    NEWS_ACTION : coller l'URL "action=" du formulaire Brevo (https://sibforms.com/serve/...).
@@ -3635,7 +3657,7 @@ $('#newsMini').onclick = () => { track('newsletter_click', { source: 'panneau' }
 const NEWS_ACTION = 'https://69a1d944.sibforms.com/serve/MUIFAN7K5Y-M3NorrPe98ttopcj5n92TsQ8VVyVuyk0CkfuYpkbILFKorLERZuTqJpQxE1Qqc97MFHFkAP-r3PHI5A9qwQmyxSK61drlEPJRUStlFBndKiPIEQCAE8CP6Vv7ZlaMvzh-tYdnXSds_l2VnyJybTE6DbttRlKXqLZNFn7d6Q-2EnG3LL0aHEjydNHIOsbXuycFiTz4zg==';
 const NEWS_FALLBACK = 'https://69a1d944.sibforms.com/serve/MUIFAN7K5Y-M3NorrPe98ttopcj5n92TsQ8VVyVuyk0CkfuYpkbILFKorLERZuTqJpQxE1Qqc97MFHFkAP-r3PHI5A9qwQmyxSK61drlEPJRUStlFBndKiPIEQCAE8CP6Vv7ZlaMvzh-tYdnXSds_l2VnyJybTE6DbttRlKXqLZNFn7d6Q-2EnG3LL0aHEjydNHIOsbXuycFiTz4zg==';
 function subscribeNews(email){
-  track('newsletter_submit', { source: 'modale' });
+  track('newsletter_submit', { source: newsSource, shape: state.shape });
   const bar = $('#news'), btn = $('#newsBtn');
   btn.disabled = true;
   // Envoi via une iframe cachée : POST de formulaire classique → aucune dépendance
@@ -3679,7 +3701,7 @@ function afterExport(){
   if(subscribed){
     maybeThanks();        // 2) don (barre du bas)
   } else if(n % 2 === 1){
-    showNews();           // 1) email : modale centrée (z600)
+    showNews('auto_export');   // 1) email : modale centrée (z600)
   }
 }
 
@@ -3855,7 +3877,7 @@ function buildGallery(){
     buildMode(); buildShapeSelector(); buildDimFields(); refresh();
   });
   const tz = document.querySelector('.gcard.teaser');
-  if(tz) tz.onclick = () => { track('collection_teaser_click', {}); showNews(); };   // invite email
+  if(tz) tz.onclick = () => { track('collection_teaser_click', {}); showNews('teaser_collection'); };   // invite email
 }
 
 /* ---------------------------------------------------------------
