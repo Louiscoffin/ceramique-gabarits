@@ -413,9 +413,29 @@ select:focus{outline:none;border-color:var(--glaze)}
   display:block;margin:12px auto 0;background:none;border:none;box-shadow:none;padding:4px;
   color:var(--ink2);font-size:12px;text-decoration:underline;cursor:pointer;
 }
-.newsmodal .newsdone{display:none;font-size:15px;font-weight:bold;color:var(--terra-d);padding:6px 0}
-.newsmodal.done .newsform,.newsmodal.done .newsconsent,.newsmodal.done .newslater,.newsmodal.done .newsmodal-txt{display:none}
+.newsmodal .newsdone{display:none}
+.newsmodal.done .newsform,.newsmodal.done .newsconsent,.newsmodal.done .newslater,
+.newsmodal.done .newsmodal-txt,
+.newsmodal.done .newsmodal-card>.newsmodal-ico,.newsmodal.done .newsmodal-card>.newsmodal-title{display:none}
 .newsmodal.done .newsdone{display:block}
+/* état « merci » : confirmation d'inscription + proposition de don */
+.newsdone-hero{font-size:34px;line-height:1;display:block;margin-bottom:6px}
+.newsdone-title{margin:0 0 8px}
+.newsdone-msg{font-size:13.5px;font-weight:bold;line-height:1.45;color:var(--terra-d);margin:0}
+.newsdone-tip{margin-top:18px;padding-top:16px;border-top:1px dashed var(--line)}
+.newsdone-ico{font-size:26px;line-height:1;display:block;margin-bottom:6px}
+.newsdone-txt{font-size:12.5px;line-height:1.5;color:var(--ink);margin:0 0 14px}
+.newsdone-txt b{color:var(--terra-d)}
+.newsmodal a.tipbtn{
+  display:block;text-decoration:none;text-align:center;font-size:13px;font-weight:bold;
+  background:var(--terra);border:1.5px solid var(--terra-d);color:#fdf6ea;
+  padding:10px 16px;border-radius:2px;box-shadow:2px 2px 0 rgba(51,38,26,.22);
+}
+.newsmodal a.tipbtn:hover{transform:translate(-1px,-1px)}
+.newsdone-later{
+  display:block;margin:12px auto 0;background:none;border:none;box-shadow:none;padding:4px;
+  color:var(--ink2);font-size:12px;text-decoration:underline;cursor:pointer;
+}
 .tipfoot{
   text-align:center;padding:26px 30px 38px;font-size:11.5px;color:var(--ink2);
   border-top:1.5px dashed var(--line);margin-top:10px;
@@ -673,11 +693,16 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
           <label data-i18n="epaisseur">Épaisseur de plaque</label>
           <span><input type="number" id="inEp" min="0" step="0.1" inputmode="decimal"><span class="unit" id="inEpUnit">mm</span></span>
         </div>
+        <div class="field" id="fieldCuir">
+          <label data-i18n="cuir">Retrait déjà fait au cuir</label>
+          <span><input type="number" id="inCuir" min="0" max="100" step="5" inputmode="decimal"><span class="unit">%</span></span>
+        </div>
         <div class="radio-row" id="coteType">
           <div class="opt" data-v="fini" data-i18n="cote_fini">cotes pièce finie</div>
           <div class="opt" data-v="cru" data-i18n="cote_cru">cotes pièce crue</div>
         </div>
         <div class="hint" data-i18n-html="terre_hint">En <b>pièce finie</b>, les gabarits sont agrandis pour compenser le retrait (séchage + cuisson). En <b>pièce crue</b>, ils sont tracés tels quels.</div>
+        <div class="hint" id="hintCuir" data-i18n-html="cuir_hint">On tournasse à consistance <b>cuir</b> : la pièce a déjà fait une part de son retrait. Seuls les gabarits de tournassage sont réduits d’autant.</div>
         <div class="krow"><span data-i18n="facteur">facteur d’agrandissement</span><b id="kVal">×1,000</b></div>
         </div>
       </div>
@@ -768,7 +793,17 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
     </form>
     <span class="newsconsent" data-i18n="news_consent">En t'inscrivant, tu acceptes de recevoir les nouveautés de l'outil. Désinscription en 1 clic.</span>
     <button class="newslater" id="newsLater" data-i18n="news_later">Plus tard</button>
-    <div class="newsdone" data-i18n="news_success">Merci — bien inscrit·e ✓ Le gabarit exclusif arrive bientôt 🎁</div>
+    <div class="newsdone">
+      <span class="newsdone-hero">🎉</span>
+      <h3 class="newsmodal-title newsdone-title" data-i18n="news_done_title">Merci, tu es bien inscrit·e !</h3>
+      <p class="newsdone-msg" data-i18n="news_success">Ton email est enregistré — le gabarit exclusif arrive bientôt 🎁</p>
+      <div class="newsdone-tip">
+        <span class="newsdone-ico">🏺</span>
+        <p class="newsdone-txt" data-i18n-html="news_tip_txt">L'outil est <b>gratuit</b> et le restera. Si tu veux aller plus loin, tu peux m'offrir un <b>pain de terre</b> — montant libre, ça aide à faire vivre le projet.</p>
+        <a class="tipbtn" id="newsTipBtn" href="#" target="_blank" rel="noopener noreferrer" data-i18n="news_tip_btn">🏺 offrir un pain de terre</a>
+        <button class="newsdone-later" id="newsDoneLater" data-i18n="news_tip_later">Une autre fois</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1001,10 +1036,28 @@ const DEFAULT_STATE = {
   shape: 'cone',
   dims: Object.fromEntries(Object.entries(SHAPES).map(([id,s]) =>
     [id, Object.assign(Object.fromEntries(s.fields.map(f=>[f.k,f.def])), JSON.parse(JSON.stringify(s.init||{})))])),
-  ep: 5, retrait: 12, coteType: 'fini',
+  ep: 5, retrait: 12, coteType: 'fini', cuir: 40,
   unit: 'cm', lang: null, paper: 'a4', view3d: false,   // lang null = auto-détection au 1er chargement
   ov: { x: 30, y: 20, scale: 55, op: 75 },
 };
+/* ?forme= : liens profonds du site vitrine (…/?forme=tasse). On tolère les
+   accents, la ponctuation et les noms anglais ; tout libellé inconnu est ignoré
+   (on garde alors la forme sauvegardée). ?shape= accepté en synonyme. */
+const SHAPE_ALIASES = {
+  mug:'tasse', cup:'tasse', box:'boite', cylinder:'cylindre', truncatedcone:'cone',
+  plate:'assiette', dish:'plat', tray:'plat', profile:'profil', bottle:'bouteille',
+  pitcher:'pichet', jug:'pichet', pyramid:'pyramide', oval:'ovale', prism:'prisme',
+  facets:'facettes', vase:'facettes', cushion:'coussin', torus:'tore',
+  free:'libre', custom:'libre'
+};
+let deeplinkShape = null;   // forme imposée par l'URL — tracée une fois l'app prête
+function shapeFromUrl(){
+  const q = new URLSearchParams(location.search);
+  const raw = q.get('forme') || q.get('shape') || '';
+  const k = raw.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z]/g, '');
+  const id = SHAPES[k] ? k : SHAPE_ALIASES[k];
+  return (id && SHAPES[id]) ? id : null;
+}
 let state = loadState();
 let photoURL = null;
 
@@ -1018,11 +1071,15 @@ function loadState(){
   const st = (s && s.dims)
     ? Object.assign({}, DEFAULT_STATE, s, { dims: mergeDims(s.dims), ov: Object.assign({}, DEFAULT_STATE.ov, s.ov) })
     : Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), regionDefaults());
+  const urlShape = shapeFromUrl();
+  if(urlShape){ st.shape = urlShape; deeplinkShape = urlShape; }   // l'intention du lien prime sur la dernière forme utilisée
+                                                                   // (le mode est recalé juste après, via modeOf)
   const urlLang = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
   if(urlLang === 'en' || urlLang === 'fr') st.lang = urlLang;   // priorité : ?lang= envoyé par le site (ex. /en → ?lang=en)
   else if(!st.lang) st.lang = detectLang();     // sinon : anglais si navigateur EN, français sinon
   if(!st.unit) st.unit = 'cm';
   if(!st.paper) st.paper = 'a4';
+  if(!(st.cuir >= 0 && st.cuir <= 100)) st.cuir = 40;   // état sauvegardé d'avant les gabarits de tournassage
   st.view3d = false;    // vue 3D prête mais pas encore ouverte (cf. #view3dSoon) :
                         // jamais restaurée depuis le stockage, on l'active à la main
   return st;
@@ -1060,6 +1117,8 @@ const STR = {
     terre_title: 'Ma terre', terre_label: 'Terre',
     terre_faience: 'faïence · 8 %', terre_gres: 'grès · 12 %', terre_porcelaine: 'porcelaine · 14 %', terre_mesure: 'retrait mesuré',
     retrait: 'Retrait de cuisson', epaisseur: 'Épaisseur de plaque',
+    cuir: 'Retrait déjà fait au cuir',
+    cuir_hint: 'On tournasse à consistance <b>cuir</b> : la pièce a déjà fait une part de son retrait. Seuls les gabarits de tournassage sont réduits d’autant.',
     cote_fini: 'cotes pièce finie', cote_cru: 'cotes pièce crue',
     terre_hint: 'En <b>pièce finie</b>, les gabarits sont agrandis pour compenser le retrait (séchage + cuisson). En <b>pièce crue</b>, ils sont tracés tels quels.',
     facteur: 'facteur d’agrandissement',
@@ -1078,6 +1137,8 @@ const STR = {
     terre_title: 'My clay', terre_label: 'Clay',
     terre_faience: 'earthenware · 8%', terre_gres: 'stoneware · 12%', terre_porcelaine: 'porcelain · 14%', terre_mesure: 'measured shrinkage',
     retrait: 'Firing shrinkage', epaisseur: 'Slab thickness',
+    cuir: 'Shrinkage done by leather-hard',
+    cuir_hint: 'Trimming happens at <b>leather-hard</b>, when the piece has already done part of its shrinkage. Only the trimming templates are scaled down by that much.',
     cote_fini: 'finished-piece size', cote_cru: 'wet-clay size',
     terre_hint: 'With <b>finished size</b>, templates are scaled up to offset shrinkage (drying + firing). With <b>wet-clay size</b>, they are drawn as entered.',
     facteur: 'scale-up factor',
@@ -1314,9 +1375,23 @@ function kurPieces(d, rectBloc){
 
 
 /* ---------- tournage : gabarits de tour ----------
-   Un gabarit de tour sert sur la terre humide : toutes les cotes sont donc
-   crues (× k), comme les patrons de plaque. Repère de dessin : x = rayon
-   depuis l'axe du tour, y vers le bas, le plateau du tour en bas (y = H). */
+   Un gabarit de tour sert sur la terre humide : ses cotes sont donc crues
+   (× k), comme les patrons de plaque. Seul le TOURNASSAGE fait exception —
+   il se pratique à consistance cuir, quand la pièce a déjà fait une part de
+   son retrait (l'essentiel du retrait de séchage se produit avant le cuir,
+   celui de cuisson entièrement après). D'où `cuirRatio()`, appliqué aux
+   seuls gabarits de tournassage : tracés au cru, ils sont trop grands.
+   Repère de dessin : x = rayon depuis l'axe du tour, y vers le bas, le
+   plateau du tour en bas (y = H). */
+const cuirRatio = () => 1 - (state.cuir/100) * (state.retrait/100);
+
+/* une jauge débitée en deux morceaux ne sert plus à rien : on prévient */
+const fitsSheet = (w, h) => [[PG.P.w, PG.P.h], [PG.L.w, PG.L.h]]
+  .some(([W,H]) => (w <= W && h <= H) || (h <= W && w <= H));
+const sheetNote = (w, h) => fitsSheet(w, h) ? null
+  : D(`plus grand qu'une feuille : le gabarit s'imprime en plusieurs feuilles à raccorder aux croix — ou reporte la cote au réglet sur une baguette de bois`,
+      `larger than one sheet: it prints across several sheets to be joined at the crosses — or transfer the dimension onto a wooden batten with a ruler`);
+
 function tourProfil(){
   const k = kFactor();
   const d = state.dims[state.shape];
@@ -1324,7 +1399,12 @@ function tourProfil(){
   const y0 = raw[0].y;
   const ctrl = raw.map(p => ({ r: p.r, y: p.y - y0 }));     // base ramenée à y = 0
   const pts = smoothProfil(ctrl, (d.galbe ?? 60)/100);     // le profil réellement découpé
-  return { d, ctrl, pts, H: pts.at(-1).y,
+  return { d, k, ctrl, pts, H: pts.at(-1).y,
+    /* paroi et pied sont saisis à la cote de la pièce : ils suivent le même
+       agrandissement que le profil, sinon la paroi visée maigrit à la cuisson */
+    paroi: Math.max(0, (d.paroi ?? 0) * k),
+    hpied: Math.max(0, (d.hpied ?? 0) * k),
+    lpied: Math.max(0, (d.lpied ?? 0) * k),
     maxR : Math.max(...pts.map(p=>p.r)),
     minR : Math.min(...pts.map(p=>p.r)),
     rTop : pts.at(-1).r,
@@ -1333,85 +1413,125 @@ function tourProfil(){
 /* boule à centrer : volume de révolution de la paroi + du fond */
 function tourClay(){
   const T = tourProfil();
-  return kurVolumes(T.pts, Math.max(1, T.d.paroi)).pieceW;
+  return kurVolumes(T.pts, Math.max(1, T.paroi)).pieceW;
 }
 function tourPieces(){
   const T = tourProfil(), P = [];
   const yOf = p => T.H - p.y;                 // profil (y vers le haut) → dessin (y vers le bas)
-  const M = 22;                               // matière à droite du profil : la prise en main
+  const M = 22;                               // matière minimale à droite du profil
+  const GRIP = 45;                            // largeur de plaque nécessaire pour tenir le calibre à plat sans qu'il vrille
 
   /* A — calibre de profil extérieur : la plaque est la matière à droite du
      profil, son bord gauche épouse la paroi, son bord bas repose sur le
-     plateau et son bord haut donne la hauteur crue à ne pas dépasser. */
+     plateau et son bord haut donne la hauteur crue à ne pas dépasser.
+     Sur les formes droites (pot, mug) la matière restante serait large de
+     quelques millimètres : on élargit à GRIP pour que la main tienne. */
   const outer = [...T.pts].reverse().map(p => ({ x:p.r, y:yOf(p) }));   // du bord vers le pied
-  const xR = T.maxR + M;
+  const xR = Math.max(T.maxR + M, T.minR + GRIP);
+  const notesA = [
+    D(`découper dans du carton fort, du plastique de classeur ou du contreplaqué 3 mm ; les gabarits mouillés se gondolent — plastifier le carton si tu tournes en série`,
+      `cut from stiff card, folder plastic or 3 mm plywood; wet templates warp — laminate the card if you throw a series`),
+    D(`tenir le bord bas à plat sur le plateau, main appuyée : la paroi est bonne quand le gabarit touche partout sans lumière`,
+      `keep the bottom edge flat on the wheel head; the wall is right when the template touches all along with no gap of light`),
+    D(`tourner d'abord la forme au plus près à la main, finir au gabarit à vitesse lente et paroi bien humide`,
+      `throw the shape close to size by hand first, finish with the template at low speed on a well-lubricated wall`)];
+  const nA = sheetNote(xR - T.minR, T.H); if(nA) notesA.push(nA);
   P.push({ name:'Calibre de profil extérieur', qty:1, noClay:true,
     geo:{ t:'path', d: pathFrom([...outer, {x:xR, y:T.H}, {x:xR, y:0}], true),
           bx:T.minR, by:0, bw:xR - T.minR, bh:T.H,
-          label:`${D('profil ext.','outer profile')} — h ${L(T.H)} · Ø max ${Lv(2*T.maxR)}` },
-    dims:[D(`hauteur crue ${L(T.H)} — Ø maxi cru ${Lv(2*T.maxR)} — Ø au bord ${Lv(2*T.rTop)}`,
-            `wet height ${L(T.H)} — max wet Ø ${Lv(2*T.maxR)} — Ø at the rim ${Lv(2*T.rTop)}`),
+          label:`${D('profil ext.','outer profile')} — h ${L(T.H)} · Ø max ${L(2*T.maxR)}` },
+    dims:[D(`hauteur crue ${L(T.H)} — Ø maxi cru ${L(2*T.maxR)} — Ø au bord ${L(2*T.rTop)}`,
+            `wet height ${L(T.H)} — max wet Ø ${L(2*T.maxR)} — Ø at the rim ${L(2*T.rTop)}`),
           D(`le bord gauche est le profil : c'est lui qui vient contre la paroi`,
             `the left edge is the profile: that is the edge you hold against the wall`)],
-    notes:[D(`découper dans du carton fort, du plastique de classeur ou du contreplaqué 3 mm ; les gabarits mouillés se gondolent — plastifier le carton si tu tournes en série`,
-             `cut from stiff card, folder plastic or 3 mm plywood; wet templates warp — laminate the card if you throw a series`),
-           D(`tenir le bord bas à plat sur le plateau, main appuyée : la paroi est bonne quand le gabarit touche partout sans lumière`,
-             `keep the bottom edge flat on the wheel head; the wall is right when the template touches all along with no gap of light`),
-           D(`tourner d'abord la forme au plus près à la main, finir au gabarit à vitesse lente et paroi bien humide`,
-             `throw the shape close to size by hand first, finish with the template at low speed on a well-lubricated wall`)] });
+    notes: notesA });
 
   /* B — profil intérieur : la coupe de l'intérieur, décalée de la paroi visée */
-  const paroi = Math.max(0, T.d.paroi);
+  const paroi = T.paroi;
   const inner = paroi >= 1 ? kurCavity(T.pts, paroi) : [];               // haut → bas
   const rIn = inner.length ? Math.max(...inner.map(q=>q.r)) : 0;
   if(inner.length >= 2 && rIn > 5){
     const yFloor = T.H - inner.at(-1).y;
+    /* un gabarit intérieur rigide doit descendre par l'ouverture : sa plus
+       grande largeur doit franchir le rétrécissement qui la surplombe.
+       Sur une forme qui se referme (vase à col), il ne passe pas. */
+    const iMax = inner.reduce((b,q,i) => q.r > inner[b].r ? i : b, 0);
+    const rCol = Math.min(...inner.slice(0, iMax + 1).map(q => q.r));
+    const passe = rIn <= rCol + 0.5;
+    const dimsB = [D(`intérieur visé : rayon maxi ${L(rIn)} — fond à ${L(paroi)} du plateau`,
+                     `target inside: max radius ${L(rIn)} — base ${L(paroi)} above the wheel head`),
+                   D(`le bord vertical gauche du gabarit, c'est l'axe du tour`,
+                     `the straight vertical edge of the template is the wheel axis`)];
+    const notesB = [];
+    if(passe){
+      notesB.push(D(`gabarit de contrôle : on le descend dans la pièce, bord vertical sur l'axe, pour vérifier le creux et l'épaisseur restante`,
+                    `check template: lower it into the piece, straight edge on the axis, to check the inside curve and the wall left`));
+    } else {
+      notesB.push(D(`cette forme se referme : le gabarit (${L(rIn)} de large) ne passe pas par l'ouverture (${L(rCol)} de rayon intérieur). Il ne peut pas servir de contrôle dans la pièce.`,
+                    `this shape closes in: the template (${L(rIn)} wide) will not pass through the opening (${L(rCol)} inner radius). It cannot be used as a check inside the piece.`),
+                   D(`à garder comme dessin de coupe de référence, posé à côté du tour ; pour l'épaisseur, travailler au compas d'épaisseur et au calibre extérieur`,
+                     `keep it as a reference section drawing beside the wheel; for wall thickness, work with a wall caliper and the outer template`),
+                   D(`autre option : tourner la forme ouverte, la contrôler au gabarit, puis rentrer le col en dernier`,
+                     `another option: throw the shape open, check it with the template, then collar the neck in last`));
+    }
+    notesB.push(D(`vérifier au compas d'épaisseur avant de tournasser : sous ${L(Math.max(2, paroi-2))} de paroi, le pied risque de percer`,
+                  `check with a wall caliper before trimming: below ${L(Math.max(2, paroi-2))} of wall the foot may cut through`));
+    const nB = sheetNote(rIn, yFloor); if(nB) notesB.push(nB);
     P.push({ name:'Profil intérieur', qty:1, noClay:true,
       geo:{ t:'path', d: pathFrom([{x:0, y:0}, ...inner.map(q=>({x:q.r, y:yOf(q)})), {x:0, y:yFloor}], true),
             bx:0, by:0, bw:rIn, bh:yFloor,
             label:`${D('profil int.','inner profile')} — ${D('paroi','wall')} ${L(paroi)}` },
-      dims:[D(`intérieur visé : rayon maxi ${L(rIn)} — fond à ${L(paroi)} du plateau`,
-              `target inside: max radius ${L(rIn)} — base ${L(paroi)} above the wheel head`),
-            D(`le bord vertical gauche du gabarit, c'est l'axe du tour`,
-              `the straight vertical edge of the template is the wheel axis`)],
-      notes:[D(`gabarit de contrôle : on le descend dans la pièce, bord vertical sur l'axe, pour vérifier le creux et l'épaisseur restante`,
-               `check template: lower it into the piece, straight edge on the axis, to check the inside curve and the wall left`),
-             D(`vérifier au compas d'épaisseur avant de tournasser : sous ${L(Math.max(2, paroi-2))} de paroi, le pied risque de percer`,
-               `check with a wall caliper before trimming: below ${L(Math.max(2, paroi-2))} of wall the foot may cut through`)] });
+      dims: dimsB, notes: notesB });
   }
 
   /* C — jauge en L : hauteur crue (bras vertical) et Ø d'ouverture (bras horizontal) */
   const B = Math.max(8, Math.min(16, T.H/4));
   const Dop = 2*T.rTop;
+  const notesC = [
+    D(`poser le pied du bras vertical sur le plateau, à côté de la pièce : le haut du bras est la hauteur à atteindre`,
+      `stand the vertical arm on the wheel head next to the piece: the top of the arm is the height to reach`),
+    D(`le bras horizontal se pose en travers du bord : il doit affleurer des deux côtés`,
+      `lay the horizontal arm across the rim: it should just touch on both sides`),
+    D(`en série, c'est cette jauge qui fait les pièces identiques — la garder accrochée au tour`,
+      `for a series this gauge is what makes the pieces match — keep it hanging on the wheel`)];
+  const nC = sheetNote(Dop, T.H); if(nC) notesC.push(nC);
   P.push({ name:'Jauge hauteur & Ø ouverture', qty:1, noClay:true,
     geo:{ t:'path', d: pathFrom([{x:0,y:0},{x:Dop,y:0},{x:Dop,y:B},{x:B,y:B},{x:B,y:T.H},{x:0,y:T.H}], true),
           bx:0, by:0, bw:Dop, bh:T.H,
-          label:`h ${L(T.H)} · Ø ${Lv(Dop)} (${D('cru','wet')})` },
-    dims:[D(`bras vertical = hauteur crue ${L(T.H)} — bras horizontal = Ø d'ouverture cru ${Lv(Dop)}`,
-            `vertical arm = wet height ${L(T.H)} — horizontal arm = wet rim Ø ${Lv(Dop)}`)],
-    notes:[D(`poser le pied du bras vertical sur le plateau, à côté de la pièce : le haut du bras est la hauteur à atteindre`,
-             `stand the vertical arm on the wheel head next to the piece: the top of the arm is the height to reach`),
-           D(`le bras horizontal se pose en travers du bord : il doit affleurer des deux côtés`,
-             `lay the horizontal arm across the rim: it should just touch on both sides`),
-           D(`en série, c'est cette jauge qui fait les pièces identiques — la garder accrochée au tour`,
-             `for a series this gauge is what makes the pieces match — keep it hanging on the wheel`)] });
+          label:`h ${L(T.H)} · Ø ${L(Dop)} (${D('cru','wet')})` },
+    dims:[D(`bras vertical = hauteur crue ${L(T.H)} — bras horizontal = Ø d'ouverture cru ${L(Dop)}`,
+            `vertical arm = wet height ${L(T.H)} — horizontal arm = wet rim Ø ${L(Dop)}`)],
+    notes: notesC });
 
-  /* D — profil de pied, pour le tournassage (pièce retournée) */
-  const hp = Math.max(0, T.d.hpied), lp = Math.max(0, T.d.lpied);
-  const rRing = Math.max(2, T.rBase - lp);
+  /* D — profil de pied, pour le tournassage (pièce retournée).
+     Seul gabarit tracé à la cote CUIR : la pièce a déjà retiré quand on la
+     repose sur le tour à l'envers. */
+  const cr = cuirRatio();
+  const hp = T.hpied * cr, lp = T.lpied * cr;
+  const rBaseC = T.rBase * cr;
+  const rRing = Math.max(2, rBaseC - lp);
   if(hp > 0.5 && rRing > 2){
     const plate = 14;
+    const dimsD = [D(`Ø extérieur du pied ${L(2*rBaseC)} — anneau de ${L(lp)} de large — creux de ${L(hp)}`,
+                     `foot outer Ø ${L(2*rBaseC)} — ${L(lp)} wide ring — ${L(hp)} recess`)];
+    const notesD = [
+      D(`tournasser à consistance cuir, pièce centrée à l'envers : le bord haut du gabarit est la coupe du dessous à obtenir`,
+        `trim at leather-hard with the piece centred upside down: the top edge of the template is the underside section to reach`),
+      D(`garder au moins ${L(Math.max(3, T.paroi))} de terre sous le fond — c'est là qu'on perce`,
+        `leave at least ${L(Math.max(3, T.paroi))} of clay under the base — that is where pieces get pierced`)];
+    if(cr < 0.999){
+      dimsD.push(D(`cotes à consistance cuir (${fmt0(state.cuir)} % du retrait déjà fait) — au sortir du tour, ce pied mesurait ${L(2*T.rBase)}`,
+                   `leather-hard dimensions (${fmt0(state.cuir)}% of the shrinkage already done) — straight off the wheel that foot measured ${L(2*T.rBase)}`));
+      notesD.push(D(`c'est le seul gabarit qui n'est pas à la cote crue : la pièce a séché avant d'être tournassée`,
+                    `this is the only template not drawn at wet size: the piece has dried before being trimmed`));
+    }
+    const nD = sheetNote(rBaseC, hp + plate); if(nD) notesD.push(nD);
     P.push({ name:'Gabarit de pied (tournassage)', qty:1, noClay:true,
-      geo:{ t:'path', d: pathFrom([{x:0,y:0},{x:rRing,y:0},{x:rRing,y:hp},{x:T.rBase,y:hp},
-                                   {x:T.rBase,y:hp+plate},{x:0,y:hp+plate}], true),
-            bx:0, by:0, bw:T.rBase, bh:hp+plate,
-            label:`${D('pied','foot')} Ø ${Lv(2*T.rBase)} · ${D('anneau','ring')} ${L(lp)}` },
-      dims:[D(`Ø extérieur du pied ${Lv(2*T.rBase)} — anneau de ${L(lp)} de large — creux de ${L(hp)}`,
-              `foot outer Ø ${Lv(2*T.rBase)} — ${L(lp)} wide ring — ${L(hp)} recess`)],
-      notes:[D(`tournasser à consistance cuir, pièce centrée à l'envers : le bord haut du gabarit est la coupe du dessous à obtenir`,
-               `trim at leather-hard with the piece centred upside down: the top edge of the template is the underside section to reach`),
-             D(`garder au moins ${L(Math.max(3, paroi))} de terre sous le fond — c'est là qu'on perce`,
-               `leave at least ${L(Math.max(3, paroi))} of clay under the base — that is where pieces get pierced`)] });
+      geo:{ t:'path', d: pathFrom([{x:0,y:0},{x:rRing,y:0},{x:rRing,y:hp},{x:rBaseC,y:hp},
+                                   {x:rBaseC,y:hp+plate},{x:0,y:hp+plate}], true),
+            bx:0, by:0, bw:rBaseC, bh:hp+plate,
+            label:`${D('pied','foot')} Ø ${L(2*rBaseC)} · ${D('anneau','ring')} ${L(lp)}` },
+      dims: dimsD, notes: notesD });
   }
   return P;
 }
@@ -1811,8 +1931,22 @@ const $ = s => document.querySelector(s);
 
 /* Suivi d'événements — défensif : envoie à PostHog s'il est chargé,
    ne fait rien sinon (aucune erreur en local file://). */
+const trackQueue = [];   // événements émis avant que array.js soit chargé (ex. au démarrage)
+let trackTries = 0, trackTimer = null;
 function track(event, props){
-  try{ if(window.posthog && window.posthog.capture) window.posthog.capture(event, props || {}); }catch(e){}
+  try{
+    if(window.posthog && window.posthog.capture){ window.posthog.capture(event, props || {}); return; }
+    trackQueue.push([event, props || {}]);
+    if(trackTimer) return;
+    trackTimer = setInterval(() => {
+      if(window.posthog && window.posthog.capture){
+        clearInterval(trackTimer); trackTimer = null;
+        trackQueue.splice(0).forEach(([e, p]) => { try{ posthog.capture(e, p); }catch(err){} });
+      } else if(++trackTries > 50){    // ~10 s : PostHog est bloqué (adblock) ou absent, on abandonne
+        clearInterval(trackTimer); trackTimer = null; trackQueue.length = 0;
+      }
+    }, 200);
+  }catch(e){}
 }
 
 const printExcl = new Set();   // pièces décochées pour l'impression (réinitialisé au changement de forme)
@@ -1846,7 +1980,7 @@ function buildShapeSelector(){
   ).join('');
   document.querySelectorAll('.shape').forEach(el => el.onclick = () => {
     state.shape = el.dataset.id; printExcl.clear(); shapeGridOpen = false;
-    track('shape_selected', { shape: el.dataset.id, mode: state.mode || 'plaque' });
+    track('shape_selected', { shape: el.dataset.id, mode: state.mode || 'plaque', source: 'selecteur' });
     buildShapeSelector(); buildDimFields(); refresh();
   });
 }
@@ -1880,6 +2014,9 @@ function buildDimFields(){
   if(s.editor) initEditor(s.editor);
   // en kurinuki comme au tour, ce n'est pas une plaque : c'est la paroi visée qui compte
   $('#inEp').closest('.field').style.display = (isKur() || isTour()) ? 'none' : 'flex';
+  // le retrait au cuir ne concerne que le tournassage
+  $('#fieldCuir').style.display = isTour() ? 'flex' : 'none';
+  $('#hintCuir').style.display  = isTour() ? '' : 'none';
 }
 
 /* ---------------------------------------------------------------
@@ -2115,8 +2252,8 @@ function redrawEditor(type){
 function syncTerrePreset(){
   $('#terrePreset').value = [8,12,14].includes(state.retrait) ? String(state.retrait) : 'perso';
 }
-Object.assign(STR.fr, { ts_shrink:'retrait', ts_solid:'bloc plein', ts_slab:'plaque', ts_finished:'pièce finie', ts_wet:'pièce crue' });
-Object.assign(STR.en, { ts_shrink:'shrinkage', ts_solid:'solid block', ts_slab:'slab', ts_finished:'finished size', ts_wet:'wet size' });
+Object.assign(STR.fr, { ts_shrink:'retrait', ts_solid:'bloc plein', ts_slab:'plaque', ts_finished:'pièce finie', ts_wet:'pièce crue', ts_leather:'cuir' });
+Object.assign(STR.en, { ts_shrink:'shrinkage', ts_solid:'solid block', ts_slab:'slab', ts_finished:'finished size', ts_wet:'wet size', ts_leather:'leather-hard' });
 Object.assign(STR.fr, { no_piece:'aucune pièce sélectionnée — coche au moins un gabarit', print_this:'imprimer cette pièce' });
 Object.assign(STR.en, { no_piece:'no piece selected — tick at least one template', print_this:'print this piece' });
 Object.assign(STR.fr, {
@@ -2147,7 +2284,10 @@ Object.assign(STR.fr, {
   news_btn:'M\'inscrire', doc_title:'Gabarits — patrons pour céramique à la plaque',
   tuto_title:'revoir le tuto', spick_title:'changer de forme',
   news_ph:'ton@email.com', news_consent:'En t\'inscrivant, tu acceptes de recevoir les nouveautés de l\'outil. Désinscription en 1 clic.',
-  news_success:'Merci — bien inscrit·e ✓ Le gabarit exclusif arrive bientôt 🎁',
+  news_success:'Ton email est enregistré — le gabarit exclusif arrive bientôt 🎁',
+  news_done_title:'Merci, tu es bien inscrit·e !',
+  news_tip_txt:'L\'outil est <b>gratuit</b> et le restera. Si tu veux aller plus loin, tu peux m\'offrir un <b>pain de terre</b> — montant libre, ça aide à faire vivre le projet.',
+  news_tip_btn:'🏺 offrir un pain de terre', news_tip_later:'Une autre fois',
   paper_lab:'format d\'impression',
   coll_badge:'Bientôt', coll_name:'De nouveaux modèles', coll_cta:'Inscris-toi →',
   news_mini:'✉️ Être prévenu·e des nouveautés →',
@@ -2166,7 +2306,10 @@ Object.assign(STR.en, {
   news_btn:'Sign up', doc_title:'Ceramic templates — cutting patterns for slab work',
   tuto_title:'replay the tutorial', spick_title:'change shape',
   news_ph:'you@email.com', news_consent:'By signing up you agree to receive updates about the tool. Unsubscribe in 1 click.',
-  news_success:'Thanks — you\'re in ✓ Your exclusive template is coming soon 🎁',
+  news_success:'Your email is saved — your exclusive template is coming soon 🎁',
+  news_done_title:'Thanks, you\'re in!',
+  news_tip_txt:'This tool is <b>free</b> and will stay that way. If you\'d like to go further, you can buy me a <b>block of clay</b> — any amount, it helps keep the project alive.',
+  news_tip_btn:'🏺 buy me a block of clay', news_tip_later:'Maybe later',
   paper_lab:'print size',
   coll_badge:'Soon', coll_name:'New models', coll_cta:'Sign up →',
   news_mini:'✉️ Get notified of what\'s new →',
@@ -2188,7 +2331,9 @@ const pieceName = nm => !isEN() ? nm : (PIECE_NAME[nm] || nm.replace('(bas)','(b
 const TERRE_NAMES = { fr:{8:'faïence',12:'grès',14:'porcelaine'}, en:{8:'earthenware',12:'stoneware',14:'porcelain'} };
 function terreSummaryTxt(){
   const nm = (TERRE_NAMES[state.lang] || TERRE_NAMES.fr)[state.retrait] || t('ts_shrink');
-  const body = isKur() ? t('ts_solid') : `${t('ts_slab')} ${L(state.ep)}`;
+  const body = isKur()  ? t('ts_solid')
+            : isTour() ? `${t('ts_leather')} ${fmt0(state.cuir)} %`   // au tour, l'épaisseur de plaque ne veut rien dire
+            : `${t('ts_slab')} ${L(state.ep)}`;
   return `${nm} ${fmt(state.retrait)} % · ${body} · ${t(state.coteType==='fini'?'ts_finished':'ts_wet')}`;
 }
 $('#terreToggle').onclick = () => {
@@ -2202,6 +2347,12 @@ refreshEpUnit();
 $('#inRetrait').value = state.retrait;
 syncTerrePreset();
 $('#inEp').oninput = e => { const mm=fromU(parseFloat(e.target.value)); if(mm>0) state.ep=Math.round(mm*10)/10; refresh(); };
+$('#inCuir').value = state.cuir;
+$('#inCuir').oninput = e => {
+  const v = parseFloat(e.target.value);
+  if(!isNaN(v) && v >= 0 && v <= 100) state.cuir = v;
+  refresh();
+};
 $('#inRetrait').oninput = e => {
   const v=parseFloat(e.target.value);
   if(!isNaN(v)&&v>=0&&v<40) state.retrait=v;
@@ -3608,6 +3759,7 @@ $('#btnPdf').onclick = async () => {
 const BMAC_URL = 'https://buymeacoffee.com/louiscoffin';
 $('#tipBtn').href = BMAC_URL;
 $('#tipFootLink').href = BMAC_URL;
+$('#newsTipBtn').href = BMAC_URL;
 $('#tipBtn').onclick = () => track('tip_click', { source: 'bandeau' });
 $('#tipFootLink').onclick = () => track('tip_click', { source: 'footer' });
 $('#fbFootLink').onclick = () => track('feedback_click', { source: 'footer' });
@@ -3648,7 +3800,16 @@ function hideNews(){
 /* « Plus tard » / croix : on ferme sans marquer off → l'invite pourra revenir
    à une prochaine visite (mais plus pendant cette session). */
 $('#newsLater').onclick = () => { track('newsletter_later', { source: newsSource }); hideNews(); };
-$('#newsClose').onclick = () => { track('newsletter_dismiss', { source: newsSource }); hideNews(); };
+$('#newsClose').onclick = () => {
+  track($('#news').classList.contains('done') ? 'tip_skip' : 'newsletter_dismiss', { source: newsSource });
+  hideNews();
+};
+/* écran de remerciement : proposition de don */
+$('#newsTipBtn').onclick = () => {
+  track('tip_click', { source: 'newsletter_merci' });
+  setTimeout(hideNews, 600);          // laisse l'onglet BMAC s'ouvrir avant de refermer
+};
+$('#newsDoneLater').onclick = () => { track('tip_skip', { source: 'newsletter_merci' }); hideNews(); };
 $('#newsMini').onclick = () => { track('newsletter_click', { source: 'panneau' }); showNews('panneau'); };   // entrée discrète panneau 1
 
 /* Inscription newsletter → Brevo (double opt-in).
@@ -3680,7 +3841,10 @@ function subscribeNews(email){
   localStorage.setItem('gabarits-news-off', '1');
   localStorage.setItem('gabarits-news-sub', '1');
   bar.classList.add('done');
-  clearTimeout(newsTimer); newsTimer = setTimeout(hideNews, 2600);
+  // pas d'auto-fermeture : l'écran de remerciement propose un don, on laisse
+  // la main (croix ou « Une autre fois »).
+  clearTimeout(newsTimer);
+  track('tip_shown', { source: 'newsletter_merci' });
 }
 $('#newsForm').addEventListener('submit', e => {
   e.preventDefault();
@@ -3932,6 +4096,8 @@ function loadProject(c){
   printExcl.clear();
   state.dims[c.shape] = Object.assign(defaultDims(c.shape), JSON.parse(JSON.stringify(c.dims)));
   state.ep = c.ep; state.retrait = c.retrait; state.coteType = c.coteType;
+  if(c.cuir !== undefined) state.cuir = c.cuir;
+  $('#inCuir').value = state.cuir;
   state.projectName = c.name;
   refreshEpUnit(); $('#inRetrait').value = c.retrait;
   syncTerrePreset();
@@ -3945,7 +4111,7 @@ function saveProjectAs(name){
     name,
     shape: state.shape,
     dims: JSON.parse(JSON.stringify(state.dims[state.shape])),
-    ep: state.ep, retrait: state.retrait, coteType: state.coteType,
+    ep: state.ep, retrait: state.retrait, coteType: state.coteType, cuir: state.cuir,
   };
   // si une pièce du même nom existe déjà → on la met à jour (pas de doublon)
   const existing = carnet.find(c => c.name.trim().toLowerCase() === name.toLowerCase());
@@ -4004,6 +4170,9 @@ applyCarnetOpen();
 // cohérence mode ↔ forme au chargement
 state.mode = modeOf(state.shape);
 if(!SHAPES[state.shape]) { state.shape = 'cone'; state.mode = 'plaque'; }
+/* Un lien profond vaut un choix de forme : sans ça, tout le trafic venu de la
+   vitrine avec ?forme= manquait l'étape « shape_selected » du funnel. */
+if(deeplinkShape) track('shape_selected', { shape: deeplinkShape, mode: state.mode, source: 'url' });
 
 /* ---- langue & unités : sélecteurs + re-rendu global ---- */
 function rerenderAll(){
