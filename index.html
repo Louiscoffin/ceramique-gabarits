@@ -201,9 +201,10 @@ main{
 @media (max-width:1150px){main{grid-template-columns:290px 1fr}.col-patterns{grid-column:1/-1}}
 /* L'aperçu suit le défilement : l'éditeur de profil est haut, sans ça on
    déplace les points de la forme sans avoir la silhouette sous les yeux.
-   (En une seule colonne, l'aperçu est sous le formulaire : sticky n'y
-   apporterait rien, d'où le seuil.) */
-@media (min-width:761px){
+   Seuil calé sur celui de la mise en page (1150px) : en dessous, .col-patterns
+   passe en pleine largeur SOUS l'aperçu — le garder collé le ferait flotter
+   par-dessus les gabarits, qu'il masque (fond opaque). */
+@media (min-width:1151px){
   #panel-apercu{
     position:sticky;top:16px;
     max-height:calc(100vh - 32px);
@@ -381,7 +382,8 @@ select:focus{outline:none;border-color:var(--glaze)}
   position:relative;width:min(92vw,400px);box-sizing:border-box;
   background:var(--card);border:1.5px solid var(--ink);border-radius:6px;
   box-shadow:7px 7px 0 rgba(51,38,26,.22);padding:26px 24px 20px;text-align:center;
-  transform:translateY(12px) scale(.98);transition:transform .28s cubic-bezier(.2,.9,.3,1.25);
+  transform:translateY(12px) scale(.98);
+  transition:transform .28s cubic-bezier(.2,.9,.3,1.25),height .36s cubic-bezier(.3,.8,.35,1);
 }
 .newsmodal.show .newsmodal-card{transform:none}
 .newsmodal-ico{font-size:34px;line-height:1;display:block;margin-bottom:6px}
@@ -402,7 +404,7 @@ select:focus{outline:none;border-color:var(--glaze)}
 }
 .newsmodal .newsform input:focus{outline:none;border-color:var(--terra-d);box-shadow:0 0 0 2px rgba(184,80,42,.18)}
 .newsmodal button.tipbtn{
-  flex:0 0 auto;cursor:pointer;text-align:center;font-size:13px;font-weight:bold;
+  position:relative;flex:0 0 auto;cursor:pointer;text-align:center;font-size:13px;font-weight:bold;
   background:var(--terra);border:1.5px solid var(--terra-d);color:#fdf6ea;
   padding:10px 16px;border-radius:2px;box-shadow:2px 2px 0 rgba(51,38,26,.22);
 }
@@ -432,6 +434,32 @@ select:focus{outline:none;border-color:var(--glaze)}
   padding:10px 16px;border-radius:2px;box-shadow:2px 2px 0 rgba(51,38,26,.22);
 }
 .newsmodal a.tipbtn:hover{transform:translate(-1px,-1px)}
+/* --- bascule animée formulaire → « merci » (le cut sec faisait mécanique) --- */
+.newsmodal button.tipbtn.is-loading{color:transparent;pointer-events:none;opacity:.9}
+.newsmodal button.tipbtn.is-loading::after{
+  content:'';position:absolute;top:50%;left:50%;width:13px;height:13px;margin:-7.5px 0 0 -7.5px;
+  border:2px solid rgba(253,246,234,.38);border-top-color:#fdf6ea;border-radius:50%;
+  animation:newsSpin .62s linear infinite;
+}
+@keyframes newsSpin{to{transform:rotate(360deg)}}
+.newsmodal-card>*{transition:opacity .19s ease,transform .19s ease}
+.newsmodal-card.swapping{overflow:hidden}
+.newsmodal-card.swapping>*{opacity:0;transform:translateY(5px)}
+.newsmodal.done .newsdone-hero{animation:newsPop .55s cubic-bezier(.2,.9,.3,1.4) both}
+.newsmodal.done .newsdone-title,.newsmodal.done .newsdone-msg{animation:newsRise .4s ease .06s both}
+.newsmodal.done .newsdone-tip{animation:newsRise .45s ease .22s both}
+@keyframes newsPop{
+  0%{opacity:0;transform:scale(.35) rotate(-14deg)}
+  60%{opacity:1;transform:scale(1.14) rotate(5deg)}
+  100%{opacity:1;transform:none}
+}
+@keyframes newsRise{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .newsmodal-card>*,.newsmodal-card{transition:none}
+  .newsmodal.done .newsdone-hero,.newsmodal.done .newsdone-title,
+  .newsmodal.done .newsdone-msg,.newsmodal.done .newsdone-tip{animation:none}
+  .newsmodal button.tipbtn.is-loading::after{animation:none}
+}
 .newsdone-later{
   display:block;margin:12px auto 0;background:none;border:none;box-shadow:none;padding:4px;
   color:var(--ink2);font-size:12px;text-decoration:underline;cursor:pointer;
@@ -443,7 +471,108 @@ select:focus{outline:none;border-color:var(--glaze)}
 .tipfoot a{color:var(--terra-d);font-weight:bold}
 .tipfoot-fb{margin-top:6px}
 .tipfoot-privacy{opacity:.7}
-@media print{ .tipbar,.tipfoot,.newsmodal{display:none !important} }
+/* ---------- palier « 3 gabarits » : plein écran, sollicitation douce ---------- */
+.mstone{
+  position:fixed;inset:0;z-index:700;display:flex;align-items:center;justify-content:center;
+  padding:24px 20px;overflow-y:auto;
+  background:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+    linear-gradient(rgba(122,103,83,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(122,103,83,.045) 1px, transparent 1px),
+    var(--paper);
+  background-size:80px 80px,80px 80px,16px 16px,16px 16px;
+  opacity:0;transition:opacity .3s ease;
+}
+.mstone.show{opacity:1}
+.mstone[hidden]{display:none}
+.mstone-in{
+  width:min(100%,520px);text-align:center;
+  transform:translateY(14px) scale(.985);
+  transition:transform .34s cubic-bezier(.2,.9,.3,1.25),opacity .24s ease;
+}
+.mstone.show .mstone-in{transform:none}
+.mstone.leaving .mstone-in{opacity:0;transform:translateY(6px) scale(.99)}
+.mstone .tipclose{
+  position:fixed;top:14px;right:18px;background:none;border:none;box-shadow:none;
+  color:var(--ink2);font-size:24px;line-height:1;padding:6px;cursor:pointer;
+}
+.mstone-ico{font-size:52px;line-height:1;display:block;margin-bottom:10px;animation:newsPop .5s cubic-bezier(.2,.9,.3,1.25) both}
+.mstone-kicker{
+  display:inline-block;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink2);border:1.5px dashed var(--line);border-radius:2px;padding:4px 9px;margin-bottom:14px;
+}
+.mstone-title{font-family:'Young Serif',serif;font-size:clamp(23px,5.4vw,31px);line-height:1.2;color:var(--ink);margin:0 0 16px}
+.mstone-txt{font-size:14px;line-height:1.7;color:var(--ink);margin:0 auto 14px;max-width:38ch}
+.mstone-txt b{color:var(--terra-d)}
+.mstone-price{
+  display:block;font-family:'Young Serif',serif;font-size:18px;color:var(--terra-d);
+  margin:18px auto;padding:12px 16px;max-width:42ch;
+  background:var(--card);border:1.5px solid var(--ink);border-radius:6px;box-shadow:5px 5px 0 rgba(51,38,26,.18);
+}
+.mstone-price small{display:block;font-family:'Fragment Mono',monospace;font-size:11.5px;color:var(--ink2);margin-top:5px;line-height:1.45}
+.mstone a.tipbtn{
+  display:block;width:100%;box-sizing:border-box;margin-top:20px;
+  text-decoration:none;text-align:center;font-size:14px;font-weight:bold;
+  background:var(--terra);border:1.5px solid var(--terra-d);color:#fdf6ea;
+  padding:13px 18px;border-radius:2px;box-shadow:3px 3px 0 rgba(51,38,26,.22);
+}
+.mstone a.tipbtn:hover{transform:translate(-1px,-1px)}
+.mstone-later{
+  display:block;margin:14px auto 0;background:none;border:none;box-shadow:none;padding:6px;
+  color:var(--ink2);font-size:12.5px;text-decoration:underline;cursor:pointer;
+}
+.mstone-free{display:block;font-size:11px;color:var(--ink2);margin-top:16px;opacity:.85}
+/* Modale de don : corps aligné à gauche et calé sur le bord du bouton. En
+   monospace centré, l'œil doit rechercher le début de chaque ligne — c'est ce
+   qui rendait le texte lourd, plus que sa longueur. (La fake door garde son
+   centrage : listes courtes et bloc prix.) */
+#mstone .mstone-in{width:min(100%,430px)}
+#mstone .mstone-txt{text-align:left;max-width:none}
+/* smiley qui s'envole au refus */
+.mstone-fly{
+  position:fixed;z-index:760;font-size:40px;line-height:1;pointer-events:none;
+  transform:translate(-50%,-50%);animation:mstoneFly 2.1s cubic-bezier(.35,.05,.5,1) forwards;
+}
+/* il apparaît, hésite un instant au-dessus du bouton, puis s'échappe en dérivant */
+@keyframes mstoneFly{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.6) rotate(0deg)}
+  10%{opacity:1;transform:translate(-50%,-64%) scale(1.14) rotate(-7deg)}
+  26%{opacity:1;transform:translate(-48%,-78%) scale(1.06) rotate(-2deg)}
+  62%{opacity:.95;transform:translate(-38%,-200%) scale(1) rotate(9deg)}
+  100%{opacity:0;transform:translate(-58%,-360%) scale(.62) rotate(-12deg)}
+}
+@media (max-width:560px){
+  .mstone{align-items:flex-start;padding-top:52px}
+  .mstone-ico{font-size:44px}
+  .mstone-price{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  .mstone,.mstone-in{transition:none}
+  .mstone-ico{animation:none}
+  .mstone-fly{animation:mstoneFadeOnly 1.4s ease forwards}
+}
+@keyframes mstoneFadeOnly{from{opacity:1}to{opacity:0}}
+/* ---------- fake door « Plus » : mesure d'intention, une seule fois ---------- */
+.mstone-list{list-style:none;margin:16px auto 0;padding:0;max-width:34ch;text-align:left}
+.mstone-list li{font-size:13px;line-height:1.45;margin:9px 0;padding-left:20px;position:relative}
+.mstone-list li::before{content:'→';position:absolute;left:0;color:var(--terra)}
+.mstone-price b{white-space:nowrap}
+.mstone-form{display:flex;gap:8px;margin-top:18px}
+.mstone-form input{
+  flex:1 1 auto;min-width:0;font-family:inherit;font-size:13px;padding:11px 12px;
+  border:1.5px solid var(--ink);border-radius:2px;background:var(--paper);color:var(--ink);
+}
+.mstone-form input:focus{outline:none;border-color:var(--terra-d);box-shadow:0 0 0 2px rgba(184,80,42,.18)}
+.mstone-form button{
+  flex:0 0 auto;cursor:pointer;font-family:inherit;font-size:13px;font-weight:bold;
+  background:var(--terra);border:1.5px solid var(--terra-d);color:#fdf6ea;
+  padding:11px 16px;border-radius:2px;box-shadow:2px 2px 0 rgba(51,38,26,.22);
+}
+#plus .plus-step2{display:none}
+#plus.step2 .plus-step1{display:none}
+#plus.step2 .plus-step2{display:block;animation:newsRise .34s ease both}
+@media print{ .tipbar,.tipfoot,.newsmodal,.mstone,.mstone-fly{display:none !important} }
 
 /* ---------- tour d'onboarding ---------- */
 .tour-btn{padding:6px 11px}
@@ -803,6 +932,46 @@ svg .sector-info{font-family:'Fragment Mono',monospace;font-size:4.2px;fill:var(
         <a class="tipbtn" id="newsTipBtn" href="#" target="_blank" rel="noopener noreferrer" data-i18n="news_tip_btn">🏺 offrir un pain de terre</a>
         <button class="newsdone-later" id="newsDoneLater" data-i18n="news_tip_later">Une autre fois</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="mstone" id="mstone" hidden>
+  <button class="tipclose" id="msClose" title="fermer" data-i18n-title="close">×</button>
+  <div class="mstone-in">
+    <span class="mstone-ico">🏺</span>
+    <h3 class="mstone-title" id="msTitle">Vous avez créé 3 gabarits 🎉</h3>
+    <p class="mstone-txt" data-i18n-html="ms_p1">Un petit merci de ma part.</p>
+    <p class="mstone-txt" data-i18n-html="ms_p2">J'ai créé cet outil pour que les gabarits de céramique soient simples à faire et accessibles à tous : pas de publicité, pas d'abonnement, pas de compte.</p>
+    <p class="mstone-txt" data-i18n-html="ms_p3">Si vous aimez l'utiliser, vous pouvez <b>m'aider à le garder gratuit</b> et à l'enrichir. Même un petit pourboire fait la différence. 🤎</p>
+    <a class="tipbtn" id="msTipBtn" href="#" target="_blank" rel="noopener noreferrer" data-i18n="ms_btn">☕ M'aider à le garder gratuit</a>
+    <button class="mstone-later" id="msLater" data-i18n="ms_later">Non merci, peut-être plus tard</button>
+  </div>
+</div>
+
+<div class="mstone" id="plus" hidden>
+  <button class="tipclose" id="plusClose" title="fermer" data-i18n-title="close">×</button>
+  <div class="mstone-in">
+    <div class="plus-step1">
+      <span class="mstone-ico">🫖</span>
+      <span class="mstone-kicker" id="plusKicker">3 gabarits téléchargés</span>
+      <h3 class="mstone-title" data-i18n-html="pl_title">Et si l'outil traçait des objets entiers&nbsp;?</h3>
+      <p class="mstone-txt" data-i18n-html="pl_txt">Aujourd'hui il vous donne des <b>formes</b>. Demain, des <b>objets complets</b>, guidés, toujours à vos cotes&nbsp;:</p>
+      <ul class="mstone-list" data-i18n-html="pl_items"><li>un mug avec son anse, tracé d'un coup</li><li>une théière, bec et couvercle compris</li><li>une boîte dont le couvercle ferme encore après cuisson</li></ul>
+      <span class="mstone-price" data-i18n-html="pl_price"><b>29 € une fois</b> — accès à vie<small>pas d'abonnement, les gabarits d'aujourd'hui restent gratuits</small></span>
+      <a class="tipbtn" id="plusCta" href="#" data-i18n="pl_cta">Passer à Plus — 29 €</a>
+      <button class="mstone-later" id="plusLater" data-i18n="pl_later">Non merci</button>
+    </div>
+    <div class="plus-step2">
+      <span class="mstone-ico">🚧</span>
+      <h3 class="mstone-title" data-i18n="pl_d_title">Plus n'est pas encore ouvert.</h3>
+      <p class="mstone-txt" data-i18n-html="pl_d_txt">Vous venez de me dire que ça vous intéresse&nbsp;— c'est exactement ce que j'avais besoin de savoir. Laissez votre email&nbsp;: vous serez prévenu·e au lancement, avec le <b>tarif fondateur</b>.</p>
+      <form class="mstone-form" id="plusForm" novalidate>
+        <input type="email" id="plusEmail" required autocomplete="email" placeholder="ton@email.com" data-i18n-ph="news_ph">
+        <button type="submit" data-i18n="pl_d_btn">Me prévenir</button>
+      </form>
+      <span class="mstone-free" data-i18n="news_consent">En t'inscrivant, tu acceptes de recevoir les nouveautés de l'outil. Désinscription en 1 clic.</span>
+      <button class="mstone-later" id="plusDone" data-i18n="pl_d_later">Fermer</button>
     </div>
   </div>
 </div>
@@ -2291,6 +2460,24 @@ Object.assign(STR.fr, {
   paper_lab:'format d\'impression',
   coll_badge:'Bientôt', coll_name:'De nouveaux modèles', coll_cta:'Inscris-toi →',
   news_mini:'✉️ Être prévenu·e des nouveautés →',
+  ms_kicker:'{n} gabarits téléchargés',
+  ms_title:'Vous avez créé {n} gabarits 🎉',
+  ms_p1:'Un petit merci de ma part.',
+  ms_p2:'J\'ai créé cet outil pour que les gabarits de céramique soient simples à faire et accessibles à tous&nbsp;: pas de publicité, pas d\'abonnement, pas de compte.',
+  ms_p3:'Si vous aimez l\'utiliser, vous pouvez <b>m\'aider à le garder gratuit</b> et à l\'enrichir. Même un petit pourboire fait la différence. 🤎',
+  ms_btn:'☕ M\'aider à le garder gratuit',
+  ms_later:'Non merci, peut-être plus tard',
+  pl_title:'Et si l\'outil traçait des objets entiers&nbsp;?',
+  pl_txt:'Aujourd\'hui il vous donne des <b>formes</b>. Demain, des <b>objets complets</b>, guidés, toujours à vos cotes&nbsp;:',
+  pl_items:'<li>un mug avec son anse, tracé d\'un coup</li><li>une théière, bec et couvercle compris</li><li>une boîte dont le couvercle ferme encore après cuisson</li>',
+  pl_price:'<b>29 € une fois</b> — accès à vie<small>pas d\'abonnement, les gabarits d\'aujourd\'hui restent gratuits</small>',
+  pl_cta:'Passer à Plus — 29 €',
+  pl_later:'Non merci',
+  pl_d_title:'Plus n\'est pas encore ouvert.',
+  pl_d_txt:'Vous venez de me dire que ça vous intéresse&nbsp;— c\'est exactement ce que j\'avais besoin de savoir. Laissez votre email&nbsp;: vous serez prévenu·e au lancement, avec le <b>tarif fondateur</b>.',
+  pl_d_btn:'Me prévenir',
+  pl_d_later:'Fermer',
+  pl_merci:'C\'est noté, merci 🤎 — vous serez prévenu·e en premier.',
 });
 Object.assign(STR.en, {
   ov_op:'opacity', ov_reset:'reset to sizes', ov_apply:'apply to sizes',
@@ -2313,6 +2500,24 @@ Object.assign(STR.en, {
   paper_lab:'print size',
   coll_badge:'Soon', coll_name:'New models', coll_cta:'Sign up →',
   news_mini:'✉️ Get notified of what\'s new →',
+  ms_kicker:'{n} templates downloaded',
+  ms_title:'You\u2019ve made {n} templates 🎉',
+  ms_p1:'A little thank you from me.',
+  ms_p2:'I built this tool so ceramic templates would be easy to make and open to everyone: no ads, no subscription, no account.',
+  ms_p3:'If you enjoy using it, you can <b>help me keep it free</b> and keep it growing. Even a small tip makes a difference. 🤎',
+  ms_btn:'☕ Help keep it free',
+  ms_later:'No thanks, maybe later',
+  pl_title:'What if the tool drew whole objects?',
+  pl_txt:'Today it gives you <b>shapes</b>. Tomorrow, <b>complete objects</b>, guided, still at your own sizes:',
+  pl_items:'<li>a mug with its handle, in one go</li><li>a teapot, spout and lid included</li><li>a box whose lid still closes after firing</li>',
+  pl_price:'<b>€29 once</b> — lifetime access<small>no subscription, today\'s templates stay free</small>',
+  pl_cta:'Get Plus — €29',
+  pl_later:'No thanks',
+  pl_d_title:'Plus isn\'t open yet.',
+  pl_d_txt:'You just told me you\'re interested — which is exactly what I needed to know. Leave your email: you\'ll hear first at launch, with the <b>founder price</b>.',
+  pl_d_btn:'Notify me',
+  pl_d_later:'Close',
+  pl_merci:'Noted, thank you 🤎 — you\'ll be the first to know.',
 });
 const isEN = () => state.lang === 'en';
 const D = (fr, en) => isEN() ? en : fr;   // texte selon la langue (instructions de pièces)
@@ -2397,12 +2602,17 @@ function silhouette(){ return silhouetteFor(state.shape, state.dims[state.shape]
 function silhouetteFor(shape, d){
   if(shape==='cylindre'){
     const ry = Math.min(d.d*0.14, d.h*0.25);
-    return { w:d.d, h:d.h, svg:`<rect x="0" y="${ry}" width="${d.d}" height="${d.h-ry}"/><ellipse cx="${d.d/2}" cy="${ry}" rx="${d.d/2}" ry="${ry}"/>` };
+    /* contour ouvert en haut (pas de rect) : le bord de l'ouverture, c'est l'ellipse,
+       pas une arête droite. Le remplissage se referme tout seul. */
+    return { w:d.d, h:d.h, svg:`<path d="M 0 ${ry} L 0 ${d.h} L ${d.d} ${d.h} L ${d.d} ${ry}"/><ellipse cx="${d.d/2}" cy="${ry}" rx="${d.d/2}" ry="${ry}"/>` };
   }
   if(shape==='cone'){
     const bm = Math.max(d.d1,d.d2), ry = Math.min(d.d2*0.14, d.h*0.2);
     const bl=(bm-d.d1)/2, tl=(bm-d.d2)/2;
-    return { w:bm, h:d.h, svg:`<path d="M ${tl} ${ry} L ${bl} ${d.h} L ${bl+d.d1} ${d.h} L ${tl+d.d2} ${ry} Z"/>`+(d.d2>1?`<ellipse cx="${bm/2}" cy="${ry}" rx="${d.d2/2}" ry="${ry}"/>`:'') };
+    /* sans Z quand il y a une ellipse d'ouverture : la refermer tracerait une corde
+       droite en travers du bord. Pièce fermée (d2 ≈ 0) → on garde le Z. */
+    const ferme = !(d.d2>1);
+    return { w:bm, h:d.h, svg:`<path d="M ${tl} ${ry} L ${bl} ${d.h} L ${bl+d.d1} ${d.h} L ${tl+d.d2} ${ry}${ferme?' Z':''}"/>`+(d.d2>1?`<ellipse cx="${bm/2}" cy="${ry}" rx="${d.d2/2}" ry="${ry}"/>`:'') };
   }
   if(shape==='boite') return { w:d.l, h:d.h, svg:`<rect x="0" y="0" width="${d.l}" height="${d.h}"/>` };
   if(shape==='pyramide'){
@@ -2411,7 +2621,7 @@ function silhouetteFor(shape, d){
   }
   if(shape==='ovale'){
     const ry = Math.min(d.db*0.14, d.h*0.25);
-    return { w:d.da, h:d.h, svg:`<rect x="0" y="${ry}" width="${d.da}" height="${d.h-ry}"/><ellipse cx="${d.da/2}" cy="${ry}" rx="${d.da/2}" ry="${ry}"/>` };
+    return { w:d.da, h:d.h, svg:`<path d="M 0 ${ry} L 0 ${d.h} L ${d.da} ${d.h} L ${d.da} ${ry}"/><ellipse cx="${d.da/2}" cy="${ry}" rx="${d.da/2}" ry="${ry}"/>` };
   }
   if(shape==='prisme'){
     const N = clampN(d.n), x1 = d.d/2*(1-Math.sin(Math.PI/N)), x2 = d.d/2*(1+Math.sin(Math.PI/N));
@@ -3052,7 +3262,7 @@ function svgMenu(anchor, pick){
 $('#btnSvg').onclick = () => svgMenu($('#btnSvg'), nu => {
   const ps = computePieces();
   ps.forEach((p,i) => setTimeout(()=>downloadPiece(p, nu), i*250));
-  track('export_svg', { shape: state.shape, mode: state.mode || 'plaque', pieces: ps.length, variant: nu ? 'nu' : 'cotes' });
+  track('export_svg', { shape: state.shape, mode: state.mode || 'plaque', pieces: ps.length, variant: nu ? 'nu' : 'cotes', export_no: exportNo(), export_session_no: sessionNo() });
   afterExport();
 });
 
@@ -3227,7 +3437,7 @@ $('#btnPrint').onclick = () => {
       <svg width="${pg.vb[2]}mm" height="${pg.vb[3]}mm" viewBox="${pg.vb.join(' ')}">${pg.inner}</svg>
     </div>`).join('');
   $('#printArea').innerHTML = pagesHtml;
-  track('export_print', { shape: state.shape, mode: state.mode || 'plaque', feuilles: pages.length });
+  track('export_print', { shape: state.shape, mode: state.mode || 'plaque', feuilles: pages.length, export_no: exportNo(), export_session_no: sessionNo() });
   window.print();
   afterExport();
 };
@@ -3746,7 +3956,7 @@ $('#btnPdf').onclick = async () => {
     }
     pdfPaginate(doc);
     doc.save(`gabarits-${title.toLowerCase().replace(/[^a-z0-9à-ÿ]+/gi,'-')}-${paperLabel().toLowerCase()}.pdf`);
-    track('export_pdf', { shape: state.shape, mode: state.mode || 'plaque', feuilles: pages.length });
+    track('export_pdf', { shape: state.shape, mode: state.mode || 'plaque', feuilles: pages.length, export_no: exportNo(), export_session_no: sessionNo() });
     afterExport();
   } finally {
     btn.disabled = false; btn.textContent = 'PDF';
@@ -3777,6 +3987,129 @@ function maybeThanks(){
 }
 $('#tipClose').onclick = () => $('#tipbar').classList.remove('show');
 
+/* ---------------------------------------------------------------
+   Palier « 3 gabarits » — plein écran, une seule fois, jamais bloquant
+   (l'export est déjà parti quand elle s'affiche : c'est une demande,
+   pas un péage). Au refus, un smiley s'envole depuis le bouton.
+   --------------------------------------------------------------- */
+const MSTONE_AT = 3;                 // à combien de visites-avec-export la proposer
+const MSTONE_PAUSE_J = 15;           // après un don : combien de jours sans rien redemander
+/* Un don met la sollicitation en pause, il ne l'éteint pas : passé le délai, le
+   palier suivant peut revenir (un outil qui sert encore six mois plus tard a le
+   droit de le redire — mais pas la semaine d'après). */
+const tipRecent = () => {
+  const t = +localStorage.getItem('gabarits-tip-fait') || 0;
+  return t > 0 && (Date.now() - t) < MSTONE_PAUSE_J * 864e5;
+};
+const MSTONE_URL = BMAC_URL;         // le lien de don, en un seul endroit
+/* Amorçage unique, au premier chargement après la mise en ligne : les habitués
+   ne repartent pas de zéro — leur prochain export les amène au palier (le message
+   « votre troisième gabarit » reste vrai pour eux, il l'est même largement). */
+if(localStorage.getItem('gabarits-xsessions') === null){
+  localStorage.setItem('gabarits-xsessions',
+    String(Math.min(+localStorage.getItem('gabarits-exports') || 0, MSTONE_AT - 1)));
+}
+$('#msTipBtn').href = MSTONE_URL;
+function showMilestone(n){
+  const el = $('#mstone');
+  sessionStorage.setItem('gabarits-mstone-vue', '1');      // une seule fois par visite
+  localStorage.setItem('gabarits-mstone-fait', '1');       // …et une seule fois tout court
+  $('#msTitle').textContent = t('ms_title').replace('{n}', n);   // n = le palier (3 usages réels)
+  $('#tipbar').classList.remove('show');
+  hideNews();
+  track('milestone_shown', { session_no: n, export_no: +localStorage.getItem('gabarits-exports') || 0, shape: state.shape });
+  el.hidden = false;
+  setTimeout(() => el.classList.add('show'), 30);   // pas de rAF : il ne tourne pas si l'onglet est masqué
+  document.addEventListener('keydown', msKey);
+}
+function msKey(e){ if(e.key === 'Escape') hideMilestone('escape'); }
+/* petit smiley triste qui s'échappe vers le haut, lâché depuis l'élément refusé */
+function msFly(from){
+  const r = (from || $('#msLater')).getBoundingClientRect();
+  const sm = document.createElement('span');
+  sm.className = 'mstone-fly';
+  sm.textContent = '🥺';
+  sm.style.left = (r.left + r.width / 2) + 'px';
+  sm.style.top  = (r.top + r.height / 2) + 'px';
+  document.body.appendChild(sm);
+  sm.addEventListener('animationend', () => sm.remove());   // suit la durée CSS, quelle qu'elle soit
+  setTimeout(() => sm.remove(), 4000);                      // filet de sécurité
+}
+function hideMilestone(via, from){
+  const el = $('#mstone');
+  if(el.hidden) return;
+  track('milestone_dismiss', { via });
+  msFly(from);
+  document.removeEventListener('keydown', msKey);
+  el.classList.add('leaving');
+  el.classList.remove('show');
+  setTimeout(() => { el.hidden = true; el.classList.remove('leaving'); }, 340);
+}
+/* ---------------------------------------------------------------
+   Fake door « Plus » — une seule fois, au premier palier.
+   Mesure une INTENTION : aucun paiement n'est demandé, et l'écran
+   suivant dit immédiatement que Plus n'existe pas encore. Le clic
+   est le signal ; l'email récolté est le bénéfice.
+   --------------------------------------------------------------- */
+const PLUS_FAKEDOOR = false;         /* EN VEILLE. Le test d'intention d'achat est écrit et
+                                        fonctionnel, mais il ne se déclenche pas : on ne le
+                                        rallumera qu'APRÈS la vague influenceurs, pour ne pas
+                                        parasiter la diffusion. Repasser à true le moment venu. */
+const PLUS_PRIX = '29';              // le prix testé (change aussi les libellés pl_price / pl_cta)
+function showPlus(n){
+  const el = $('#plus');
+  localStorage.setItem('gabarits-plus-vu', '1');
+  sessionStorage.setItem('gabarits-mstone-vue', '1');   // une seule grande modale par visite
+  $('#plusKicker').textContent = t('ms_kicker').replace('{n}', n * 1);
+  el.classList.remove('step2');
+  $('#tipbar').classList.remove('show');
+  hideNews();
+  track('plus_shown', { session_no: n, prix: PLUS_PRIX, shape: state.shape });
+  el.hidden = false;
+  setTimeout(() => el.classList.add('show'), 30);
+  document.addEventListener('keydown', plusKey);
+}
+function plusKey(e){ if(e.key === 'Escape') hidePlus('escape'); }
+function hidePlus(via, from){
+  const el = $('#plus');
+  if(el.hidden) return;
+  if(!el.classList.contains('step2')) track('plus_dismiss', { via, prix: PLUS_PRIX });
+  document.removeEventListener('keydown', plusKey);
+  if(via !== 'envoye') msFly(from || $('#plusLater'));
+  el.classList.add('leaving'); el.classList.remove('show');
+  setTimeout(() => { el.hidden = true; el.classList.remove('leaving', 'step2'); }, 340);
+}
+$('#plusLater').onclick = e => hidePlus('non_merci', e.currentTarget);
+$('#plusClose').onclick = e => hidePlus('croix', e.currentTarget);
+$('#plusDone').onclick  = () => hidePlus('envoye');
+$('#plus').onclick = e => { if(e.target === $('#plus')) hidePlus('fond'); };
+$('#plusCta').onclick = e => {
+  e.preventDefault();
+  track('plus_click', { prix: PLUS_PRIX, session_no: +localStorage.getItem('gabarits-xsessions') || 0 });
+  $('#plus').classList.add('step2');           // révélation immédiate : rien n'est vendu
+  setTimeout(() => $('#plusEmail').focus(), 120);
+};
+$('#plusForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const email = $('#plusEmail').value.trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ $('#plusEmail').focus(); $('#plusEmail').style.borderColor = 'var(--terra-d)'; return; }
+  track('plus_email', { prix: PLUS_PRIX });
+  newsSource = 'plus_fakedoor';
+  subscribeNews(email);                        // même envoi Brevo que l'invite email
+  $('#plusForm').style.display = 'none';
+  $('#plus').querySelector('.plus-step2 .mstone-txt').innerHTML = t('pl_merci');
+  setTimeout(() => hidePlus('envoye'), 2200);
+});
+$('#msLater').onclick = e => hideMilestone('plus_tard', e.currentTarget);
+$('#msClose').onclick = e => hideMilestone('croix', e.currentTarget);
+$('#mstone').onclick = e => { if(e.target === $('#mstone')) hideMilestone('fond'); };
+$('#msTipBtn').onclick = () => {
+  track('tip_click', { source: 'milestone' });
+  localStorage.setItem('gabarits-news-off', '1');       // ne plus harceler après un geste
+  localStorage.setItem('gabarits-tip-fait', String(Date.now()));   // met le palier en pause (voir MSTONE_PAUSE_J)
+  setTimeout(() => hideMilestone('don'), 400);
+};
+
 /* invite newsletter : modale frontale (fond flouté). Ré-affichable (relancée une
    impression sur deux tant que l'email n'est pas rempli). Idempotente : ne fait
    rien si elle est déjà ouverte. Jamais en même temps que le pourboire. */
@@ -3787,8 +4120,11 @@ function showNews(source){
   newsSource = source || 'inconnu';
   track('newsletter_shown', { source: newsSource, shape: state.shape });
   $('#tipbar').classList.remove('show');
-  const btn = $('#newsBtn'); if(btn) btn.disabled = false;   // réactive si fermée après un envoi
+  const btn = $('#newsBtn');
+  if(btn){ btn.disabled = false; btn.classList.remove('is-loading'); }   // réactive si fermée après un envoi
   el.classList.remove('done');
+  const card = el.querySelector('.newsmodal-card');
+  card.classList.remove('swapping'); card.style.height = '';             // purge l'animation précédente
   el.hidden = false;
   setTimeout(() => el.classList.add('show'), 30);
 }
@@ -3817,6 +4153,25 @@ $('#newsMini').onclick = () => { track('newsletter_click', { source: 'panneau' }
    Vide = repli provisoire vers le formulaire hébergé, le temps de brancher Brevo. */
 const NEWS_ACTION = 'https://69a1d944.sibforms.com/serve/MUIFAN7K5Y-M3NorrPe98ttopcj5n92TsQ8VVyVuyk0CkfuYpkbILFKorLERZuTqJpQxE1Qqc97MFHFkAP-r3PHI5A9qwQmyxSK61drlEPJRUStlFBndKiPIEQCAE8CP6Vv7ZlaMvzh-tYdnXSds_l2VnyJybTE6DbttRlKXqLZNFn7d6Q-2EnG3LL0aHEjydNHIOsbXuycFiTz4zg==';
 const NEWS_FALLBACK = 'https://69a1d944.sibforms.com/serve/MUIFAN7K5Y-M3NorrPe98ttopcj5n92TsQ8VVyVuyk0CkfuYpkbILFKorLERZuTqJpQxE1Qqc97MFHFkAP-r3PHI5A9qwQmyxSK61drlEPJRUStlFBndKiPIEQCAE8CP6Vv7ZlaMvzh-tYdnXSds_l2VnyJybTE6DbttRlKXqLZNFn7d6Q-2EnG3LL0aHEjydNHIOsbXuycFiTz4zg==';
+/* fondu croisé formulaire → « merci » avec la hauteur de la carte animée */
+function swapToDone(bar){
+  const card = bar.querySelector('.newsmodal-card');
+  const btn  = $('#newsBtn');
+  const h0 = card.getBoundingClientRect().height;
+  card.classList.add('swapping');                  // le contenu s'efface
+  setTimeout(() => {
+    btn.classList.remove('is-loading');
+    bar.classList.add('done');                     // on échange le contenu à couvert
+    card.style.height = 'auto';
+    const h1 = card.getBoundingClientRect().height;
+    card.style.height = h0 + 'px';
+    void card.offsetHeight;                        // reflow : le départ est pris en compte
+    card.style.height = h1 + 'px';
+    requestAnimationFrame(() => card.classList.remove('swapping'));
+    setTimeout(() => { card.style.height = ''; }, 420);
+    track('tip_shown', { source: 'newsletter_merci' });
+  }, 200);
+}
 function subscribeNews(email){
   track('newsletter_submit', { source: newsSource, shape: state.shape });
   const bar = $('#news'), btn = $('#newsBtn');
@@ -3840,11 +4195,12 @@ function subscribeNews(email){
   // succès optimiste (simple opt-in)
   localStorage.setItem('gabarits-news-off', '1');
   localStorage.setItem('gabarits-news-sub', '1');
-  bar.classList.add('done');
-  // pas d'auto-fermeture : l'écran de remerciement propose un don, on laisse
-  // la main (croix ou « Une autre fois »).
+  // Bascule vers l'écran « merci » : petit temps d'accusé de réception (spinner),
+  // puis fondu du contenu + hauteur de carte animée. Sans ça le remplacement est
+  // instantané et paraît mécanique.
+  btn.classList.add('is-loading');
   clearTimeout(newsTimer);
-  track('tip_shown', { source: 'newsletter_merci' });
+  setTimeout(() => swapToDone(bar), 520);
 }
 $('#newsForm').addEventListener('submit', e => {
   e.preventDefault();
@@ -3858,11 +4214,36 @@ $('#newsEmail').addEventListener('focus', () => clearTimeout(newsTimer));   // n
    Priorité : d'abord capter l'email (modale), puis — seulement pour ceux qui
    ont laissé leur email — proposer le don. Qui n'a pas laissé d'email n'est
    jamais sollicité pour un don. */
+/* Deux compteurs, volontairement distincts :
+   - gabarits-exports  : tous les exports. Inchangé — c'est lui qui pilote l'invite
+     email, qui reste la priorité : on ne lui retire aucune occasion de s'afficher.
+   - gabarits-xsessions : les VISITES ayant produit au moins un export (plafond d'un
+     par session). C'est lui qui porte le palier, sinon SVG + PDF + impression
+     enchaînés sur la même pièce annonceraient « 3 gabarits » au bout de 2 minutes. */
+const exportNo = () => (+localStorage.getItem('gabarits-exports') || 0) + 1;   // n° de l'export en cours (écrit juste après par afterExport)
+const sessionNo = () => (+localStorage.getItem('gabarits-xsessions') || 0) + (sessionStorage.getItem('gabarits-xsession') ? 0 : 1);   // lecture seule, pour le tracking
+function bumpSessionNo(){
+  const sn = sessionNo();
+  sessionStorage.setItem('gabarits-xsession', '1');    // cette visite ne comptera plus qu'une fois
+  localStorage.setItem('gabarits-xsessions', String(sn));
+  return sn;
+}
 function afterExport(){
-  const n = (+localStorage.getItem('gabarits-exports') || 0) + 1;
+  const n = exportNo();
   localStorage.setItem('gabarits-exports', String(n));
+  const sn = bumpSessionNo();
   const subscribed = localStorage.getItem('gabarits-news-sub');
-  if(subscribed){
+  const palier = sn % MSTONE_AT === 0                        // au 3e usage réel
+     && !localStorage.getItem('gabarits-mstone-fait')       // UNE SEULE FOIS par personne
+     && !sessionStorage.getItem('gabarits-mstone-vue')      // (et jamais deux fois dans la même visite)
+     && !tipRecent();                                       // pause après un don : sans objet tant
+                                                            // qu'on ne montre qu'une fois, gardée
+                                                            // pour le jour où la récurrence revient
+  if(palier && PLUS_FAKEDOOR && !localStorage.getItem('gabarits-plus-vu')){
+    showPlus(sn);        // 1er palier : on mesure l'intention d'achat, une fois pour toutes
+  } else if(palier){
+    showMilestone(sn);   // ensuite : le pourboire. Une seule sollicitation à la fois
+  } else if(subscribed){
     maybeThanks();        // 2) don (barre du bas)
   } else if(n % 2 === 1){
     showNews('auto_export');   // 1) email : modale centrée (z600)
