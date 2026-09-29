@@ -541,6 +541,7 @@ select:focus{outline:none;border-color:var(--glaze)}
   display:block;margin:14px auto 0;background:none;border:none;box-shadow:none;padding:6px;
   color:var(--ink2);font-size:12.5px;text-decoration:underline;cursor:pointer;
 }
+#mstone .ms-free{display:block;font-size:12px;color:var(--ink2);margin-top:8px}
 .mstone-free{display:block;font-size:11px;color:var(--ink2);margin-top:16px;opacity:.85}
 /* Modale de don : corps aligné à gauche et calé sur le bord du bouton. En
    monospace centré, l'œil doit rechercher le début de chaque ligne — c'est ce
@@ -960,11 +961,12 @@ svg .sector-info{font-family:var(--gc-font-cotes);font-size:4.2px;fill:var(--ink
   <div class="mstone-in">
     <span class="mstone-ico">🏺</span>
     <h3 class="mstone-title" id="msTitle">Vous avez créé 3 gabarits 🎉</h3>
-    <p class="mstone-txt" data-i18n-html="ms_p1">Un petit merci de ma part.</p>
-    <p class="mstone-txt" data-i18n-html="ms_p2">J'ai créé cet outil pour que les gabarits de céramique soient simples à faire et accessibles à tous : pas de publicité, pas d'abonnement, pas de compte.</p>
-    <p class="mstone-txt" data-i18n-html="ms_p3">Si vous aimez l'utiliser, vous pouvez <b>m'aider à le garder gratuit</b> et à l'enrichir. Même un petit pourboire fait la différence. 🤎</p>
-    <a class="tipbtn" id="msTipBtn" href="#" target="_blank" rel="noopener noreferrer" data-i18n="ms_btn">☕ M'aider à le garder gratuit</a>
-    <button class="mstone-later" id="msLater" data-i18n="ms_later">Non merci, peut-être plus tard</button>
+    <p class="mstone-txt" data-i18n-html="ms_p1">Autant de patrons que vous n'avez pas eu à tracer à la main, retrait de cuisson compris.</p>
+    <p class="mstone-txt" data-i18n-html="ms_p2">Je développe cet outil seul, sur mon temps libre. Tout ce que vous utilisez aujourd'hui <b>restera gratuit</b>, sans publicité.</p>
+    <p class="mstone-txt" data-i18n-html="ms_p3">S'il vous a fait gagner du temps, un café m'aide à le faire connaître et à ajouter de nouvelles formes. 🤎</p>
+    <a class="tipbtn" id="msTipBtn" href="#" target="_blank" rel="noopener noreferrer" data-i18n="ms_btn">☕ Offrir un café (ou un pain de terre)</a>
+    <span class="ms-free" data-i18n="ms_free">Montant libre, sans minimum</span>
+    <button class="mstone-later" id="msLater" data-i18n="ms_later">Pas cette fois</button>
   </div>
 </div>
 
@@ -2481,11 +2483,12 @@ Object.assign(STR.fr, {
   news_mini:'✉️ Être prévenu·e des nouveautés →',
   ms_kicker:'{n} gabarits téléchargés',
   ms_title:'Vous avez créé {n} gabarits 🎉',
-  ms_p1:'Un petit merci de ma part.',
-  ms_p2:'J\'ai créé cet outil pour que les gabarits de céramique soient simples à faire et accessibles à tous&nbsp;: pas de publicité, pas d\'abonnement, pas de compte.',
-  ms_p3:'Si vous aimez l\'utiliser, vous pouvez <b>m\'aider à le garder gratuit</b> et à l\'enrichir. Même un petit pourboire fait la différence. 🤎',
-  ms_btn:'☕ M\'aider à le garder gratuit',
-  ms_later:'Non merci, peut-être plus tard',
+  ms_p1:'Autant de patrons que vous n\'avez pas eu à tracer à la main, retrait de cuisson compris.',
+  ms_p2:'Je développe cet outil seul, sur mon temps libre. Tout ce que vous utilisez aujourd\'hui <b>restera gratuit</b>, sans publicité.',
+  ms_p3:'S\'il vous a fait gagner du temps, un café m\'aide à le faire connaître et à ajouter de nouvelles formes. 🤎',
+  ms_free:'Montant libre, sans minimum',
+  ms_btn:'☕ Offrir un café (ou un pain de terre)',
+  ms_later:'Pas cette fois',
   pl_title:'Et si l\'outil traçait des objets entiers&nbsp;?',
   pl_txt:'Aujourd\'hui il vous donne des <b>formes</b>. Demain, des <b>objets complets</b>, guidés, toujours à vos cotes&nbsp;:',
   pl_items:'<li>un mug avec son anse, tracé d\'un coup</li><li>une théière, bec et couvercle compris</li><li>une boîte dont le couvercle ferme encore après cuisson</li>',
@@ -2521,11 +2524,12 @@ Object.assign(STR.en, {
   news_mini:'✉️ Get notified of what\'s new →',
   ms_kicker:'{n} templates downloaded',
   ms_title:'You\u2019ve made {n} templates 🎉',
-  ms_p1:'A little thank you from me.',
-  ms_p2:'I built this tool so ceramic templates would be easy to make and open to everyone: no ads, no subscription, no account.',
-  ms_p3:'If you enjoy using it, you can <b>help me keep it free</b> and keep it growing. Even a small tip makes a difference. 🤎',
-  ms_btn:'☕ Help keep it free',
-  ms_later:'No thanks, maybe later',
+  ms_p1:'That\u2019s that many patterns you didn\u2019t have to draw by hand, firing shrinkage included.',
+  ms_p2:'I build this tool on my own, in my spare time. Everything you use today <b>will stay free</b>, with no ads.',
+  ms_p3:'If it saved you time, a coffee helps me spread the word and add new shapes. 🤎',
+  ms_free:'Any amount, no minimum',
+  ms_btn:'☕ Buy me a coffee (or a block of clay)',
+  ms_later:'Not this time',
   pl_title:'What if the tool drew whole objects?',
   pl_txt:'Today it gives you <b>shapes</b>. Tomorrow, <b>complete objects</b>, guided, still at your own sizes:',
   pl_items:'<li>a mug with its handle, in one go</li><li>a teapot, spout and lid included</li><li>a box whose lid still closes after firing</li>',
@@ -4007,11 +4011,11 @@ function maybeThanks(){
 $('#tipClose').onclick = () => $('#tipbar').classList.remove('show');
 
 /* ---------------------------------------------------------------
-   Palier « 3 gabarits » — plein écran, une seule fois, jamais bloquant
+   Palier « 3 gabarits » — plein écran, tous les 3 exports, jamais bloquant
    (l'export est déjà parti quand elle s'affiche : c'est une demande,
    pas un péage). Au refus, un smiley s'envole depuis le bouton.
    --------------------------------------------------------------- */
-const MSTONE_AT = 3;                 // à combien de visites-avec-export la proposer
+const MSTONE_AT = 3;                 // tous les combien d'exports la proposer (3, 6, 9…)
 const MSTONE_PAUSE_J = 15;           // après un don : combien de jours sans rien redemander
 /* Un don met la sollicitation en pause, il ne l'éteint pas : passé le délai, le
    palier suivant peut revenir (un outil qui sert encore six mois plus tard a le
@@ -4031,12 +4035,10 @@ if(localStorage.getItem('gabarits-xsessions') === null){
 $('#msTipBtn').href = MSTONE_URL;
 function showMilestone(n){
   const el = $('#mstone');
-  sessionStorage.setItem('gabarits-mstone-vue', '1');      // une seule fois par visite
-  localStorage.setItem('gabarits-mstone-fait', '1');       // …et une seule fois tout court
-  $('#msTitle').textContent = t('ms_title').replace('{n}', n);   // n = le palier (3 usages réels)
+  $('#msTitle').textContent = t('ms_title').replace('{n}', n);   // n = le nombre d'exports (3, 6, 9…)
   $('#tipbar').classList.remove('show');
   hideNews();
-  track('milestone_shown', { session_no: n, export_no: +localStorage.getItem('gabarits-exports') || 0, shape: state.shape });
+  track('milestone_shown', { export_no: n, session_no: +localStorage.getItem('gabarits-xsessions') || 0, shape: state.shape });
   el.hidden = false;
   setTimeout(() => el.classList.add('show'), 30);   // pas de rAF : il ne tourne pas si l'onglet est masqué
   document.addEventListener('keydown', msKey);
@@ -4172,6 +4174,17 @@ $('#newsMini').onclick = () => { track('newsletter_click', { source: 'panneau' }
    Vide = repli provisoire vers le formulaire hébergé, le temps de brancher Brevo. */
 const NEWS_ACTION = 'https://69a1d944.sibforms.com/serve/MUIFAN7K5Y-M3NorrPe98ttopcj5n92TsQ8VVyVuyk0CkfuYpkbILFKorLERZuTqJpQxE1Qqc97MFHFkAP-r3PHI5A9qwQmyxSK61drlEPJRUStlFBndKiPIEQCAE8CP6Vv7ZlaMvzh-tYdnXSds_l2VnyJybTE6DbttRlKXqLZNFn7d6Q-2EnG3LL0aHEjydNHIOsbXuycFiTz4zg==';
 const NEWS_FALLBACK = 'https://69a1d944.sibforms.com/serve/MUIFAN7K5Y-M3NorrPe98ttopcj5n92TsQ8VVyVuyk0CkfuYpkbILFKorLERZuTqJpQxE1Qqc97MFHFkAP-r3PHI5A9qwQmyxSK61drlEPJRUStlFBndKiPIEQCAE8CP6Vv7ZlaMvzh-tYdnXSds_l2VnyJybTE6DbttRlKXqLZNFn7d6Q-2EnG3LL0aHEjydNHIOsbXuycFiTz4zg==';
+/* ?abo=1 : marqueur d'inscription posé par le site vitrine (www.), qui ne partage
+   pas son localStorage avec ce domaine (app.). Le bloc email des articles décore
+   ses liens vers l'app avec ce paramètre : on note l'inscription ici aussi, et la
+   modale ne redemande pas son adresse à quelqu'un qui vient de la laisser. */
+try{
+  if(new URLSearchParams(location.search).get('abo') === '1'){
+    localStorage.setItem('gabarits-news-sub', '1');
+    localStorage.setItem('gabarits-news-off', '1');   // mêmes deux clés que subscribeNews()
+  }
+}catch(e){}
+
 /* fondu croisé formulaire → « merci » avec la hauteur de la carte animée */
 function swapToDone(bar){
   const card = bar.querySelector('.newsmodal-card');
@@ -4252,16 +4265,14 @@ function afterExport(){
   localStorage.setItem('gabarits-exports', String(n));
   const sn = bumpSessionNo();
   const subscribed = localStorage.getItem('gabarits-news-sub');
-  const palier = sn % MSTONE_AT === 0                        // au 3e usage réel
-     && !localStorage.getItem('gabarits-mstone-fait')       // UNE SEULE FOIS par personne
-     && !sessionStorage.getItem('gabarits-mstone-vue')      // (et jamais deux fois dans la même visite)
-     && !tipRecent();                                       // pause après un don : sans objet tant
-                                                            // qu'on ne montre qu'une fois, gardée
-                                                            // pour le jour où la récurrence revient
+  /* Récurrent (29 sept. 2026) : tous les 3 clics sur Imprimer / PDF / SVG —
+     3e, 6e, 9e export… Compté sur gabarits-exports, pas sur les visites. */
+  const palier = n % MSTONE_AT === 0                         // tous les 3 exports
+     && !tipRecent();                                       // pause de MSTONE_PAUSE_J jours après un don
   if(palier && PLUS_FAKEDOOR && !localStorage.getItem('gabarits-plus-vu')){
     showPlus(sn);        // 1er palier : on mesure l'intention d'achat, une fois pour toutes
   } else if(palier){
-    showMilestone(sn);   // ensuite : le pourboire. Une seule sollicitation à la fois
+    showMilestone(n);    // ensuite : le pourboire. Une seule sollicitation à la fois
   } else if(subscribed){
     maybeThanks();        // 2) don (barre du bas)
   } else if(n % 2 === 1){
