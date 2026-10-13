@@ -126,6 +126,38 @@ h1 em{font-style:normal;color:var(--terra)}
 .seg button + button{border-left:1.5px solid var(--line)}
 .seg button.on{background:var(--terra);color:#F4F2E8}
 .seg button:hover{transform:none}
+/* « Donner mon avis » : lien Tally du header. L'invitation est un « bon à
+   découper » — un ciseau suit le pointillé du logo autour du bouton. */
+.fb-hdr{
+  position:relative;display:inline-flex;align-items:center;gap:7px;
+  padding:6px 11px;border:1.5px solid var(--ink);border-radius:2px;background:var(--card);
+  box-shadow:2px 2px 0 rgba(35,39,31,.18);font-size:12px;color:var(--ink);text-decoration:none;white-space:nowrap;
+  transition:transform .08s ease, box-shadow .08s ease;
+}
+.fb-hdr:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 rgba(35,39,31,.22)}
+.fb-hdr:active{transform:translate(2px,2px);box-shadow:none}
+.fb-hdr .fb-min{font-family:var(--gc-font-cotes);font-size:9.5px;color:var(--terra-d);
+  background:var(--gc-emailclair);border-radius:2px;padding:1px 5px}
+html[lang="en"] .fb-hdr{display:none}   /* le questionnaire n'existe qu'en français */
+.fb-cut{position:absolute;inset:-7px;pointer-events:none;opacity:0}
+.fb-cut .fb-line{position:absolute;left:0;top:0;overflow:visible}
+.fb-cut .fb-dash{fill:none;stroke:var(--terra);stroke-width:1.5;stroke-dasharray:5 4}
+.fb-cut .fb-mask{fill:none;stroke:#fff;stroke-width:5}
+.fb-sc{position:absolute;left:0;top:0;width:18px;height:13px;offset-anchor:70% 50%;offset-rotate:auto}
+.fb-sc .bl-a,.fb-sc .bl-b{transform-origin:10px 7px}
+.fb-hdr.nudge .fb-cut{animation:fbCutFade 4.4s ease both}
+.fb-hdr.nudge .fb-mask{animation:fbTrace 2.2s linear .2s both}
+.fb-hdr.nudge .fb-sc{animation:fbRun 2.2s linear .2s both, fbScOut .3s ease 2.4s both}
+.fb-hdr.nudge .bl-a{animation:fbSnipA .16s ease-in-out .2s 14 alternate}
+.fb-hdr.nudge .bl-b{animation:fbSnipB .16s ease-in-out .2s 14 alternate}
+.fb-hdr.nudge .fb-min{animation:fbPop .45s ease 2.4s}
+@keyframes fbCutFade{0%,100%{opacity:0}5%,75%{opacity:1}}
+@keyframes fbTrace{to{stroke-dashoffset:0}}
+@keyframes fbRun{from{offset-distance:0%}to{offset-distance:100%}}
+@keyframes fbScOut{to{opacity:0}}
+@keyframes fbSnipA{to{transform:rotate(-14deg)}}
+@keyframes fbSnipB{to{transform:rotate(14deg)}}
+@keyframes fbPop{40%{transform:scale(1.18)}}
 button,.btn{
   font-family:var(--gc-font-texte);font-size:12.5px;cursor:pointer;
   border:1.5px solid var(--ink);background:var(--card);color:var(--ink);
@@ -738,6 +770,7 @@ svg .sector-info{font-family:var(--gc-font-cotes);font-size:4.2px;fill:var(--ink
   .brand svg{width:34px;height:34px}
   h1{font-size:23px}
   .tagline{font-size:11px;margin-top:3px}
+  .fb-hdr{order:9;flex:1 0 100%;justify-content:center;min-height:44px;font-size:14px}   /* sa propre ligne : la rangée FR/EN · tuto · carnet est déjà pleine */
 
   /* cibles tactiles ≥ 44px + 16px pour éviter le zoom iOS au focus */
   input[type=number], select, #projName{font-size:16px;min-height:44px}
@@ -783,6 +816,7 @@ svg .sector-info{font-family:var(--gc-font-cotes);font-size:4.2px;fill:var(--ink
     </div>
   </div>
   <div class="actions">
+    <a id="fbHdr" class="fb-hdr" href="https://tally.so/r/kdVxkr?source=outil-entete" target="_blank" rel="noopener noreferrer" data-i18n-title="hdr_fb_title" title="2 minutes pour choisir ensemble la suite de l’outil"><span aria-hidden="true">✍️</span><span data-i18n="hdr_fb">Donner mon avis</span><span class="fb-min" data-i18n="hdr_fb_min">2 min</span><span class="fb-cut" aria-hidden="true"><svg class="fb-line"><mask id="fbMask" maskUnits="userSpaceOnUse"><path class="fb-mask"/></mask><path class="fb-dash" mask="url(#fbMask)"/></svg><svg class="fb-sc" viewBox="0 0 20 14"><g class="bl-a"><circle cx="4" cy="3.5" r="2.5" fill="none" stroke="#23271F" stroke-width="1.5"/><path d="M6.2 5 19 11.2" stroke="#23271F" stroke-width="1.6" stroke-linecap="round"/></g><g class="bl-b"><circle cx="4" cy="10.5" r="2.5" fill="none" stroke="#23271F" stroke-width="1.5"/><path d="M6.2 9 19 2.8" stroke="#23271F" stroke-width="1.6" stroke-linecap="round"/></g></svg></span></a>
     <div class="seg" id="langSeg" title="langue / language"><button data-lang="fr">FR</button><button data-lang="en">EN</button></div>
     <button id="tourBtn" class="tour-btn" data-i18n="hdr_tuto" data-i18n-title="tuto_title" title="revoir le tuto">? tuto</button>
     <button id="carnetToggle" class="carnet-btn"><span class="caret">▾</span> <span data-i18n="hdr_carnet">Mon carnet de pièces</span></button>
@@ -920,7 +954,7 @@ svg .sector-info{font-family:var(--gc-font-cotes);font-size:4.2px;fill:var(--ink
 
 <footer class="tipfoot">
   <span data-i18n="foot_made">Outil gratuit, fait avec 🤎 —</span> <a id="tipFootLink" href="#" target="_blank" rel="noopener noreferrer" data-i18n="foot_tip_link">offrez-moi un pain de terre ☕</a> <span style="opacity:.7" data-i18n="foot_free">(montant libre)</span>
-  <div class="tipfoot-fb"><a id="newsFootLink" href="https://69a1d944.sibforms.com/serve/MUIFAN7K5Y-M3NorrPe98ttopcj5n92TsQ8VVyVuyk0CkfuYpkbILFKorLERZuTqJpQxE1Qqc97MFHFkAP-r3PHI5A9qwQmyxSK61drlEPJRUStlFBndKiPIEQCAE8CP6Vv7ZlaMvzh-tYdnXSds_l2VnyJybTE6DbttRlKXqLZNFn7d6Q-2EnG3LL0aHEjydNHIOsbXuycFiTz4zg==" target="_blank" rel="noopener noreferrer" data-i18n="foot_news">✉️ recevez les nouveautés</a> · <a id="fbFootLink" href="https://tally.so/r/ZjKADz" target="_blank" rel="noopener noreferrer" data-i18n="foot_fb">donnez votre avis ✍️</a> · <span class="tipfoot-privacy" data-i18n="foot_privacy">mesure d'audience anonyme, sans cookie</span></div>
+  <div class="tipfoot-fb"><a id="newsFootLink" href="https://69a1d944.sibforms.com/serve/MUIFAN7K5Y-M3NorrPe98ttopcj5n92TsQ8VVyVuyk0CkfuYpkbILFKorLERZuTqJpQxE1Qqc97MFHFkAP-r3PHI5A9qwQmyxSK61drlEPJRUStlFBndKiPIEQCAE8CP6Vv7ZlaMvzh-tYdnXSds_l2VnyJybTE6DbttRlKXqLZNFn7d6Q-2EnG3LL0aHEjydNHIOsbXuycFiTz4zg==" target="_blank" rel="noopener noreferrer" data-i18n="foot_news">✉️ recevez les nouveautés</a> · <a id="fbFootLink" href="https://tally.so/r/kdVxkr?source=outil-pied" target="_blank" rel="noopener noreferrer" data-i18n="foot_fb">donnez votre avis ✍️</a> · <span class="tipfoot-privacy" data-i18n="foot_privacy">mesure d'audience anonyme, sans cookie</span></div>
 </footer>
 
 <div class="tipbar" id="tipbar">
@@ -1299,6 +1333,7 @@ const STR = {
   fr: {
     tagline: 'patrons à découper pour le travail à la plaque',
     hdr_carnet: 'Mon carnet de pièces', hdr_tuto: '? tuto',
+    hdr_fb: 'Donner mon avis', hdr_fb_min: '2 min', hdr_fb_title: '2 minutes pour choisir ensemble la suite de l’outil',
     p1_title: 'Forme & cotes', p2_title: 'Aperçu', p3_title: 'Pièces à découper',
     mode_plaque: 'à la plaque', mode_kur: 'kurinuki', change: 'changer',
     mode_tour: 'au tour', tour_title: 'gabarits de tournage : profils, jauge de hauteur, pied',
@@ -1319,6 +1354,7 @@ const STR = {
   en: {
     tagline: 'printable cutting templates for slab building',
     hdr_carnet: 'My pieces', hdr_tuto: '? tour',
+    hdr_fb: 'Give feedback', hdr_fb_min: '2 min', hdr_fb_title: 'A 2-minute survey (in French) to shape what comes next',
     p1_title: 'Shape & size', p2_title: 'Preview', p3_title: 'Pieces to cut',
     mode_plaque: 'slab building', mode_kur: 'kurinuki', change: 'change',
     mode_tour: 'on the wheel', tour_title: 'throwing templates: profiles, height gauge, foot',
@@ -3995,7 +4031,52 @@ $('#tipFootLink').href = BMAC_URL;
 $('#newsTipBtn').href = BMAC_URL;
 $('#tipBtn').onclick = () => track('tip_click', { source: 'bandeau' });
 $('#tipFootLink').onclick = () => track('tip_click', { source: 'footer' });
-$('#fbFootLink').onclick = () => track('feedback_click', { source: 'footer' });
+/* « Donner mon avis » — invitation discrète : le ciseau découpe le pointillé
+   autour du bouton du header, 2 fois au plus par visite, jamais par-dessus le
+   tuto ou une modale, et plus du tout pendant 30 jours après un clic.
+   ?avis dans l'URL la rejoue en boucle (réglages). */
+const AVIS_URL = 'https://tally.so/r/kdVxkr';
+const AVIS_A = [6000, 60000];        // moments de l'invitation après le chargement (ms)
+const AVIS_PAUSE_J = 30;             // après un clic : combien de jours sans réinviter
+const AVIS_DEMO = /[?&]avis\b/.test(location.search);
+$('#fbHdr').href = AVIS_URL + '?source=outil-entete';
+$('#fbFootLink').href = AVIS_URL + '?source=outil-pied';
+let avisNudges = 0;
+const avisRecent = () => {
+  const t = +localStorage.getItem('gabarits-avis-clic') || 0;
+  return t > 0 && (Date.now() - t) < AVIS_PAUSE_J * 864e5;
+};
+function avisClick(source){
+  try{ localStorage.setItem('gabarits-avis-clic', String(Date.now())); }catch(e){}
+  track('feedback_click', { source, nudges: avisNudges });
+}
+$('#fbHdr').onclick = () => avisClick('header');
+$('#fbFootLink').onclick = () => avisClick('footer');
+function avisNudge(){
+  const b = $('#fbHdr');
+  if(!AVIS_DEMO && (avisRecent() || matchMedia('(prefers-reduced-motion:reduce)').matches)) return;
+  if(!b.offsetWidth) return;                                         // masqué (version anglaise)
+  if(tourEls || document.querySelector('#mstone.show, #plus.show, #news.show') || document.hidden){
+    setTimeout(avisNudge, 5000); return;
+  }
+  const W = b.offsetWidth + 14, H = b.offsetHeight + 14, r = 5, x1 = W - 1, y1 = H - 1;
+  const d = `M${1+r} 1H${x1-r}A${r} ${r} 0 0 1 ${x1} ${1+r}V${y1-r}A${r} ${r} 0 0 1 ${x1-r} ${y1}` +
+            `H${1+r}A${r} ${r} 0 0 1 1 ${y1-r}V${1+r}A${r} ${r} 0 0 1 ${1+r} 1Z`;
+  const svg = b.querySelector('.fb-line'), mk = b.querySelector('.fb-mask');
+  svg.setAttribute('width', W); svg.setAttribute('height', H);
+  b.querySelector('.fb-dash').setAttribute('d', d);
+  mk.setAttribute('d', d);
+  const len = mk.getTotalLength();
+  mk.style.strokeDasharray = len; mk.style.strokeDashoffset = len;
+  const sc = b.querySelector('.fb-sc');
+  if(CSS.supports('offset-path', "path('M0 0H1')")) sc.style.offsetPath = `path('${d}')`;
+  else sc.style.display = 'none';                                    // vieux navigateur : le pointillé seul
+  b.classList.remove('nudge'); void b.offsetWidth; b.classList.add('nudge');
+  avisNudges++;
+  if(!AVIS_DEMO) track('feedback_nudge', { n: avisNudges });
+}
+if(AVIS_DEMO) setInterval(avisNudge, 7000), setTimeout(avisNudge, 1200);
+else AVIS_A.forEach(ms => setTimeout(avisNudge, ms));
 $('#newsFootLink').onclick = () => track('newsletter_click', { source: 'footer' });
 let tipShown = false, tipTimer = null, newsShown = false, newsTimer = null;
 let newsSource = 'inconnu';   // d'où vient l'invite email actuellement ouverte
