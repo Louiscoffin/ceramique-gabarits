@@ -1026,9 +1026,9 @@ function reliefSVG(p, o){
   return s+'</svg>';
 }
 
-/* Grille de prix (Louis, 17 oct. 2026) : 4,99 € pour les formes les plus simples
-   (niveau Débutant), 9,99 € pour les plus complexes. Le bol-tasse à talon reste à
-   9,99 € : c'est la première vente, tutoriel compris. */
+/* Grille de prix (Louis, 26 oct. 2026) : 4,99 € pour les formes simples (niveau
+   Débutant, bol-tasse à talon compris), 9,99 € pour les intermédiaires, les avancées
+   et la théière. */
 const MODELS = [
   /* ---- formes de base, gratuites (elles le restent) ---- */
   { id:'bol', name:'Bol évasé', family:'Vaisselle', diff:'Débutant', price:0, base:true,
@@ -1076,7 +1076,7 @@ const MODELS = [
      Un cylindre posé SUR son fond et une rondelle de talon dessous. Le moteur
      générique ne sait pas faire ça : isTalon() l'envoie sur talonPieces(), qui
      reprend les calculs du tutoriel (v2/tutoriel-bol-talon). */
-  { id:'bol-talon', name:'Bol-tasse à talon', family:'Vaisselle', diff:'Débutant', price:9.99, novelty:true,
+  { id:'bol-talon', name:'Bol-tasse à talon', family:'Vaisselle', diff:'Débutant', price:4.99, novelty:true,
     tuto:'tutoriel-bol-talon/',
     blurb:"Série Tasses n°1b. Une tasse à espresso sans anse : un cylindre net qui flotte sur un talon fin. Quatre gabarits (la paroi, le fond, le talon en rondelle et un mandrin en papier cartonné au Ø exact) et le tutoriel 3D pas à pas, recalculé à tes cotes.",
     blurbEn:"Tasses series no. 1b. An espresso cup with no handle: a crisp cylinder floating on a thin foot ring. Four templates (wall, base, foot ring and a card mandrel at the exact Ø) plus the step-by-step 3D tutorial, recomputed at your dimensions.",
@@ -2669,7 +2669,7 @@ const ED_ROWS = () => [
   {k:D('Interface V2, aperçu 3D manipulable','V2 interface, hands-on 3D preview'), b:1},
   {k:D('Récapitulatif, planche d’assemblage, calepinage serré','Summary, assembly sheet, tight nesting'), b:1},
   {k:D('Carnet de formes','Shape book'), b:1},
-  {k:D('Bol-tasse à talon + tutoriel','Foot-ring cup + tutorial'), s:D('9,99 €, en vente le 3/11','€9.99, on sale on 3 Nov'), b:1},
+  {k:D('Bol-tasse à talon + tutoriel','Foot-ring cup + tutorial'), s:D('4,99 €, en vente le 3/11','€4.99, on sale on 3 Nov'), b:1},
   {k:D('Série Tasses : n°1a, 3 et 8','Tasses series: no. 1a, 3 and 8'), s:D('en vitrine « bientôt disponible » avec inscription : gabarits en conception','shown as “coming soon” with sign-up: templates being designed'), b:1},
   {g:D('Repris de la V1 : dans les deux','Carried over from V1: in both')},
   {k:D('Les formes de la V1, gratuites','The V1 shapes, free'), s:D('dont tasse & mug avec anse, pichet avec bec, et les modèles prédéfinis','including cup & mug with handle, jug with spout and the starter models'), b:1},
