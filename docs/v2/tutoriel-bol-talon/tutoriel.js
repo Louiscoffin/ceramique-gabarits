@@ -1520,7 +1520,7 @@ paintGrain();
   $('.bar__back').href = PRODUCT;
   const pdf = $('.bar__pdf');
   if (OWNED) { pdf.textContent = 'Mes gabarits'; pdf.href = PRODUCT; pdf.removeAttribute('download'); }
-  else { pdf.textContent = 'Débloquer · 9,99 €'; pdf.href = PRODUCT; pdf.removeAttribute('download'); }
+  else { pdf.textContent = 'Débloquer · 4,99 €'; pdf.href = PRODUCT; pdf.removeAttribute('download'); }
   $('#steps').innerHTML = STEPS.map((st, i) => `
     <section class="step" id="${st.id}" data-i="${i}">
       <article class="card">
@@ -1529,7 +1529,7 @@ paintGrain();
         ${st.html}
         <div class="card__nav">
           ${i && !st.lock ? `<button class="btn btn--ghost" type="button" data-replay>Revoir le geste</button>` : ''}
-          ${st.lock ? `<a class="btn btn--primary" href="${PRODUCT}">Débloquer · 9,99 €</a>`
+          ${st.lock ? `<a class="btn btn--primary" href="${PRODUCT}">Débloquer · 4,99 €</a>`
             : i < N ? `<button class="btn btn--primary" type="button" data-go="${i + 1}">${i ? 'Étape suivante' : 'Commencer'} →</button>` : `<a class="btn btn--primary" href="#ma-tasse" data-go="0">Revenir au début</a>`}
         </div>
       </article>
