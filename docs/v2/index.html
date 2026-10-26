@@ -895,6 +895,7 @@ body.da-epure .protoflag{border-radius:6px}
 /* Bêta privée : l'édition de sortie, sans sélecteur de version. */
 window.GC_RELEASE = {
   edition: 'sortie',
+  avis: 'https://tally.so/r/EqqdQL',   // formulaire bêta, séparé du sondage kdVxkr
   footTitle: { fr:'Nouvel atelier · bêta', en:'New workshop · beta' },
   foot: { fr:'Tu testes le nouvel atelier avant sa sortie. Tes réglages restent sur cet appareil.',
           en:'You’re trying the new workshop before its release. Your settings stay on this device.' }
@@ -2449,7 +2450,7 @@ function renderSbPrefs(){
    d'abord, le don tous les 3 exports (pause de 15 jours après un don),
    jamais deux à la fois. Les textes sont ceux de la V1. */
 const BMAC_URL = 'https://buymeacoffee.com/louiscoffin';
-const AVIS_URL = 'https://tally.so/r/kdVxkr';
+const AVIS_URL = GC.avis || 'https://tally.so/r/kdVxkr';   // une version en ligne peut avoir son propre formulaire (bêta : GC_RELEASE.avis)
 const NEWS_ACTION = 'https://69a1d944.sibforms.com/serve/MUIFAN7K5Y-M3NorrPe98ttopcj5n92TsQ8VVyVuyk0CkfuYpkbILFKorLERZuTqJpQxE1Qqc97MFHFkAP-r3PHI5A9qwQmyxSK61drlEPJRUStlFBndKiPIEQCAE8CP6Vv7ZlaMvzh-tYdnXSds_l2VnyJybTE6DbttRlKXqLZNFn7d6Q-2EnG3LL0aHEjydNHIOsbXuycFiTz4zg==';
 const MSTONE_AT = 3, MSTONE_PAUSE_J = 15;
 const lsGet = k => { try{ return localStorage.getItem(k) }catch(e){ return null } };
