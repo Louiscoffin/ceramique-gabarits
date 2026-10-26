@@ -3,7 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gabarits — patrons pour céramique à la plaque</title>
+<title>Créer un gabarit de poterie à imprimer | Gabarits Céramique</title>
+<!-- ===================== Référencement (SEO + IA) =====================
+     Version FR en dur ; applyI18n() bascule description et canonical
+     quand la page est servie en anglais (?lang=en). -->
+<meta name="description" content="Créez gratuitement vos gabarits de poterie à imprimer en taille réelle : tasse, bol, vase, boîte, assiette… Le retrait de cuisson et l'épaisseur de plaque sont compensés. PDF A4 ou Letter, sans compte.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://app.gabarits-ceramique.com/">
+<link rel="alternate" hreflang="fr" href="https://app.gabarits-ceramique.com/">
+<link rel="alternate" hreflang="en" href="https://app.gabarits-ceramique.com/?lang=en">
+<link rel="alternate" hreflang="x-default" href="https://app.gabarits-ceramique.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Gabarits Céramique">
+<meta property="og:url" content="https://app.gabarits-ceramique.com/">
+<meta property="og:title" content="Créer un gabarit de poterie à imprimer | Gabarits Céramique">
+<meta property="og:description" content="Entrez les cotes de votre pièce finie : le retrait et l'épaisseur de plaque sont calculés, le gabarit s'imprime en taille réelle. Gratuit, sans compte.">
+<meta property="og:image" content="https://framerusercontent.com/images/BDmMVIlXWK8lOUHLbP8YHEJH1v0.png">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:locale:alternate" content="en_GB">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://framerusercontent.com/images/BDmMVIlXWK8lOUHLbP8YHEJH1v0.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "@id": "https://app.gabarits-ceramique.com/#app",
+  "name": "Gabarits Céramique",
+  "alternateName": ["Créateur de gabarits de poterie", "Pottery template maker"],
+  "url": "https://app.gabarits-ceramique.com/",
+  "description": "Outil web gratuit qui génère des gabarits de poterie à imprimer en taille réelle pour la céramique à la plaque. Le retrait de cuisson et l'épaisseur de plaque sont compensés automatiquement.",
+  "applicationCategory": "DesignApplication",
+  "operatingSystem": "Web",
+  "browserRequirements": "Navigateur récent avec JavaScript",
+  "inLanguage": ["fr", "en"],
+  "isAccessibleForFree": true,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+  "featureList": [
+    "Compensation du retrait de cuisson (formule : cote crue = cote finie ÷ (1 − retrait))",
+    "Épaisseur de plaque intégrée aux développés et aux angles",
+    "Impression en taille réelle avec barre témoin de 50 mm",
+    "Export PDF A4 ou US Letter, et SVG",
+    "Cotes en centimètres ou en pouces",
+    "Formes : tasse et mug avec anse, bol, cylindre, cône, boîte, vase à facettes, bouteille, pichet, assiette, plat, profil libre",
+    "Gabarits de contrôle pour le kurinuki et gabarits de profil pour le tour"
+  ],
+  "image": "https://framerusercontent.com/images/BDmMVIlXWK8lOUHLbP8YHEJH1v0.png",
+  "author": { "@id": "https://www.gabarits-ceramique.com/#louis-coffin" },
+  "publisher": { "@id": "https://www.gabarits-ceramique.com/#organization" },
+  "isPartOf": { "@id": "https://www.gabarits-ceramique.com/#website" }
+}
+</script>
+<!-- =================================================================== -->
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/png" sizes="512x512" href="favicon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
@@ -1405,6 +1455,10 @@ const fieldLab = (id, fk, frLab) => (state.lang==='en' && I18N_SHAPES[id]?.f?.[f
 function applyI18n(){
   document.documentElement.lang = state.lang;
   document.title = t('doc_title');
+  // SEO : description et canonical suivent la langue (l'hreflang, lui, est fixe)
+  const en = state.lang === 'en';
+  document.querySelector('meta[name="description"]')?.setAttribute('content', t('doc_desc'));
+  document.querySelector('link[rel="canonical"]')?.setAttribute('href', 'https://app.gabarits-ceramique.com/' + (en ? '?lang=en' : ''));
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
   document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
@@ -2507,7 +2561,8 @@ Object.assign(STR.fr, {
   news_title:'Reste dans la boucle',
   news_txt:'Laisse ton email pour :<ul><li>🎁 recevoir bientôt un <b>gabarit exclusif en PDF</b></li><li>✉️ les nouveautés — prochainement, les <b>gabarits pour le tour</b> ! (je communique très peu)</li><li>🤎 <b>soutenir le projet</b></li></ul>',
   news_later:'Plus tard',
-  news_btn:'M\'inscrire', doc_title:'Gabarits — patrons pour céramique à la plaque',
+  news_btn:'M\'inscrire', doc_title:'Créer un gabarit de poterie à imprimer | Gabarits Céramique',
+  doc_desc:'Créez gratuitement vos gabarits de poterie à imprimer en taille réelle : tasse, bol, vase, boîte, assiette… Le retrait de cuisson et l\'épaisseur de plaque sont compensés. PDF A4 ou Letter, sans compte.',
   tuto_title:'revoir le tuto', spick_title:'changer de forme',
   news_ph:'ton@email.com', news_consent:'En t\'inscrivant, tu acceptes de recevoir les nouveautés de l\'outil. Désinscription en 1 clic.',
   news_success:'Ton email est enregistré — le gabarit exclusif arrive bientôt 🎁',
@@ -2548,7 +2603,8 @@ Object.assign(STR.en, {
   news_title:'Stay in the loop',
   news_txt:'Drop your email to:<ul><li>🎁 get an <b>exclusive PDF template</b> soon</li><li>✉️ hear what\'s new — soon, <b>wheel-throwing templates</b>! (I email very rarely)</li><li>🤎 <b>support the project</b></li></ul>',
   news_later:'Later',
-  news_btn:'Sign up', doc_title:'Ceramic templates — cutting patterns for slab work',
+  news_btn:'Sign up', doc_title:'Printable pottery template maker | Gabarits Céramique',
+  doc_desc:'Make free printable pottery templates at actual size: cup, bowl, vase, box, plate… Firing shrinkage and slab thickness are worked out for you. A4 or Letter PDF, no sign-up.',
   tuto_title:'replay the tutorial', spick_title:'change shape',
   news_ph:'you@email.com', news_consent:'By signing up you agree to receive updates about the tool. Unsubscribe in 1 click.',
   news_success:'Your email is saved — your exclusive template is coming soon 🎁',

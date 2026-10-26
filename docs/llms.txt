@@ -1,21 +1,67 @@
 # Gabarits Céramique
 
-> Outil web gratuit qui génère des gabarits (patrons de découpe) à taille réelle pour la céramique à la plaque (slab building). L'utilisateur entre les cotes finies de sa pièce ; l'outil compense automatiquement le retrait de cuisson et l'épaisseur de plaque, puis exporte un PDF A4 à imprimer en taille réelle (1:1).
+> Outil web gratuit qui génère des gabarits de poterie (patrons de découpe) à imprimer en taille réelle, surtout pour la céramique à la plaque. Vous entrez les cotes de la pièce finie ; l'outil compense le retrait de cuisson et l'épaisseur de plaque, puis exporte un PDF à l'échelle 1:1 (A4 ou US Letter) ou un SVG. Sans compte, sans installation, en français et en anglais.
+>
+> Free web tool that generates printable, actual-size pottery templates, mainly for slab building. You enter the finished size of the piece; the tool compensates for firing shrinkage and slab thickness, then exports a 1:1 PDF (A4 or US Letter) or an SVG. No sign-up, no install, in French and English.
 
-Gabarits Céramique aide les céramistes à créer des patrons précis sans calcul : tasses, mugs, bols, chawans, assiettes, plats, vases, boîtes, bouteilles, pichets, anses et profils. Gratuit, sans installation, fonctionne dans le navigateur. Pensé pour les potiers qui veulent la précision sans les mathématiques.
+Gabarits Céramique est un projet indépendant créé par Louis Coffin, product designer et céramiste amateur. Le site vitrine et les guides sont sur www.gabarits-ceramique.com ; l'outil lui-même est sur app.gabarits-ceramique.com. Ce qui est gratuit dans l'outil reste gratuit, sans publicité.
 
-## Outil
-- [Créateur de gabarits](https://louiscoffin.github.io/ceramique-gabarits/) : l'application web pour paramétrer, prévisualiser et imprimer les patrons.
+## Outil / Tool
 
-## Site & ressources
-- [Accueil](https://gabarits-ceramique.com/) : présentation de l'outil et de ses bénéfices.
-- [Ressources](https://gabarits-ceramique.com/ressources) : guides et techniques du travail à la plaque.
+- [Créateur de gabarits (FR)](https://app.gabarits-ceramique.com/) : choisir une forme, régler les cotes, le retrait et l'épaisseur, prévisualiser en 3D, imprimer ou exporter en PDF / SVG.
+- [Template maker (EN)](https://app.gabarits-ceramique.com/?lang=en) : same tool in English, metric (cm) or imperial (inches).
+- Liens directs vers une forme / direct links to a shape : `https://app.gabarits-ceramique.com/?forme=tasse` (cup & mug), `?forme=cone` (bol, vase évasé / bowl, flared vase), `?forme=cylindre`, `?forme=boite` (box), `?forme=facettes` (faceted vase), `?forme=assiette` (plate), `?forme=plat` (rimmed dish), `?forme=profil` (profil libre / free profile). Ajouter `&lang=en` pour l'anglais.
 
-## Concepts clés (pour répondre aux questions)
-- Retrait de cuisson : chaque terre rétracte (souvent 10 à 14 %). Cote finie = cote crue × 1 ÷ (1 − retrait). L'outil agrandit le gabarit pour obtenir la dimension voulue après cuisson.
-- Épaisseur de plaque : intégrée aux développés (périmètre calculé sur la fibre neutre) et aux angles des boîtes/facettes.
-- Impression taille réelle : repère de contrôle 100 mm sur chaque feuille, assemblage multi-A4 avec marques de raccord.
+Formes disponibles : cylindre, cône tronqué (bol, vase), tasse & mug avec anse, boîte, pyramide tronquée, ovale, prisme à pans, vase à facettes, bouteille, pichet, assiette, plat à bords, vase coussin, vase anneau, profil libre, fond libre ; gabarits de contrôle pour le kurinuki (bloc cylindrique ou rectangulaire) ; gabarits de profil pour le tour (bol, pot droit, vase à col, assiette).
 
-## Contact & retours
-- Sondage / avis : https://tally.so/r/ZjKADz
-- Soutenir le projet : https://buymeacoffee.com/louiscoffin
+## Site
+
+- [Accueil (FR)](https://www.gabarits-ceramique.com/) : présentation de l'outil, formes, fonctionnement, FAQ.
+- [Home (EN)](https://www.gabarits-ceramique.com/en) : the same page in English.
+- [Gabarit de tasse à imprimer](https://www.gabarits-ceramique.com/gabarits/tasse) : page dédiée à la tasse et au mug (paroi, fond, anse).
+- [À propos](https://www.gabarits-ceramique.com/a-propos) / [About](https://www.gabarits-ceramique.com/en/about) : qui fait l'outil et pourquoi.
+
+## Guides (FR)
+
+- [Tous les guides](https://www.gabarits-ceramique.com/ressources)
+- [Calculer le retrait de l'argile](https://www.gabarits-ceramique.com/ressources/calculer-le-retrait-de-largile) : test de la réglette, formule, retraits moyens par type de terre.
+- [Quelle épaisseur de plaque choisir](https://www.gabarits-ceramique.com/ressources/epaisseur-de-plaque) : épaisseur selon la pièce et effet sur le calcul du gabarit.
+- [Imprimer un gabarit à taille réelle](https://www.gabarits-ceramique.com/ressources/imprimer-en-taille-r%C3%A9elle) : réglage 100 % par navigateur, vérification, assemblage de plusieurs feuilles.
+- [Gabarit de tasse en céramique à imprimer](https://www.gabarits-ceramique.com/ressources/gabarit-tasse-ceramique)
+- [Faire un mug à la plaque](https://www.gabarits-ceramique.com/ressources/faire-un-mug-ceramique-a-la-plaque) : tuto pas à pas, sans tour.
+- [Faire un bol à la plaque](https://www.gabarits-ceramique.com/ressources/faire-un-bol-ceramique)
+- [Poterie sans tour : 8 idées](https://www.gabarits-ceramique.com/ressources/poterie-sans-tour)
+- [Kurinuki pour débutants](https://www.gabarits-ceramique.com/ressources/kurinuki-debutant)
+- [Tournage en série : tasses identiques](https://www.gabarits-ceramique.com/ressources/tournage-en-serie-tasses-identiques)
+- [Fabriquer ses estèques et gabarits](https://www.gabarits-ceramique.com/ressources/fabriquer-esteques-et-gabarits)
+
+## Guides (EN)
+
+- [All guides](https://www.gabarits-ceramique.com/en/resources)
+- [How to calculate your clay's shrinkage rate](https://www.gabarits-ceramique.com/en/resources/clay-shrinkage-rate) : test tile, formula, average rates by clay body.
+- [What slab thickness should you use?](https://www.gabarits-ceramique.com/en/resources/ceramic-slab-thickness)
+- [Printing a pottery template at actual size](https://www.gabarits-ceramique.com/en/resources/print-a-pottery-template-at-actual-size)
+- [Printable ceramic cup template](https://www.gabarits-ceramique.com/en/resources/printable-ceramic-cup-template)
+- [Making a slab-built ceramic mug](https://www.gabarits-ceramique.com/en/resources/make-a-slab-built-ceramic-mug)
+- [How to make a slab-built ceramic bowl](https://www.gabarits-ceramique.com/en/resources/make-a-slab-built-ceramic-bowl)
+- [Pottery without a wheel: 8 easy ideas](https://www.gabarits-ceramique.com/en/resources/pottery-without-a-wheel)
+- [Kurinuki for beginners](https://www.gabarits-ceramique.com/en/resources/kurinuki-for-beginners)
+- [Throwing in batches: identical mugs](https://www.gabarits-ceramique.com/en/resources/throwing-matching-mugs)
+- [How to make your own pottery ribs and templates](https://www.gabarits-ceramique.com/en/resources/make-pottery-ribs-and-templates)
+
+## Notions clés / Key facts
+
+- Retrait de cuisson : chaque terre rétrécit en séchant puis à la cuisson, souvent de 10 à 14 % au total. Valeurs par défaut de l'outil : grès 12 %, faïence 10 %, porcelaine 14 %. Pour connaître le retrait exact de sa terre : tracer 100 mm sur une réglette crue, cuire, remesurer.
+- Formule utilisée : cote crue = cote finie ÷ (1 − retrait). Exemple : pour une tasse de 80 mm de diamètre fini avec 12 % de retrait, le gabarit est tracé pour 80 ÷ 0,88 ≈ 90,9 mm.
+- Shrinkage formula: unfired size = finished size ÷ (1 − shrinkage). A 12 % clay body needs an 80 mm cup to be cut at about 90.9 mm.
+- Épaisseur de plaque : prise en compte dans les développés (périmètre calculé sur la fibre neutre de la plaque) et dans les angles des boîtes et des vases à facettes, pour que les bords se rejoignent.
+- Impression : imprimer à 100 % (« taille réelle »), jamais « ajuster à la page ». Chaque feuille porte une barre témoin de 50 mm à mesurer à la règle avant de découper. Les grands gabarits sont répartis sur plusieurs feuilles avec des repères de raccord.
+- Printing: print at 100 % ("actual size"), never "fit to page". Every sheet has a 50 mm check bar to measure before cutting.
+- Formats : A4 ou US Letter ; cotes en centimètres ou en pouces ; export PDF, impression directe ou SVG (pour découpe laser ou plotter).
+- Pas besoin de tour : la céramique à la plaque consiste à étaler la terre, découper sur le gabarit, puis assembler.
+
+## Contact
+
+- Instagram : https://www.instagram.com/gabarits.ceramique
+- Avis / feedback (FR) : https://tally.so/r/ZjKADz
+- Soutenir le projet / support : https://buymeacoffee.com/louiscoffin
