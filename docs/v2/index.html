@@ -354,6 +354,12 @@ main{min-width:0;display:flex;flex-direction:column}
 .stage .hint{position:absolute;left:12px;bottom:10px;font-size:11px;color:var(--ink2);
   background:var(--veil);border:1px solid var(--line);border-radius:2px;padding:3px 9px;pointer-events:none}
 .stage .viewbtns{position:absolute;right:10px;top:10px;display:flex;flex-direction:column;gap:6px}
+.drow.pick{cursor:pointer}
+.drow.pick:hover .nm{color:var(--ink)}
+.drow.pin{box-shadow:inset 3px 0 0 var(--terra)}
+.dmini{position:fixed;top:66px;right:12px;z-index:60;width:min(300px,62vw);pointer-events:none;
+  border:1px solid var(--line);border-radius:6px;background:var(--card);box-shadow:0 6px 22px rgba(0,0,0,.14)}
+.dmini svg{display:block;width:100%;height:auto}
 .stage .viewbtns button{width:30px;height:30px;border-radius:2px;border:1.5px solid var(--line);
   background:var(--veil);color:var(--ink2);font-size:13px;line-height:1;padding:0}
 .stage .viewbtns button:hover{color:var(--ink);border-color:var(--ink2)}
@@ -1388,6 +1394,8 @@ const state = {
   carnet: load(LS.carnet,[]),
   owned:  load(LS.owned,{}),   // {modelId:{date,key}}
   tilt: prefs0.tilt ?? 0.28,
+  orbit: prefs0.orbit || {yaw:-0.42, pitch:0.36},   // Volume 3D : lacet / tangage (rad), cf. orbitSVG
+  zoom: 1, pan:{x:0,y:0},
   unit: prefs0.unit || (GC_FIXED ? 'mm' : 'cm'),   // mm | cm | in — affichage seulement (cm par défaut, comme la V1 ; une build GC garde le mm)
   lang: prefs0.lang || (/^fr/i.test(navigator.language||'fr') ? 'fr' : 'en'),   // fr | en — langue du navigateur au 1er passage, comme la V1
   // a4 | a3 | letter — Letter d'office aux États-Unis, au Canada, au Mexique et aux Philippines
@@ -1408,7 +1416,7 @@ const state = {
 };
 function persist(){
   save(LS.carnet,state.carnet); save(LS.owned,state.owned); save(LS.draft,state.draft);
-  save(LS.prefs,{tilt:state.tilt, shrink:state.shrink, unit:state.unit, paper:state.paper, printFix:state.printFix, lang:state.lang,
+  save(LS.prefs,{tilt:state.tilt, orbit:state.orbit, shrink:state.shrink, unit:state.unit, paper:state.paper, printFix:state.printFix, lang:state.lang,
                  theme:state.theme, aside:state.aside, sb:state.sb, da:state.da, fold:state.fold, cut:state.cut});
 }
 const owns = id => { const m=model(id); if(!m) return false;
@@ -1961,6 +1969,7 @@ function buildSVG(dm, opt){
   const o = Object.assign({W:600,H:440,mode:'assemble',handles:false,letters:false,dimline:false,pal:PAL_SCREEN,tilt:state.tilt}, opt);
   if(isRelief(dm)) return reliefSVG(dm, {W:o.W, H:o.H, pal:o.pal, letters:o.letters});
   if(isTore(dm)) return toreSVG(dm, {W:o.W, H:o.H, pal:o.pal, letters:o.letters});
+  if(o.orbit) return orbitSVG(dm, o);
   const P=o.pal, tilt=isTalon(dm)&&o.mode!=='exploded' ? Math.min(o.tilt,.15) : o.tilt, lv=profile(dm), Ht=totalH(dm), Dm=maxD(dm);
   const m = o.model || dm || {};
   const expl = o.mode==='exploded';
@@ -2112,19 +2121,10 @@ function buildSVG(dm, opt){
     });
   }
 
-  // ---- anse en place (vue assemblée) : la forme se lit mieux avec
+  // ---- anse en place (vue assemblée) : la forme se lit mieux avec ; elle suit ses cotes (h, saillie)
   if(m.ears && !expl && !TG){
-    const rAt=y=>{                                   // rayon du profil à la hauteur y
-      for(let k=1;k<lv.length;k++) if(y<=lv[k].y){
-        const t=(y-lv[k-1].y)/((lv[k].y-lv[k-1].y)||1);
-        return lv[k-1].r+(lv[k].r-lv[k-1].r)*t;
-      }
-      return lv[lv.length-1].r;
-    };
-    const yA=lvY(lv.length-1)-Ht*0.14, yB=Ht*0.40, off=Ht*0.26*sc;
-    const x1=X(rAt(yA)),y1=Y(yA),x2=X(rAt(yB)),y2=Y(yB);
-    s+=`<path d="M ${x1.toFixed(1)} ${y1.toFixed(1)} C ${(x1+off).toFixed(1)} ${y1.toFixed(1)}, `
-      +`${(x2+off).toFixed(1)} ${y2.toFixed(1)}, ${x2.toFixed(1)} ${y2.toFixed(1)}" `
+    const AG=anseGeo(dm, m);
+    if(AG) s+=`<path d="${path(AG.pts.map(([x,y])=>[X(x),Y(y)]))}" `
       +`fill="none" stroke="${P.ink}" stroke-width="${Math.min(7,Math.max(1.8,dm.thick*sc*.45)).toFixed(1)}" stroke-linecap="round"/>`;
   }
 
@@ -2195,6 +2195,323 @@ function buildSVG(dm, opt){
   return s+'</svg>';
 }
 
+
+/* ==================== Volume 3D de l'atelier : vue orbitale ====================
+   Retour bêta (28 oct.) : l'ancienne vue ne faisait que s'incliner, en écrasant
+   les ellipses sans raccourcir les hauteurs (« elle s'aplatit »), et ne tournait
+   pas autour de la pièce : l'anse et le bec restaient de profil.
+   Ici, comme dans Blender ou Fusion : projection orthographique, lacet (yaw)
+   autour de l'axe sur 360°, tangage (pitch) de 0 (à hauteur d'œil) à 90° (vu de
+   dessus), zoom et déplacement. Le cadrage ne dépend pas de l'angle (sphère
+   englobante) : la pièce tourne sur place, sans sauter à chaque geste.
+   Chaque tronçon de la pièce est convexe (tronc de cône, prisme, cylindre,
+   segment d'anse) : sa projection est l'enveloppe convexe de ses deux contours.
+   On trace les enveloppes d'un objet en trait épais, puis remplies par-dessus :
+   il ne reste que le contour de leur union, à n'importe quel angle.
+   Seul l'atelier s'en sert (option orbit) ; vignettes, planche et PDF gardent la
+   vue oblique de buildSVG. ============================================== */
+const ORBIT0 = {yaw:-0.42, pitch:0.36};             // vue de départ : trois-quarts, légèrement plongeante
+function hull2(P){                                  // enveloppe convexe (chaîne monotone), toujours dans le même sens
+  const p=P.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]); if(p.length<3) return p;
+  const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]), lo=[], up=[];
+  for(const q of p){ while(lo.length>=2 && cr(lo[lo.length-2],lo[lo.length-1],q)<=0) lo.pop(); lo.push(q); }
+  for(let i=p.length-1;i>=0;i--){ const q=p[i]; while(up.length>=2 && cr(up[up.length-2],up[up.length-1],q)<=0) up.pop(); up.push(q); }
+  return lo.slice(0,-1).concat(up.slice(0,-1));
+}
+/** l'anse en place, en coordonnées monde (côté +x) : ligne moyenne en demi-ellipse
+    h × saillie, comme le profil de contrôle CTRL ; null si la pièce n'en a pas */
+function anseGeo(dm, m){
+  if(!(dm.anse || (m && m.ears)) || isTore(dm) || isRelief(dm)) return null;
+  const lv=profile(dm), e=dm.thick, Hb=lv[lv.length-1].y;
+  const A=dm.anse || {h:Hb*.46, p:Hb*.26, w:14};
+  const rAt=y=>{ for(let k=1;k<lv.length;k++) if(y<=lv[k].y){
+      const t=(y-lv[k-1].y)/((lv[k].y-lv[k-1].y)||1); return lv[k-1].r+(lv[k].r-lv[k-1].r)*t; }
+    return lv[lv.length-1].r; };
+  let yB, yT;
+  if(isTheiere(dm)){ yB=Math.max(e+4, Math.min(lv[1].y-6, lv[1].y*.2)); yT=Math.min(lv[1].y-5, yB+A.h); }
+  else { yT=Math.max(Hb*.5, Hb-Math.max(5, Hb*.12)); yB=Math.max(e+3, yT-A.h); }
+  const ym=(yB+yT)/2, N=28, pts=[];
+  for(let i=0;i<=N;i++){ const th=-Math.PI/2+Math.PI*i/N, y=ym+(yT-yB)/2*Math.sin(th);
+    pts.push([rAt(y)-e*.4+A.p*Math.cos(th), y]); }      // pieds un peu noyés dans la paroi : pas de jour à l'attache
+  return {yB, yT, ym, pts, w:A.w, p:A.p, h:yT-yB, rAt};
+}
+function orbitSVG(dm, o){
+  const P=o.pal, lv=profile(dm), Ht=totalH(dm), expl=o.mode==='exploded', e=dm.thick, kk=ratioOf(dm);
+  const cY=Math.cos(o.orbit.yaw), sY=Math.sin(o.orbit.yaw), cP=Math.cos(o.orbit.pitch), sP=Math.sin(o.orbit.pitch);
+  const m=o.model||dm||{};
+  const gap=expl ? Math.max(26, Ht*0.20) : 0, off=i=>expl ? gap*(i+1) : 0;
+  const yb=i=>lv[i].y+off(i), yt=i=>lv[i+1].y+off(i);   // bas / haut de la section i (écartées en éclaté)
+  const footH=isTalon(dm) ? e : 0, footR=isTalon(dm) ? dm.sections[0].d*TALON_K/2 : 0;
+  const baseGap=expl ? gap : 0, footGap=expl && footH ? gap*0.7 : 0;
+  const TG=isTheiere(dm) ? becGeo(dm) : null, AN=expl ? null : anseGeo(dm, m);
+  const nS=dm.sections.length, topY=yt(nS-1);
+
+  // ---- cadrage indépendant de l'angle : rayon horizontal + sphère englobante
+  let Rh=Math.max(...lv.map(q=>q.r))*Math.max(1,kk);
+  Rh=Math.max(Rh, footR);
+  if(TG) Rh=Math.max(Rh, TG.Rp+TG.L*TG.ca+TG.rtO*TG.sa+(expl?gap*1.6:0));
+  if(AN) Rh=Math.max(Rh, ...AN.pts.map(q=>q[0]+e/2));
+  const yMin=-baseGap-footGap-footH;
+  let yMax=topY;
+  if(TG) yMax=Math.max(topY+thLidH(dm)+(expl?gap*1.9+dm.sections[2].h+4:0), TG.ya+off(0)+TG.L*TG.sa+TG.rtO);
+  const yc=(yMin+yMax)/2, Rs=Math.hypot(Rh, (yMax-yMin)/2);
+  const dimTxt=`H ${uNum(Ht)} ${uLab()}`, pad=16;
+  const padX=pad+(o.dimline && !expl ? 16+7+dimTxt.length*5.6+4 : 0);
+  let W2=o.W, H2=o.H, sc=Math.min((W2-2*padX)/(2*Rh), (H2-2*pad)/(2*Rs))*(o.zoom||1);
+  const pan=o.pan||{x:0,y:0};
+  let wx0=(PAD-W2/2-pan.x)/sc, wy1=yc*cP+(H2/2+pan.y-PAD)/sc;
+  if(o.lock){ sc=o.lock.sc; wx0=o.lock.wx0; wy1=o.lock.wy1; W2=o.lock.W2; H2=o.lock.H2; }
+  const X=wx=>PAD+(wx-wx0)*sc, Y=up=>PAD+(wy1-up)*sc;
+
+  // ---- projection : x à droite, y en haut, z vers l'œil (avant rotation)
+  const rz=(x,z)=>-x*sY+z*cY;
+  const V=(x,y,z)=>[X(x*cY+z*sY), Y(y*cP-rz(x,z)*sP)];
+  const toEye=(x,y,z)=>rz(x,z)*cP+y*sP;                          // > 0 : la direction regarde l'œil
+  const ring=(r,y)=>csPts(dm,r).map(([x,z])=>V(x,y,z));
+  const circ=(cx,cy,cz,r,n=36)=>Array.from({length:n},(_,i)=>{ const t=2*Math.PI*i/n;
+    return V(cx+r*Math.cos(t), cy, cz+r*Math.sin(t)); });          // cercle horizontal
+  const side=(pts,dir)=>pts.reduce((b,q)=>dir*q[0]>dir*b[0]?q:b);
+  const Z=pts=>path(pts)+' Z';
+  const slope=i=>(lv[i+1].r-lv[i].r)/((lv[i+1].y-lv[i].y)||1);    // dr/dy de la section i
+
+  let s=`<svg viewBox="0 0 ${W2.toFixed(0)} ${H2.toFixed(0)}" xmlns="http://www.w3.org/2000/svg"`
+      +` data-sc="${sc}" data-wx0="${wx0}" data-wy1="${wy1}" data-w2="${W2}" data-h2="${H2}" data-orbit="1">`;
+  const solid=(polys,w=1.3)=>{ const d=polys.filter(q=>q.length>2).map(Z).join(' '); if(!d) return;
+    s+=`<path d="${d}" fill="${P.ink}" stroke="${P.ink}" stroke-width="${(2*w).toFixed(1)}" stroke-linejoin="round"/>`
+      +`<path d="${d}" fill="${P.fill}"/>`; };
+  const HID=`stroke="${P.hide}" stroke-width=".9" stroke-dasharray="4 3"`, SEAM=`stroke="${P.thin}" stroke-width=".9"`;
+  /* un contour horizontal coupé en partie vue (trait) et cachée (tirets) :
+     une génératrice est vue si sa normale (rayon, -dr/dy) regarde l'œil */
+  const split=(r,y,sl,vis,hid)=>{
+    const W=csPts(dm,r), n=W.length;
+    const f=W.map(([x,z])=>{ const L=Math.hypot(x,z)||1; return rz(x,z)/L*cP-sl*sP>0; });
+    const pts=W.map(([x,z])=>V(x,y,z)), start=f.findIndex((v,i)=>v!==f[(i-1+n)%n]);
+    if(start<0){ const a=f[0]?vis:hid; if(a) s+=`<path d="${Z(pts)}" fill="none" ${a}/>`; return; }
+    for(let i=0;i<n;){ const val=f[(start+i)%n], run=[pts[(start+i)%n]]; let j=1;
+      while(i+j<n && f[(start+i+j)%n]===val){ run.push(pts[(start+i+j)%n]); j++; }
+      run.push(pts[(start+i+j)%n]);
+      const a=val?vis:hid; if(a) s+=`<path d="${path(run)}" fill="none" ${a}/>`;
+      i+=j; }
+  };
+
+  // ---- la girelle : un plateau gradué sous la pièce, qui tourne avec elle (repère d'orientation)
+  { const Rg=Rh*1.08, yF=yMin;
+    s+=`<path d="${Z(circ(0,yF,0,Rg,72))}" fill="${P.top}" fill-opacity=".28" stroke="${P.hide}" stroke-width="1"/>`;
+    for(let i=0;i<24;i++){ const t=2*Math.PI*i/24, big=i%6===0, a=V(Rg*(big?.9:.95)*Math.cos(t),yF,Rg*(big?.9:.95)*Math.sin(t)), b=V(Rg*Math.cos(t),yF,Rg*Math.sin(t));
+      s+=`<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="${big?P.thin:P.hide}" stroke-width="${big?1:.8}"/>`; }
+    const f=V(0,yF,Rg*1.0), f2=V(0,yF,Rg*.86);                     // l'avant de la pièce (vue de face)
+    s+=`<line x1="${f[0].toFixed(1)}" y1="${f[1].toFixed(1)}" x2="${f2[0].toFixed(1)}" y2="${f2[1].toFixed(1)}" stroke="${P.accent}" stroke-width="2.2" stroke-linecap="round"/>`;
+  }
+  // axe
+  { const a=V(0,yMin,0), b=V(0,yMax,0);
+    s+=`<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="${P.hide}" stroke-width="1" stroke-dasharray="6 4"/>`; }
+
+  // ---- les objets, des plus loin aux plus proches de l'œil
+  const becDraw=()=>{
+    const O=TG.cone(TG.rbO,TG.rtO), dx=expl?-gap*1.6:0, dy=expl?off(0):0;
+    const C=v=>[-(TG.Rp+v*TG.ca)+dx, TG.ya+dy+v*TG.sa];
+    const disc=(v,r,n=32)=>Array.from({length:n},(_,i)=>{ const f=2*Math.PI*i/n, c=C(v);
+      return V(c[0]+r*Math.cos(f)*TG.sa, c[1]+r*Math.cos(f)*TG.ca, r*Math.sin(f)); });
+    // base = la vraie courbe d'attache sur la panse (miroir de becGeo : le bec est côté -x)
+    const foot=Array.from({length:32},(_,i)=>{ const f=2*Math.PI*i/32, q=TG.at(O,f,TG.hit(O,f)); return V(-q[0]+dx, q[1]+dy, q[2]); });
+    solid([hull2(foot.concat(disc(TG.L,TG.rtO)))]);
+    if(toEye(-TG.ca,TG.sa,0)>0){                                   // le bout regarde l'œil : on voit l'ouverture
+      s+=`<path d="${Z(disc(TG.L,TG.rtO))}" fill="${P.top}" stroke="${P.ink}" stroke-width="1.1"/>`;
+      s+=`<path d="${Z(disc(TG.L,Math.max(.5,TG.rtO-e)))}" fill="none" stroke="${P.thin}" stroke-width=".8"/>`;
+    }
+  };
+  const anseDraw=()=>{
+    const hw=AN.w/2, he=e/2, Q=AN.pts;
+    const secs=Q.map((q,i)=>{ const a=Q[Math.max(0,i-1)], b=Q[Math.min(Q.length-1,i+1)];
+      let tx=b[0]-a[0], ty=b[1]-a[1]; const L=Math.hypot(tx,ty)||1; tx/=L; ty/=L;
+      return [[-1,-1],[1,-1],[1,1],[-1,1]].map(([u,v])=>V(q[0]-ty*he*u, q[1]+tx*he*u, hw*v)); });
+    const polys=[]; for(let i=1;i<secs.length;i++) polys.push(hull2(secs[i-1].concat(secs[i])));
+    solid(polys,1.1);
+  };
+  const footDraw=()=>{
+    if(!footH) return;
+    const y0=-baseGap-footGap-footH, y1=-baseGap-footGap;
+    solid([hull2(ring(footR,y0).concat(ring(footR,y1)))],1.2);
+    if(expl){ s+=`<path d="${Z(ring(footR,y1))}" fill="${P.top}" stroke="${P.ink}" stroke-width="1"/>`;
+      s+=`<path d="${Z(ring(Math.max(1,footR-(dm.talon.w||3)),y1))}" fill="${P.fill}" stroke="${P.thin}" stroke-width=".8"/>`; }
+  };
+  const facets=shapeOf(dm)!=='round' && shapeOf(dm)!=='oval';
+  const bodyDraw=()=>{
+    if(expl){                                                    // le fond, seul sous la pile
+      const r=(isTalon(dm)?dm.sections[0].d:dm.dBase)/2, y0=-baseGap;
+      solid([hull2(ring(r,y0).concat(ring(r,y0+e)))],1.2);
+      s+=`<path d="${Z(ring(r,y0+e))}" fill="${P.fill}" stroke="${P.thin}" stroke-width=".8"/>`;
+    }
+    const groups=expl ? dm.sections.map((_,i)=>[i,i+1]) : [[0,lv.length-1]];
+    groups.forEach(([a,b])=>{
+      const Ya=k=>expl ? (k===a?yb(a):yt(a)) : lv[k].y;          // hauteur du niveau k dans ce bloc
+      const polys=[]; for(let k=a;k<b;k++) polys.push(hull2(ring(lv[k].r,Ya(k)).concat(ring(lv[k+1].r,Ya(k+1)))));
+      solid(polys);
+      split(lv[a].r, Ya(a), slope(a), null, HID);                // le dessous du bloc, côté caché
+      if(!expl) for(let k=a+1;k<b;k++) split(lv[k].r, lv[k].y, (slope(k-1)+slope(k))/2, SEAM, `stroke="${P.hide}" stroke-width=".8" stroke-dasharray="4 3"`);
+      if(facets) csPts(dm,1).forEach(([ux,uz],v)=>{
+        const col=[]; for(let k=a;k<=b;k++) col.push(ring(lv[k].r,Ya(k))[v]);
+        const seen=rz(ux,uz)/(Math.hypot(ux,uz)||1)*cP-slope(Math.min(a,nS-1))*sP>0;
+        s+=`<path d="${path(col)}" fill="none" ${seen?`stroke="${P.thin}" stroke-width="1"`:HID}/>`;
+      });
+      const tr=Math.max(1,lv[b].r-e);                            // l'ouverture et l'épaisseur de paroi
+      s+=`<path d="${Z(ring(lv[b].r,Ya(b)))}" fill="${P.top}" stroke="${P.ink}" stroke-width="1.1"/>`;
+      s+=`<path d="${Z(ring(tr,Ya(b)))}" fill="none" stroke="${P.thin}" stroke-width=".8"/>`;
+    });
+  };
+  const lidDraw=()=>{
+    if(!TG) return;
+    const Dc=dm.sections[1].d, DL=Dc+e, Df=Dc-2*e-2*TH.jeu, Hf=(dm.sections[2]?dm.sections[2].h:12)+4, Dg=Math.max(16,Dc*.36);
+    const cyl=(r,y0,y1,w=1.2)=>{ solid([hull2(circ(0,y0,0,r).concat(circ(0,y1,0,r)))],w*.9);
+      s+=`<path d="${Z(circ(0,y1,0,r))}" fill="${P.top}" stroke="${P.ink}" stroke-width="${(w*.85).toFixed(2)}"/>`; };
+    let yl=topY;
+    if(expl){ cyl(Df/2, topY+gap, topY+gap+Hf, 1.1); yl=topY+gap*1.5+Hf; }
+    cyl(DL/2, yl, yl+e);
+    s+=`<path d="${Z(circ(DL/2*.56,yl+e,0,TH.hole/2,16))}" fill="${P.ink}"/>`;   // trou d'air
+    const yk=yl+e+(expl?gap*.4:0);
+    cyl(5, yk, yk+TH.tige, 1); cyl(Dg/2, yk+TH.tige, yk+TH.tige+e);
+  };
+  // le bec est côté -x, l'anse côté +x : un seul des deux passe devant la pièce
+  const back=[], front=[];
+  if(TG) (toEye(-1,0,0)>0?front:back).push(becDraw);
+  if(AN) (toEye(1,0,0)>0?front:back).push(anseDraw);
+  back.forEach(f=>f()); footDraw(); bodyDraw(); lidDraw(); front.forEach(f=>f());
+
+  // ---- oreilles / anses à part, en éclaté (comme la vue oblique)
+  if((m.ears||dm.anse) && expl && !TG){
+    const r=maxD(dm)*0.30, bx=X(Rh*.98), nE=m.earsCount || (/s$/i.test(m.earsLabel||'ANSES') ? 2 : 1);
+    Array.from({length:nE},(_,i)=>i).forEach(i=>{
+      const by=Y((topY-i*gap*1.4-Ht*0.06)*cP), hgt=r*sc*.9, wdt=r*sc*.34;
+      s+=`<path d="M ${bx} ${by-hgt/2} C ${bx+wdt*1.6} ${by-hgt*.2}, ${bx+wdt*1.6} ${by+hgt*.2}, ${bx} ${by+hgt/2} C ${bx+wdt*.5} ${by+hgt*.2}, ${bx+wdt*.5} ${by-hgt*.2}, ${bx} ${by-hgt/2} Z" fill="${P.fill}" stroke="${P.ink}" stroke-width="1.2"/>`;
+    });
+  }
+
+  // ---- repères A/B/C… (vue éclatée)
+  if(o.letters){
+    const lx=PAD+13;
+    const put=(cy,txt,rx)=>{ const rr=txt.length>2?11:9, dir=rx>lx?1:-1, fs=txt.length>2?5.5:8;
+      s+=`<g class="letter"><line x1="${lx+rr*dir}" y1="${cy}" x2="${rx}" y2="${cy}" stroke="${P.thin}" stroke-width=".8"/>`
+       +`<circle cx="${lx}" cy="${cy}" r="${rr}" fill="${P.fill}" stroke="${P.thin}" stroke-width="1"/>`
+       +`<text x="${lx}" y="${(cy+fs*0.35).toFixed(1)}" text-anchor="middle" fill="${P.ink}" font-family="Helvetica, monospace" font-size="${fs}">${txt}</text></g>`; };
+    const at=(x,y,z)=>V(x,y,z);
+    dm.sections.forEach((sec,i)=>{ const yy=expl?(yb(i)+yt(i))/2:(lv[i].y+lv[i+1].y)/2, q=at(-Math.max(lv[i].r,lv[i+1].r)*.8,yy,0); put(q[1],LETTERS[i],q[0]); });
+    if(expl){ const q=at(-(isTalon(dm)?dm.sections[0].d:dm.dBase)/2.4,-baseGap,0); put(q[1], isTalon(dm)?'B':TG?'D':'BASE', q[0]); }
+    if(expl && TG){
+      const Hf=(dm.sections[2]?dm.sections[2].h:12)+4, sm=TG.L*.55;
+      let q=at(-(dm.sections[1].d+e)/2.2, topY+gap*1.5+Hf, 0); put(q[1],'E',q[0]);
+      q=at(-(dm.sections[1].d/2-e)/1.6, topY+gap+Hf/2, 0); put(q[1],'F',q[0]);
+      q=at(-TG.Rp-gap*1.6-sm*TG.ca, TG.ya+off(0)+sm*TG.sa, 0); put(q[1],'H',q[0]);
+    }
+    if(expl && footH){ const q=at(-footR/1.25,-baseGap-footGap-footH/2,0); put(q[1],'C',q[0]); }
+  }
+
+  // ---- cote de hauteur, à droite (masquée quand on regarde de trop haut)
+  if(o.dimline && !expl && cP>.35){
+    const dx=X(Rh)+16, y1=Y(-footH*cP), y2=Y((Ht-footH)*cP);
+    s+=`<line x1="${dx}" y1="${y1}" x2="${dx}" y2="${y2}" stroke="${P.thin}" stroke-width=".8"/>`
+      +`<line x1="${dx-4}" y1="${y1}" x2="${dx+4}" y2="${y1}" stroke="${P.thin}" stroke-width=".8"/>`
+      +`<line x1="${dx-4}" y1="${y2}" x2="${dx+4}" y2="${y2}" stroke="${P.thin}" stroke-width=".8"/>`
+      +`<text x="${dx+7}" y="${(y1+y2)/2}" style="font-size:9px;fill:${P.thin}" dominant-baseline="central">${dimTxt}</text>`;
+  }
+
+  // ---- la cote en cours de réglage, surlignée sur le volume (champ survolé, saisi ou poignée tirée)
+  if(o.hi && !expl) s+=orbitHi(dm, o.hi, {V, ring, side, circ, Z, lv, TG, AN, P, X, Y, e, cP, sc, Rh});
+
+  // ---- poignées de manipulation directe
+  if(o.handles){
+    lv.forEach((p,k)=>{
+      if(k===0 && (isTalon(dm)||isTheiere(dm))) return;
+      const y=expl ? (k===0?yb(0):yt(k-1)) : p.y, pts=ring(p.r,y), R=side(pts,1), L=side(pts,-1), dual=k>0;
+      [[R[0],R[1],''],[L[0],L[1],' opacity=".45"']].forEach(([x,yy,op])=>{
+        s+=`<circle class="hdot${dual?' dual':''}" data-lvl="${k}" cx="${x.toFixed(1)}" cy="${yy.toFixed(1)}" r="6"${op}/>`;
+        s+=`<circle class="hdot hit${dual?' dual':''}" data-lvl="${k}" data-mirror="${op?1:0}" cx="${x.toFixed(1)}" cy="${yy.toFixed(1)}" r="14"/>`;
+      });
+    });
+    /* poignées du bec : seulement quand son plan n'est pas vu par la tranche,
+       sinon le geste n'a plus de sens (on le dit dans l'aide) */
+    if(TG && !expl && becEditable(o.orbit)){
+      const C=v=>[-(TG.Rp+v*TG.ca), TG.ya+v*TG.sa];
+      const pt=(v,r)=>{ const c=C(v); return V(c[0]+r*TG.sa, c[1]+r*TG.ca, 0); };
+      [['tip',pt(TG.L,0)],['base',pt(0,0)],['dt',pt(TG.L,-TG.rtO)],['db',pt(0,-TG.rbO)]].forEach(([w,[x,y]])=>{
+        s+=`<circle class="hdot dual bec" data-lvl="bec-${w}" data-bec="${w}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6"/>`;
+        s+=`<circle class="hdot hit dual bec" data-lvl="bec-${w}" data-bec="${w}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="14"/>`;
+      });
+    }
+  }
+  return s+'</svg>';
+}
+/** le plan du bec est-il assez de face pour y tirer des poignées ? */
+const becEditable = ob => Math.abs(Math.cos(ob.yaw))>.34 && Math.cos(ob.pitch)>.34;
+
+/* La cote surlignée : un trait de cote dans la couleur d'accent, posé sur la
+   partie du volume qu'elle règle, et sa valeur. Clés = celles du tableau des
+   cotes (B_d, B_h, dBase, thick, anse_h…, th_db…), ou lvl:k pendant qu'on tire
+   une poignée de niveau (Ø et hauteur de la section ensemble). */
+function orbitHi(dm, key, G){
+  const {V, ring, side, circ, Z, lv, TG, AN, P, X, Y, e, cP, sc, Rh}=G, A=P.accent;
+  let s='';
+  const lk=/^lvl:(\d+)$/.exec(key);
+  if(lk && +lk[1]>=lv.length) return '';                  // ligne d'une autre pièce du lot
+  if(lk){                                                 // la section (ou le fond) teintée dans la couleur d'accent
+    const k=+lk[1], pts = k===0 ? ring(lv[0].r,0) : hull2(ring(lv[k-1].r,lv[k-1].y).concat(ring(lv[k].r,lv[k].y)));
+    s+=`<path d="${Z(pts)}" fill="${A}" fill-opacity=".16" stroke="${A}" stroke-width="1.4" stroke-linejoin="round"/>`;
+  }
+  const f1=n=>n.toFixed(1);
+  const lab=(x,y,txt,anchor='middle')=>{ s+=`<text x="${f1(x)}" y="${f1(y)}" text-anchor="${anchor}" dominant-baseline="central"`
+    +` style="font-size:11px;font-weight:600" fill="${A}" stroke="var(--card)" stroke-width="3.2" stroke-linejoin="round" paint-order="stroke">${esc(txt)}</text>`; };
+  const seg=(a,b,w=1.6,dash='')=>{ s+=`<line x1="${f1(a[0])}" y1="${f1(a[1])}" x2="${f1(b[0])}" y2="${f1(b[1])}" stroke="${A}" stroke-width="${w}" stroke-linecap="round"${dash?` stroke-dasharray="${dash}"`:''}/>`; };
+  const outline=(pts,w=2,dash='')=>{ s+=`<path d="${Z(pts)}" fill="none" stroke="${A}" stroke-width="${w}"${dash?` stroke-dasharray="${dash}"`:''}/>`; };
+  const dot=p=>{ s+=`<circle cx="${f1(p[0])}" cy="${f1(p[1])}" r="3.2" fill="${A}"/>`; };
+  // Ø d'un niveau : le contour, la ligne de diamètre et sa valeur
+  const diam=(r,y,txt)=>{ const pts=ring(r,y), R=side(pts,1), L=side(pts,-1);
+    outline(pts); seg(L,R,1.4,'5 3'); dot(L); dot(R); lab((L[0]+R[0])/2, Math.min(L[1],R[1])-11, txt); };
+  // hauteur d'une section : accolade verticale à gauche du volume
+  const haut=(y0,y1,txt)=>{ const Rb=Math.max(...lv.map(q=>q.r)), x=X(-Rb)-18, a=[x,Y(y0*cP)], b=[x,Y(y1*cP)];
+    outline(ring(lv.find(q=>Math.abs(q.y-y0)<.01)?.r||0,y0),1.2,'3 3'); outline(ring(lv.find(q=>Math.abs(q.y-y1)<.01)?.r||0,y1),1.2,'3 3');
+    seg(a,b); seg([x-5,a[1]],[x+5,a[1]]); seg([x-5,b[1]],[x+5,b[1]]); lab(x-8,(a[1]+b[1])/2,txt,'end'); };
+  const sec=dm.sections, idOf=k=>sec.findIndex(q=>q.id===k);
+  let m;
+  if((m=/^lvl:(\d+)$/.exec(key))){
+    const k=+m[1];
+    if(k===0) diam(lv[0].r, 0, `${dimWord(dm)} ${U(dm.dBase)}`);
+    else{ diam(lv[k].r, lv[k].y, `${dimWord(dm)} ${U(sec[k-1].d)}`); haut(lv[k-1].y, lv[k].y, `h ${U(sec[k-1].h)}`); }
+  }else if((m=/^(.+)_(d|h)$/.exec(key)) && idOf(m[1])>=0){
+    const i=idOf(m[1]);
+    if(m[2]==='d') diam(lv[i+1].r, lv[i+1].y, `${dimWord(dm)} ${U(sec[i].d)}`);
+    else haut(lv[i].y, lv[i+1].y, `h ${U(sec[i].h)}`);
+  }else if(key==='dBase') diam(lv[0].r, 0, `${dimWord(dm)} ${U(dm.dBase)}`);
+  else if(key==='thick'){
+    const top=lv[lv.length-1], o2=ring(top.r,top.y), i2=ring(Math.max(1,top.r-e),top.y);
+    outline(o2,1.8); outline(i2,1.8); const R=side(o2,1); lab(R[0]+8, R[1]-10, `e ${U(dm.thick)}`, 'start');
+  }else if(/^anse_/.test(key) && AN){
+    const a=AN.pts[0], b=AN.pts[AN.pts.length-1], mid=AN.pts[Math.round((AN.pts.length-1)/2)];
+    if(key==='anse_h'){ const pa=V(a[0],a[1],0), pb=V(b[0],b[1],0); seg(pa,pb,1.6,'5 3'); dot(pa); dot(pb);
+      lab((pa[0]+pb[0])/2+(pa[0]>X(0)?-30:30), (pa[1]+pb[1])/2, `h ${U(dm.anse?dm.anse.h:AN.h)}`); }
+    else if(key==='anse_p'){ const w=V(AN.rAt(AN.ym)-e*.4,AN.ym,0), pk=V(mid[0],mid[1],0); seg(w,pk); dot(w); dot(pk);
+      lab((w[0]+pk[0])/2, Math.min(w[1],pk[1])-11, `${D('saillie','projection')} ${U(dm.anse?dm.anse.p:AN.p)}`); }
+    else { const hw=AN.w/2, q=[[-1,-1],[1,-1],[1,1],[-1,1]].map(([u,v])=>V(mid[0]+u*e/2, mid[1], v*hw));
+      outline(q,2); const c=V(mid[0],mid[1],hw); lab(c[0], c[1]-12, `l ${U(dm.anse?dm.anse.w:AN.w)}`); }
+  }else if(/^th_/.test(key) && TG){
+    const C=v=>[-(TG.Rp+v*TG.ca), TG.ya+v*TG.sa];
+    const disc=(v,r)=>Array.from({length:32},(_,i)=>{ const f=2*Math.PI*i/32, c=C(v); return V(c[0]+r*Math.cos(f)*TG.sa, c[1]+r*Math.cos(f)*TG.ca, r*Math.sin(f)); });
+    const B=dm.theiere.bec, c0=V(...C(0),0), cL=V(...C(TG.L),0);
+    if(key==='th_db'){ const d=disc(0,TG.rbO); outline(d); const R=side(d,1); lab(R[0]+8,R[1],`Ø ${U(2*TG.rbO)}`,'start'); }
+    else if(key==='th_dt'){ const d=disc(TG.L,TG.rtO); outline(d); const L=side(d,-1); lab(L[0]-8,L[1],`Ø ${U(2*TG.rtO)}`,'end'); }
+    else if(key==='th_l'){ seg(c0,cL,2); dot(c0); dot(cL); lab((c0[0]+cL[0])/2, (c0[1]+cL[1])/2-14, `l ${U(TG.L)}`); }
+    else if(key==='th_a'){
+      const rr=Math.max(14, TG.L*.45), arc=[], c=C(0);
+      for(let i=0;i<=18;i++){ const t=TG.a*i/18; arc.push(V(c[0]-rr*Math.cos(t), c[1]+rr*Math.sin(t), 0)); }
+      seg(c0, V(c[0]-rr*1.15, c[1], 0), 1.2, '4 3'); seg(c0, V(c[0]-rr*1.15*TG.ca, c[1]+rr*1.15*TG.sa, 0), 1.6);
+      s+=`<path d="${path(arc)}" fill="none" stroke="${A}" stroke-width="1.8"/>`;
+      const mid=arc[9]; lab(mid[0]-14, mid[1], `${fmt(B.a)}°`, 'end');
+    }else if(key==='th_y'){
+      const r=ring(TG.Rp, TG.ya), h=V(0,TG.ya,0); outline(r,1.4,'5 3');
+      const x=X(Rh)+4; seg([x,Y(0)],[x,h[1]]); seg([x-5,Y(0)],[x+5,Y(0)]); seg([x-5,h[1]],[x+5,h[1]]);
+      lab(x+8,(Y(0)+h[1])/2,`${Math.round(B.y*100)} % · ${U(TG.ya)}`,'start');
+    }
+  }
+  return s;
+}
 
 /* ==================== rendu d'un LOT (plusieurs pièces) ====================
    Chaque partie est dessinée par buildSVG à une échelle IMPOSÉE commune, puis
@@ -2885,50 +3202,106 @@ function renderPreview(){
     return;
   }
   box.innerHTML=`<div class="stage" id="stage">
-      ${buildSVG(d,{W:660,H:450,mode:state.view,handles:true,letters:state.view==='exploded',dimline:true})}
+      ${buildSVG(d,stageOpts())}
       <div class="viewbtns">
         <button id="vExp" class="${state.view==='exploded'?'on':''}" title="${D('Vue éclatée','Exploded view')}">⬍</button>
-        <button id="vUp" title="${D('Vue plus plongeante','Look from higher')}">▲</button>
-        <button id="vDn" title="${D('Vue plus rasante','Look from lower')}">▼</button>
+        <button id="vHome" title="${D('Recadrer : revenir à la vue de départ (ou double-clic dans le vide)','Reframe: back to the starting view (or double-click the background)')}">⟲</button>
+        <button id="vIn" title="${D('Zoomer','Zoom in')}">+</button>
+        <button id="vOut" title="${D('Dézoomer','Zoom out')}">−</button>
       </div>
-      <div class="hint" id="hint">${isTheiere(d)?D('Tire les points : ⟷ le Ø · ↕ la hauteur · le bec : son bout, son attache, ses deux Ø','Drag the dots: ⟷ diameter · ↕ height · the spout: tip, joint, both Ø')
-        :D('Tire les points : ⟷ le Ø · ↕ la hauteur de la section','Drag the dots: ⟷ diameter · ↕ section height')}</div>
+      <div class="hint" id="hint">${stageHint(d)}</div>
     </div>
     <div class="note" style="margin-top:10px">${isTalon(d)?D('3 pièces à découper + le mandrin en carton','3 pieces to cut + the card mandrel'):isTheiere(d)?D('9 pièces à découper, la passoire à percer, le profil de l’anse et 2 mandrins en carton','9 pieces to cut, the strainer to pierce, the handle profile and 2 card mandrels'):`${nPieces(d)} ${D('pièces à découper','pieces to cut')}`}${d.ears&&!d.anse&&!d.bec?` + ${t(d.earsLabel||'ANSES').toLowerCase()}`:''}
-      · ${D('vue','view')} ${state.view==='exploded'?D('éclatée','exploded'):D('assemblée','assembled')} · ${D('glisse dans le vide pour incliner.','drag the background to tilt.')}</div>`;
+      · ${D('vue','view')} ${state.view==='exploded'?D('éclatée','exploded'):D('assemblée','assembled')} · ${orbitHelp()}</div>`;
   $('#vExp').onclick=()=>{ state.view=state.view==='exploded'?'assemble':'exploded'; renderPreview(); };
-  $('#vUp').onclick=()=>{ state.tilt=Math.min(.5,state.tilt+.05); renderPreview(); };
-  $('#vDn').onclick=()=>{ state.tilt=Math.max(.10,state.tilt-.05); renderPreview(); };
+  $('#vHome').onclick=()=>orbitHome();
+  $('#vIn').onclick=()=>{ zoomBy(1.25); };
+  $('#vOut').onclick=()=>{ zoomBy(1/1.25); };
   wireHandles();
 }
+
+/* ---- Volume 3D : options de la scène, aide, recadrage ---- */
+function stageOpts(lock){
+  return {W:660,H:450,mode:state.view,handles:true,letters:state.view==='exploded',dimline:true,
+          orbit:state.orbit, zoom:state.zoom, pan:state.pan, hi:hiKey(), lock};
+}
+const coarse = () => matchMedia('(pointer:coarse)').matches;
+const orbitHelp = () => coarse()
+  ? D('un doigt dans le vide pour tourner la pièce, deux pour zoomer et la déplacer, ⟲ pour recadrer.','one finger on the background to turn the piece, two to zoom and move it, ⟲ to reframe.')
+  : D('glisse dans le vide pour tourner la pièce · molette pour zoomer · Maj + glisser pour la déplacer · double-clic pour recadrer.','drag the background to turn the piece · scroll to zoom · Shift + drag to move it · double-click to reframe.');
+function stageHint(d){
+  if(isTheiere(d) && state.view!=='exploded' && !becEditable(state.orbit))
+    return D('Tourne la pièce pour voir le bec de côté : ses poignées reviennent','Turn the piece to see the spout side-on: its handles come back');
+  return isTheiere(d)?D('Tire les points : ⟷ le Ø · ↕ la hauteur · le bec : son bout, son attache, ses deux Ø','Drag the dots: ⟷ diameter · ↕ height · the spout: tip, joint, both Ø')
+    :D('Tire les points : ⟷ le Ø · ↕ la hauteur de la section','Drag the dots: ⟷ diameter · ↕ section height');
+}
+function orbitHome(){ state.orbit={...ORBIT0}; state.zoom=1; state.pan={x:0,y:0}; persist(); renderPreview(); }
+function zoomBy(k){
+  const z=Math.max(.4, Math.min(6, state.zoom*k)), r=z/state.zoom;
+  state.zoom=z; state.pan={x:state.pan.x*r, y:state.pan.y*r};   // le centre de l'écran reste en place
+  redrawStage();
+}
+/* cote surlignée sur le volume : champ survolé ou en cours de saisie, la cote
+   qu'on vient de changer (quelques secondes), ou celle que règle la poignée tirée */
+const HI={key:null, flash:null, until:0, drag:null, t:0, row:null};
+// priorité : poignée tirée > champ survolé ou saisi > cote qu'on vient de changer > ligne cliquée (épinglée)
+const hiKey = () => HI.drag || HI.key || (Date.now()<HI.until ? HI.flash : null) || HI.row;
+function setHi(k){ if(HI.key===k) return; HI.key=k; redrawStage(); }
+function flashHi(k){
+  HI.flash=k; HI.until=Date.now()+2600; clearTimeout(HI.t);
+  HI.t=setTimeout(()=>{ if(!HI.drag && !HI.key) redrawStage(); }, 2700);
+}
+const BEC_HI = {tip:'th_l', base:'th_y', dt:'th_dt', db:'th_db'};
 
 /* ---- manipulation directe sur le volume ----
    Les listeners de déplacement vivent sur window : le SVG est redessiné à
    chaque mouvement, un listener posé sur la poignée mourrait avec elle.
-   Le cadrage est figé pendant le geste, sinon la pièce fuit sous le doigt. */
+   Le cadrage est figé pendant le geste, sinon la pièce fuit sous le doigt.
+   Dans le vide : tourner (lacet + tangage), Maj / clic droit / milieu :
+   déplacer, molette ou deux doigts : zoomer, double-clic : recadrer. */
 function wireHandles(){
   const stage=$('#stage'); if(!stage) return;
   const svg=stage.querySelector('svg'), hint=$('#hint'), sc=parseFloat(svg.dataset.sc);
   fitHandles(svg);
   const LOCK={sc, wx0:+svg.dataset.wx0, wy1:+svg.dataset.wy1, W2:+svg.dataset.w2, H2:+svg.dataset.h2};
   // le SVG est en « meet » dans la scène : on retire les marges de letterbox
+  const kPx=()=>{ const r=stage.querySelector('svg').getBoundingClientRect(); return Math.min(r.width/LOCK.W2, r.height/LOCK.H2)||1; };
   const toSvg=e=>{
     const r=stage.querySelector('svg').getBoundingClientRect();
     const k=Math.min(r.width/LOCK.W2, r.height/LOCK.H2);
     return {x:(e.clientX-r.left-(r.width-LOCK.W2*k)/2)/k,
             y:(e.clientY-r.top -(r.height-LOCK.H2*k)/2)/k};
   };
+  const ptrs=new Map();                              // doigts posés (pincer = 2)
   let drag=null;
+  const angles=()=>`↻ ${Math.round(((state.orbit.yaw*180/Math.PI)%360+540)%360-180)}° · ↗ ${Math.round(state.orbit.pitch*180/Math.PI)}°`;
   const move=e=>{
+    if(ptrs.has(e.pointerId)) ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
     if(!drag) return;
     e.preventDefault();
-    if(drag.tiltFrom!==undefined){
-      state.tilt=Math.max(.10,Math.min(.5,drag.tiltFrom+(e.clientY-drag.cy)/700));
+    if(drag.pinch){                                  // deux doigts : zoom + déplacement
+      if(ptrs.size<2) return;
+      const [a,b]=[...ptrs.values()], dist=Math.hypot(a.x-b.x,a.y-b.y), mx=(a.x+b.x)/2, my=(a.y+b.y)/2, k=kPx();
+      const z=Math.max(.4, Math.min(6, drag.z0*dist/drag.d0)), r=z/drag.z0;
+      state.zoom=z; state.pan={x:drag.pan0.x*r+(mx-drag.mx)/k, y:drag.pan0.y*r+(my-drag.my)/k};
+      redrawStage(); return;
+    }
+    if(drag.pan){
+      const k=kPx(); state.pan={x:drag.pan0.x+(e.clientX-drag.cx)/k, y:drag.pan0.y+(e.clientY-drag.cy)/k};
+      redrawStage(); return;
+    }
+    if(drag.orbit){
+      let yaw=drag.yaw0+(e.clientX-drag.cx)*.011;
+      const q=Math.round(yaw/(Math.PI/2))*Math.PI/2; if(Math.abs(yaw-q)<.05) yaw=q;   // aimanté de face, de profil, de dos
+      state.orbit={yaw, pitch:Math.max(0, Math.min(Math.PI/2, drag.pitch0+(e.clientY-drag.cy)*.009))};
+      hint.textContent=angles();
       redrawStage(undefined,LOCK); return;
     }
     const d=cur(), p=toSvg(e);
-    if(drag.bec){                                    // le bec de la théière, en coordonnées monde (mm finis)
-      const B=d.theiere.bec, G=becGeo(d), wx=LOCK.wx0+(p.x-PAD)/LOCK.sc, wy=LOCK.wy1-(p.y-PAD)/LOCK.sc, was={...B};
+    if(drag.bec){                                    // le bec de la théière, ramené dans son plan (mm finis)
+      const B=d.theiere.bec, G=becGeo(d), was={...B};
+      const {yaw,pitch}=state.orbit, u=-(LOCK.wx0+(p.x-PAD)/LOCK.sc)/Math.cos(yaw);
+      const wx=-u, wy=(LOCK.wy1-(p.y-PAD)/LOCK.sc+u*Math.sin(yaw)*Math.sin(pitch))/Math.cos(pitch);
       const dx=-(wx+G.Rp), dy=wy-G.ya, perp=Math.abs(dx*G.sa-dy*G.ca), r1=v=>Math.round(v*10)/10;
       if(drag.bec==='tip'){ B.a=r1(Math.max(20,Math.min(70, Math.atan2(dy,Math.max(1,dx))*180/Math.PI))); const L=Math.hypot(dx,dy), m=becGeo(d).Lmin; B.l = L>m ? r1(L) : 0; }
       else if(drag.bec==='base') B.y=Math.round(Math.max(.2,Math.min(.8, wy/G.Hp))*100)/100;
@@ -2940,7 +3313,8 @@ function wireHandles(){
       hint.textContent=`H · ${D('Bec','Spout')} · Ø ${uNum(2*G2.rbO)} → ${U(2*G2.rtO)} · ${U(G2.L)} ${D('à','at')} ${fmt(B.a)}° · ${D('attache','joint')} ${Math.round(B.y*100)} %`;
       redrawStage('bec-'+drag.bec,LOCK); renderDims(true); return;
     }
-    const dr=(p.x-drag.start.x)/sc*drag.mirror, dh=-(p.y-drag.start.y)/sc;
+    // la hauteur se lit raccourcie quand on regarde d'en haut : on la rallonge d'autant
+    const dr=(p.x-drag.start.x)/sc*drag.mirror, dh=-(p.y-drag.start.y)/sc/Math.max(.25,Math.cos(state.orbit.pitch));
     const r=Math.max(10,Math.min(200, drag.r0+dr));
     if(drag.k===0) d.dBase=Math.round(r*2*10)/10;
     else{
@@ -2953,40 +3327,69 @@ function wireHandles(){
       : `${LETTERS[drag.k-1]} · ${t(d.sections[drag.k-1].name)} · ${dimWord(d)} ${uNum(d.sections[drag.k-1].d)} · h ${U(d.sections[drag.k-1].h)}`;
     redrawStage(drag.k,LOCK); renderDims(true);
   };
-  const up=()=>{
+  const up=e=>{
+    ptrs.delete(e.pointerId);
     if(!drag) return;
-    track('view3d_drag', {shape:setOf().modelId, geste:drag.tiltFrom!==undefined?'inclinaison':drag.bec?'bec':'poignee'});
-    drag=null;
-    window.removeEventListener('pointermove',move); window.removeEventListener('pointerup',up);
+    if(drag.pinch && ptrs.size) return;              // on attend que le dernier doigt se lève
+    const g=drag; drag=null; HI.drag=null;
+    window.removeEventListener('pointermove',move); window.removeEventListener('pointerup',up); window.removeEventListener('pointercancel',up);
+    track('view3d_drag', {shape:setOf().modelId, geste:g.orbit?'orbite':g.pan?'deplacement':g.pinch?'zoom':g.bec?'bec':'poignee'});
+    if(g.orbit || g.pan || g.pinch){ persist(); hint.textContent=stageHint(cur()); redrawStage(); return; }
     renderPreview(); renderDims(); refreshTopbarState();
   };
   stage.addEventListener('pointerdown',e=>{
     if(e.target.closest('button')) return;
+    ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(ptrs.size===2 && (!drag || drag.orbit)){       // le 2e doigt transforme le geste en pincement
+      const [a,b]=[...ptrs.values()];
+      drag={pinch:true, d0:Math.hypot(a.x-b.x,a.y-b.y)||1, z0:state.zoom, pan0:{...state.pan}, mx:(a.x+b.x)/2, my:(a.y+b.y)/2};
+      return;
+    }
+    if(drag) return;
     const dot=e.target.closest('.hdot');
     if(dot && dot.dataset.bec){
       e.preventDefault();
-      drag={bec:dot.dataset.bec};
+      drag={bec:dot.dataset.bec}; HI.drag=BEC_HI[dot.dataset.bec];
       svg.querySelectorAll('.hdot[data-bec="'+dot.dataset.bec+'"]').forEach(x=>x.classList.add('on'));
     }else if(dot){
       e.preventDefault();
       const k=+dot.dataset.lvl, d=cur(), lv=profile(d);
       drag={k, start:toSvg(e), r0:lv[k].r, h0:k>0?d.sections[k-1].h:0, mirror:(dot.dataset.mirror==='1'||dot.getAttribute('opacity'))?-1:1};
+      HI.drag='lvl:'+k;
       svg.querySelectorAll('.hdot[data-lvl="'+k+'"]').forEach(x=>x.classList.add('on'));
       document.querySelectorAll('.drow').forEach(r=>r.classList.toggle('on', +r.dataset.lvl===k));
-    }else drag={tiltFrom:state.tilt, cy:e.clientY};
+    }else if(e.shiftKey || e.button===1 || e.button===2){
+      e.preventDefault(); drag={pan:true, cx:e.clientX, cy:e.clientY, pan0:{...state.pan}};
+    }else drag={orbit:true, yaw0:state.orbit.yaw, pitch0:state.orbit.pitch, cx:e.clientX, cy:e.clientY};
     window.addEventListener('pointermove',move,{passive:false});
-    window.addEventListener('pointerup',up);
+    window.addEventListener('pointerup',up); window.addEventListener('pointercancel',up);
   });
+  stage.addEventListener('contextmenu',e=>{ if(!e.target.closest('button')) e.preventDefault(); });
+  stage.addEventListener('dblclick',e=>{ if(!e.target.closest('button,.hdot')) orbitHome(); });
+  stage.addEventListener('wheel',e=>{ e.preventDefault(); zoomBy(Math.exp(-e.deltaY*.0015)); },{passive:false});
 }
 function redrawStage(activeLvl, lock){
-  const stage=$('#stage'); if(!stage) return;
-  const html=buildSVG(cur(),{W:660,H:450,mode:state.view,handles:true,
-    letters:state.view==='exploded',dimline:true,lock});
+  const stage=$('#stage'); if(!stage) return renderMini();
+  const html=buildSVG(cur(), stageOpts(lock));
   const tmp=document.createElement('div'); tmp.innerHTML=html;
   const neo=tmp.firstChild;
   if(activeLvl!==undefined) neo.querySelectorAll('.hdot[data-lvl="'+activeLvl+'"]').forEach(x=>x.classList.add('on'));
   stage.querySelector('svg').replaceWith(neo);
-  fitHandles(neo);
+  fitHandles(neo); renderMini();
+}
+/* Une colonne (fenêtre étroite, téléphone) : le volume est hors de l'écran quand
+   on tape une cote. La cote surlignée s'affiche alors dans une vignette flottante
+   (en haut : le clavier du téléphone occupe le bas), sous le même angle que le
+   grand volume, sans décaler le champ en cours de saisie. */
+let miniRaf=0;
+addEventListener('scroll',()=>{ if(hiKey() && !miniRaf) miniRaf=requestAnimationFrame(()=>{ miniRaf=0; renderMini(); }); },{passive:true,capture:true});
+function renderMini(){
+  const box=$('#dmini'); if(!box) return;
+  const k=hiKey(), st=$('#stage'), r=st && st.getBoundingClientRect();
+  const seen=r && Math.min(r.bottom,innerHeight)-Math.max(r.top,0) > r.height*.45;
+  if(!k || seen || state.tab!=='volume' || state.view==='exploded'){ box.hidden=true; box.innerHTML=''; return; }
+  box.hidden=false;
+  box.innerHTML=buildSVG(cur(), {W:340,H:200,mode:'assemble',orbit:state.orbit,zoom:1.3,hi:k});
 }
 /* Poignées à taille d'écran constante. Le SVG suit la largeur de la scène
    (×0,47 sur un téléphone) : un rayon en unités SVG y donnait une cible de
@@ -3255,7 +3658,7 @@ function renderDimsTable(soft){
     });
     return;
   }
-  let h=`<div class="dims"><div class="drow head"><span></span><span></span>
+  let h=`<div class="dmini" id="dmini" hidden></div><div class="dims"><div class="drow head"><span></span><span></span>
       <span>Ø ${uLab()}</span><span>${D('haut.','height')} ${uLab()}</span></div>`;
   d.sections.forEach((s,i)=>{
     h+=`<div class="drow" data-lvl="${i+1}">
@@ -3265,7 +3668,7 @@ function renderDimsTable(soft){
       <span class="num"><label>h</label><input data-key="${s.id}_h" value="${uNum(s.h)}" inputmode="decimal"></span>
     </div>`;
   });
-  h+= isTheiere(d) ? `<div class="drow">
+  h+= isTheiere(d) ? `<div class="drow" data-hi="lvl:0">
       <span class="lt">D</span><span class="nm">${D('Fond','Base')}</span>
       <span class="num" style="opacity:.6"><label>Ø</label><input value="${uNum(d.sections[0].d)}" disabled></span>
       <span class="num" style="opacity:.35"><label>h</label><input value="·" disabled></span></div>`
@@ -3316,7 +3719,7 @@ function renderDimsTable(soft){
            <button class="link" id="dAdd">+ ${D('section','section')}</button></span>`
        : GC.teasers ? `<button class="link soonlink" data-teaser="libre" style="margin-left:auto">+ ${D('section','section')} ${SOON_TAG()}</button>` : ''}
    </div>`;
-  box.innerHTML=h; box.dataset.built='1'; wireUnitToggle();
+  box.innerHTML=h; box.dataset.built='1'; wireUnitToggle(); renderMini();
   box.querySelectorAll('input[data-key]').forEach(inp=>{
     const commit=()=>{
       const raw=parseFloat(String(inp.value).replace(',','.'));
@@ -3337,6 +3740,7 @@ function renderDimsTable(soft){
           if(isTalon(d)) d.dBase=d.sections[0].d;       // le fond a le Ø de la paroi
         }
         touched();
+        flashHi(inp.dataset.key);                     // la cote changée reste surlignée un instant sur le volume
       }
       renderPreview(); renderDims(); refreshTopbarState();
     };
@@ -3345,8 +3749,27 @@ function renderDimsTable(soft){
     inp.addEventListener('focus',()=>{
       const row=inp.closest('.drow');
       document.querySelectorAll('.drow').forEach(r=>r.classList.toggle('on',r===row));
+      setHi(inp.dataset.key);
+    });
+    inp.addEventListener('blur',()=>{ if(HI.key===inp.dataset.key) setHi(null); });
+    // survoler une cote la montre sur le volume (sans voler le focus d'un autre champ)
+    const cell=inp.closest('.num'), typing=()=>document.activeElement && document.activeElement.matches('#dims input');
+    cell.addEventListener('mouseenter',()=>{ if(!typing()) setHi(inp.dataset.key); });
+    cell.addEventListener('mouseleave',()=>{ if(!typing()) setHi(null); });
+  });
+  const rowKey=row=>row.dataset.lvl!==undefined ? 'lvl:'+row.dataset.lvl
+    : (row.dataset.hi || (row.querySelector('input[data-key]')||{dataset:{}}).dataset.key);
+  const markRows=()=>box.querySelectorAll('.drow:not(.head)').forEach(r=>r.classList.toggle('pin', !!HI.row && rowKey(r)===HI.row));
+  box.querySelectorAll('.drow:not(.head)').forEach(row=>{
+    if(!rowKey(row)) return;
+    row.classList.add('pick');
+    row.addEventListener('click',e=>{
+      if(e.target.closest('input')) return;
+      const k=rowKey(row); HI.row = HI.row===k ? null : k;
+      markRows(); redrawStage();
     });
   });
+  markRows();
   $('#dReset').onclick=()=>{
     /* une partie ne porte pas son modèle : on le relit sur la pièce (lot compris) */
     const st=setOf(), m=model(st.modelId); if(!m) return;
@@ -5077,6 +5500,67 @@ async function pdfDrawSvg(doc, svgString, x, y, w, h){
    en mm (les arcs sont échantillonnés) : un seul chemin à dessiner, à
    translater et à découper proprement d'une feuille à l'autre.
    --------------------------------------------------------------- */
+/* ---- cotes secondaires d'un gabarit (retour bêta, 28 oct. : « voir quel côté,
+   quel angle fait combien sur le plan, pour vérifier facilement ») : la lettre et
+   le nom restent l'info principale, dans la forme ; ces mesures se posent en petit
+   et en gris le long de chaque bord, à l'intérieur de la pièce. Repère local du
+   gabarit (celui de patternSVG, avant la translation de geomOf) :
+   p = point du bord, u = direction du bord (le texte la suit),
+   inner = normale vers la matière si on la connaît, R = rayon d'un arc convexe
+   (le texte s'en écarte de sa flèche), corner = les deux bords d'un angle. */
+function tplMeasures(q){
+  const M=[], add=(p,u,lab,o)=>M.push({p, u, lab, ...(o||{})});
+  switch(q.kind){
+    case 'disque': add([0,-q.d0/2],[1,0],`Ø ${U(q.d0)}`,{inner:[0,1], R:q.d0/2}); break;
+    case 'ellipse': add([0,-q.hh/2],[1,0],U(q.w),{inner:[0,1], R:q.w*q.w/4/Math.max(1,q.hh)}); add([q.w/2,0],[0,1],U(q.hh),{inner:[-1,0], R:q.hh*q.hh/4/Math.max(1,q.w)}); break;
+    case 'polygone': { const n=q.n||6, R=q.R, A=[R*Math.cos(Math.PI/n),R*Math.sin(Math.PI/n)], B=[R*Math.cos(3*Math.PI/n),R*Math.sin(3*Math.PI/n)], L=Math.hypot(B[0]-A[0],B[1]-A[1]);
+      add([(A[0]+B[0])/2,(A[1]+B[1])/2],[(B[0]-A[0])/L,(B[1]-A[1])/L],`${U(L)} · ${fmt(180-360/n)}°`); break; }
+    case 'panneau': case 'bande': add([0,-q.hh/2],[1,0],U(q.w)); add([q.w/2,0],[0,1],U(q.hh)); break;
+    case 'trapeze': { const a=q.w0/2, b=q.w1/2, h=q.hh, L=Math.hypot(h,a-b), th=Math.atan2(h,a-b)*180/Math.PI, ud=[(b-a)/L,-h/L];
+      add([0,h/2],[1,0],U(q.w0)); add([0,-h/2],[1,0],U(q.w1)); add([(a+b)/2,0],ud,U(L));
+      if(Math.abs(th-90)>.5) add([a,h/2],null,`${fmt(th)}°`,{corner:[[-1,0],ud]}); break; }
+    case 'secteur': { const th=Math.min(q.ang,359.5)*Math.PI/180, R=q.R, r=q.r, a0=-th/2, d=[Math.sin(a0),-Math.cos(a0)];
+      add([0,-R],[1,0],`${D('arc','arc')} ${U(R*th)}${th<Math.PI*.9?` · ${D('corde','chord')} ${U(2*R*Math.sin(th/2))}`:''}`,{inner:[0,1], R});
+      if(r>3) add([0,-r],[1,0],`${D('arc','arc')} ${U(r*th)} · ${fmt(q.ang)}°`,{inner:[0,-1]});
+      else add([0,-R*.45],[1,0],`${fmt(q.ang)}°`,{inner:[0,-1]});
+      if(R-r>12) add([(R+r)/2*d[0],(R+r)/2*d[1]],d,U(R-r));
+      break; }
+    case 'contour': {
+      if(q.ring){ add([0,-q.ring.R],[1,0],`Ø ${U(2*q.ring.R)}`,{inner:[0,1], R:q.ring.R});
+        add([0,-q.ring.r],[1,0],`Ø ${U(2*q.ring.r)}`,{inner:[0,-1]}); break; }
+      const xs=q.pts.map(v=>v[0]), ys=q.pts.map(v=>v[1]), top=q.pts.reduce((b,v)=>v[1]<b[1]?v:b);
+      const w=Math.max(...xs)-Math.min(...xs), h=Math.max(...ys)-Math.min(...ys);
+      if(q.pts.length>=40 && Math.abs(w-h)<.5) add(top,[1,0],`Ø ${U(w)}`,{inner:[0,1], R:w/2});   // un disque (couvercle)
+      else add(top,[1,0],`${uNum(w)} × ${U(h)}`,{inner:[0,1]});
+    }
+  }
+  return M;
+}
+/** place un libellé de mesure : départ de la ligne de base, angle (degrés, sens
+    direct à l'écran), boîte englobante — ou null s'il ne tient pas dans la pièce.
+    tw = largeur du texte, ch = hauteur de capitale, gap = recul depuis le bord */
+function measureSpot(m, poly, tw, ch, gap){
+  const N=v=>{ const L=Math.hypot(v[0],v[1])||1; return [v[0]/L, v[1]/L]; };
+  let u, base;
+  if(m.corner){                                   // angle : le texte, à plat, sur la bissectrice
+    const b=N([m.corner[0][0]+m.corner[1][0], m.corner[0][1]+m.corner[1][1]]), k=gap*2.2+tw*.55;
+    u=[1,0]; base=[m.p[0]+b[0]*k-tw/2, m.p[1]+b[1]*k+ch/2];
+  }else{
+    u=N(m.u||[1,0]);
+    let n=m.inner ? N(m.inner) : [-u[1],u[0]];
+    if(!m.inner && !inPoly(poly, m.p[0]+n[0]*gap*2, m.p[1]+n[1]*gap*2)) n=[-n[0],-n[1]];
+    if(u[0]<-1e-6 || (Math.abs(u[0])<=1e-6 && u[1]>0)) u=[-u[0],-u[1]];   // jamais à l'envers : de gauche à droite, ou de bas en haut
+    const up=[u[1],-u[0]], sag=m.R ? tw*tw/(8*m.R) : 0;
+    const off=gap+sag+((n[0]*up[0]+n[1]*up[1])<0 ? ch : 0);
+    base=[m.p[0]+n[0]*off-u[0]*tw/2, m.p[1]+n[1]*off-u[1]*tw/2];
+  }
+  const up=[u[1],-u[0]], C=[base, [base[0]+u[0]*tw, base[1]+u[1]*tw],
+    [base[0]+u[0]*tw+up[0]*ch, base[1]+u[1]*tw+up[1]*ch], [base[0]+up[0]*ch, base[1]+up[1]*ch]];
+  if(!C.every(c=>inPoly(poly,c[0],c[1]))) return null;
+  const xs=C.map(c=>c[0]), ys=C.map(c=>c[1]);
+  return {x:base[0], y:base[1], ang:-Math.atan2(u[1],u[0])*180/Math.PI, box:[Math.min(...xs),Math.min(...ys),Math.max(...xs),Math.max(...ys)]};
+}
+const boxHit = (a,b,m=0) => a[0]<b[2]+m && b[0]<a[2]+m && a[1]<b[3]+m && b[1]<a[3]+m;
 function geomOf(q){
   const P=[];
   const push=(x,y)=>P.push([x,y]);
@@ -5111,6 +5595,7 @@ function geomOf(q){
   }
   const J=q.seg && segJoins(q);
   if(J && J.length) g.joins=J.map(j=>({...j, a:[j.a[0]-x0, j.a[1]-y0], b:[j.b[0]-x0, j.b[1]-y0]}));
+  g.meas=tplMeasures(q).map(m=>({...m, p:[m.p[0]-x0, m.p[1]-y0]}));
   return g;
 }
 /** les bords d'un tronçon qui se raccordent à un autre tronçon (pas la couture
@@ -5139,7 +5624,9 @@ const rot90 = g => ({ ...g, w:g.h, h:g.w, rot:((g.rot||0)+1)%4,
   pts:g.pts.map(([x,y])=>[g.h-y, x]),
   holes:g.holes?g.holes.map(h=>h.map(([x,y])=>[g.h-y, x])):undefined,
   center:g.center?[g.h-g.center[1], g.center[0]]:undefined,
-  joins:g.joins?g.joins.map(j=>({...j, a:[g.h-j.a[1], j.a[0]], b:[g.h-j.b[1], j.b[0]]})):undefined });
+  joins:g.joins?g.joins.map(j=>({...j, a:[g.h-j.a[1], j.a[0]], b:[g.h-j.b[1], j.b[0]]})):undefined,
+  meas:g.meas?g.meas.map(m=>{ const r=v=>v&&[-v[1], v[0]];
+    return {...m, p:[g.h-m.p[1], m.p[0]], u:r(m.u), inner:r(m.inner), corner:m.corner&&m.corner.map(r)}; }):undefined });
 
 /* découpe d'un polygone par un rectangle (Sutherland-Hodgman) : c'est ce qui
    permet de ne dessiner que la portion de pièce qui appartient à la feuille. */
@@ -5215,6 +5702,21 @@ function pdfNotches(doc, joins, ox, oy, P, R){
     doc.setFont('helvetica','bold'); doc.setFontSize(7); doc.setTextColor(...PDF_TERRA);
     const tx=m[0]+n[0]*s*6.5, ty=m[1]+n[1]*s*6.5+1.2;
     doc.text(j.lab, tx, ty, {align:'center'});
+  });
+}
+/* cotes secondaires d'un gabarit à l'échelle 1:1 : en gris, à 2 mm du bord, à
+   l'intérieur ; jamais sur l'étiquette, un cran de tronçon ou hors de la feuille */
+function pdfMeasures(doc, g, ox, oy, P, R, avoid){
+  if(!g.meas) return;
+  const fs=5.2, ch=fs*.3528*.72, used=avoid.slice();
+  doc.setFont('helvetica','normal'); doc.setFontSize(fs); doc.setTextColor(140,144,128);
+  (g.joins||[]).forEach(j=>{ const mx=ox+(j.a[0]+j.b[0])/2, my=oy+(j.a[1]+j.b[1])/2; used.push([mx-9,my-9,mx+9,my+9]); });
+  g.meas.forEach(m=>{
+    const tw=doc.getTextWidth(m.lab), sp=measureSpot({...m, p:[ox+m.p[0], oy+m.p[1]]}, P, tw, ch, 2);
+    if(!sp || sp.box[0]<R[0] || sp.box[2]>R[2] || sp.box[1]<R[1] || sp.box[3]>R[3]) return;
+    if(used.some(b=>boxHit(b, sp.box, 1))) return;
+    used.push(sp.box);
+    doc.text(m.lab, sp.x, sp.y, Math.abs(sp.ang)>.01 ? {angle:sp.ang} : undefined);
   });
 }
 function pdfPoly(doc, pts, style){
@@ -6008,6 +6510,7 @@ function pdfAnySheet(doc, sheet, st, no, total){
     doc.setDrawColor(0,0,0); doc.setLineWidth(.5);
     [P].concat((g.holes||[]).map(h=>h.map(([px,py])=>[ox+px, oy+py]))).forEach(L=>pdfLines(doc, clipLines(L, ...R)));
     if(g.joins) pdfNotches(doc, g.joins, ox, oy, P, R);
+    pdfMeasures(doc, g, ox, oy, P, R, e.lab ? [[ox+e.lab.x, oy+e.lab.y, ox+e.lab.x+e.lab.w, oy+e.lab.y+LBL]] : []);
     if(g.center && !covered(ox+g.center[0], oy+g.center[1], e)) pdfCenterMark(doc, ox+g.center[0], oy+g.center[1], g, R);
     if(it.q.carton && g.center && it.q.tabAng){       // mandrin conique : le trait suit un rayon
       const cx=ox+g.center[0], cy=oy+g.center[1];
@@ -6620,25 +7123,32 @@ function cutCardSVG(c){
    Dans les deux cas width/height en mm : le fichier arrive à l'échelle 1.
    --------------------------------------------------------------- */
 const svgNum = n => (Math.round(n*100)/100).toString();
+/* Retour bêta (28 oct.) : « ×3,781 pour avoir une taille identique à l'impression ».
+   Figma, Canva, Cricut Design Space… ignorent le « mm » de width/height et lisent
+   une unité du viewBox comme 1 px ; à 96 px/pouce, 1 px = 0,2646 mm : le dessin
+   arrivait 3,78 fois trop petit. On dessine donc en px (1 mm = 96/25,4 px) dans un
+   groupe mis à l'échelle, et on garde width/height en mm : les deux lectures
+   tombent d'accord, le fichier sort à 1:1 partout. */
+const PX_MM = 96/25.4;
+const svgDoc1to1 = (w, h, x0, y0, body) => `<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+  width="${svgNum(w)}mm" height="${svgNum(h)}mm" viewBox="${svgNum(x0*PX_MM)} ${svgNum(y0*PX_MM)} ${svgNum(w*PX_MM)} ${svgNum(h*PX_MM)}">
+<g transform="scale(${PX_MM.toFixed(6)})">
+${body}
+</g>
+</svg>`;
 function cutSVGDoc(c, nu){
   const F=cutStats(c), G=cutStats(gabCut(c));
   const poly=(S,attrs)=>`<path d="${cutAllD(S)}" ${attrs}/>`;
   if(nu){                                   // contour de découpe, rien d'autre
     const m=0.5;                            // marge : le trait a une épaisseur
-    return `<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
-  width="${svgNum(G.w+2*m)}mm" height="${svgNum(G.h+2*m)}mm"
-  viewBox="${svgNum(-G.w/2-m)} ${svgNum(-G.h/2-m)} ${svgNum(G.w+2*m)} ${svgNum(G.h+2*m)}">
-  <g id="decoupe" data-layer="${D('découpe','cut')}">
+    return svgDoc1to1(G.w+2*m, G.h+2*m, -G.w/2-m, -G.h/2-m, `  <g id="decoupe" data-layer="${D('découpe','cut')}">
     ${poly(G,'fill="none" stroke="#000000" stroke-width="0.3" stroke-linejoin="round"')}
-  </g>
-</svg>`;
+  </g>`);
   }
   const pad=14, x0=-G.w/2-pad, y0=-G.h/2-pad, w=G.w+2*pad, h=G.h+2*pad+6;
   const dimx=G.h/2+7, dimy=G.w/2+7, tick=1.6;
   const cote=(x1,y1,x2,y2)=>`<line x1="${svgNum(x1)}" y1="${svgNum(y1)}" x2="${svgNum(x2)}" y2="${svgNum(y2)}"/>`;
-  return `<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
-  width="${svgNum(w)}mm" height="${svgNum(h)}mm" viewBox="${svgNum(x0)} ${svgNum(y0)} ${svgNum(w)} ${svgNum(h)}">
-  <g id="decoupe" data-layer="${D('découpe','cut')}" fill="none" stroke="#000000" stroke-width="0.4" stroke-linejoin="round">
+  return svgDoc1to1(w, h, x0, y0, `  <g id="decoupe" data-layer="${D('découpe','cut')}" fill="none" stroke="#000000" stroke-width="0.4" stroke-linejoin="round">
     ${poly(G,'')}
   </g>
   <g id="fini" data-layer="${D('pièce finie','finished piece')}" fill="none" stroke="#4A7263" stroke-width="0.3"
@@ -6657,8 +7167,7 @@ function cutSVGDoc(c, nu){
     <text x="${svgNum(x0+2)}" y="${svgNum(y0+h-2)}" font-family="monospace" font-size="3.4"
       fill="#565A4D" stroke="none">${esc(cutLabel(c))} · ${D('gabarit à découper','template to cut')} ·
       ${D('retrait','shrinkage')} ${Math.round(state.shrink*100)} % · 1:1 · gabarits-ceramique.com</text>
-  </g>
-</svg>`;
+  </g>`);
 }
 /* Export SVG de l'atelier (repris de la V1) : tous les gabarits de la pièce,
    agrandis du retrait, rangés en étagères, width/height en mm (échelle 1).
@@ -6678,21 +7187,30 @@ function pieceSVGDoc(st, nu){
   const H=y+rowH, m=nu?0.5:6, foot=nu?0:8;
   const d=(pts,dx,dy)=>'M'+pts.map(([a,b])=>`${svgNum(a+dx)} ${svgNum(b+dy)}`).join(' L')+' Z';
   const paths=placed.map(it=>`<path d="${d(it.g.pts,it.x,it.y)}${(it.g.holes||[]).map(h=>' '+d(h,it.x,it.y)).join('')}" fill-rule="evenodd"/>`).join('\n    ');
-  const head=`<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
-  width="${svgNum(W+2*m)}mm" height="${svgNum(H+2*m+foot)}mm" viewBox="${svgNum(-m)} ${svgNum(-m)} ${svgNum(W+2*m)} ${svgNum(H+2*m+foot)}">`;
+  const doc = body => svgDoc1to1(W+2*m, H+2*m+foot, -m, -m, body);
   const cut=`<g id="decoupe" data-layer="${D('découpe','cut')}" fill="none" stroke="#000000" stroke-width="${nu?0.3:0.4}" stroke-linejoin="round">
     ${paths}
   </g>`;
-  if(nu) return `${head}\n  ${cut}\n</svg>`;
+  if(nu) return doc(`  ${cut}`);
   const labs=placed.map(it=>`<text x="${svgNum(it.x)}" y="${svgNum(it.y-4.6)}" font-size="3.4" font-weight="bold">${esc(it.q.letter)} · ${esc(t(it.q.name))}${it.q.count>1?' ×'+it.q.count:''}${it.part?' · '+esc(it.part):''}</text>
     <text x="${svgNum(it.x)}" y="${svgNum(it.y-1.2)}" font-size="2.6">${esc(String(it.q.desc||'').replace(/<[^>]+>/g,''))}</text>`).join('\n    ');
-  return `${head}
-  ${cut}
+  // cotes secondaires de chaque gabarit, en gris, le long des bords (calque à part)
+  const meas=placed.map(it=>{
+    const P=it.g.pts.map(([a,b])=>[a+it.x,b+it.y]), used=[];
+    return (it.g.meas||[]).map(mm=>{
+      const fs=2.2, tw=mm.lab.length*fs*.6, sp=measureSpot({...mm, p:[mm.p[0]+it.x, mm.p[1]+it.y]}, P, tw, fs*.72, 1.6);
+      if(!sp || used.some(b=>boxHit(b,sp.box,.5))) return ''; used.push(sp.box);
+      return `<text x="${svgNum(sp.x)}" y="${svgNum(sp.y)}" font-size="${fs}"${Math.abs(sp.ang)>.01?` transform="rotate(${svgNum(-sp.ang)} ${svgNum(sp.x)} ${svgNum(sp.y)})"`:''}>${esc(mm.lab)}</text>`;
+    }).join('');
+  }).join('\n    ');
+  return doc(`  ${cut}
   <g id="annotations" data-layer="${D('annotations','annotations')}" font-family="monospace" fill="#565A4D" stroke="none">
     ${labs}
     <text x="0" y="${svgNum(H+foot)}" font-size="3.2">${esc(t(st.name))} · ${D('gabarits à découper','templates to cut')} · ${D('retrait','shrinkage')} ${Math.round(state.shrink*100)} % · 1:1 · gabarits-ceramique.com</text>
   </g>
-</svg>`;
+  <g id="mesures" data-layer="${D('mesures des bords','edge lengths')}" font-family="monospace" fill="#8C9080" stroke="none">
+    ${meas}
+  </g>`);
 }
 function exportPieceSVG(st, nu){
   const blob=new Blob(['<?xml version="1.0" encoding="UTF-8"?>\n'+pieceSVGDoc(st,nu)], {type:'image/svg+xml;charset=utf-8'});
