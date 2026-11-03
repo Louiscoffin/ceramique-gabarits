@@ -1072,7 +1072,6 @@ body.da-epure .protoflag{border-radius:6px}
 /* Sortie : l'édition de sortie, sans sélecteur de version. ?beta=1 rallume la complète. */
 window.GC_RELEASE = {
   edition: 'sortie',
-  shop: [],   // bol-tasse à talon en « bientôt » + liste d'attente tant que l'achat Gumroad n'est pas branché
   avis: { fr:'https://tally.so/r/EqqdQL', en:'https://tally.so/r/aOO502' },   // « Donner mon avis » : les deux Tally du nouvel atelier (FR / EN)
   footTitle: { fr:'Le nouvel atelier', en:'The new workshop' },
   foot: { fr:'Tes réglages et tes pièces restent sur cet appareil. L’ancienne version reste accessible depuis « Nouvelle pièce ».',
@@ -1097,7 +1096,7 @@ const clayPrep = g => g*(1+CLAY_MARGIN);
 /* Code de test du prototype : saisi à la place d'un lien Gumroad, il débloque
    toutes les formes d'un coup (pour montrer/tester sans repasser au paiement). */
 const MASTER_KEY = 'ATELIER-TEST';
-const isMaster = v => v.trim().toUpperCase().replace(/\s+/g,'') === MASTER_KEY;
+const isMaster = v => !!FEATURES.proto && v.trim().toUpperCase().replace(/\s+/g,'') === MASTER_KEY;
 const LETTERS = ['A','B','C','D','E','F'];
 
 /* ================================================================
@@ -1256,6 +1255,7 @@ const MODELS = [
      reprend les calculs du tutoriel (v2/tutoriel-bol-talon). */
   { id:'bol-talon', name:'Bol-tasse à talon', family:'Vaisselle', diff:'Débutant', price:4.99, novelty:true,
     tuto:'tutoriel-bol-talon/',
+    gumroad:{ url:'https://ceramix541.gumroad.com/l/bol-talon', productId:'Z8jFGdxBa9MrhHtiU-5wQw==' },
     blurb:"Série Tasses n°1b. Une tasse à espresso sans anse : un cylindre net qui flotte sur un talon fin. Quatre gabarits (la paroi, le fond, le talon en rondelle et un mandrin en papier cartonné au Ø exact) et le tutoriel 3D pas à pas, recalculé à tes cotes.",
     blurbEn:"Tasses series no. 1b. An espresso cup with no handle: a crisp cylinder floating on a thin foot ring. Four templates (wall, base, foot ring and a card mandrel at the exact Ø) plus the step-by-step 3D tutorial, recomputed at your dimensions.",
     thick:4, dBase:64, ears:false, talon:{w:3},
@@ -1268,6 +1268,7 @@ const MODELS = [
      (v2/tutoriel-theiere). ---- */
   { id:'theiere', name:'Théière', family:'Vaisselle', diff:'Intermédiaire', price:9.99, novelty:true,
     tuto:'tutoriel-theiere/',
+    gumroad:{ url:'https://ceramix541.gumroad.com/l/theiere', productId:'Rx1-FzOZWXJ2iNK7PULoHg==' },
     blurb:"Une théière de deux à trois tasses montée à la plaque : panse droite, épaule, col où s'emboîte le couvercle à collerette, et un bec conique dont la base est déjà coupée à la courbe de la panse. Treize gabarits, dont la passoire à percer et deux mandrins en carton, et le tutoriel 3D pas à pas, recalculé à tes cotes.",
     blurbEn:"A two-to-three-cup teapot built from slabs: straight belly, shoulder, a neck the flanged lid drops into, and a conical spout whose base is already cut to the curve of the belly. Thirteen templates, including the strainer to pierce and two card mandrels, plus the step-by-step 3D tutorial, recomputed at your dimensions.",
     thick:4, dBase:100, ears:true, earsLabel:'ANSE', anse:{h:54, p:34, w:18},
@@ -5216,7 +5217,12 @@ function openBuy(m){
         ${m.tuto?`<div class="r"><span>${D('Tutoriel 3D pas à pas','Step-by-step 3D tutorial')}</span><span>${D('inclus','included')}</span></div>`:''}
         <div class="r tot"><span>Total</span><span>${eur(m.price)}</span></div>
       </div>
-      <p>${D(`Le paiement se fait sur Gumroad. À la fin, tu reviens ici et la forme se débloque
+      <p>${realPay(m) ? D(`Le paiement se fait sur Gumroad, dans un nouvel onglet. Une fois payé, tu reçois ta
+         <b>clé de licence</b> par email (elle s'affiche aussi sur la page de confirmation) : reviens ici et colle-la
+         pour débloquer la forme. Elle te sert aussi à la retrouver sur un autre appareil.`,
+        `Payment happens on Gumroad, in a new tab. Once paid, you get your <b>license key</b> by email (it also shows
+         on the confirmation page): come back here and paste it to unlock the shape. It also gets it back on another device.`)
+      : D(`Le paiement se fait sur Gumroad. À la fin, tu reviens ici et la forme se débloque
          toute seule. Le <b>lien d'accès</b> reçu par email te sert à la retrouver sur un autre appareil.`,
         `Payment happens on Gumroad. When it's done you come back here and the shape unlocks by itself.
          The <b>access link</b> in your email lets you get it back on another device.`)}</p>
@@ -5228,8 +5234,35 @@ function openBuy(m){
         <button class="link" id="already">${D("j'ai déjà mon lien",'I already have my link')}</button>
       </div>
     </div>`);
-  $('#toGum').onclick=()=>fakeGumroad(m);
+  $('#toGum').onclick=()=> realPay(m) ? payGumroad(m) : fakeGumroad(m);
   $('#already').onclick=()=>openUnlock(m);
+}
+/* ---------------------- achat réel : Gumroad + clé de licence ----------------------
+   Un produit Gumroad par pièce (`m.gumroad = {url, productId}`). Pas de compte : on paie
+   sur Gumroad, la clé de licence arrive par email, on la colle ici et on la vérifie auprès
+   de l'API publique (CORS ouvert, sans clé secrète). Le prototype (FEATURES.proto) garde
+   le faux Gumroad pour les pièces sans produit. */
+const realPay = m => !!(m && m.gumroad && !FEATURES.proto);
+const LICENSE_RE = /^[0-9A-F]{8}(-[0-9A-F]{8}){3}$/i;
+function payGumroad(m){
+  track('gumroad_open', {shape:m.id});
+  try{ window.open(m.gumroad.url, '_blank', 'noopener'); }catch(e){}
+  openUnlock(m);
+}
+/** → {ok:true} | {ok:false, why:'unknown'|'refunded'|'network'} */
+async function verifyLicense(m, key){
+  try{
+    const r = await fetch('https://api.gumroad.com/v2/licenses/verify', {
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:new URLSearchParams({product_id:m.gumroad.productId, license_key:key, increment_uses_count:'false'}).toString() });
+    const j = await r.json().catch(()=>null);
+    if(!j) return {ok:false, why:'network'};
+    if(!j.success) return {ok:false, why:'unknown'};
+    const p = j.purchase||{};
+    if(p.refunded || p.chargebacked || p.disputed) return {ok:false, why:'refunded'};
+    return {ok:true};
+  }catch(e){ return {ok:false, why:'network'}; }
 }
 function fakeGumroad(m){
   const price=m.price.toFixed(2);
@@ -5267,28 +5300,49 @@ function fakeGumroad(m){
   };
 }
 function openUnlock(m, prefill){
+  const real = m ? realPay(m) : !FEATURES.proto;   // achat réel : clé de licence vérifiée chez Gumroad
   const opts = m ? '' : EXTRAS.concat(MODELS.filter(x=>x.price>0&&!x.pack))
-      .filter(x=>!state.owned[x.id])
+      .filter(x=>!state.owned[x.id] && (!real || (x.gumroad && inShop(x))))
       .map(x=>`<option value="${x.id}">${esc(x.name)}${x.extra?` · ${eur(x.price)}`:''}</option>`).join('');
   modal(`<div class="mh"><h3>${m?`${D('Débloquer','Unlock')} « ${esc(t(m.name))} »`:D('Retrouver un achat','Restore a purchase')}</h3><button class="x" data-close>×</button></div>
     ${STEPS(2, true)}
     <div class="mb">
-      <p>${D("Colle le lien d'accès Gumroad (ou la clé de licence) reçu par email.",'Paste the Gumroad access link (or the license key) you got by email.')}</p>
+      <p>${real ? D("Colle la clé de licence reçue par email après ton achat sur Gumroad (4 groupes de 8 caractères).",
+                    'Paste the license key you got by email after buying on Gumroad (4 groups of 8 characters).')
+                : D("Colle le lien d'accès Gumroad (ou la clé de licence) reçu par email.",'Paste the Gumroad access link (or the license key) you got by email.')}</p>
       ${m?'':`<div class="field"><label>${D('Forme','Shape')}</label><select id="uModel">${opts}</select></div>`}
       <div class="field"><label>${D('Lien ou clé','Link or key')}</label>
-        <input id="ukey" placeholder="https://gumroad.com/d/… ou PLA-XXXX-XXXX-XXXX" value="${prefill?esc(prefill):''}"></div>
+        <input id="ukey" placeholder="${real?'XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX':'https://gumroad.com/d/… ou PLA-XXXX-XXXX-XXXX'}" value="${prefill?esc(prefill):''}"></div>
       <div class="err" id="uerr" hidden></div>
-      <div class="testkey">
+      ${FEATURES.proto?`<div class="testkey">
         <span>${D('Prototype · code de test universel','Prototype · universal test code')}</span>
         <button class="copybtn" id="ukeyfill">${MASTER_KEY}</button>
-      </div>
+      </div>`:''}
+      ${real&&m?`<p class="soonfine"><a href="${m.gumroad.url}" target="_blank" rel="noopener">${D('Pas encore acheté ? Ouvrir la page Gumroad','Not bought yet? Open the Gumroad page')} ↗</a></p>`:''}
       <div class="act"><button class="ghost" data-close>${D('Annuler','Cancel')}</button>
         <button class="btn" id="uok">${D('Débloquer','Unlock')}</button></div>
     </div>`);
   const inp=$('#ukey'); inp.focus();
-  $('#ukeyfill').onclick=()=>{ inp.value=MASTER_KEY; navigator.clipboard?.writeText(MASTER_KEY).catch(()=>{}); inp.focus(); };
-  const submit=()=>{
+  if($('#ukeyfill')) $('#ukeyfill').onclick=()=>{ inp.value=MASTER_KEY; navigator.clipboard?.writeText(MASTER_KEY).catch(()=>{}); inp.focus(); };
+  const showErr=msg=>{ const e=$('#uerr'); e.hidden=false; e.textContent=msg; };
+  const submit=async()=>{
     const v=inp.value.trim();
+    if(real && !isMaster(v)){
+      const target = m || model($('#uModel')?.value);
+      if(!target){ closeModal(); return toast(D('Aucune forme à débloquer','Nothing to unlock')); }
+      const key = v.replace(/\s+/g,'').toUpperCase();
+      if(!LICENSE_RE.test(key)) return showErr(D("Une clé de licence ressemble à 6F0E4C97-B72A4E69-A11BF6C4-AF6517E7. Copie-la depuis l'email Gumroad ou la page de confirmation.",
+                                                "A license key looks like 6F0E4C97-B72A4E69-A11BF6C4-AF6517E7. Copy it from the Gumroad email or the confirmation page."));
+      const btn=$('#uok'); btn.disabled=true; const lab=btn.textContent; btn.textContent=D('Vérification…','Checking…');
+      const r = await verifyLicense(target, key);
+      if(!r.ok){ btn.disabled=false; btn.textContent=lab; track('license_fail', {shape:target.id, why:r.why});
+        return showErr(r.why==='network' ? D("Impossible de joindre Gumroad pour vérifier ta clé. Vérifie ta connexion et réessaie.",
+                                              "Couldn't reach Gumroad to check your key. Check your connection and try again.")
+                     : r.why==='refunded' ? D("Cet achat a été remboursé : la clé n'est plus valable.","This purchase was refunded: the key is no longer valid.")
+                     : D("Cette clé ne correspond pas à « "+t(target.name)+" ». Vérifie que tu as copié la clé du bon produit.",
+                         "This key doesn't match “"+t(target.name)+"”. Check you copied the key of the right product.")); }
+      return grantPurchase(target, key);
+    }
     if(isMaster(v)){                                  // code universel : tout le catalogue
       MODELS.concat(EXTRAS).filter(x=>x.price>0).forEach(x=>state.owned[x.id]={date:Date.now(), key:MASTER_KEY});
       persist(); closeModal();
