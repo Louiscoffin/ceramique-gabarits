@@ -1464,7 +1464,13 @@ if(PH_LIVE){
   ph.onload=()=>{ try{ posthog.init(PH_KEY, Object.assign({ api_host:'https://eu.i.posthog.com', defaults:'2026-05-30',
     persistence:'memory', person_profiles:'never', disable_session_recording:true, disable_surveys:true,
     property_denylist:['$ip','$initial_referrer','$initial_referring_domain'],
-    loaded:ph=>{ try{ ph.register({ app:'v2', edition:(typeof EDITION!=='undefined'&&EDITION)||'config' }) }catch(e){} } },
+    /* replays anonymisés, sans bandeau : tous les champs de saisie sont masqués (email, clé de
+       licence), ni console ni corps de requêtes, pas de cookie (persistence:'memory'). Seul le
+       parcours à l'écran est enregistré, sur 1 session sur 5 (quota gratuit PostHog : 5 000/mois). */
+    session_recording:{ maskAllInputs:true, maskTextSelector:'[data-ph-mask]', recordBody:false, recordHeaders:false },
+    enable_recording_console_log:false,
+    loaded:ph=>{ try{ ph.register({ app:'v2', edition:(typeof EDITION!=='undefined'&&EDITION)||'config' });
+                      if(!PH_LOCAL && Math.random()<0.2) ph.startSessionRecording(); }catch(e){} } },
     PH_LOCAL ? { api_host:location.origin+'/__posthog', disable_compression:true,
                  before_send:ev=>{ window.__phSent.push([ev.event, ev.properties]); return ev; } } : {})); }catch(e){} };
   document.head.appendChild(ph);
