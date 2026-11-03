@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tutoriel · Théière · Gabarits Céramique</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#F4F2E8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5C75 5 95 25 95 51C95 79 76 96 49 96C23 96 6 77 6 50C6 24 25 5 50 5Z' fill='%235F8A78'/%3E%3Cpath d='M14.2 46.9A64 64 0 0 1 85.8 46.9L71.2 68.5A38 38 0 0 0 28.8 68.5Z' fill='none' stroke='%23F4F2E8' stroke-width='5' stroke-dasharray='9 6'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=IBM+Plex+Mono:wght@400;500&family=Karla:wght@400;600&display=swap">
+<style>
+:root{
+  --celadon:#5F8A78; --action:#4A7263; --action-d:#3A5A4E; --vert:#8FBFAA;
+  --encre:#23271F; --gris:#565A4D; --biscuit:#B08874; --email:#E7EFE9;
+  --sable:#E3E2D3; --lait:#F4F2E8; --creme:#FFFEFA;
+  --f-titre:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+  --f-texte:Karla,"Helvetica Neue",Arial,sans-serif;
+  --f-cote:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --bar:56px; --rail:236px; --col:460px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-snap-type:y proximity; scroll-padding-top:var(--bar); -webkit-text-size-adjust:100%}
+body{
+  background-color:var(--lait); color:var(--encre); font:400 15.5px/1.55 var(--f-texte);
+  background-image:var(--grain,none),
+    linear-gradient(rgba(74,114,99,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(74,114,99,.07) 1px,transparent 1px);
+  background-size:160px 160px,40px 40px,40px 40px;
+}
+a{color:inherit} button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--encre); outline-offset:3px}
+
+#scene{position:fixed; inset:0; width:100%; height:100vh; height:100lvh; z-index:1; opacity:0; transition:opacity .6s; touch-action:pan-y; cursor:grab}
+#scene:active{cursor:grabbing}
+.gl-ready #scene{opacity:1}
+
+/* barre de l'outil */
+.bar{position:fixed; z-index:20; inset:0 0 auto; height:var(--bar); display:flex; align-items:center; gap:14px;
+  padding:0 16px; background:rgba(255,254,250,.92); border-bottom:1px solid var(--sable); backdrop-filter:blur(6px)}
+.bar__back{font:600 14px var(--f-texte); text-decoration:none; color:var(--action); white-space:nowrap}
+.bar__title{display:flex; align-items:baseline; gap:8px; min-width:0; flex:1 1 auto; overflow:hidden}
+.bar__title b{font:800 17px/1 var(--f-titre); letter-spacing:-.03em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.bar__title span{font-size:13px; color:var(--gris); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.bar__cfg{margin-left:auto; font:400 12px var(--f-cote); background:var(--email); padding:5px 9px; white-space:nowrap}
+.bar__pdf{font:600 14px var(--f-texte); text-decoration:none; color:var(--creme); background:var(--action);
+  padding:9px 14px; border-radius:999px; box-shadow:0 2px 0 var(--action-d); white-space:nowrap}
+.progress{position:fixed; z-index:21; left:0; right:0; top:var(--bar); height:3px}
+.progress i{display:block; height:100%; background:var(--action); transform-origin:0 50%; transform:scaleX(0); transition:transform .4s}
+
+/* le rail des étapes */
+#rail{position:fixed; z-index:10; top:calc(var(--bar) + 18px); left:16px; width:var(--rail); bottom:16px; overflow:auto;
+  background:var(--creme); border:1px solid var(--sable); border-radius:14px; padding:14px 10px}
+#rail p{font:600 11px var(--f-texte); letter-spacing:.18em; text-transform:uppercase; color:var(--action); padding:0 8px 8px}
+#rail ol{list-style:none; display:grid; gap:2px}
+#rail a{display:flex; gap:10px; align-items:baseline; text-decoration:none; padding:6px 8px; border-radius:8px; font-size:14px; color:var(--gris)}
+#rail a span{font:500 11.5px var(--f-cote); color:var(--action); min-width:20px}
+#rail a:hover{background:var(--lait)}
+#rail a.done{color:var(--encre)}
+#rail a.done span::after{content:" ✓"}
+#rail a.on{background:var(--email); color:var(--encre); font-weight:600}
+#rail a.lock{opacity:.55}
+#rail a.lock i{font-style:normal; font-size:11px; margin-left:auto}
+
+/* étapes */
+#steps{position:relative; z-index:5; margin-left:calc(var(--rail) + 32px); width:var(--col); pointer-events:none}
+.step{min-height:100vh; min-height:100svh; padding:calc(var(--bar) + 24px) 0 24px; display:flex; flex-direction:column; justify-content:center; scroll-snap-align:start}
+.card{pointer-events:auto; background:var(--creme); border:1px solid var(--sable); border-radius:16px; padding:22px 24px 20px; box-shadow:0 10px 30px rgba(35,39,31,.06)}
+.card__num{display:flex; align-items:center; gap:10px; font:500 12px var(--f-cote); letter-spacing:.06em; text-transform:uppercase; color:var(--action)}
+.card__num::after{content:""; flex:1; border-top:2px dashed var(--action); opacity:.4}
+.card__num span{order:3; text-transform:none; letter-spacing:0; color:var(--gris)}
+.card h2{font:800 clamp(26px,3vw,34px)/1.05 var(--f-titre); letter-spacing:-.035em; margin:10px 0 12px}
+.card h3{font:600 12px var(--f-texte); letter-spacing:.16em; text-transform:uppercase; color:var(--action); margin:16px 0 6px}
+.card p{color:var(--gris)}
+.card p + p, .card ol + p, .card .cfg + p, .card p + ol, .card .cfg + ol, .card .states + p{margin-top:10px}
+.card b{color:var(--encre); font-weight:600}
+.lead{font-size:16.5px}
+.card ol{counter-reset:g; list-style:none; display:grid; gap:8px; margin-top:4px}
+.card ol li{counter-increment:g; position:relative; padding-left:30px}
+.card ol li::before{content:counter(g); position:absolute; left:0; top:1px; width:21px; height:21px; border-radius:50%;
+  display:grid; place-items:center; font:500 11.5px var(--f-cote); color:var(--creme); background:var(--action)}
+.cfg{margin-top:12px; border-top:1px dashed var(--sable)}
+.kv{display:flex; justify-content:space-between; gap:12px; padding:6px 0; border-bottom:1px dashed var(--sable); font-size:14px; color:var(--gris)}
+.kv b{font:500 13px var(--f-cote); color:var(--encre); text-align:right; display:flex; gap:6px; align-items:center; flex-wrap:wrap; justify-content:flex-end}
+.st{font:500 10.5px var(--f-cote); padding:1px 6px; border-radius:999px; white-space:nowrap}
+.st--crue{background:#F0E4DC; color:#7A5644}
+.st--cuir{background:#E6EFE0; color:#4E6B3E}
+.st--cuite{background:var(--action); color:var(--creme)}
+.st--papier,.st--carton{background:var(--sable); color:var(--gris)}
+.states{display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:12px}
+.states div{background:var(--lait); border-radius:10px; padding:9px 10px}
+.states i{display:block; font:500 10.5px var(--f-cote); font-style:normal; text-transform:uppercase; letter-spacing:.08em; color:var(--action)}
+.states b{display:block; font:800 19px/1.2 var(--f-titre); letter-spacing:-.02em}
+.states small{font-size:12px; color:var(--gris)}
+.note{font-size:13.5px}
+.tip,.warn{font-size:14px; padding:10px 12px; border-radius:10px; margin-top:12px}
+.tip{background:var(--email)}
+.warn{background:#F6ECE4}
+.tip b,.warn b{display:block; font:600 11px var(--f-texte); letter-spacing:.14em; text-transform:uppercase; color:var(--action); margin-bottom:2px}
+.warn b{color:#8C5A40}
+.kit{list-style:none; display:grid; gap:5px}
+.kit li{font-size:14px; color:var(--gris); padding-left:16px; position:relative}
+.kit li::before{content:""; position:absolute; left:0; top:.7em; width:9px; border-top:1.5px dashed var(--action)}
+.kit em{font:500 12px var(--f-cote); font-style:normal; color:var(--action); margin-right:4px}
+.card__nav{display:flex; gap:8px; margin-top:18px}
+.btn{flex:1 1 auto; display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:0 16px; border-radius:999px;
+  font:600 15px var(--f-texte); text-decoration:none; border:2px solid var(--action); white-space:nowrap}
+.btn--primary{background:var(--action); color:var(--creme); box-shadow:0 3px 0 var(--action-d)}
+.btn--ghost{background:transparent; color:var(--action); border-style:dashed}
+.hint{position:fixed; z-index:4; right:20px; bottom:16px; font:400 12px var(--f-cote); color:var(--gris); pointer-events:none}
+
+/* barre du bas (mobile) */
+.dock{display:none}
+@media (max-width:999px){
+  :root{--bar:52px}
+  .bar__title span,.bar__cfg{display:none}
+  .bar__pdf{padding:8px 12px; font-size:13px}
+  #rail{display:none}
+  #steps{margin:0; width:auto; padding:0 12px}
+  .step{justify-content:flex-start; padding:46vh 0 88px}
+  .card{padding:18px 18px 16px}
+  .card h2{font-size:26px}
+  .card__nav{display:none}
+  .hint{display:none}
+  .dock{display:flex; position:fixed; z-index:20; left:10px; right:10px; bottom:max(10px,env(safe-area-inset-bottom)); align-items:center; gap:8px;
+    background:var(--creme); border:1px solid var(--sable); border-radius:999px; padding:6px; box-shadow:0 8px 24px rgba(35,39,31,.12)}
+  .dock button{width:44px; height:44px; border-radius:50%; border:2px solid var(--action); background:var(--creme); color:var(--action); font:600 18px var(--f-texte)}
+  .dock button[data-next]{background:var(--action); color:var(--creme)}
+  .dock p{flex:1; min-width:0; text-align:center; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .dock p b{font:500 12px var(--f-cote); color:var(--action); margin-right:6px}
+  .dock .rp{border-style:dashed}
+}
+@media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} #scene{transition:none} }
+</style>
+</head>
+<body>
+<canvas id="scene" aria-hidden="true"></canvas>
+
+<header class="bar">
+  <a class="bar__back" href="#" onclick="history.back(); return false">← Mon gabarit</a>
+  <p class="bar__title"><b>Théière</b><span data-kind></span></p>
+  <p class="bar__cfg" data-cfg></p>
+  <a class="bar__pdf" href="../#produit/theiere">Mes gabarits</a>
+</header>
+<div class="progress" aria-hidden="true"><i></i></div>
+
+<nav id="rail" aria-label="Étapes du tutoriel"><p>Tutoriel</p><ol></ol></nav>
+
+<main id="steps"></main>
+
+<p class="hint" aria-hidden="true">glisser sur la scène pour tourner autour · ← → pour changer d'étape</p>
+
+<nav class="dock" aria-label="Navigation">
+  <button type="button" data-prev aria-label="Étape précédente">←</button>
+  <p><b data-dock-n>·</b><span data-dock-name></span></p>
+  <button type="button" class="rp" data-replay aria-label="Revoir le geste">↺</button>
+  <button type="button" data-next aria-label="Étape suivante">→</button>
+</nav>
+
+<script type="module" src="tutoriel.js"></script>
+</body>
+</html>
