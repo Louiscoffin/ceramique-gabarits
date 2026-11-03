@@ -228,6 +228,9 @@ body.aside-ink .navb.fbsticker{color:var(--gc-encre)}
 .navb .badge.soon{background:none;border-color:var(--glaze);color:var(--glaze)}
 .soonnote{font-size:12.5px;line-height:1.5;color:var(--ink2);margin:-4px 0 12px;max-width:72ch}
 .soonfine{font-size:11.5px;line-height:1.5;color:var(--ink2);margin:8px 0 0}
+.waiver{display:flex;gap:9px;align-items:flex-start;font-size:12px;line-height:1.5;color:var(--ink2);margin:12px 0 0;cursor:pointer}
+.waiver input{margin-top:3px;flex:none}
+.waiver a{color:var(--terra)}
 .newsm ul{margin:8px 0 12px 18px;padding:0;font-size:13px;line-height:1.55}
 .newsm form{display:flex;gap:8px;flex-wrap:wrap}.newsm input[type=email]{flex:1;min-width:180px}
 .newsm input[type=email],.nlcard input[type=email]{border:1.5px solid var(--line);background:var(--paper);color:var(--ink);font:inherit;font-size:14px;padding:10px 14px}
@@ -1072,6 +1075,8 @@ body.da-epure .protoflag{border-radius:6px}
 /* Sortie : l'édition de sortie, sans sélecteur de version. ?beta=1 rallume la complète. */
 window.GC_RELEASE = {
   edition: 'sortie',
+  // waiver: true,   // à rallumer quand www.gabarits-ceramique.com/cgv existe (case de renonciation avant paiement)
+  shop: ['bol-talon', 'theiere'],   // en vente : un produit Gumroad par pièce (m.gumroad dans atelier-v2.html)
   avis: { fr:'https://tally.so/r/EqqdQL', en:'https://tally.so/r/aOO502' },   // « Donner mon avis » : les deux Tally du nouvel atelier (FR / EN)
   footTitle: { fr:'Le nouvel atelier', en:'The new workshop' },
   foot: { fr:'Tes réglages et tes pièces restent sur cet appareil. L’ancienne version reste accessible depuis « Nouvelle pièce ».',
@@ -5226,14 +5231,18 @@ function openBuy(m){
          toute seule. Le <b>lien d'accès</b> reçu par email te sert à la retrouver sur un autre appareil.`,
         `Payment happens on Gumroad. When it's done you come back here and the shape unlocks by itself.
          The <b>access link</b> in your email lets you get it back on another device.`)}</p>
+      ${realPay(m)&&GC.waiver?`<label class="waiver"><input type="checkbox" id="waiver">
+        <span>${D(`Je demande l'accès immédiat au contenu numérique et je <b>renonce à mon droit de rétractation</b> (art. L221-28 du Code de la consommation). J'ai lu les <a href="${LEGAL_CGV}" target="_blank" rel="noopener">conditions de vente</a>.`,
+                  `I ask for immediate access to the digital content and <b>waive my right of withdrawal</b> (French Consumer Code art. L221-28). I have read the <a href="${LEGAL_CGV}" target="_blank" rel="noopener">terms of sale</a>.`)}</span></label>`:''}
       <div class="act">
         <button class="ghost" data-close>${D('Plus tard','Later')}</button>
-        <button class="btn" id="toGum">${D('Payer sur Gumroad','Pay on Gumroad')} ↗</button>
+        <button class="btn" id="toGum"${realPay(m)&&GC.waiver?' disabled':''}>${D('Payer sur Gumroad','Pay on Gumroad')} ↗</button>
       </div>
       <div style="text-align:center;margin-top:10px">
         <button class="link" id="already">${D("j'ai déjà mon lien",'I already have my link')}</button>
       </div>
     </div>`);
+  if(realPay(m)&&GC.waiver) $('#waiver').onchange=e=>{ $('#toGum').disabled=!e.target.checked; if(e.target.checked) track('waiver_checked',{shape:m.id}); };
   $('#toGum').onclick=()=> realPay(m) ? payGumroad(m) : fakeGumroad(m);
   $('#already').onclick=()=>openUnlock(m);
 }
@@ -5243,6 +5252,9 @@ function openBuy(m){
    de l'API publique (CORS ouvert, sans clé secrète). Le prototype (FEATURES.proto) garde
    le faux Gumroad pour les pièces sans produit. */
 const realPay = m => !!(m && m.gumroad && !FEATURES.proto);
+/* Case « je renonce à mon droit de rétractation » avant le paiement : éteinte tant que la page /cgv
+   n'existe pas (GC_RELEASE.waiver:true pour la rallumer). */
+const LEGAL_CGV = 'https://www.gabarits-ceramique.com/cgv';
 const LICENSE_RE = /^[0-9A-F]{8}(-[0-9A-F]{8}){3}$/i;
 function payGumroad(m){
   track('gumroad_open', {shape:m.id});
