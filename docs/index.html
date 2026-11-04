@@ -7918,12 +7918,18 @@ function readUrl(){
     if(m && shown(m) && owns(m.id)){ state.draft=newDraft(m); state.route='atelier'; state.tab='volume';
       res.shape=id; track('shape_selected', {shape:id, source:'url'}); }
     else if(m && inShop(m)){ state.route='produit'; state.productId=m.id; res.shape=id; }
+    else if(m && HIDE.includes(m.id) && m.paidLater && isSoon(m)){   // prisme, facettes, coussin : fiche « bientôt » + liste d'attente
+      if(FEATURES.catalogue) state.route='catalogue'; res.soon=m.id; }
     else if(['libre','tore'].includes(id) || /^(kur|tour)/.test(id) || (m && HIDE.includes(m.id))) res.v1=id;
   }
   return res;
 }
 const V1MIG = migrateV1();
 const URLIN = readUrl();
+/* un lien du site vers une forme restée dans l'ancienne version : on y va directement
+   (pas une autre pièce avec un message à rater) */
+if(URLIN.v1){ track('v1_fallback_redirect',{shape:URLIN.v1, source:'url'});
+  setTimeout(()=>location.replace(`${V1_URL}?forme=${encodeURIComponent(URLIN.v1)}&lang=${state.lang}`), 250); }
 { const h=/^#produit\/([\w-]+)/.exec(location.hash);
   if(h && FEATURES.catalogue && inShop(model(h[1]))){ state.route='produit'; state.productId=h[1]; history.replaceState(null,'',location.pathname); } }
 applyTheme();
@@ -7933,6 +7939,7 @@ applyDa();
 applyPaper();
 applyFxMark();
 render();
+if(URLIN.soon) setTimeout(()=>openSoon(URLIN.soon), 350);   // lien du site vers une pièce « bientôt »
 if(URLIN.v1) toastAction(D('Cette forme est dans l’ancienne version de l’outil.','This shape lives in the old version of the tool.'),
   D('Ouvrir ↗','Open ↗'), ()=>{ track('v1_fallback_click',{shape:URLIN.v1, source:'url'});
     window.open(`${V1_URL}?forme=${encodeURIComponent(URLIN.v1)}&lang=${state.lang}`,'_blank'); }, 12000);
