@@ -282,6 +282,8 @@ body.aside-ink .navb.fbsticker{color:var(--gc-encre)}
 .evq .evstar.on,.evq .evstar:hover{color:var(--glaze);border-color:var(--glaze);background:var(--wash)}
 .evq .evstar:hover{transform:translateY(-2px)}
 .evq .evstar.pop{animation:evpop .5s cubic-bezier(.3,1.6,.5,1) var(--d,0ms) both}
+.evq .evlater{text-align:center;margin-top:12px}
+.evq .evlater .link{font-size:13px;padding:6px 10px}
 .evq .evends{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink2);margin:0 4px 6px}
 .evq textarea{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:9px 11px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);resize:vertical}
 .evq textarea:focus,.evq .evoth input:focus{outline:none;border-color:var(--terra)}
@@ -3288,7 +3290,16 @@ function askEvolution(source){
         : D('Pas de souci 🙂 Trois questions rapides, la dernière est facultative.','No worries 🙂 Three quick questions, the last is optional.')}</p>
       <h3 style="--i:1">${D('Quelle note donnes-tu à Gabarits Céramique ?','How would you rate Gabarits Céramique?')}</h3>
       <div class="evstars" style="--i:2" role="group" aria-label="${D('Note de 1 à 5','Rating from 1 to 5')}">${[1,2,3,4,5].map(i=>`<button class="evstar" data-n="${i}" aria-label="${i}/5">★</button>`).join('')}</div>
-      <div class="evends" style="--i:3"><span>${D('bof','meh')}</span><span>${D('top','great')}</span></div>`);
+      <div class="evends" style="--i:3"><span>${D('bof','meh')}</span><span>${D('top','great')}</span></div>
+      <div class="evlater" style="--i:4"><button class="link" id="evLater">${D('Répondre plus tard','Answer later')}</button></div>`);
+    body.querySelector('#evLater').onclick=()=>{
+      track('evolution_later',{source});
+      if(!SONDAGE_DEMO){          // le sondage pourra se rouvrir à un prochain export : 2 fois de plus au plus, puis plus jamais tout seul
+        const k=(+lsGet('gabarits-evol-later')||0)+1; lsSet('gabarits-evol-later', String(k));
+        if(k<3){ try{ localStorage.removeItem('gabarits-evol-auto'); }catch(e){} }
+      }
+      closeModal();
+    };
     const st=[...body.querySelectorAll('.evstar')], box=body.querySelector('.evstars');
     let fixed=false;
     if(ans.note) st.forEach((x,k)=>x.classList.toggle('on',k<ans.note));
