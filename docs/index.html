@@ -238,6 +238,8 @@ body.aside-ink .navb.fbsticker{color:var(--gc-encre)}
 .evq .evart.s3 .evf{stroke-dashoffset:0}
 .evq .evart .msh{display:none}.evq .evart.s4 .msh{display:block}
 .evq .evart.s4 .evg{opacity:.8}
+.evq .evlead{font-size:13.5px;line-height:1.5;color:var(--ink);margin:0 0 6px}
+.evq .evlead b{color:var(--terra-d)}
 .evq .evh{font-size:11.5px;color:var(--ink2);margin:0 0 4px}
 .evq h3{font-size:16.5px;line-height:1.3;margin:0 0 10px}
 .evq #evBody.evin>*{opacity:0;transform:translateY(8px);animation:msin .42s ease forwards;animation-delay:calc(var(--i,0)*.07s)}
@@ -282,6 +284,9 @@ body.aside-ink .navb.fbsticker{color:var(--gc-encre)}
 .evq .evstar.on,.evq .evstar:hover{color:var(--glaze);border-color:var(--glaze);background:var(--wash)}
 .evq .evstar:hover{transform:translateY(-2px)}
 .evq .evstar.pop{animation:evpop .5s cubic-bezier(.3,1.6,.5,1) var(--d,0ms) both}
+.evq .evfx{position:absolute;left:0;right:0;top:0;height:0;pointer-events:none;overflow:visible;z-index:2}
+.evq .evfx span{position:absolute;left:50%;top:30px;font-size:calc(17px*var(--s,1));line-height:1;margin:-9px 0 0 -9px;opacity:0;will-change:transform,opacity;animation:evemoji var(--d,2.2s) cubic-bezier(.2,.7,.4,1) forwards}
+@keyframes evemoji{0%{opacity:0;transform:translate(var(--x0,0),10px) scale(.3) rotate(0)}16%{opacity:1;transform:translate(var(--x0,0),-4px) scale(1.2) rotate(var(--r,0deg))}100%{opacity:0;transform:translate(var(--x1,0),calc(var(--y,80px)*-1)) scale(.85) rotate(var(--r2,0deg))}}
 .evq .evlater{text-align:center;margin-top:12px}
 .evq .evlater .link{font-size:13px;padding:6px 10px}
 .evq .evends{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink2);margin:0 4px 6px}
@@ -3272,26 +3277,55 @@ function askEvolution(source){
   let cur=hasNote?2:1;
   m.querySelector('.mh .x').onclick=()=>{ track('evolution_dismiss',{source, step:cur}); closeModal(); };
   /* l'illustration avance avec les étapes : 1 trace · 2 émaille · 3 pied · 4 cœurs */
+  /* étape 1 : des emojis (cœurs, étoiles, sourires, feux d'artifice) sortent du bol, montent et s'effacent ; une salve au clic sur une étoile */
+  const FX_EMO=['❤️','💖','💛','💚','⭐','🌟','✨','😊','🥰','😍','🎆','🎇','🎉'];
+  const fxLayer=document.createElement('div'); fxLayer.className='evfx'; fxLayer.setAttribute('aria-hidden','true'); wrap.appendChild(fxLayer);
+  let fxTimer=0, fxRun=0;
+  const fxOne=()=>{
+    if(reduce || document.hidden || fxLayer.childElementCount>45) return;
+    const e=document.createElement('span'), em=FX_EMO[Math.random()*FX_EMO.length|0], big=(em==='🎆'||em==='🎇'||em==='🎉');
+    e.textContent=em;
+    const x0=(Math.random()-.5)*64, x1=x0+(Math.random()-.5)*130;
+    e.style.setProperty('--x0',x0.toFixed(0)+'px'); e.style.setProperty('--x1',x1.toFixed(0)+'px');
+    e.style.setProperty('--r',((Math.random()-.5)*40).toFixed(0)+'deg'); e.style.setProperty('--r2',((Math.random()-.5)*120).toFixed(0)+'deg');
+    e.style.setProperty('--s',(big?1.5:.85+Math.random()*.7).toFixed(2));
+    e.style.setProperty('--d',(1.7+Math.random()*1.3).toFixed(2)+'s');
+    e.style.setProperty('--y',(70+Math.random()*50).toFixed(0)+'px');
+    setTimeout(()=>e.remove(), parseFloat(e.style.getPropertyValue('--d'))*1000+300);   // pas d'attente de animationend : il peut ne jamais venir
+    fxLayer.appendChild(e);
+  };
+  const fxSet=on=>{
+    fxRun++; const my=fxRun; clearTimeout(fxTimer); fxTimer=0;
+    if(!on || reduce) return;
+    const loop=()=>{                       // boucle auto-reprogrammée : ne s'arrête que si l'étape change ou si la fenêtre se ferme
+      if(my!==fxRun || !m.isConnected) return;
+      fxOne(); if(Math.random()<.55) setTimeout(fxOne,120);
+      fxTimer=setTimeout(loop, 220+Math.random()*120);
+    };
+    loop();
+  };
+  const fxBurst=n=>{ for(let i=0;i<n;i++) setTimeout(fxOne, i*45); };
   const prog=n=>{ for(let k=1;k<=4;k++) art.classList.toggle('s'+k, k<=n); wrap.classList.toggle('s3', n>=3); };
-  const step=n=>{ cur=n; stepEl.textContent=n+' / 3'; backB.hidden = n<=1; prog(n); };
+  const step=n=>{ cur=n; stepEl.textContent=n+' / 3'; backB.hidden = n<=1; prog(n); fxSet(n===1); };
   requestAnimationFrame(()=>requestAnimationFrame(()=>prog(cur)));
   const render=html=>{ body.innerHTML=html; body.classList.remove('evin'); void body.offsetWidth; body.classList.add('evin'); };
   const later=(fn,ms)=>setTimeout(()=>{ if($('#mask')===m) fn(); }, reduce?0:ms);
   const end=()=>{
-    prog(4); stepEl.textContent=''; backB.hidden=true;
+    prog(4); stepEl.textContent=''; backB.hidden=true; fxSet(false);
     render(`<p class="evmerci">${D('Merci, c’est noté','Thanks, noted')} <svg class="evcheck" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M7 12.5 L10.5 16 L17 8.5"/></svg></p>
       <p class="evh" style="text-align:center;margin:0">${D('Ça m’aide à choisir la suite.','It helps me pick what comes next.')}</p>`);
     later(closeModal, 1900);
   };
   const s1=()=>{
     step(1);
-    render(`<p class="evh" style="--i:0">${source==='export'
-        ? D('Ton gabarit est prêt 🙂 Trois questions rapides pour m’aider à choisir la suite, la dernière est facultative.','Your template is ready 🙂 Three quick questions to help me decide what comes next, the last is optional.')
-        : D('Pas de souci 🙂 Trois questions rapides, la dernière est facultative.','No worries 🙂 Three quick questions, the last is optional.')}</p>
-      <h3 style="--i:1">${D('Quelle note donnes-tu à Gabarits Céramique ?','How would you rate Gabarits Céramique?')}</h3>
-      <div class="evstars" style="--i:2" role="group" aria-label="${D('Note de 1 à 5','Rating from 1 to 5')}">${[1,2,3,4,5].map(i=>`<button class="evstar" data-n="${i}" aria-label="${i}/5">★</button>`).join('')}</div>
-      <div class="evends" style="--i:3"><span>${D('bof','meh')}</span><span>${D('top','great')}</span></div>
-      <div class="evlater" style="--i:4"><button class="link" id="evLater">${D('Répondre plus tard','Answer later')}</button></div>`);
+    render(`<p class="evlead" style="--i:0">${source==='export'
+        ? D('Ton gabarit est prêt 🙂','Your template is ready 🙂')
+        : D('Pas de souci 🙂','No worries 🙂')} ${D('Ton avis est <b>essentiel</b> : c’est lui qui donne la direction des prochaines évolutions de l’atelier.','Your feedback is <b>essential</b>: it is what sets the direction for the workshop’s future.')}</p>
+      <p class="evh" style="--i:1;margin:0 0 8px">${D('Trois questions rapides, la dernière est facultative.','Three quick questions, the last is optional.')}</p>
+      <h3 style="--i:2">${D('Quelle note donnes-tu à Gabarits Céramique ?','How would you rate Gabarits Céramique?')}</h3>
+      <div class="evstars" style="--i:3" role="group" aria-label="${D('Note de 1 à 5','Rating from 1 to 5')}">${[1,2,3,4,5].map(i=>`<button class="evstar" data-n="${i}" aria-label="${i}/5">★</button>`).join('')}</div>
+      <div class="evends" style="--i:4"><span>${D('bof','meh')}</span><span>${D('top','great')}</span></div>
+      <div class="evlater" style="--i:5"><button class="link" id="evLater">${D('Répondre plus tard','Answer later')}</button></div>`);
     body.querySelector('#evLater').onclick=()=>{
       track('evolution_later',{source});
       if(!SONDAGE_DEMO){          // le sondage pourra se rouvrir à un prochain export : 2 fois de plus au plus, puis plus jamais tout seul
@@ -3309,7 +3343,7 @@ function askEvolution(source){
       b.onclick=()=>{
         if(fixed) return; fixed=true; lit(i);
         st.forEach((x,k)=>{ x.style.setProperty('--d',(k*70)+'ms'); if(k<=i) x.classList.add('pop'); });
-        const n=+b.dataset.n; ans.note=n; if(!SONDAGE_DEMO) lsSet('gabarits-note', String(n)); track('app_rating',{rating:n, source});
+        const n=+b.dataset.n; ans.note=n; fxBurst(16); if(!SONDAGE_DEMO) lsSet('gabarits-note', String(n)); track('app_rating',{rating:n, source});
         logSurvey(sid,{note:n, source});
         later(s2, 200+i*70+420);
       };
