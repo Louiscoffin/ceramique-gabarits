@@ -3328,6 +3328,11 @@ $('#drawerClose').onclick=()=>drawer(false);
 addEventListener('resize',()=>{ if(innerWidth>860) drawer(false); });
 
 /* ============================ ATELIER ============================ */
+/** sous-titre de l'atelier, en texte brut : le rendu complet et la mise à jour à chaque cote partagent la même phrase */
+function atelierSub(st){
+  const src=model(st.modelId), multi=isSet(st);
+  return `${src?t(src.name):D('forme libre','custom shape')}${multi?` · ${D('lot de','set of')} ${st.parts.length} ${D('formes','shapes')}`:''}${src&&src.diff?` · ${t(src.diff)}`:''} · ${setStats(st).pieces} ${D('pièces à découper','pieces to cut')} · ${st.savedId?D('enregistrée dans le carnet','saved to shape book'):D('non enregistrée','unsaved')}${st.dirty?' · '+D('modifiée','edited'):''}`;
+}
 function viewAtelier(){
   state.editing='draft';
   const st=state.draft, src=model(st.modelId), d=cur();
@@ -3335,7 +3340,7 @@ function viewAtelier(){
   if(!multi) state.ensemble=false;
   const S=multi?setStats(st):null;
   topbar(esc(t(st.name)),
-    `${src?esc(t(src.name)):D('forme libre','custom shape')}${multi?` · ${D('lot de','set of')} ${st.parts.length} ${D('formes','shapes')}`:''}${src&&src.diff?` · ${t(src.diff)}`:''} · ${setStats(st).pieces} ${D('pièces à découper','pieces to cut')} · ${st.savedId?D('enregistrée dans le carnet','saved to shape book'):D('non enregistrée','unsaved')}${st.dirty?' · '+D('modifiée','edited'):''}`,
+    esc(atelierSub(st)),
     `${src&&src.tuto&&owns(src.id)?`<button class="ghost sm" id="aTuto">${D('Tutoriel','Tutorial')} ↗</button>`:''}
      <button class="ghost sm" id="aNew">${D('Nouvelle pièce','New piece')}</button>
      <button class="ghost sm" id="aRename">${D('Renommer','Rename')}</button>
@@ -3646,8 +3651,8 @@ function fitHandles(svg){
 }
 addEventListener('resize', ()=>fitHandles(document.querySelector('#stage svg')));
 function refreshTopbarState(){
-  const d=state.draft, src=model(d.modelId), sub=$('#topbar .sub');
-  if(sub) sub.textContent=`${src?t(src.name):D('forme libre','custom shape')} · ${d.savedId?D('enregistrée dans le carnet','saved to shape book'):D('non enregistrée','unsaved')}${d.dirty?' · '+D('modifiée','edited'):''}`;
+  const sub=$('#topbar .sub');
+  if(sub) sub.textContent=atelierSub(state.draft);
 }
 
 /* ---------------------------------------------------------------
