@@ -652,6 +652,9 @@ button.rk:hover .chev,.ritem.open .chev,.rpiv.open .chev{opacity:1}
   display:flex;flex-direction:column;text-align:left;padding:0;color:inherit;position:relative;transition:transform .1s ease,box-shadow .1s ease}
 button.card{cursor:pointer}
 button.card:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--shadow)}
+.card .openhint{opacity:0;transform:translateY(-3px);transition:opacity .12s ease,transform .12s ease;border-color:var(--ink);color:var(--ink);background:var(--card);pointer-events:none}
+button.card.own:hover .openhint,button.card.own:focus-visible .openhint{opacity:1;transform:none}
+@media (hover:none){ .card .openhint{display:none} }
 .card .thumb{aspect-ratio:4/3;position:relative;border-bottom:1.5px solid var(--line);
   background:radial-gradient(110% 85% at 50% 10%,var(--card),var(--wash))}
 .card .thumb svg{position:absolute;left:7%;top:7%;width:86%;height:86%;display:block}
@@ -3332,7 +3335,7 @@ function viewAtelier(){
   if(!multi) state.ensemble=false;
   const S=multi?setStats(st):null;
   topbar(esc(t(st.name)),
-    `${src?esc(t(src.name)):D('forme libre','custom shape')}${multi?` · ${D('lot de','set of')} ${st.parts.length} ${D('pièces','pieces')}`:''} · ${st.savedId?D('enregistrée dans le carnet','saved to shape book'):D('non enregistrée','unsaved')}${st.dirty?' · '+D('modifiée','edited'):''}`,
+    `${src?esc(t(src.name)):D('forme libre','custom shape')}${multi?` · ${D('lot de','set of')} ${st.parts.length} ${D('formes','shapes')}`:''}${src&&src.diff?` · ${t(src.diff)}`:''} · ${setStats(st).pieces} ${D('pièces à découper','pieces to cut')} · ${st.savedId?D('enregistrée dans le carnet','saved to shape book'):D('non enregistrée','unsaved')}${st.dirty?' · '+D('modifiée','edited'):''}`,
     `${src&&src.tuto&&owns(src.id)?`<button class="ghost sm" id="aTuto">${D('Tutoriel','Tutorial')} ↗</button>`:''}
      <button class="ghost sm" id="aNew">${D('Nouvelle pièce','New piece')}</button>
      <button class="ghost sm" id="aRename">${D('Renommer','Rename')}</button>
@@ -4851,8 +4854,11 @@ function viewCatalogue(){
   k.oninput=e=>{ state.filter.q=e.target.value; const p=e.target.selectionStart; viewCatalogue();
     const n=$('#kq'); n.focus(); n.setSelectionRange(p,p); };
   $('#page').querySelectorAll('[data-prod]').forEach(b=>{
-    b.onclick=()=>go('produit',b.dataset.prod);
     const m=model(b.dataset.prod), S=EDITIONS.sortie;
+    b.onclick=()=>{ const has=!!m && owns(m.id);
+      track('catalogue_click', {shape:b.dataset.prod, prix:m?m.price:null, possede:has, destination:has?'atelier':'fiche'});
+      if(has) return openOwned(m);      // pièce déjà à toi : la fiche ferait doublon avec l'atelier
+      go('produit',b.dataset.prod); };
     if(EDITION==='complete' && m && (!(S.shop.includes(m.id) || (S.shopFree && m.price===0)) || S.hide.includes(m.id)))
       b.setAttribute('data-fx', m.parts?D('lot','set'):D('catalogue','catalogue'));
   });
@@ -4976,7 +4982,8 @@ function cardDims(st){
 }
 function cardHTML(m){
   const has=owns(m.id), st=newDraft(m), S=setStats(st), multi=isSet(st);
-  return `<button class="card" data-prod="${m.id}">
+  return `<button class="card${has?' own':''}" data-prod="${m.id}"${has?` title="${D("Ouvrir dans l'atelier",'Open in the workshop')}"`:''}>
+    ${has?`<span class="corner pill openhint" aria-hidden="true">${D('Ouvrir','Open')} →</span>`:''}
     ${m.novelty&&!has?`<span class="corner pill pay">${D('nouveau','new')}</span>`:''}
     ${multi?`<span class="corner pill" style="top:auto;bottom:9px;right:9px">${D('lot de','set of')} ${st.parts.length}</span>`:''}
     <div class="thumb">${thumbSVG(st,{W:230,H:172,tilt:.26})}</div>
@@ -5146,9 +5153,20 @@ function shotHTML(d,cap,exploded){
     pal:{ink:'#23271F',thin:'#565A4D',hide:'rgba(86,90,77,.35)',fill:'rgba(255,254,250,.62)',top:'rgba(231,239,233,.85)'}})}
     <span class="cap">${cap}</span></div>`;
 }
+/** pièce déjà à toi, depuis le catalogue : un clic, l'atelier s'ouvre sur ses cotes de départ */
+function openOwned(m){
+  if(state.draft && state.draft.dirty && !state.draft.savedId
+     && !confirm(D('La pièce en cours n’est pas enregistrée. Continuer ?','The current piece is not saved. Continue?'))) return;
+  state.draft=newDraft(m); state.ensemble=isSet(state.draft);
+  state.editing='draft'; state.tab='volume';
+  track('shape_selected', {shape:m.id, source:'catalogue'});
+  go('atelier');
+}
 function openInAtelier(m){
   state.draft = {...state.trial, savedId:null, dirty:false, parts:state.trial.parts.map(x=>clonePart(x))};
-  state.editing='draft'; state.tab='volume'; go('atelier');
+  state.editing='draft'; state.tab='volume';
+  track('shape_selected', {shape:m.id, source:'fiche'});
+  go('atelier');
   toast(D('Forme ouverte dans l’atelier','Shape opened in the workshop'));
 }
 
