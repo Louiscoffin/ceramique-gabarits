@@ -750,6 +750,46 @@ button.card.own:hover .openhint,button.card.own:focus-visible .openhint{opacity:
 .filters{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
 .chip{border:1.5px solid var(--line);background:var(--card);border-radius:2px;padding:5px 12px;font-size:12px;color:var(--ink2)}
 .chip.on{background:var(--terra);border-color:var(--terra-d);color:var(--on-terra)}
+.chip:disabled{opacity:.45;cursor:default}
+.catbar{display:flex;gap:8px;align-items:center;margin:0 0 12px}
+.catbar .search{flex:1;max-width:480px;margin:0;min-width:0;background:var(--card);padding:9px 14px;font-size:14px;border-radius:3px;box-shadow:0 1px 0 rgba(0,0,0,.03)}
+.catbar .search::placeholder{color:var(--ink2);opacity:.75}
+.fbtn{white-space:nowrap}
+.fbtn .n{font-family:var(--mono,'IBM Plex Mono',monospace);font-size:10.5px;opacity:.8}
+.fpanel{display:grid;gap:10px;margin:0 0 12px;padding:12px 14px;border:1.5px solid var(--line);border-radius:6px;background:var(--card)}
+.fpanel .fgrp{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.fpanel .lvllab{min-width:74px}
+.fpanel .link{justify-self:start;font-size:12.5px}
+.cattabs{display:flex;gap:22px;max-width:100%;overflow-x:auto;margin:0 0 16px;border-bottom:1.5px solid var(--line)}
+.cattab{border:0;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;background:transparent;padding:8px 1px 9px;font-size:14px;color:var(--ink2);white-space:nowrap;cursor:pointer}
+.cattab .n{font-family:var(--mono,'IBM Plex Mono',monospace);font-size:10.5px;opacity:.65;margin-left:4px}
+.cattab:hover{color:var(--ink)}
+.cattab.on{color:var(--ink);border-bottom-color:var(--ink);font-weight:600}
+.cattab:disabled{opacity:.4;cursor:default}
+.newband{margin:6px 0 18px;padding:12px 14px 6px;border:1.5px dashed var(--line);border-radius:6px}
+.newband .nbh{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
+.newband .nbh b{font-size:14px;color:var(--ink)}
+.hs{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x proximity;padding:0 2px 8px;margin:0 -2px;scrollbar-width:thin;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+.hs .card{flex:0 0 108px;width:108px;scroll-snap-align:start}
+.hs .card .meta{padding:8px 9px 9px}
+.hs .card .meta h3{font-size:12px!important;line-height:1.25}
+.hs .card .sub{font-size:10.5px;line-height:1.3;margin-top:2px}
+.hs .card .thumb{aspect-ratio:1/1}
+.hs .card .thumb svg{left:6%;top:6%;width:88%;height:88%}
+.hs::-webkit-scrollbar{height:6px}.hs::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+.newband .nbh .nbmore{margin-left:auto;font-size:12.5px;padding:2px 4px}
+.soontease{display:flex;align-items:center;gap:14px;width:100%;margin:6px 0 18px;padding:10px 14px;border:1.5px solid var(--line);border-radius:6px;background:var(--card);text-align:left;cursor:pointer;color:var(--ink)}
+.soontease:hover,.soontease:focus-visible{border-color:var(--ink)}
+.soontease .stth{display:flex;flex:none}
+.soontease .stth img{width:46px;height:46px;object-fit:contain;background:#fff;border:1.5px solid var(--line);border-radius:50%;margin-left:-10px;padding:3px;box-sizing:border-box}
+.soontease .stth img:first-child{margin-left:0}
+.soontease .stx{display:grid;gap:2px;flex:1;min-width:0}
+.soontease .stx b{font-size:14px}
+.soontease .stx small{font-size:12px;color:var(--ink2);line-height:1.35}
+.soontease .stgo{flex:none;font-size:13px;color:var(--ink2)}
+.chip .n{font-family:var(--mono,'IBM Plex Mono',monospace);font-size:10.5px;opacity:.7;margin-left:3px}
+.filters.lvlrow{margin-top:-6px}
+.filters .lvllab{font-family:var(--mono,'IBM Plex Mono',monospace);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);margin-right:2px}
 .search{margin-left:auto;border:1.5px solid var(--line);border-radius:2px;background:var(--paper);padding:6px 12px;font:inherit;font-size:12.5px;color:var(--ink);min-width:180px}
 .search:focus{outline:none;border-color:var(--terra)}
 .sect-title{display:flex;align-items:baseline;gap:12px;margin:26px 0 12px}
@@ -1519,6 +1559,7 @@ const MODELS = [
    famille. Les dix formes qu'il contient se rangent avec leurs voisines,
    au rayon où on les cherche. */
 const FAMILIES = ['Vaisselle','Vase','Objet','Mural'];
+const LEVELS = ['Débutant','Intermédiaire','Avancé'];   // filtre « niveau » du catalogue
 /* Produits qui ne sont pas des formes : ils s'achètent par le même parcours
    (récap → Gumroad → lien collé) mais n'apparaissent pas dans la grille. */
 const EXTRAS = [
@@ -1687,7 +1728,7 @@ const state = {
   view: 'assemble',            // assemble | exploded
   tab:  'volume',              // volume | photo | planche
   photo:null, ph:{x:0,y:0,s:1,o:.55},
-  filter:{fam:'Tout', q:''}
+  filter:{fam:'Tout', q:'', lvl:'Tout', view:'free', open:false}
 };
 function persist(){
   save(LS.carnet,state.carnet); save(LS.owned,state.owned); save(LS.draft,state.draft);
@@ -4914,19 +4955,33 @@ function openNewPiece(){
       <div class="meta"><h3 style="font-size:13.5px">${esc(title)}</h3><div class="sub">${sub}</div></div></button>`;
   const presets=V1_PRESETS.map((p,i)=>({p, i, st:draftFromV1(p.shape, p.dims, D(p.name,p.en))}))
     .filter(x=>x.st && shown(model(x.st.modelId)) && owns(x.st.modelId));   // une build limitée (ONLY) ne les montre pas
-  const fams=FAMILIES.map(f=>[f, mine.filter(x=>x.family===f)]).filter(([,l])=>l.length);
+  /* Nouvelle pièce = accès rapide (comme dans la V1) : nouveautés de Louis, modèles prêts à l'emploi, ses formes payantes ;
+     la liste complète des formes est dans le catalogue, pas répétée ici */
+  const nouv=MODELS.filter(x=>x.novelty && inShop(x) && !x.soonOnly).slice(0,4);
+  const ownedPaid=mine.filter(x=>x.price>0 && !nouv.includes(x));
+  const freeShapes=mine.filter(x=>x.price===0), nFreeShapes=freeShapes.length;
+  const nouvCard=x=>{ const own=owns(x.id), st=newDraft(x);
+    return `<button class="card" data-nov="${x.id}">
+      <div class="thumb fit">${cardThumb(x,st)}</div>
+      <div class="meta"><h3 style="font-size:13.5px">${esc(t(x.name))}</h3>
+        <div class="sub">${own?'✓ '+D('à toi · ouvrir','yours · open'):`${eur(x.price)} · ${D('nouveau','new')}${x.tuto?' · '+D('avec tutoriel','with tutorial'):''}`}</div></div></button>`; };
   const grid='display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px';
   const m=modal(`<div class="mh"><h3>${D('Nouvelle pièce','New piece')}</h3><button class="x" data-close>×</button></div>
     <div class="mb">
       <p>${D("Pars d'un modèle ou d'une forme. Les cotes restent modifiables sur l'aperçu.",
              'Start from a model or a shape. Dimensions stay adjustable on the preview.')}</p>
+      ${nouv.length?`<div class="newband" style="margin:12px 0 6px"><div class="nbh"><b>${D('Nouveautés','New')}</b><span class="tagsm">${D('les dernières pièces','latest pieces')}</span>
+          <button class="link nbmore" id="novAll">${D('Voir tout','See all')} →</button></div>
+        <div class="hs">${nouv.map(nouvCard).join('')}</div></div>`:''}
       ${presets.length?`<div class="sect-title" style="margin:14px 0 8px"><h3 style="font-size:16px">${D('Pour commencer','To start with')}</h3>
         <span class="tagsm">${D('modèles prédéfinis','starter models')}</span></div>`:''}
-      <div style="${grid}">${presets.map(x=>card(`data-preset="${x.i}"`, x.st, D(x.p.name,x.p.en),
+      <div class="hs">${presets.map(x=>card(`data-preset="${x.i}"`, x.st, D(x.p.name,x.p.en),
         esc(t(model(x.st.modelId).name)))).join('')}</div>
-      ${fams.map(([f,l])=>`<div class="sect-title" style="margin:18px 0 8px"><h3 style="font-size:16px">${t(f)}</h3></div>
-        <div style="${grid}">${l.map(x=>card(`data-pick="${x.id}"`, newDraft(x), t(x.name),
-          `${x.parts?x.parts.length+' '+D('formes','shapes')+' · ':''}${x.price===0?D('forme de base','basic shape'):state.owned[x.id]?.key==='OFFERT'?D('offert','gift'):D('acheté','owned')}`)).join('')}</div>`).join('')}
+      ${nFreeShapes?`<div class="sect-title" style="margin:18px 0 8px"><h3 style="font-size:16px">${D('Formes gratuites','Free shapes')}</h3><span class="tagsm">${nFreeShapes} · ${D('fais défiler','scroll')} →</span></div>
+        <div class="hs">${freeShapes.map(x=>card(`data-pick="${x.id}"`, newDraft(x), t(x.name), `${x.parts?x.parts.length+' '+D('formes','shapes')+' · ':''}${t(x.diff)}`)).join('')}</div>`:''}
+      ${ownedPaid.length?`<div class="sect-title" style="margin:18px 0 8px"><h3 style="font-size:16px">${D('Tes formes','Your shapes')}</h3><span class="tagsm">${D('achetées','owned')}</span></div>
+        <div class="hs">${ownedPaid.map(x=>card(`data-pick="${x.id}"`, newDraft(x), t(x.name),
+          `${x.parts?x.parts.length+' '+D('formes','shapes')+' · ':''}${state.owned[x.id]?.key==='OFFERT'?D('offert','gift'):D('acheté','owned')}`)).join('')}</div>`:''}
       ${!FEATURES.lots && GC.teasers ? `<div class="sect-title" style="margin:18px 0 6px"><h3 style="font-size:16px">${D('Lots de pièces assorties','Matching sets')}</h3> ${SOON_TAG()}</div>
         <button class="link soonlink" data-teaser="lots" style="padding:0;font-size:12.5px">${D('Tasse & coupelle, bol & assiette, réglés ensemble','Cup & saucer, bowl & plate, adjusted together')} →</button>` : ''}
       ${ONLY?'':`<div class="sect-title" style="margin:18px 0 6px"><h3 style="font-size:16px">${D('Dans l’ancienne version','In the old version')}</h3>
@@ -4934,7 +4989,7 @@ function openNewPiece(){
       <p style="margin:0 0 6px;font-size:12.5px">${V1_ONLY.filter(x=>!x.hidden || HIDE.includes(x.k)).map(x=>`<a class="link" style="padding:0 10px 0 0" href="${V1_URL}${x.q}${x.q?'&':'?'}lang=${state.lang}" target="_blank" rel="noopener"
           data-v1="${x.k}">${D(x.fr,x.en)} ↗</a>`).join('')}</p>`}
       ${FEATURES.catalogue ? `<div style="margin-top:14px;text-align:center">
-        <button class="link" id="toCat">${D('voir le catalogue','see the catalogue')} · ${(n=>`${n} ${n>1?D('formes à ajouter','shapes to add'):D('forme à ajouter','shape to add')}`)(MODELS.filter(x=>inShop(x)&&!owns(x.id)).length)}</button>
+        <button class="ghost sm" id="toCat">${D('Voir tout le catalogue','Browse the full catalogue')} · ${(n=>`${n} ${n>1?D('formes à ajouter','shapes to add'):D('forme à ajouter','shape to add')}`)(MODELS.filter(x=>inShop(x)&&!owns(x.id)).length)}</button>
       </div>` : ''}
     </div>`, {cls:'modal edm'});
   const leave=()=>!(state.draft.dirty && !state.draft.savedId && !confirm(D('La pièce en cours n’est pas enregistrée. Continuer ?','The current piece is not saved. Continue?')));
@@ -4946,6 +5001,13 @@ function openNewPiece(){
     const p=V1_PRESETS[+b.dataset.preset];
     track('preset_loaded', {preset:p.name, shape:p.shape});
     open(draftFromV1(p.shape, p.dims, D(p.name,p.en)), {shape:p.shape, source:'preset'}); });
+  m.querySelector('#novAll')?.addEventListener('click',()=>{ track('nouveautes_voir_tout',{source:'nouvelle_piece'});
+    state.filter.view='paid'; state.filter.fam='Tout'; state.filter.lvl='Tout'; state.filter.q=''; closeModal(); go('catalogue'); });
+  m.querySelectorAll('[data-nov]').forEach(b=>b.onclick=()=>{
+    const x=model(b.dataset.nov), has=owns(x.id);
+    track('nouveaute_click', {shape:x.id, possede:has, source:'nouvelle_piece'});
+    if(has){ if(!leave()) return; open(newDraft(x), {shape:x.id, source:'nouvelle_piece_nouveaute'}); }
+    else { closeModal(); go('produit', x.id); } });
   m.querySelectorAll('[data-v1]').forEach(a=>a.onclick=()=>track('v1_fallback_click', {shape:a.dataset.v1}));
   m.querySelector('#toCat')?.addEventListener('click',()=>{ closeModal(); go('catalogue'); });
 }
@@ -5065,12 +5127,36 @@ function viewCatalogue(){
   topbar(D('Catalogue','Catalogue'),
     `${CAT.length} ${D('formes','shapes')} · ${freeM.length} ${D('gratuites','free')} · ${owned} ${owned>1?D('achetées','bought'):D('achetée','bought')}${(n=>n?` · ${n} ${D('bientôt','coming soon')}`:'')(MODELS.filter(isSoon).length)}`,
     `<button class="ghost sm" id="restore">${D("J'ai déjà acheté",'I already bought')}</button>`);
-  const q=state.filter.q.toLowerCase(), fam=state.filter.fam;
-  const match=m=>(fam==='Tout'||m.family===fam)&&(!q||(m.name+' '+m.blurb).toLowerCase().includes(q));
+  const q=state.filter.q.toLowerCase(), fam=state.filter.fam, lvl=state.filter.lvl||'Tout';
+  const matchNoLvl=m=>(fam==='Tout'||m.family===fam)&&(!q||(m.name+' '+m.blurb).toLowerCase().includes(q));
+  const match=m=>matchNoLvl(m)&&(lvl==='Tout'||m.diff===lvl);
   const packed=CAT.filter(m=>m.pack&&match(m));
   const paid=CAT.filter(m=>m.price>0&&!m.pack&&match(m)), free=CAT.filter(m=>m.price===0&&match(m));
   const soon=MODELS.filter(m=>isSoon(m)&&match(m));
   const packOwned=owns('cone'), packN=CAT.filter(m=>m.pack==='base').length;
+  /* vues du catalogue : les gratuites d'abord (ce que la plupart viennent chercher), les payantes à un clic ou en
+     bande « Nouveautés » après la 1re rangée, les « bientôt » repliées en une ligne ; une recherche regarde partout */
+  const nFree=free.length, nPaid=paid.length+packed.length, nSoon=soon.length;
+  let view=q ? 'all' : (state.filter.view||'free');
+  if(view!=='all' && ((view==='free'&&!nFree)||(view==='paid'&&!nPaid)||(view==='soon'&&!nSoon))) view='all';
+  /* effectif par niveau : même périmètre que l'onglet affiché (+ famille et recherche en cours) */
+  const inView=m=>view==='all'||(view==='soon'?isSoon(m):(!isSoon(m)&&(view==='free'?m.price===0:m.price>0)));
+  const lvlCount=l=>[...CAT,...MODELS.filter(isSoon)].filter(m=>matchNoLvl(m)&&inView(m)&&(l==='Tout'||m.diff===l)).length;
+  const nAct=(fam!=='Tout'?1:0)+(lvl!=='Tout'?1:0);
+  const tabsHTML=`<div class="cattabs" role="tablist" aria-label="${D('Type de formes','Kind of shapes')}">${
+    [['free',D('Gratuites','Free'),nFree],['paid',D('Payantes','Paid'),nPaid],['soon',D('Bientôt','Coming soon'),nSoon],['all',D('Tout','All'),nFree+nPaid+nSoon]]
+    .map(([k,l,n])=>`<button role="tab" class="cattab${view===k?' on':''}" data-view="${k}" aria-selected="${view===k}"${n===0&&k!=='all'?' disabled':''}>${l} <span class="n">${n}</span></button>`).join('')}</div>`;
+  const newBand=paid.length?`<div class="newband"><div class="nbh"><b>${D('Nouveautés','New')}</b><span class="tagsm">${D('achat unique','one-off')}</span></div>
+      <div class="grid">${paid.map(cardHTML).join('')}</div></div>`:'';
+  const freeHead=`<div class="sect-title"><h3>${D('Pour commencer','To start with')}</h3><span class="tagsm">${D('gratuites','free')}</span></div>`;
+  const BAND_AT=5;   // la bande s'insère après la 1re rangée de gratuites
+  const freeHTML=!free.length?'':(view==='free' && paid.length
+    ? freeHead+`<div class="grid">${free.slice(0,BAND_AT).map(cardHTML).join('')}</div>`+newBand+(free.length>BAND_AT?`<div class="grid">${free.slice(BAND_AT).map(cardHTML).join('')}</div>`:'')
+    : (view==='free'||view==='all') ? freeHead+`<div class="grid">${free.map(cardHTML).join('')}</div>` : '');
+  const soonTease=(nSoon && (view==='free'||view==='paid'))?`<button class="soontease" data-view="soon">
+      <span class="stth" aria-hidden="true">${soon.slice(0,5).map(m=>{ const p=(typeof PRODUCT_PHOTOS!=='undefined'&&PRODUCT_PHOTOS[m.id]||[])[0]; return p?`<img src="${p}" alt="" loading="lazy">`:''; }).join('')}</span>
+      <span class="stx"><b>${nSoon} ${D('pièces arrivent bientôt','pieces coming soon')}</b><small>${D('Choisis celles qui t’intéressent : on te prévient le jour de leur sortie.','Pick the ones you like: we’ll let you know the day they come out.')}</small></span>
+      <span class="stgo">${D('Voir','See')} →</span></button>`:'';
   $('#page').innerHTML=`
     ${(show=>`<div class="hero hero2${show?'':' solo'}">
       <div class="hl">
@@ -5093,16 +5179,24 @@ function viewCatalogue(){
         <span class="fine">${D('Désinscription en un clic. Aucune revente d’adresse.','Unsubscribe in one click. We never sell your address.')}</span>
       </form>`:''}
     </div>`)(!(GC_FIXED || lsGet('gabarits-news-sub')))}
-    <div class="filters">
-      ${['Tout',...FAMILIES].map(f=>`<button class="chip${fam===f?' on':''}" data-fam="${f}">${f==='Tout'?D('Tout','All'):t(f)}</button>`).join('')}
-      <input class="search" id="kq" placeholder="${D('rechercher une forme…','search a shape…')}" value="${esc(state.filter.q)}">
+    <div class="catbar">
+      <input class="search" id="kq" type="search" placeholder="${D('rechercher une forme…','search a shape…')}" value="${esc(state.filter.q)}" aria-label="${D('Rechercher une forme','Search a shape')}">
+      <button class="chip fbtn${nAct?' on':''}" id="fToggle" aria-expanded="${!!state.filter.open}" aria-controls="fPanel">${D('Filtres','Filters')}${nAct?` <span class="n">${nAct}</span>`:''} <span aria-hidden="true">${state.filter.open?'▴':'▾'}</span></button>
     </div>
-    ${free.length?`<div class="sect-title"><h3>${D('Pour commencer','To start with')}</h3><span class="tagsm">${D('gratuites','free')}</span></div>
-      <div class="grid">${free.map(cardHTML).join('')}</div>`:''}
-    ${paid.length?`${free.length?`<div class="sect-title"><h3>${D('À l’unité','Single shapes')}</h3><span class="tagsm">${D('achat unique','one-off')}</span></div>`:''}
-      <div class="grid">${paid.map(cardHTML).join('')}</div>`
-      :(packed.length||free.length||soon.length?'':`<div class="empty"><h3>${D('Aucune forme ici','Nothing here')}</h3><p>${D('Change de famille ou vide la recherche.','Try another family or clear the search.')}</p></div>`)}
-    ${packed.length?`
+    ${state.filter.open?`<div class="fpanel" id="fPanel">
+      <div class="fgrp" role="group" aria-label="${D('Catégorie','Category')}"><span class="lvllab">${D('Catégorie','Category')}</span>
+        ${['Tout',...FAMILIES].map(f=>`<button class="chip${fam===f?' on':''}" data-fam="${f}" aria-pressed="${fam===f}">${f==='Tout'?D('Toutes','All'):t(f)}</button>`).join('')}</div>
+      <div class="fgrp" role="group" aria-label="${D('Niveau','Level')}"><span class="lvllab">${D('Niveau','Level')}</span>
+        ${['Tout',...LEVELS].map(l=>{ const n=lvlCount(l), on=lvl===l;
+          return `<button class="chip${on?' on':''}" data-lvl="${l}" aria-pressed="${on}"${n===0&&!on?' disabled':''}>${l==='Tout'?D('Tous','All'):t(l)} <span class="n">${n}</span></button>`; }).join('')}</div>
+      ${nAct?`<button class="link" id="fReset">${D('Tout réinitialiser','Reset all')}</button>`:''}
+    </div>`:''}
+    ${tabsHTML}
+    ${freeHTML}
+    ${paid.length && (view==='paid'||view==='all')?`${(view==='all'&&free.length)?`<div class="sect-title"><h3>${D('À l’unité','Single shapes')}</h3><span class="tagsm">${D('achat unique','one-off')}</span></div>`:''}
+      <div class="grid">${paid.map(cardHTML).join('')}</div>`:''}
+    ${(nFree+nPaid+nSoon)?'':`<div class="empty"><h3>${D('Aucune forme ici','Nothing here')}</h3><p>${D('Change de famille ou vide la recherche.','Try another family or clear the search.')}</p></div>`}
+    ${packed.length&&(view==='paid'||view==='all')?`
       <div class="sect-title"><h3>${D('Pack formes de base','Basics pack')}</h3>
         <span class="tagsm">${packN} ${D('formes','shapes')} · ${packOwned?D('à toi','yours'):eur(PACK.price)}</span></div>
       <div class="packband">
@@ -5120,7 +5214,8 @@ function viewCatalogue(){
           : `<button class="btn" id="buyPack">${D('Débloquer le pack','Unlock the pack')} · ${eur(PACK.price)}</button>`}</div>
       </div>
       <div class="grid">${packed.map(cardHTML).join('')}</div>`:''}
-    ${soon.length?`<div class="sect-title"><h3>${D('Bientôt disponibles','Coming soon')}</h3>
+    ${soonTease}
+    ${soon.length&&(view==='soon'||view==='all')?`<div class="sect-title"><h3>${D('Bientôt disponibles','Coming soon')}</h3>
         <span class="tagsm">${D('une liste d’attente par pièce','one waiting list per piece')}</span></div>
       <p class="soonnote">${D('Chaque pièce a sa propre liste d’attente : laisse ton email sur la fiche de chacune de celles qui t’intéressent. Tu recevras un seul email par pièce, le jour où elle sort. Ce n’est pas la newsletter : rien d’autre ne t’est envoyé.',
         'Each piece has its own waiting list: leave your email on the page of every piece you’re interested in. You’ll get one email per piece, the day it comes out. This is not the newsletter: nothing else is sent to you.')}</p>
@@ -5148,6 +5243,10 @@ function viewCatalogue(){
   $('#restore').onclick=()=>openRestore();
   $('#buyPack')?.addEventListener('click',()=>openPack());
   $('#page').querySelectorAll('[data-fam]').forEach(b=>b.onclick=()=>{ state.filter.fam=b.dataset.fam; viewCatalogue(); });
+  $('#page').querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{ state.filter.view=b.dataset.view; track('catalogue_onglet',{vue:b.dataset.view}); viewCatalogue(); window.scrollTo?.(0,0); $('#page').scrollTop=0; });
+  $('#fToggle')?.addEventListener('click',()=>{ state.filter.open=!state.filter.open; viewCatalogue(); });
+  $('#fReset')?.addEventListener('click',()=>{ state.filter.fam='Tout'; state.filter.lvl='Tout'; viewCatalogue(); });
+  $('#page').querySelectorAll('[data-lvl]').forEach(b=>b.onclick=()=>{ state.filter.lvl=b.dataset.lvl; track('catalogue_filtre_niveau',{niveau:b.dataset.lvl}); viewCatalogue(); });
   const k=$('#kq');
   k.oninput=e=>{ state.filter.q=e.target.value; const p=e.target.selectionStart; viewCatalogue();
     const n=$('#kq'); n.focus(); n.setSelectionRange(p,p); };
