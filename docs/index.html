@@ -324,6 +324,8 @@ body.aside-ink .navb.fbsticker{color:var(--gc-encre)}
 .msm2 .kick b{font-size:15px;color:var(--terra);letter-spacing:0}.msm2 .kick sup{font-size:8px}
 .msm2 h3{font-size:21px;margin:6px 0 6px;line-height:1.2}
 .msm2 .lead{font-size:13.5px;line-height:1.55;margin:0 0 10px;color:var(--ink)}
+.msm2 h3 .mscount{color:var(--terra)}
+.msm2 .msalt{font-size:12.5px;color:var(--ink2);text-decoration:underline;text-underline-offset:3px}
 .msuses{list-style:none;margin:0 auto 14px;padding:0;display:grid;gap:6px;max-width:320px;text-align:left}
 .msuses li{display:flex;gap:10px;align-items:center;font-size:13px;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:var(--wash);
   opacity:0;transform:translateY(6px);animation:msin .45s ease forwards;animation-delay:calc(1.6s + var(--i)*.18s)}
@@ -3226,18 +3228,18 @@ function showMilestone(n){
   const m=modal(`<div class="mh"><span></span><button class="x" data-close aria-label="${D('Fermer','Close')}">×</button></div>
     <div class="mb msm2">
       ${MS_ART}
-      <div class="kick">${D('ton','your')} <b class="mscount" data-to="${n}">0</b><sup>${ord}</sup> ${D('gabarit','template')}</div>
-      <h3>${D('C’est toi qui fais vivre l’outil','You keep this tool alive')}</h3>
-      <p class="lead">${D('Gabarits céramique est gratuit, sans pub et sans compte. Il tient grâce aux dons de celles et ceux qui s’en servent.',
-        'Gabarits céramique is free, ad-free and account-free. It keeps going thanks to tips from the people who use it.')}</p>
-      <ul class="msuses">
-        <li style="--i:0"><span>🏺</span>${D('de nouvelles formes à monter','new shapes to build')}</li>
-        <li style="--i:1"><span>🔥</span>${D('des pièces cuites pour tester chaque gabarit','fired pieces to test every template')}</li>
-        <li style="--i:2"><span>🤍</span>${D('un outil qui reste gratuit pour tout le monde','a tool that stays free for everyone')}</li>
-      </ul>
+      <h3>${D('Vous avez créé','You’ve made')} <span class="mscount" data-to="${n}">0</span> ${D('gabarits','templates')} 🎉</h3>
+      <p class="lead">${D('Autant de patrons que vous n’avez pas eu à tracer à la main, retrait de cuisson compris.',
+        'That’s that many patterns you didn’t have to draw by hand, firing shrinkage included.')}</p>
+      <p class="lead">${D('Je développe cet outil seul, sur mon temps libre. Tout ce que vous utilisez aujourd’hui <b>restera gratuit</b>, sans publicité.',
+        'I build this tool on my own, in my spare time. Everything you use today <b>will stay free</b>, with no ads.')}</p>
+      <p class="lead">${D('S’il vous a fait gagner du temps, un café m’aide à le faire connaître et à ajouter de nouvelles formes. 🤎',
+        'If it saved you time, a coffee helps me spread the word and add new shapes. 🤎')}</p>
       <div class="act">
-        <a class="btn mscta" id="msTip" href="${BMAC_URL}" target="_blank" rel="noopener">${D('☕ Offrir un café','☕ Buy me a coffee')}</a>
-        <span class="tagsm">${D('montant libre, sans minimum · une fois suffit','any amount, no minimum · once is enough')}</span>
+        <a class="btn mscta" id="msTip" href="${BMAC_URL}" target="_blank" rel="noopener">${D('☕ Offrir un café (ou un pain de terre)','☕ Buy me a coffee (or a block of clay)')}</a>
+        <span class="tagsm">${D('Montant libre, sans minimum','Any amount, no minimum')}</span>
+        ${(()=>{ const tm=model('theiere'); return tm && inShop(tm) && !owns(tm.id)
+          ? `<button class="link msalt" id="msTea" type="button">${D('Pas du genre café ? Faites-vous une théière 🫖','Not a coffee person? Make yourself a teapot 🫖')}</button>` : ''; })()}
         <button class="link" id="msLater">${D('Pas cette fois','Not this time')}</button>
       </div></div>`, {cls:'modal msmodal'});
   /* confettis de terre (céladon, biscuit, encre), tirés une fois */
@@ -3261,6 +3263,7 @@ function showMilestone(n){
     lsSet('gabarits-news-off','1'); lsSet('gabarits-tip-fait', String(Date.now()));
     m.querySelector('.msm2').classList.add('merci');
     setTimeout(closeModal, 900); };
+  m.querySelector('#msTea')?.addEventListener('click',()=>{ track('milestone_theiere_click',{export_no:n}); closeModal(); go('produit','theiere'); });
   m.querySelector('#msLater').onclick=e=>{ track('milestone_dismiss',{via:'plus_tard'}); flyFrom(e.currentTarget); askEvolution('milestone'); };
   m.querySelector('.mh .x').addEventListener('click',()=>track('milestone_dismiss',{via:'croix'}));
   m.querySelector('.mh .x').onclick=()=>askEvolution('milestone');
