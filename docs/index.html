@@ -3167,11 +3167,14 @@ const tipRecent = () => { const t=+lsGet('gabarits-tip-fait')||0; return t>0 && 
 if(lsGet('gabarits-xsessions')===null)                 // les habitués ne repartent pas de zéro
   lsSet('gabarits-xsessions', String(Math.min(+lsGet('gabarits-exports')||0, MSTONE_AT-1)));
 let tipShown=false, msPending=0;
+/* la fenêtre de don (palier) ne s'ouvre que pour une pièce GRATUITE : qui a acheté la pièce ne se la voit pas demander */
+let lastExportId=null;
+const exportIsPaid = () => { const m=lastExportId && MODELS.concat(typeof EXTRAS!=='undefined'?EXTRAS:[]).find(x=>x.id===lastExportId); return !!m && m.price>0; };
 function afterExport(){
   const n=(+lsGet('gabarits-exports')||0)+1; lsSet('gabarits-exports', String(n));
   let sn=+lsGet('gabarits-xsessions')||0;
   try{ if(!sessionStorage.getItem('gabarits-xsession')){ sn++; sessionStorage.setItem('gabarits-xsession','1'); lsSet('gabarits-xsessions', String(sn)); } }catch(e){}
-  const palier = n%MSTONE_AT===0 && !tipRecent();      // 3e, 6e, 9e export (impression, PDF, SVG)
+  const palier = n%MSTONE_AT===0 && !tipRecent() && !exportIsPaid();      // 3e, 6e, 9e export (impression, PDF, SVG)
   if($('#mask')){ if(palier) msPending=n; return; }      // une modale est ouverte : le palier attend qu'elle se ferme
   /* sondage de sortie : proposé tout seul au 2e export (le 1er = newsletter, le 3e = don, donc rien d'autre ce jour-là) ;
      un visiteur qui a déjà un historique le reçoit au premier export qui n'est ni un palier de don ni la newsletter.
@@ -6139,6 +6142,7 @@ function printSheet(d,m){
   let z=$('#printzone');
   if(!z){ z=document.createElement('div'); z.id='printzone'; document.body.appendChild(z); }
   z.innerHTML=sheetHTML(d,m,{print:true});
+  lastExportId=(m&&m.id)||state.draft.modelId;
   track('export_print', {shape:(m&&m.id)||state.draft.modelId, paper:state.paper});
   printThen();
 }
@@ -7442,6 +7446,7 @@ async function exportPDF(st){
     const slug=(st.name||'piece').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
       .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
     try{ doc.save(`gabarits-${slug}-${paper().name.toLowerCase()}.pdf`); }catch(e){}
+    lastExportId=st.modelId;
     track('export_pdf', {shape:st.modelId, pages:doc.getNumberOfPages(), feuilles:plan.sheets.length, unit:state.unit, paper:state.paper, fix:printFix()});
     setTimeout(afterExport, 1400);
     toastAction(D(`PDF prêt · ${doc.getNumberOfPages()} pages`,`PDF ready · ${doc.getNumberOfPages()} pages`),
@@ -7894,7 +7899,7 @@ function cutPlan(c){
   return {sheets};
 }
 function printCutter(c){
-  track('export_print', {shape:'emporte_'+c.shape, kind:'emporte', paper:state.paper});
+  lastExportId=null; track('export_print', {shape:'emporte_'+c.shape, kind:'emporte', paper:state.paper});
   const G=cutStats(gabCut(c)), F=cutStats(c);
   let ps=$('#pagesize');
   if(!ps){ ps=document.createElement('style'); ps.id='pagesize'; document.head.appendChild(ps); }
@@ -7923,7 +7928,7 @@ function printCutter(c){
 }
 async function exportCutterPDF(c){
   if(pdfBusy) return;
-  track('export_pdf', {shape:'emporte_'+c.shape, kind:'emporte', paper:state.paper, fix:printFix()}); setTimeout(afterExport, 1400);
+  lastExportId=null; track('export_pdf', {shape:'emporte_'+c.shape, kind:'emporte', paper:state.paper, fix:printFix()}); setTimeout(afterExport, 1400);
   pdfBusy=true; toast(D('Préparation du PDF…','Building the PDF…'), 9000);
   try{
     if(!await ensurePdfLibs()){ toast(D('Impossible de charger la librairie PDF : vérifie la connexion','Could not load the PDF library: check your connection')); return; }
@@ -8092,6 +8097,7 @@ function exportPieceSVG(st, nu){
   const a=document.createElement('a');
   a.href=url; a.download=`gabarits-${slug}${nu?'-decoupe':''}.svg`;
   document.body.appendChild(a); a.click(); a.remove();
+  lastExportId=st.modelId;
   track('export_svg', {shape:st.modelId, variante:nu?'contour':'cotes'});
   setTimeout(afterExport, 600);
   toastAction(nu?D('SVG du contour exporté','Outline SVG exported'):D('SVG coté exporté','Dimensioned SVG exported'),
@@ -8099,7 +8105,7 @@ function exportPieceSVG(st, nu){
   setTimeout(()=>URL.revokeObjectURL(url), 60000);
 }
 function exportCutterSVG(c, nu){
-  track('export_svg', {shape:'emporte_'+c.shape, kind:'emporte', variante:nu?'contour':'cotes'}); setTimeout(afterExport, 600);
+  lastExportId=null; track('export_svg', {shape:'emporte_'+c.shape, kind:'emporte', variante:nu?'contour':'cotes'}); setTimeout(afterExport, 600);
   const blob=new Blob([cutSVGDoc(c,nu)], {type:'image/svg+xml;charset=utf-8'});
   const url=URL.createObjectURL(blob);
   const slug=(cutLabel(c)||'emporte-piece').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
