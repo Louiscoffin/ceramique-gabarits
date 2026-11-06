@@ -393,7 +393,8 @@ body.aside-ink .sbprefs .unitsw button.on{background:var(--gc-vert-clair);color:
   body.sb-rail .sbfoot{display:block;font-size:0;border-top:0;padding:6px 0;text-align:center}
   body.sb-rail .sbfoot>:not(.sbfb){display:none!important}
   body.sb-rail .sbfb .link{justify-content:center;padding:6px 0}
-  body.sb-rail .sbfb .lab,body.sb-rail .sbfb .min{display:none}
+  body.sb-rail .sbfb .lab,body.sb-rail .sbfb .min,body.sb-rail .sbfb .sbtxt{display:none}
+  body.sb-rail .sbfb .sbsup{background:none;padding:6px 0}
   body.sb-rail .sbfb .ic{font-size:16px}
   body.sb-rail .sbfb .nl{border:0;background:none;padding:6px 0;margin:0}
   body.sb-rail .sbprefs{flex-direction:column;gap:7px;padding:10px 0 2px}
@@ -435,6 +436,10 @@ body.aside-ink{--sb-accent:var(--gc-vert-clair)}
 .sbfb .nl .lab{font-weight:600}
 .sbfb .nl .min{flex-basis:100%;padding-left:25px;font-size:9.5px;color:var(--gc-action)}
 .sbfb .nl:hover{border-style:solid;background:var(--gc-emailclair)}
+.sbfb .sbsup{align-items:center;gap:9px;padding:8px 9px;border-radius:8px;line-height:1.4;background:color-mix(in srgb,var(--gc-celadon) 12%,transparent)}
+.sbfb .sbsup .sbtxt{font-size:11px;color:var(--ink2)}
+.sbfb .sbsup .min{font-family:inherit;font-size:inherit;color:inherit;opacity:.75}
+.sbph{width:26px;height:26px;border-radius:50%;object-fit:cover;flex:none}
 .sbsw{display:inline-flex;margin:8px 0 2px}
 .sbsw button{font-size:10px;padding:2px 8px;letter-spacing:.03em}
 .sblab{display:block;font-family:var(--gc-font-cotes);font-size:8.5px;letter-spacing:.1em;
@@ -3018,17 +3023,18 @@ function render(){
   renderSbPrefs();
   document.querySelector('main').classList.toggle('appmode', state.route==='atelier');
   const fbLinks = GC_FIXED ? '' : `<div class="sbfb">
-    ${lsGet('gabarits-news-sub') ? '' : `<button class="link nl" id="newsFoot" type="button"
+    ${(lsGet('gabarits-news-sub')||lsGet('gabarits-news-click')) ? '' : `<button class="link nl" id="newsFoot" type="button"
       title="${D('Un email quand une nouveauté sort (très peu), et un gabarit PDF exclusif en cadeau','An email when something new comes out (very few), plus an exclusive PDF template as a gift')}">
       <span class="ic" aria-hidden="true">💌</span><span class="lab">${D('Recevoir les nouveautés','Get the news')}</span><span class="min">🎁 ${D('un gabarit offert','a free template')}</span></button>`}
-    <a class="link" id="tipNav" href="${BMAC_URL}" target="_blank" rel="noopener"
+    <a class="link sbsup" id="tipNav" href="${BMAC_URL}" target="_blank" rel="noopener"
       title="${D('L’outil est gratuit : un don aide à le faire vivre','The tool is free: a tip helps keep it alive')}">
-      <span class="ic" aria-hidden="true">☕</span><span class="lab">${D('Soutenir le projet','Support the project')}</span><span class="min">${D('don','tip')}</span></a></div>`;
-  $('#sbfoot').innerHTML = !FEATURES.proto ? `<b>${esc(GC.footTitle ? D(GC.footTitle.fr, GC.footTitle.en) : D('Version de test','Test version'))}</b>
-    ${GC.foot ? esc(D(GC.foot.fr, GC.foot.en)) : ''}
+      <img class="sbph" src="${(()=>{try{return EV_PHOTO}catch(e){return ''}})()}" alt="Louis" width="26" height="26">
+      <span class="sbtxt">${D('Outil gratuit, fait avec 🤎 —','Free tool, made with 🤎 —')} <span class="lab">${D('offrez-moi un pain de terre ☕','buy me a block of clay ☕')}</span> <span class="min">${D('(montant libre)','(any amount)')}</span></span></a></div>`;
+  $('#sbfoot').innerHTML = !FEATURES.proto ? `${GC_FIXED ? `<b>${esc(GC.footTitle ? D(GC.footTitle.fr, GC.footTitle.en) : D('Version de test','Test version'))}</b>
+    ${GC.foot ? esc(D(GC.foot.fr, GC.foot.en)) : ''}` : ''}
     ${fbLinks}
     ${GC.feedback ? `<a class="link" href="${esc(GC.feedback)}" target="_blank" rel="noopener" style="padding-left:0;display:block;margin-top:8px">${D('Donner mon avis','Give feedback')} ↗</a>` : ''}
-    <button class="link" id="wipe" style="padding-left:0;display:block;margin-top:8px">${D('tout réinitialiser','reset everything')}</button>`
+    ${GC_FIXED ? `<button class="link" id="wipe" style="padding-left:0;display:block;margin-top:8px">${D('tout réinitialiser','reset everything')}</button>` : ''}`
   : `<b>Prototype</b>
     ${D('Paiement simulé · données locales.','Simulated payment · local data.')}<br>
     ${D('Code de test','Test code')}${COLON()} <b style="font-weight:400;color:var(--sb-accent)">ATELIER-TEST</b>
@@ -3044,9 +3050,9 @@ function render(){
     </span>
     ${fbLinks}
     <button class="link" id="wipe" style="padding-left:0;display:block;margin-top:8px">${D('tout réinitialiser','reset everything')}</button>`;
-  $('#wipe').onclick=wipeAll;
+  if($('#wipe')) $('#wipe').onclick=wipeAll;
   $('#tipNav')?.addEventListener('click',()=>{ track('tip_click',{source:'barre'}); lsSet('gabarits-tip-fait', String(Date.now())); });
-  $('#newsFoot')?.addEventListener('click',()=>{ track('newsletter_click',{source:'footer'}); showNews('footer'); });
+  $('#newsFoot')?.addEventListener('click',()=>{ track('newsletter_click',{source:'footer'}); lsSet('gabarits-news-click','1'); $('#newsFoot')?.remove(); showNews('footer'); });
   if($('#dasw')) $('#dasw').onclick=e=>{
     const b=e.target.closest('[data-da]'); if(!b||b.dataset.da===state.da) return;
     state.da=b.dataset.da; applyDa(); persist(); render();
@@ -3182,8 +3188,7 @@ function afterExport(){
   if(n>=2 && !palier && evolFree() && !lsGet('gabarits-evol-auto') && !(n%2===1 && !lsGet('gabarits-news-sub'))){
     lsSet('gabarits-evol-auto','1'); track('evolution_auto',{export_no:n}); askEvolution('export'); return; }
   if(palier) showMilestone(n);
-  else if(lsGet('gabarits-news-sub')) maybeThanks();
-  else if(n%2===1) showNews('auto_export');
+  else if(n%2===1 && !lsGet('gabarits-news-sub')) showNews('auto_export');
 }
 function maybeThanks(){
   if(tipShown) return; tipShown=true;
