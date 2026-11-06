@@ -1219,7 +1219,7 @@ body.da-epure .protoflag{border-radius:6px}
 window.GC_RELEASE = {
   edition: 'sortie',
   // waiver: true,   // à rallumer quand www.gabarits-ceramique.com/cgv existe (case de renonciation avant paiement)
-  shop: ['bol-talon', 'theiere', 'pot', 'calado', 'carafe', 'soliflore', 'lampe', 'coupe', 'tore', 'prisme', 'facettes'],   // en vente : un produit Gumroad par pièce (m.gumroad dans atelier-v2.html)
+  shop: ['bol-talon', 'theiere'],   // en vente : un produit Gumroad par pièce (m.gumroad dans atelier-v2.html) ; les 9 autres sont en « bientôt » depuis le 6/11
   avis: { fr:'https://tally.so/r/EqqdQL', en:'https://tally.so/r/aOO502' },   // « Donner mon avis » : les deux Tally du nouvel atelier (FR / EN)
   footTitle: { fr:'Le nouvel atelier', en:'The new workshop' },
   foot: { fr:'Tes réglages et tes pièces restent sur cet appareil. L’ancienne version reste accessible depuis « Nouvelle pièce ».',
@@ -1646,10 +1646,10 @@ function track(event, props){
 const EDITIONS = {
   sortie:   { features:{ argile:false, plaque:false, sombre:false, contenance:false, emporte:false,
                          libre:false, lots:false, paywall:false, proto:false },
-              shop:['bol-talon','theiere','pot','calado','carafe','soliflore','lampe','coupe','tore','prisme','facettes'], shopFree:true, tourAuto:true,   // en vente : bol-tasse à talon + théière (3/11), puis 9 pièces le 6/11 (un produit Gumroad chacune) ; même liste que GC_RELEASE de build-sortie.sh
+              shop:['bol-talon','theiere'], shopFree:true, tourAuto:true,   // en vente : bol-tasse à talon + théière (3/11) ; même liste que GC_RELEASE de build-sortie.sh. Les 9 autres pièces ont leur produit Gumroad (m.gumroad) mais sont en « bientôt » + liste d'attente depuis le retour en arrière du 6/11 : pour les relancer, les ajouter ici et dans GC_RELEASE, et sortir prisme/facettes/tore de `hide`
               teasers:true,   // emporte-pièces, contenance, lots, atelier libre : « bientôt » → newsletter + cadeau (Louis, 17/10)
               soon:true,   // les formes qui seront payantes : « bientôt disponible » + email (Louis, 17/10)
-              hide:['profil','coussin'],   // restent dans l'ancienne version (Louis, 17/10) ; prisme, facettes et tore sont en vente depuis le 6/11, coussin attend son produit Gumroad   // le rayon : les formes de la V1 (gratuites) + le bol-tasse
+              hide:['profil','prisme','facettes','coussin','tore'],   // restent dans l'ancienne version (Louis, 17/10) ; prisme, facettes et coussin deviennent payants   // le rayon : les formes de la V1 (gratuites) + le bol-tasse
               footTitle:{fr:'Version de sortie', en:'Release version'},
               foot:{fr:'Les fonctions de la V1 dans le nouvel atelier. Tes réglages restent sur cet appareil.',
                     en:'The V1 features in the new workshop. Your settings stay on this device.'} },
