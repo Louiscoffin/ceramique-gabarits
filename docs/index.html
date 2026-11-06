@@ -1219,7 +1219,7 @@ body.da-epure .protoflag{border-radius:6px}
 window.GC_RELEASE = {
   edition: 'sortie',
   // waiver: true,   // à rallumer quand www.gabarits-ceramique.com/cgv existe (case de renonciation avant paiement)
-  shop: ['bol-talon', 'theiere'],   // en vente : un produit Gumroad par pièce (m.gumroad dans atelier-v2.html)
+  shop: ['bol-talon', 'theiere', 'pot', 'calado', 'carafe', 'soliflore', 'lampe', 'coupe', 'tore', 'prisme', 'facettes'],   // en vente : un produit Gumroad par pièce (m.gumroad dans atelier-v2.html)
   avis: { fr:'https://tally.so/r/EqqdQL', en:'https://tally.so/r/aOO502' },   // « Donner mon avis » : les deux Tally du nouvel atelier (FR / EN)
   footTitle: { fr:'Le nouvel atelier', en:'The new workshop' },
   foot: { fr:'Tes réglages et tes pièces restent sur cet appareil. L’ancienne version reste accessible depuis « Nouvelle pièce ».',
@@ -1444,33 +1444,33 @@ const MODELS = [
     sections:[{id:'A', name:'Paroi', d:55, h:49.5}] },
 
   /* ---- planches d'assemblage, payantes ---- */
-  { id:'calado', name:'Calado Vessel', family:'Vase', diff:'Intermédiaire', price:9.99, novelty:true,
+  { id:'calado', gumroad:{ url:'https://ceramix541.gumroad.com/l/calado', productId:'I4floC7F5bxUZA9iLh_5pA==' }, name:'Calado Vessel', family:'Vase', diff:'Intermédiaire', price:9.99, novelty:true,
     blurb:"Vase à panse basse et col droit : quatre sections empilées, fond et anses rapportés.",
     blurbEn:"A vase with a low belly and a straight neck: four stacked sections, base and handles added.",
     thick:5, dBase:52, ears:true, earsLabel:'ANSES',
     sections:[{id:'A',name:'Cône de pied',d:150,h:78},{id:'B',name:'Panse',d:138,h:56},
               {id:'C',name:'Épaule',d:86,h:40},{id:'D',name:'Col',d:84,h:52}] },
-  { id:'carafe', name:'Carafe à col', family:'Vase', diff:'Intermédiaire', price:9.99,
+  { id:'carafe', gumroad:{ url:'https://ceramix541.gumroad.com/l/carafe', productId:'ypebWcpwAZ6-TsyEWbRvvA==' }, name:'Carafe à col', family:'Vase', diff:'Intermédiaire', price:9.99,
     blurb:"Corps bombé, épaule marquée, col long. Trois sections et un fond.",
     blurbEn:"Rounded body, marked shoulder, long neck. Three sections and a base.",
     thick:5, dBase:64, ears:false,
     sections:[{id:'A',name:'Corps',d:132,h:90},{id:'B',name:'Épaule',d:64,h:46},{id:'C',name:'Col',d:58,h:70}] },
-  { id:'soliflore', name:'Soliflore', family:'Vase', diff:'Intermédiaire', price:9.99,
+  { id:'soliflore', gumroad:{ url:'https://ceramix541.gumroad.com/l/soliflore', productId:'pObujpqMRljavfwCa-4_eA==' }, name:'Soliflore', family:'Vase', diff:'Intermédiaire', price:9.99,
     blurb:"Petit vase à une fleur : bulbe bas, col fin et très haut. Sèche lentement.",
     blurbEn:"A vase for a single stem: low bulb, fine and very tall neck. Dries slowly.",
     thick:4, dBase:40, ears:false,
     sections:[{id:'A',name:'Bulbe',d:88,h:52},{id:'B',name:'Rétreint',d:30,h:30},{id:'C',name:'Col',d:26,h:96}] },
-  { id:'lampe', name:'Photophore ajouré', family:'Objet', diff:'Avancé', price:9.99, novelty:true,
+  { id:'lampe', gumroad:{ url:'https://ceramix541.gumroad.com/l/lampe', productId:'5NTV5zXJronmA4n2J6xgPQ==' }, name:'Photophore ajouré', family:'Objet', diff:'Avancé', price:9.99, novelty:true,
     blurb:"Cylindre ajouré sur socle évasé, couronne haute. Les perçages se font après montage.",
     blurbEn:"A pierced cylinder on a flared foot, tall crown. The holes are cut after assembly.",
     thick:6, dBase:96, ears:false,
     sections:[{id:'A',name:'Socle',d:112,h:26},{id:'B',name:'Fût',d:110,h:118},{id:'C',name:'Couronne',d:124,h:24}] },
-  { id:'coupe', name:'Coupe sur pied', family:'Objet', diff:'Avancé', price:9.99,
+  { id:'coupe', gumroad:{ url:'https://ceramix541.gumroad.com/l/coupe', productId:'wTfXhfRN3mN9uQn2uYXE_w==' }, name:'Coupe sur pied', family:'Objet', diff:'Avancé', price:9.99,
     blurb:"Pied conique inversé, nœud, vasque évasée. Le montage demande un support.",
     blurbEn:"Inverted cone foot, knop, flared bowl. The build needs support.",
     thick:5, dBase:80, ears:false,
     sections:[{id:'A',name:'Pied',d:44,h:62},{id:'B',name:'Nœud',d:56,h:18},{id:'C',name:'Vasque',d:168,h:64}] },
-  { id:'pot', name:'Pot à ustensiles', family:'Objet', diff:'Débutant', price:4.99,
+  { id:'pot', gumroad:{ url:'https://ceramix541.gumroad.com/l/pot', productId:'jOhf3NElZQJpt6S1F6OxEQ==' }, name:'Pot à ustensiles', family:'Objet', diff:'Débutant', price:4.99,
     blurb:"Un cylindre franc, légèrement rentrant au pied, à poser près du tour.",
     blurbEn:"A frank cylinder, slightly tucked at the foot, to keep by the wheel.",
     thick:6, dBase:104, ears:false,
@@ -1496,12 +1496,12 @@ const MODELS = [
     blurbEn:"Elliptical section: the band is developed on the true ellipse perimeter, not an average circle.",
     thick:5, dBase:130, ratio:.55, shape:'oval', ears:false,
     sections:[{id:'A',name:'Paroi',d:150,h:96}] },
-  { id:'prisme', name:'Prisme à pans', family:'Vase', diff:'Intermédiaire', pack:'base', price:29, paidLater:9.99,
+  { id:'prisme', gumroad:{ url:'https://ceramix541.gumroad.com/l/prisme', productId:'hoIL732gArOsPJHke-1Jgw==' }, name:'Prisme à pans', family:'Vase', diff:'Intermédiaire', pack:'base', price:29, paidLater:9.99,
     blurb:"Vase à N pans droits, six par défaut. Une seule facette à découper, répétée.",
     blurbEn:"A vase with N straight facets, six by default. One facet to cut, repeated.",
     thick:5, dBase:98, shape:'poly', n:6, ears:false,
     sections:[{id:'A',name:'Fût',d:98,h:185}] },
-  { id:'facettes', name:'Vase à facettes', family:'Vase', diff:'Avancé', pack:'base', price:29, paidLater:9.99,
+  { id:'facettes', gumroad:{ url:'https://ceramix541.gumroad.com/l/facettes', productId:'okgB1Rjqx0_KvosnlVEwjw==' }, name:'Vase à facettes', family:'Vase', diff:'Avancé', pack:'base', price:29, paidLater:9.99,
     blurb:"Pans qui s'évasent puis se referment : deux jeux de facettes, huit pans.",
     blurbEn:"Facets that flare then close again: two sets of panels, eight sides.",
     thick:5, dBase:70, shape:'poly', n:8, ears:false,
@@ -1529,7 +1529,7 @@ const MODELS = [
   /* ---- vase donut (le « vase anneau » de la V1) : un anneau creux posé sur la tranche.
      Ce n'est pas un solide de révolution vertical : isTore() l'envoie sur torePieces()
      et toreSVG(), comme le bas-relief a ses propres branches. Payant (Louis, 17/10). ---- */
-  { id:'tore', name:'Vase donut', family:'Vase', diff:'Avancé', price:9.99, novelty:true,
+  { id:'tore', gumroad:{ url:'https://ceramix541.gumroad.com/l/tore', productId:'otKBbEvItIgC52rkgEFx1Q==' }, name:'Vase donut', family:'Vase', diff:'Avancé', price:9.99, novelty:true,
     blurb:"Un anneau creux posé sur la tranche, un petit col au sommet : deux faces percées, deux bandes cintrées et le col.",
     blurbEn:"A hollow ring standing on its edge, a small neck on top: two pierced faces, two curved strips and the neck.",
     thick:5, dBase:0, ears:false, tore:{de:200, dt:70, p:65, do:42, hc:28}, sections:[] },
@@ -1646,10 +1646,10 @@ function track(event, props){
 const EDITIONS = {
   sortie:   { features:{ argile:false, plaque:false, sombre:false, contenance:false, emporte:false,
                          libre:false, lots:false, paywall:false, proto:false },
-              shop:['bol-talon','theiere'], shopFree:true, tourAuto:true,   // en vente depuis le 3/11 : bol-tasse à talon + théière (même liste que GC_RELEASE de build-sortie.sh)
+              shop:['bol-talon','theiere','pot','calado','carafe','soliflore','lampe','coupe','tore','prisme','facettes'], shopFree:true, tourAuto:true,   // en vente : bol-tasse à talon + théière (3/11), puis 9 pièces le 6/11 (un produit Gumroad chacune) ; même liste que GC_RELEASE de build-sortie.sh
               teasers:true,   // emporte-pièces, contenance, lots, atelier libre : « bientôt » → newsletter + cadeau (Louis, 17/10)
               soon:true,   // les formes qui seront payantes : « bientôt disponible » + email (Louis, 17/10)
-              hide:['profil','prisme','facettes','coussin','tore'],   // restent dans l'ancienne version (Louis, 17/10) ; prisme, facettes et coussin deviennent payants   // le rayon : les formes de la V1 (gratuites) + le bol-tasse
+              hide:['profil','coussin'],   // restent dans l'ancienne version (Louis, 17/10) ; prisme, facettes et tore sont en vente depuis le 6/11, coussin attend son produit Gumroad   // le rayon : les formes de la V1 (gratuites) + le bol-tasse
               footTitle:{fr:'Version de sortie', en:'Release version'},
               foot:{fr:'Les fonctions de la V1 dans le nouvel atelier. Tes réglages restent sur cet appareil.',
                     en:'The V1 features in the new workshop. Your settings stay on this device.'} },
