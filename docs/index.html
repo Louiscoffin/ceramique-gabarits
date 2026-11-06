@@ -822,15 +822,21 @@ button.card.own:hover .openhint,button.card.own:focus-visible .openhint{opacity:
 body.da-epure .pphoto{border:1px solid var(--line);border-radius:8px}
 /* retour de testeuse (fiche produit) : verbatim + vignettes qui ouvrent la galerie */
 /* « guidé pas à pas » : deux séquences du tutoriel 3D qui tournent en boucle dans la fiche (v2/img/tuto/) */
-.tclips{border:1px solid var(--line);border-radius:8px;background:var(--card);padding:10px 10px 11px;display:grid;gap:8px}
+.tclips{border:1px solid var(--line);border-radius:8px;background:var(--card);padding:8px 9px 9px;display:grid;gap:6px}
 .tclips .th{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .tclips .th b{font-size:13px;color:var(--ink)}
 .tclips .th .pill{margin-left:auto}
 .tclips .tgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .tclips figure{margin:0;position:relative;cursor:pointer;border-radius:5px;overflow:hidden;border:1px solid var(--line);background:#F4F2E8}
-.tclips video{display:block;width:100%;aspect-ratio:8/5;object-fit:cover}
+.tclips video{display:block;width:100%;aspect-ratio:2/1;object-fit:cover}
 .tclips figcaption{position:absolute;left:5px;bottom:5px;right:5px;font-size:10.5px;line-height:1.25;padding:2px 7px;border-radius:99px;
   background:color-mix(in srgb,var(--card) 90%,transparent);color:var(--ink);width:fit-content;max-width:calc(100% - 10px)}
+.pdesc{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin:0}
+.pdesc.open{display:block;-webkit-line-clamp:unset;overflow:visible}
+.pdescw{display:grid;gap:2px;justify-items:start}
+.pdescmore{padding:0;font-size:12.5px}
+.buybox>.panel:first-child{overflow:visible}   /* sinon le bouton collant ne colle pas (le panneau coupe son contenu) */
+.ctabar{position:sticky;bottom:0;z-index:4;display:grid;gap:6px;padding:8px 0 6px;background:var(--card);box-shadow:0 -10px 10px -8px color-mix(in srgb,var(--ink) 14%,transparent)}
 .tclips .tfine{font-size:11.5px;color:var(--ink2);line-height:1.4;margin:0}
 @media (max-width:420px){ .tclips .tgrid{grid-template-columns:1fr} }
 .retour{border-top:1px dashed var(--line);padding-top:12px;display:grid;gap:7px}
@@ -5398,8 +5404,7 @@ function tutoClipsHTML(m){
     <div class="tgrid">${T.clips.map(c=>`<figure data-tc title="${D('Ouvrir le tutoriel 3D','Open the 3D tutorial')}">
       <video src="${c.src}.mp4" poster="${c.src}.jpg" muted loop playsinline preload="metadata" aria-label="${esc(D(c.fr,c.en))}"></video>
       <figcaption>${esc(D(c.fr,c.en))}</figcaption></figure>`).join('')}</div>
-    <p class="tfine">${D(`Le tutoriel 3D te montre chaque geste, recalculé à tes cotes et à ta terre. ${m.price===0||owns(m.id)?'':'Les premières étapes sont à essayer sans acheter.'}`,
-      `The 3D tutorial shows every move, recomputed for your dimensions and clay. ${m.price===0||owns(m.id)?'':'The first steps are free to try.'}`)}</p>
+    ${m.price===0||owns(m.id)?'':`<p class="tfine">${D('Les premières étapes sont à essayer sans acheter.','The first steps are free to try.')}</p>`}
   </div>`;
 }
 /** lecture des séquences : seulement quand elles sont à l'écran (économie de batterie), figées si l'utilisateur préfère moins d'animations */
@@ -5535,7 +5540,8 @@ function viewProduit(){
               ${has?`<span class="pill ok">✓ ${D('dans ta bibliothèque','in your library')}</span>`
                    :`<span class="tagsm">${m.pack?`${D('le pack','the pack')} · ${MODELS.filter(x=>x.pack===m.pack).length} ${D('formes','shapes')}`:D('achat unique','one-off purchase')}</span>`}
             </div>
-            <p class="note">${esc(D(m.blurb, m.blurbEn||m.blurb))}</p>
+            <div class="pdescw"><p class="note pdesc" id="pdesc">${esc(D(m.blurb, m.blurbEn||m.blurb))}</p>
+              <button class="link pdescmore" id="pdescMore" hidden>${D('Lire la suite','Read more')}</button></div>
             ${tutoClipsHTML(m)}
             ${RETOURS[m.id]?(R=>`<div class="retour">
               <blockquote>« ${esc(D(R.quote.fr,R.quote.en))} »</blockquote>
@@ -5543,13 +5549,13 @@ function viewProduit(){
               <div class="rthumbs" id="rthumbs">${R.photos.map((p,i)=>`<button type="button" data-rp="${i}" aria-label="${D('Agrandir la photo','Enlarge photo')} ${i+1}"><img src="${p.src}" alt="${esc(D(p.fr,p.en))}" loading="lazy"></button>`).join('')}
                 <span class="n">${R.photos.length} ${D('photos','photos')}</span></div>
             </div>`)(RETOURS[m.id]):''}
-            ${has
+            <div class="ctabar">${has
               ? `<button class="btn lg" id="open">${D("Ouvrir dans l'atelier",'Open in the workshop')}</button>`
               : `<button class="btn lg" id="buy">${m.price===0?D('Ajouter à mes formes','Add to my shapes')
                      :m.pack?`${D('Débloquer le pack','Unlock the pack')} · ${eur(PACK.price)}`:`${D('Acheter','Buy')} · ${eur(m.price)}`}</button>
                  <div class="note" style="text-align:center">${m.pack
                      ? `${D('cette forme et les','this shape and the')} ${MODELS.filter(x=>x.pack===m.pack).length-1} ${D('autres du pack','others in the pack')}`
-                     : D('paiement Gumroad · accès immédiat','Gumroad payment · instant access')}</div>`}
+                     : D('paiement Gumroad · accès immédiat','Gumroad payment · instant access')}</div>`}</div>
             ${m.tuto?`<button class="ghost" id="tuto" style="width:100%">${has?D('Voir le tutoriel 3D','Open the 3D tutorial'):D('Aperçu du tutoriel 3D','Preview the 3D tutorial')} ↗</button>`:''}
             <ul class="incl">
               ${m.tuto?`<li><span><b>${D('le tutoriel 3D pas à pas','the step-by-step 3D tutorial')}</b>${D(', recalculé à tes cotes et à ta terre',', recomputed for your dimensions and clay')}</span></li>`:''}
@@ -5568,6 +5574,10 @@ function viewProduit(){
         </div>
       </div>
     </div>`;
+  { const pd=$('#pdesc'), pm=$('#pdescMore');            // description repliée sur 3 lignes : le bouton d'achat reste visible sur un petit écran
+    const full=pd?(pd.classList.add('open'), pd.scrollHeight):0; pd?.classList.remove('open');       // hauteur complète, puis on referme
+    if(pd && pm && full>pd.clientHeight+2){ pm.hidden=false;
+      pm.onclick=()=>{ const o=pd.classList.toggle('open'); pm.textContent=o?D('Réduire','Show less'):D('Lire la suite','Read more'); track('fiche_lire_suite',{shape:m.id}); }; } }
   $('#tabs').onclick=e=>{ const b=e.target.closest('[data-tab]'); if(b){ state.tab=b.dataset.tab; viewProduit(); } };
   $('#partbar')?.addEventListener('click',e=>{
     const b=e.target.closest('[data-part]'); if(!b) return;
