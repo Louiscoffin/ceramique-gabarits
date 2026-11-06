@@ -3029,7 +3029,7 @@ function render(){
     <a class="link sbsup" id="tipNav" href="${BMAC_URL}" target="_blank" rel="noopener"
       title="${D('L’outil est gratuit : un don aide à le faire vivre','The tool is free: a tip helps keep it alive')}">
       <img class="sbph" src="${(()=>{try{return EV_PHOTO}catch(e){return ''}})()}" alt="Louis" width="26" height="26">
-      <span class="sbtxt">${D('Outil gratuit, fait avec 🤎 —','Free tool, made with 🤎 —')} <span class="lab">${D('offrez-moi un pain de terre ☕','buy me a block of clay ☕')}</span> <span class="min">${D('(montant libre)','(any amount)')}</span></span></a></div>`;
+      <span class="sbtxt">${D('Outil gratuit, fait avec 🤎','Free tool, made with 🤎')}<br><span class="lab">${D('offrez-moi un pain de terre ☕','buy me a block of clay ☕')}</span> <span class="min">${D('(montant libre)','(any amount)')}</span></span></a></div>`;
   $('#sbfoot').innerHTML = !FEATURES.proto ? `${GC_FIXED ? `<b>${esc(GC.footTitle ? D(GC.footTitle.fr, GC.footTitle.en) : D('Version de test','Test version'))}</b>
     ${GC.foot ? esc(D(GC.foot.fr, GC.foot.en)) : ''}` : ''}
     ${fbLinks}
