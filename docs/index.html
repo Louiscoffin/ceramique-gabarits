@@ -5344,7 +5344,7 @@ function soonCardHTML(m){
       <h3>${esc(t(m.name))}</h3>
       <div class="sub">${cardDims(st)} · ${t(m.diff)}</div>
       <div class="row">${asked?`<span class="pill ok">✓ ${D('on te prévient','we’ll let you know')}</span>`
-        :`<span class="pill">${D('me prévenir','notify me')} →</span>`}<span class="pill">${eur(m.price)}</span></div>
+        :`<span class="pill">${D('me prévenir','notify me')} →</span>`}</div>
     </div></button>`;
 }
 function openSoon(id){
@@ -5356,7 +5356,7 @@ function openSoon(id){
       <div class="thumb" style="aspect-ratio:4/3;border:1px solid var(--line);border-radius:4px;background:var(--card);position:relative">
         ${thumbSVG(st,{W:420,H:300,tilt:.26})}</div>
       <p style="margin:12px 0 4px"><span class="pill pay">${D('bientôt disponible','coming soon')}</span>
-        <span class="tagsm" style="margin-left:6px">${eur(m.price)} · ${t(m.diff)}${isSet(st)?' · '+D('lot de','set of')+' '+st.parts.length:''}</span></p>
+        <span class="tagsm" style="margin-left:6px">${t(m.diff)}${isSet(st)?' · '+D('lot de','set of')+' '+st.parts.length:''}</span></p>
       <p style="font-size:13.5px;line-height:1.55">${esc(state.lang==='en'&&m.blurbEn?m.blurbEn:m.blurb)}</p>
       <div id="soonBody">${asked
         ? `<p class="tagsm">✓ ${D('C’est noté : tu recevras un email le jour où elle sort.','Noted: you’ll get an email the day it comes out.')}</p>`
