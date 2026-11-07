@@ -1047,6 +1047,8 @@ body.da-epure .pphoto{border:1px solid var(--line);border-radius:8px}
   .fold::after{content:"";position:absolute;inset:-12px}
 }
 @media (max-width:1080px){ .acols{grid-template-columns:1fr} .pcols{grid-template-columns:1fr} .buybox{position:static} }
+/* fiche forme en une colonne : photos + bouton d'achat d'abord, puis aperçu 3D / planche, puis les cotes */
+@media (max-width:1080px){ .pcols{gap:14px} .buybox{display:contents} .buybox>.panel:first-child{order:-1} .buybox>.panel:not(:first-child){order:1} }
 @media (max-width:860px){
   .shell{grid-template-columns:1fr}
   /* la sidebar devient un tiroir : hors écran, ramené par le bouton burger */
