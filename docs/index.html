@@ -455,6 +455,65 @@ main{min-width:0;display:flex;flex-direction:column}
 .topbar .sp{margin-left:auto;display:flex;gap:8px;align-items:center}
 .page{padding:22px 24px 90px;max-width:1280px;width:100%}
 
+/* ===================== pied de page =====================
+   Discret : un filet, le fond de l'app, des liens en texte courant. Les couleurs
+   viennent des jetons de l'app (clair/sombre suivent seuls). Il n'existe que quand
+   la page défile ; l'atelier plein écran (≥1081px) n'en a pas. */
+.appfoot{margin-top:auto;border-top:1px solid var(--line);background:color-mix(in srgb,var(--paper2) 45%,transparent);container:appfoot/inline-size}
+.appfoot .afin{max-width:1440px;padding:34px 32px 0}
+.appfoot .afgrid{display:grid;grid-template-columns:1.7fr repeat(4,1fr);gap:28px 24px;padding-bottom:30px}
+.appfoot .afbrand .wm{display:flex;align-items:center;gap:9px;font-family:var(--gc-font-titres);font-weight:800;letter-spacing:-.03em;font-size:16px;color:var(--ink)}
+.appfoot .afbrand .wm em{color:var(--gc-action)}
+.appfoot .afbrand .logo{width:28px;height:28px;flex:none}
+.appfoot .afbrand p{margin:10px 0 0;max-width:300px;font-size:12px;line-height:1.5;color:var(--ink2)}
+.appfoot .afsoc{display:flex;gap:6px;margin-top:14px}
+.appfoot .afsoc a{display:grid;place-items:center;width:30px;height:30px;border:1px solid var(--line);border-radius:50%;color:var(--ink2);transition:color .15s,border-color .15s}
+.appfoot .afsoc a:hover{color:var(--gc-action);border-color:var(--gc-action)}
+.appfoot .afsoc svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.appfoot h5{margin:0 0 10px;font-family:var(--gc-font-cotes);font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);opacity:.85}
+.appfoot .afcol a,.appfoot .afcol button.afl{display:block;width:100%;padding:0;margin:0 0 6px;font:inherit;font-size:12.5px;line-height:1.35;
+  color:var(--ink);text-align:left;text-decoration:none;background:none;border:0;cursor:pointer}
+.appfoot .afcol a:hover,.appfoot .afcol button.afl:hover{color:var(--gc-action);text-decoration:underline;text-underline-offset:3px}
+.appfoot .afcol .afall,.appfoot .afcol button.afall{margin-top:10px;color:var(--gc-action);font-weight:600}
+.appfoot .afbase{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 22px;padding:14px 0 18px;border-top:1px solid var(--line);font-size:11px;color:var(--ink2)}
+.appfoot .afbase .afleft{display:flex;align-items:center;flex-wrap:wrap;gap:4px 18px}
+.appfoot .afbase a,.appfoot .afbase button{color:var(--ink2);text-decoration:none;background:none;border:0;padding:0;font:inherit;cursor:pointer}
+.appfoot .afbase a:hover,.appfoot .afbase button:hover{color:var(--gc-action)}
+@container appfoot (max-width:1040px){ .appfoot .afgrid{grid-template-columns:repeat(4,1fr)} .appfoot .afbrand{grid-column:1/-1} }
+@container appfoot (max-width:700px){ .appfoot .afgrid{grid-template-columns:repeat(2,1fr)} }
+@container appfoot (max-width:520px){ .appfoot .afin{padding:28px 16px 0} }
+/* bandeau d'accroche en tête du pied de page : même fond que le reste, un filet dessous, titre à taille de page */
+.appfoot .afband{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.appfoot .afdeco{position:absolute;right:-70px;top:-80px;width:300px;height:300px;opacity:.09;pointer-events:none}
+.appfoot .afdeco path{stroke:var(--gc-celadon)}
+.appfoot .afbandin{position:relative;max-width:1440px;display:flex;justify-content:space-between;align-items:center;gap:18px 40px;flex-wrap:wrap;padding:26px 32px}
+.appfoot .afbandin h2{margin:0;max-width:560px;font-family:var(--gc-font-titres);font-weight:800;font-size:clamp(19px,3cqw,26px);line-height:1.12;letter-spacing:-.03em;color:var(--ink)}
+.appfoot .afbandin h2 em{font-style:normal;color:var(--gc-action)}
+.appfoot .afbandin p{margin:6px 0 0;max-width:460px;font-size:12.5px;line-height:1.5;color:var(--ink2)}
+.appfoot .afcta{display:flex;gap:10px;flex-wrap:wrap;align-items:stretch}
+/* mêmes cartes que le pied de la barre latérale : encart en pointillés + carte teintée avec la photo */
+.appfoot .afcard{display:flex;align-items:center;gap:9px;box-sizing:border-box;padding:10px 14px;text-align:left;text-decoration:none;font:inherit;font-size:12.5px;line-height:1.4;color:var(--ink)}
+.appfoot .afcard .lab{text-decoration:underline;text-underline-offset:2px}
+.appfoot .afcard:hover .lab{text-decoration-thickness:2px}
+.appfoot .afnl{flex-wrap:wrap;row-gap:1px;cursor:pointer;border:1.5px dashed var(--gc-celadon);border-radius:4px;background:transparent}
+.appfoot .afnl .lab{font-weight:600}
+.appfoot .afnl .min{flex-basis:100%;padding-left:27px;font-family:var(--gc-font-cotes);font-size:10px;color:var(--gc-action)}
+.appfoot .afnl:hover{border-style:solid;background:color-mix(in srgb,var(--gc-celadon) 14%,transparent)}
+.appfoot .afsup{border-radius:8px;background:color-mix(in srgb,var(--gc-celadon) 12%,transparent)}
+.appfoot .afsup .sbtxt{font-size:12px;color:var(--ink2)}
+.appfoot .afsup .min{opacity:.75}
+.appfoot .afsup .sbph{width:34px;height:34px}
+@container appfoot (max-width:520px){ .appfoot .afbandin{padding:22px 16px} .appfoot .afcta,.appfoot .afcard{width:100%} }
+/* invitation aux ressources (carnet) : une ligne, un lien vers le site vitrine */
+.resinv{display:flex;align-items:center;gap:10px;margin-top:20px;padding:8px 4px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink2);text-decoration:none}
+.resinv .rph{width:26px;height:26px;border-radius:50%;object-fit:cover;flex:none}
+.resinv .rtxt{flex:1;min-width:0;line-height:1.35}
+.resinv .rtxt b{font-weight:600;color:var(--ink)}
+.resinv .rgo{flex:none;color:var(--gc-action);white-space:nowrap}
+.resinv:hover .rgo{text-decoration:underline;text-underline-offset:3px}
+.resinv:hover .rtxt b{color:var(--gc-action)}
+@media (max-width:520px){ .resinv .rtxt span{display:none} }
+
 /* ===================== atomes ===================== */
 .btn{background:var(--terra);color:var(--on-terra);border:1.5px solid var(--terra-d);padding:9px 15px;border-radius:2px;
   font-size:13px;font-weight:600;box-shadow:3px 3px 0 var(--shadow);transition:transform .08s ease,box-shadow .08s ease}
@@ -664,6 +723,7 @@ button.rk:hover .chev,.ritem.open .chev,.rpiv.open .chev{opacity:1}
    chez elle — les réglages restent sous la main quoi qu'il arrive. */
 @media (min-width:1081px){
   main.appmode{height:100vh;overflow:hidden}
+  main.appmode .appfoot{display:none}
   main.appmode .page{flex:1;min-height:0;overflow:hidden;padding-bottom:20px}
   main.appmode .acols{height:100%;min-height:0}
   main.appmode .acols>.panel{height:100%;min-height:0;display:flex;flex-direction:column}
@@ -1219,6 +1279,7 @@ body.da-epure .protoflag{border-radius:6px}
   <main>
     <div class="topbar" id="topbar"></div>
     <div class="page" id="page"></div>
+    <footer class="appfoot" id="appfoot"></footer>
   </main>
 </div>
 <script>
@@ -2991,6 +3052,116 @@ const NAV = () => [
 ].map(n => n.id==='emporte' && !FEATURES.emporte && GC.teasers ? {...n, soon:'emporte'} : n)
  .filter(n => (n.id!=='catalogue' || FEATURES.catalogue) && (n.id!=='emporte' || FEATURES.emporte || n.soon)
            && (n.id!=='tuto' || draftTuto()));
+/* ---------- Pied de page : ressources · à propos · contact · réseaux ----------
+   Mêmes destinations que le footer du site (www.gabarits-ceramique.com), en
+   anglais quand l'outil est en anglais. Le contact est une adresse, pas une page :
+   /contact n'existe pas côté site. Masqué dans les versions de test (GC_FIXED),
+   comme les liens de la barre. */
+const SITE_URL = 'https://www.gabarits-ceramique.com';
+const CONTACT_MAIL = 'gabarits.ceramique@gmail.com';
+const SOCIALS = [
+  {id:'instagram', label:'Instagram', url:'https://www.instagram.com/gabarits.ceramique',
+   svg:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6"/></svg>'},
+  {id:'pinterest', label:'Pinterest', url:'https://www.pinterest.com/loucoff1995/',
+   svg:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M10.6 17.8 12.3 9.6M9.6 11.2c.2-1.6 1.4-2.4 2.8-2.4 1.5 0 2.4.9 2.4 2.2 0 1.8-1.1 3-2.5 3-.8 0-1.3-.4-1.5-1"/></svg>'}
+];
+function appFootLinks(){
+  const en = state.lang==='en', b = SITE_URL + (en?'/en':'');
+  const arts = en
+    ? [['pottery-without-a-wheel','Pottery without a wheel'],['printable-ceramic-cup-template','Printable cup template'],['make-a-slab-built-ceramic-bowl','Make a slab-built bowl']]
+    : [['poterie-sans-tour','Poterie sans tour'],['gabarit-tasse-ceramique','Gabarit de tasse'],['faire-un-bol-ceramique','Faire un bol']];
+  return {
+    resources: b + (en?'/resources':'/ressources'),
+    arts: arts.map(([s,t]) => [`${b}${en?'/resources/':'/ressources/'}${s}`, t]),
+    about: b + (en?'/about':'/a-propos'),
+    home: b || SITE_URL,
+    legal: b + (en?'/legal':'/mentions-legales'),
+    privacy: b + (en?'/privacy':'/confidentialite'),
+    mail: 'mailto:' + CONTACT_MAIL
+  };
+}
+/* Invitation « Les ressources de Loulou » : en bas du carnet, là où l'on revient après avoir fini une pièce. */
+function resInviteHTML(){
+  const F = appFootLinks(), ph = (()=>{ try{ return EV_PHOTO }catch(e){ return '' } })();
+  return `<a class="resinv" href="${esc(F.resources)}" data-res="ressources" target="_blank" rel="noopener">
+    ${ph ? `<img class="rph" src="${ph}" alt="" width="26" height="26">` : ''}
+    <span class="rtxt"><b>${D('Les ressources de Loulou','Loulou’s resources')}</b> <span>· ${D('guides et astuces pour travailler à la plaque','guides and tips for slab building')}</span></span>
+    <span class="rgo">${D('Sur le site','On the website')} ↗</span></a>`;
+}
+function renderAppFoot(){
+  const el = $('#appfoot'); if(!el) return;
+  if(GC_FIXED){ el.hidden = true; return; }
+  const F = appFootLinks(), ext = 'target="_blank" rel="noopener"';
+  const A = (id, href, txt, blank=true) => `<a href="${esc(href)}" data-ft="${id}"${blank?' '+ext:''}>${txt}</a>`;
+  const G = (route, txt, extra='') => `<button class="afl" type="button" data-ft-go="${route}" ${extra}>${txt}</button>`;
+  const subbed = lsGet('gabarits-news-sub') || lsGet('gabarits-news-click');
+  const ph = (()=>{ try{ return EV_PHOTO }catch(e){ return '' } })();
+  const tool = NAV().filter(n => n.id!=='tuto' && !n.soon).map(n => G(n.id, n.t));
+  const fams = FEATURES.catalogue ? FAMILIES.map(f => G('catalogue', t(f), `data-fam="${f}"`)) : [];
+  const logo = `<svg class="logo" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+      <path d="M50 5 C75 5 95 25 95 51 C95 79 76 96 49 96 C23 96 6 77 6 50 C6 24 25 5 50 5 Z" fill="var(--gc-celadon)"/>
+      <path d="M14.2 46.9 A64 64 0 0 1 85.8 46.9 L71.2 68.5 A38 38 0 0 0 28.8 68.5 Z" stroke="var(--gc-lait)" stroke-width="5" stroke-dasharray="9 6" stroke-linejoin="round"/></svg>`;
+  el.innerHTML = `<div class="afband">
+      <svg class="afdeco" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+        <path d="M50 5 C75 5 95 25 95 51 C95 79 76 96 49 96 C23 96 6 77 6 50 C6 24 25 5 50 5 Z" stroke="#8FBFAA" stroke-width=".6"/>
+        <path d="M14.2 46.9 A64 64 0 0 1 85.8 46.9 L71.2 68.5 A38 38 0 0 0 28.8 68.5 Z" stroke="#8FBFAA" stroke-width="1.2" stroke-dasharray="3 2.4" stroke-linejoin="round"/></svg>
+      <div class="afbandin">
+        <div>
+          <h2>${D('L’intelligence numérique pour les <em>mains agiles.</em>','Digital smarts for <em>nimble hands.</em>')}</h2>
+          <p>${D('Dessine ta pièce, imprime les gabarits à taille réelle : le retrait de cuisson et l’épaisseur de plaque sont déjà compensés.',
+                 'Shape your piece and print full-size templates, with firing shrinkage and slab thickness already compensated.')}</p>
+        </div>
+        <div class="afcta">
+          ${subbed ? '' : `<button class="afcard afnl" type="button" data-ft-news title="${D('Un email quand une nouveauté sort (très peu), et un gabarit PDF exclusif en cadeau','An email when something new comes out (very few), plus an exclusive PDF template as a gift')}">
+            <span class="ic" aria-hidden="true">💌</span><span class="lab">${D('Recevoir les nouveautés','Get the news')}</span><span class="min">🎁 ${D('un gabarit offert','a free template')}</span></button>`}
+          <a class="afcard afsup" href="${esc(BMAC_URL)}" data-ft="don" ${ext} title="${D('L’outil est gratuit : un don aide à le faire vivre','The tool is free: a tip helps keep it alive')}">
+            ${ph ? `<img class="sbph" src="${ph}" alt="Louis" width="34" height="34">` : ''}
+            <span class="sbtxt">${D('Outil gratuit, fait avec 🤎','Free tool, made with 🤎')}<br><span class="lab">${D('offrez-moi un pain de terre ☕','buy me a block of clay ☕')}</span> <span class="min">${D('(montant libre)','(any amount)')}</span></span></a>
+        </div>
+      </div>
+    </div>
+    <div class="afin">
+      <div class="afgrid">
+        <div class="afbrand">
+          <div class="wm">${logo}<span>Gabarits <em>${D('céramique','ceramics')}</em></span></div>
+          <p>${D('Des gabarits de découpe à taille réelle pour la céramique à la plaque, retrait et épaisseur déjà compensés.',
+                 'Full-size cutting templates for slab-built ceramics, with shrinkage and thickness already compensated.')}</p>
+          <div class="afsoc">${SOCIALS.map(s => `<a href="${esc(s.url)}" data-ft="${s.id}" aria-label="${s.label}" title="${s.label}" ${ext}>${s.svg}</a>`).join('')}
+            <a href="${esc(F.mail)}" data-ft="contact" aria-label="Contact" title="${CONTACT_MAIL}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="m4 7.5 8 6 8-6"/></svg></a></div>
+        </div>
+        <nav class="afcol" aria-label="${D('L’outil','The tool')}"><h5>${D('L’outil','The tool')}</h5>${tool.join('')}</nav>
+        ${fams.length ? `<nav class="afcol" aria-label="${D('Formes','Shapes')}"><h5>${D('Formes','Shapes')}</h5>${fams.join('')}
+          <button class="afl afall" type="button" data-ft-go="catalogue" data-fam="Tout">${D('Tout le catalogue →','Full catalogue →')}</button></nav>` : ''}
+        <nav class="afcol" aria-label="${D('Ressources','Resources')}"><h5>${D('Ressources','Resources')}</h5>
+          ${F.arts.map(([u,tt],i)=>A('article'+(i+1), u, tt)).join('')}
+          <a class="afall" href="${esc(F.resources)}" data-ft="ressources" ${ext}>${D('Tous les articles →','All articles →')}</a>
+        </nav>
+        <nav class="afcol" aria-label="${D('Le projet','The project')}"><h5>${D('Le projet','The project')}</h5>
+          ${A('a-propos', F.about, D('À propos','About'))}
+          ${A('contact', F.mail, D('Contact','Contact'), false)}
+          ${A('avis', avisUrl()+'?source=pied-outil-v2', D('Donner mon avis','Give feedback'))}
+        </nav>
+      </div>
+      <div class="afbase">
+        <div class="afleft">
+          <span>© 2026 Gabarits céramique</span>
+          ${A('site', F.home, D('Le site','Website'))}
+          ${A('mentions', F.legal, D('Mentions légales','Legal notice'))}
+          ${A('confidentialite', F.privacy, D('Confidentialité','Privacy'))}
+        </div>
+        <button type="button" data-ft-top>${D('Haut de page','Back to top')} ↑</button>
+      </div>
+    </div>`;
+  el.onclick = e => {
+    const a = e.target.closest('[data-ft]'); if(a){ track('footer_click',{link:a.dataset.ft, lang:state.lang}); return; }
+    const g = e.target.closest('[data-ft-go]');
+    if(g){ track('footer_click',{link:'nav-'+g.dataset.ftGo+(g.dataset.fam?':'+g.dataset.fam:''), lang:state.lang});
+      if(g.dataset.fam){ state.filter.fam=g.dataset.fam; state.filter.view='all'; state.filter.lvl='Tout'; state.filter.q=''; }
+      return go(g.dataset.ftGo); }
+    if(e.target.closest('[data-ft-news]')){ track('newsletter_click',{source:'pied-page'}); showNews('pied-page'); return; }
+    if(e.target.closest('[data-ft-top]')) window.scrollTo({top:0, behavior:'smooth'});
+  };
+}
 function go(route, productId){
   state.route=route; if(productId!==undefined) state.productId=productId;
   window.scrollTo(0,0); render();
@@ -3063,6 +3234,7 @@ function render(){
     const b=e.target.closest('[data-as]'); if(!b||b.dataset.as===state.aside) return;
     state.aside=b.dataset.as; applyAside(); persist(); render();
   };
+  renderAppFoot();
   ({atelier:viewAtelier, carnet:viewCarnet, catalogue:viewCatalogue, produit:viewProduit,
     emporte:viewEmporte}[state.route])();
   persist();
@@ -5094,6 +5266,8 @@ function viewCarnet(){
           </div></div>`;
       }).join('')}
     </div>`;
+  $('#page').insertAdjacentHTML('beforeend', resInviteHTML());
+  $('#page').querySelectorAll('[data-res]').forEach(a=>a.addEventListener('click',()=>track('resources_click',{source:'carnet', link:a.dataset.res, lang:state.lang})));
   $('#cNew').onclick=openNewPiece;
   $('#cGo')?.addEventListener('click',()=>go('atelier'));
   const q1=$('#cq');
