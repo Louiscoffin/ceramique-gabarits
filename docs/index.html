@@ -4,6 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Créer un gabarit de poterie à imprimer | Gabarits Céramique</title>
+<!-- Partage (Facebook, WhatsApp, LinkedIn, Slack…) : en tête du <head>, avant le CSS, pour être lu par les robots -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Gabarits Céramique">
+<meta property="og:url" content="https://app.gabarits-ceramique.com/">
+<meta property="og:title" content="Créer un gabarit de poterie à imprimer | Gabarits Céramique">
+<meta property="og:description" content="Entrez les cotes de votre pièce finie : le retrait et l'épaisseur de plaque sont calculés, le gabarit s'imprime en taille réelle. Gratuit, sans compte.">
+<meta property="og:image" content="https://app.gabarits-ceramique.com/og-gabarits.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="L’atelier Gabarits Céramique : aperçu 3D d’une tasse, récapitulatif des cotes et bouton Télécharger le PDF">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:locale:alternate" content="en_GB">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://app.gabarits-ceramique.com/og-gabarits.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Karla:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -324,8 +339,6 @@ body.aside-ink .navb.fbsticker{color:var(--gc-encre)}
 .msm2 .kick b{font-size:15px;color:var(--terra);letter-spacing:0}.msm2 .kick sup{font-size:8px}
 .msm2 h3{font-size:21px;margin:6px 0 6px;line-height:1.2}
 .msm2 .lead{font-size:13.5px;line-height:1.55;margin:0 0 10px;color:var(--ink)}
-.msm2 h3 .mscount{color:var(--terra)}
-.msm2 .msalt{font-size:12.5px;color:var(--ink2);text-decoration:underline;text-underline-offset:3px}
 .msuses{list-style:none;margin:0 auto 14px;padding:0;display:grid;gap:6px;max-width:320px;text-align:left}
 .msuses li{display:flex;gap:10px;align-items:center;font-size:13px;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:var(--wash);
   opacity:0;transform:translateY(6px);animation:msin .45s ease forwards;animation-delay:calc(1.6s + var(--i)*.18s)}
@@ -395,8 +408,7 @@ body.aside-ink .sbprefs .unitsw button.on{background:var(--gc-vert-clair);color:
   body.sb-rail .sbfoot{display:block;font-size:0;border-top:0;padding:6px 0;text-align:center}
   body.sb-rail .sbfoot>:not(.sbfb){display:none!important}
   body.sb-rail .sbfb .link{justify-content:center;padding:6px 0}
-  body.sb-rail .sbfb .lab,body.sb-rail .sbfb .min,body.sb-rail .sbfb .sbtxt{display:none}
-  body.sb-rail .sbfb .sbsup{background:none;padding:6px 0}
+  body.sb-rail .sbfb .lab,body.sb-rail .sbfb .min{display:none}
   body.sb-rail .sbfb .ic{font-size:16px}
   body.sb-rail .sbfb .nl{border:0;background:none;padding:6px 0;margin:0}
   body.sb-rail .sbprefs{flex-direction:column;gap:7px;padding:10px 0 2px}
@@ -438,10 +450,6 @@ body.aside-ink{--sb-accent:var(--gc-vert-clair)}
 .sbfb .nl .lab{font-weight:600}
 .sbfb .nl .min{flex-basis:100%;padding-left:25px;font-size:9.5px;color:var(--gc-action)}
 .sbfb .nl:hover{border-style:solid;background:var(--gc-emailclair)}
-.sbfb .sbsup{align-items:center;gap:9px;padding:8px 9px;border-radius:8px;line-height:1.4;background:color-mix(in srgb,var(--gc-celadon) 12%,transparent)}
-.sbfb .sbsup .sbtxt{font-size:11px;color:var(--ink2)}
-.sbfb .sbsup .min{font-family:inherit;font-size:inherit;color:inherit;opacity:.75}
-.sbph{width:26px;height:26px;border-radius:50%;object-fit:cover;flex:none}
 .sbsw{display:inline-flex;margin:8px 0 2px}
 .sbsw button{font-size:10px;padding:2px 8px;letter-spacing:.03em}
 .sblab{display:block;font-family:var(--gc-font-cotes);font-size:8.5px;letter-spacing:.1em;
@@ -454,65 +462,6 @@ main{min-width:0;display:flex;flex-direction:column}
 .topbar .sub{font-size:11.5px;color:var(--ink2)}
 .topbar .sp{margin-left:auto;display:flex;gap:8px;align-items:center}
 .page{padding:22px 24px 90px;max-width:1280px;width:100%}
-
-/* ===================== pied de page =====================
-   Discret : un filet, le fond de l'app, des liens en texte courant. Les couleurs
-   viennent des jetons de l'app (clair/sombre suivent seuls). Il n'existe que quand
-   la page défile ; l'atelier plein écran (≥1081px) n'en a pas. */
-.appfoot{margin-top:auto;border-top:1px solid var(--line);background:color-mix(in srgb,var(--paper2) 45%,transparent);container:appfoot/inline-size}
-.appfoot .afin{max-width:1440px;padding:34px 32px 0}
-.appfoot .afgrid{display:grid;grid-template-columns:1.7fr repeat(4,1fr);gap:28px 24px;padding-bottom:30px}
-.appfoot .afbrand .wm{display:flex;align-items:center;gap:9px;font-family:var(--gc-font-titres);font-weight:800;letter-spacing:-.03em;font-size:16px;color:var(--ink)}
-.appfoot .afbrand .wm em{color:var(--gc-action)}
-.appfoot .afbrand .logo{width:28px;height:28px;flex:none}
-.appfoot .afbrand p{margin:10px 0 0;max-width:300px;font-size:12px;line-height:1.5;color:var(--ink2)}
-.appfoot .afsoc{display:flex;gap:6px;margin-top:14px}
-.appfoot .afsoc a{display:grid;place-items:center;width:30px;height:30px;border:1px solid var(--line);border-radius:50%;color:var(--ink2);transition:color .15s,border-color .15s}
-.appfoot .afsoc a:hover{color:var(--gc-action);border-color:var(--gc-action)}
-.appfoot .afsoc svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.appfoot h5{margin:0 0 10px;font-family:var(--gc-font-cotes);font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);opacity:.85}
-.appfoot .afcol a,.appfoot .afcol button.afl{display:block;width:100%;padding:0;margin:0 0 6px;font:inherit;font-size:12.5px;line-height:1.35;
-  color:var(--ink);text-align:left;text-decoration:none;background:none;border:0;cursor:pointer}
-.appfoot .afcol a:hover,.appfoot .afcol button.afl:hover{color:var(--gc-action);text-decoration:underline;text-underline-offset:3px}
-.appfoot .afcol .afall,.appfoot .afcol button.afall{margin-top:10px;color:var(--gc-action);font-weight:600}
-.appfoot .afbase{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 22px;padding:14px 0 18px;border-top:1px solid var(--line);font-size:11px;color:var(--ink2)}
-.appfoot .afbase .afleft{display:flex;align-items:center;flex-wrap:wrap;gap:4px 18px}
-.appfoot .afbase a,.appfoot .afbase button{color:var(--ink2);text-decoration:none;background:none;border:0;padding:0;font:inherit;cursor:pointer}
-.appfoot .afbase a:hover,.appfoot .afbase button:hover{color:var(--gc-action)}
-@container appfoot (max-width:1040px){ .appfoot .afgrid{grid-template-columns:repeat(4,1fr)} .appfoot .afbrand{grid-column:1/-1} }
-@container appfoot (max-width:700px){ .appfoot .afgrid{grid-template-columns:repeat(2,1fr)} }
-@container appfoot (max-width:520px){ .appfoot .afin{padding:28px 16px 0} }
-/* bandeau d'accroche en tête du pied de page : même fond que le reste, un filet dessous, titre à taille de page */
-.appfoot .afband{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
-.appfoot .afdeco{position:absolute;right:-70px;top:-80px;width:300px;height:300px;opacity:.09;pointer-events:none}
-.appfoot .afdeco path{stroke:var(--gc-celadon)}
-.appfoot .afbandin{position:relative;max-width:1440px;display:flex;justify-content:space-between;align-items:center;gap:18px 40px;flex-wrap:wrap;padding:26px 32px}
-.appfoot .afbandin h2{margin:0;max-width:560px;font-family:var(--gc-font-titres);font-weight:800;font-size:clamp(19px,3cqw,26px);line-height:1.12;letter-spacing:-.03em;color:var(--ink)}
-.appfoot .afbandin h2 em{font-style:normal;color:var(--gc-action)}
-.appfoot .afbandin p{margin:6px 0 0;max-width:460px;font-size:12.5px;line-height:1.5;color:var(--ink2)}
-.appfoot .afcta{display:flex;gap:10px;flex-wrap:wrap;align-items:stretch}
-/* mêmes cartes que le pied de la barre latérale : encart en pointillés + carte teintée avec la photo */
-.appfoot .afcard{display:flex;align-items:center;gap:9px;box-sizing:border-box;padding:10px 14px;text-align:left;text-decoration:none;font:inherit;font-size:12.5px;line-height:1.4;color:var(--ink)}
-.appfoot .afcard .lab{text-decoration:underline;text-underline-offset:2px}
-.appfoot .afcard:hover .lab{text-decoration-thickness:2px}
-.appfoot .afnl{flex-wrap:wrap;row-gap:1px;cursor:pointer;border:1.5px dashed var(--gc-celadon);border-radius:4px;background:transparent}
-.appfoot .afnl .lab{font-weight:600}
-.appfoot .afnl .min{flex-basis:100%;padding-left:27px;font-family:var(--gc-font-cotes);font-size:10px;color:var(--gc-action)}
-.appfoot .afnl:hover{border-style:solid;background:color-mix(in srgb,var(--gc-celadon) 14%,transparent)}
-.appfoot .afsup{border-radius:8px;background:color-mix(in srgb,var(--gc-celadon) 12%,transparent)}
-.appfoot .afsup .sbtxt{font-size:12px;color:var(--ink2)}
-.appfoot .afsup .min{opacity:.75}
-.appfoot .afsup .sbph{width:34px;height:34px}
-@container appfoot (max-width:520px){ .appfoot .afbandin{padding:22px 16px} .appfoot .afcta,.appfoot .afcard{width:100%} }
-/* invitation aux ressources (carnet) : une ligne, un lien vers le site vitrine */
-.resinv{display:flex;align-items:center;gap:10px;margin-top:20px;padding:8px 4px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink2);text-decoration:none}
-.resinv .rph{width:26px;height:26px;border-radius:50%;object-fit:cover;flex:none}
-.resinv .rtxt{flex:1;min-width:0;line-height:1.35}
-.resinv .rtxt b{font-weight:600;color:var(--ink)}
-.resinv .rgo{flex:none;color:var(--gc-action);white-space:nowrap}
-.resinv:hover .rgo{text-decoration:underline;text-underline-offset:3px}
-.resinv:hover .rtxt b{color:var(--gc-action)}
-@media (max-width:520px){ .resinv .rtxt span{display:none} }
 
 /* ===================== atomes ===================== */
 .btn{background:var(--terra);color:var(--on-terra);border:1.5px solid var(--terra-d);padding:9px 15px;border-radius:2px;
@@ -723,7 +672,6 @@ button.rk:hover .chev,.ritem.open .chev,.rpiv.open .chev{opacity:1}
    chez elle — les réglages restent sous la main quoi qu'il arrive. */
 @media (min-width:1081px){
   main.appmode{height:100vh;overflow:hidden}
-  main.appmode .appfoot{display:none}
   main.appmode .page{flex:1;min-height:0;overflow:hidden;padding-bottom:20px}
   main.appmode .acols{height:100%;min-height:0}
   main.appmode .acols>.panel{height:100%;min-height:0;display:flex;flex-direction:column}
@@ -889,21 +837,15 @@ button.card.own:hover .openhint,button.card.own:focus-visible .openhint{opacity:
 body.da-epure .pphoto{border:1px solid var(--line);border-radius:8px}
 /* retour de testeuse (fiche produit) : verbatim + vignettes qui ouvrent la galerie */
 /* « guidé pas à pas » : deux séquences du tutoriel 3D qui tournent en boucle dans la fiche (v2/img/tuto/) */
-.tclips{border:1px solid var(--line);border-radius:8px;background:var(--card);padding:8px 9px 9px;display:grid;gap:6px}
+.tclips{border:1px solid var(--line);border-radius:8px;background:var(--card);padding:10px 10px 11px;display:grid;gap:8px}
 .tclips .th{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .tclips .th b{font-size:13px;color:var(--ink)}
 .tclips .th .pill{margin-left:auto}
 .tclips .tgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .tclips figure{margin:0;position:relative;cursor:pointer;border-radius:5px;overflow:hidden;border:1px solid var(--line);background:#F4F2E8}
-.tclips video{display:block;width:100%;aspect-ratio:2/1;object-fit:cover}
+.tclips video{display:block;width:100%;aspect-ratio:8/5;object-fit:cover}
 .tclips figcaption{position:absolute;left:5px;bottom:5px;right:5px;font-size:10.5px;line-height:1.25;padding:2px 7px;border-radius:99px;
   background:color-mix(in srgb,var(--card) 90%,transparent);color:var(--ink);width:fit-content;max-width:calc(100% - 10px)}
-.pdesc{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin:0}
-.pdesc.open{display:block;-webkit-line-clamp:unset;overflow:visible}
-.pdescw{display:grid;gap:2px;justify-items:start}
-.pdescmore{padding:0;font-size:12.5px}
-.buybox>.panel:first-child{overflow:visible}   /* sinon le bouton collant ne colle pas (le panneau coupe son contenu) */
-.ctabar{position:sticky;bottom:0;z-index:4;display:grid;gap:6px;padding:8px 0 6px;background:var(--card);box-shadow:0 -10px 10px -8px color-mix(in srgb,var(--ink) 14%,transparent)}
 .tclips .tfine{font-size:11.5px;color:var(--ink2);line-height:1.4;margin:0}
 @media (max-width:420px){ .tclips .tgrid{grid-template-columns:1fr} }
 .retour{border-top:1px dashed var(--line);padding-top:12px;display:grid;gap:7px}
@@ -1201,16 +1143,6 @@ body.da-epure .protoflag{border-radius:6px}
 <link rel="alternate" hreflang="fr" href="https://app.gabarits-ceramique.com/">
 <link rel="alternate" hreflang="en" href="https://app.gabarits-ceramique.com/?lang=en">
 <link rel="alternate" hreflang="x-default" href="https://app.gabarits-ceramique.com/">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Gabarits Céramique">
-<meta property="og:url" content="https://app.gabarits-ceramique.com/">
-<meta property="og:title" content="Créer un gabarit de poterie à imprimer | Gabarits Céramique">
-<meta property="og:description" content="Entrez les cotes de votre pièce finie : le retrait et l'épaisseur de plaque sont calculés, le gabarit s'imprime en taille réelle. Gratuit, sans compte.">
-<meta property="og:image" content="https://framerusercontent.com/images/BDmMVIlXWK8lOUHLbP8YHEJH1v0.png">
-<meta property="og:locale" content="fr_FR">
-<meta property="og:locale:alternate" content="en_GB">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://framerusercontent.com/images/BDmMVIlXWK8lOUHLbP8YHEJH1v0.png">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -1281,7 +1213,6 @@ body.da-epure .protoflag{border-radius:6px}
   <main>
     <div class="topbar" id="topbar"></div>
     <div class="page" id="page"></div>
-    <footer class="appfoot" id="appfoot"></footer>
   </main>
 </div>
 <script>
@@ -1289,7 +1220,7 @@ body.da-epure .protoflag{border-radius:6px}
 window.GC_RELEASE = {
   edition: 'sortie',
   // waiver: true,   // à rallumer quand www.gabarits-ceramique.com/cgv existe (case de renonciation avant paiement)
-  shop: ['bol-talon', 'theiere'],   // en vente : un produit Gumroad par pièce (m.gumroad dans atelier-v2.html) ; les 9 autres sont en « bientôt » depuis le 6/11
+  shop: ['bol-talon', 'theiere'],   // en vente : un produit Gumroad par pièce (m.gumroad dans atelier-v2.html)
   avis: { fr:'https://tally.so/r/EqqdQL', en:'https://tally.so/r/aOO502' },   // « Donner mon avis » : les deux Tally du nouvel atelier (FR / EN)
   footTitle: { fr:'Le nouvel atelier', en:'The new workshop' },
   foot: { fr:'Tes réglages et tes pièces restent sur cet appareil. L’ancienne version reste accessible depuis « Nouvelle pièce ».',
@@ -1514,33 +1445,33 @@ const MODELS = [
     sections:[{id:'A', name:'Paroi', d:55, h:49.5}] },
 
   /* ---- planches d'assemblage, payantes ---- */
-  { id:'calado', gumroad:{ url:'https://ceramix541.gumroad.com/l/calado', productId:'I4floC7F5bxUZA9iLh_5pA==' }, name:'Calado Vessel', family:'Vase', diff:'Intermédiaire', price:9.99, novelty:true,
+  { id:'calado', name:'Calado Vessel', family:'Vase', diff:'Intermédiaire', price:9.99, novelty:true,
     blurb:"Vase à panse basse et col droit : quatre sections empilées, fond et anses rapportés.",
     blurbEn:"A vase with a low belly and a straight neck: four stacked sections, base and handles added.",
     thick:5, dBase:52, ears:true, earsLabel:'ANSES',
     sections:[{id:'A',name:'Cône de pied',d:150,h:78},{id:'B',name:'Panse',d:138,h:56},
               {id:'C',name:'Épaule',d:86,h:40},{id:'D',name:'Col',d:84,h:52}] },
-  { id:'carafe', gumroad:{ url:'https://ceramix541.gumroad.com/l/carafe', productId:'ypebWcpwAZ6-TsyEWbRvvA==' }, name:'Carafe à col', family:'Vase', diff:'Intermédiaire', price:9.99,
+  { id:'carafe', name:'Carafe à col', family:'Vase', diff:'Intermédiaire', price:9.99,
     blurb:"Corps bombé, épaule marquée, col long. Trois sections et un fond.",
     blurbEn:"Rounded body, marked shoulder, long neck. Three sections and a base.",
     thick:5, dBase:64, ears:false,
     sections:[{id:'A',name:'Corps',d:132,h:90},{id:'B',name:'Épaule',d:64,h:46},{id:'C',name:'Col',d:58,h:70}] },
-  { id:'soliflore', gumroad:{ url:'https://ceramix541.gumroad.com/l/soliflore', productId:'pObujpqMRljavfwCa-4_eA==' }, name:'Soliflore', family:'Vase', diff:'Intermédiaire', price:9.99,
+  { id:'soliflore', name:'Soliflore', family:'Vase', diff:'Intermédiaire', price:9.99,
     blurb:"Petit vase à une fleur : bulbe bas, col fin et très haut. Sèche lentement.",
     blurbEn:"A vase for a single stem: low bulb, fine and very tall neck. Dries slowly.",
     thick:4, dBase:40, ears:false,
     sections:[{id:'A',name:'Bulbe',d:88,h:52},{id:'B',name:'Rétreint',d:30,h:30},{id:'C',name:'Col',d:26,h:96}] },
-  { id:'lampe', gumroad:{ url:'https://ceramix541.gumroad.com/l/lampe', productId:'5NTV5zXJronmA4n2J6xgPQ==' }, name:'Photophore ajouré', family:'Objet', diff:'Avancé', price:9.99, novelty:true,
+  { id:'lampe', name:'Photophore ajouré', family:'Objet', diff:'Avancé', price:9.99, novelty:true,
     blurb:"Cylindre ajouré sur socle évasé, couronne haute. Les perçages se font après montage.",
     blurbEn:"A pierced cylinder on a flared foot, tall crown. The holes are cut after assembly.",
     thick:6, dBase:96, ears:false,
     sections:[{id:'A',name:'Socle',d:112,h:26},{id:'B',name:'Fût',d:110,h:118},{id:'C',name:'Couronne',d:124,h:24}] },
-  { id:'coupe', gumroad:{ url:'https://ceramix541.gumroad.com/l/coupe', productId:'wTfXhfRN3mN9uQn2uYXE_w==' }, name:'Coupe sur pied', family:'Objet', diff:'Avancé', price:9.99,
+  { id:'coupe', name:'Coupe sur pied', family:'Objet', diff:'Avancé', price:9.99,
     blurb:"Pied conique inversé, nœud, vasque évasée. Le montage demande un support.",
     blurbEn:"Inverted cone foot, knop, flared bowl. The build needs support.",
     thick:5, dBase:80, ears:false,
     sections:[{id:'A',name:'Pied',d:44,h:62},{id:'B',name:'Nœud',d:56,h:18},{id:'C',name:'Vasque',d:168,h:64}] },
-  { id:'pot', gumroad:{ url:'https://ceramix541.gumroad.com/l/pot', productId:'jOhf3NElZQJpt6S1F6OxEQ==' }, name:'Pot à ustensiles', family:'Objet', diff:'Débutant', price:4.99,
+  { id:'pot', name:'Pot à ustensiles', family:'Objet', diff:'Débutant', price:4.99,
     blurb:"Un cylindre franc, légèrement rentrant au pied, à poser près du tour.",
     blurbEn:"A frank cylinder, slightly tucked at the foot, to keep by the wheel.",
     thick:6, dBase:104, ears:false,
@@ -1566,12 +1497,12 @@ const MODELS = [
     blurbEn:"Elliptical section: the band is developed on the true ellipse perimeter, not an average circle.",
     thick:5, dBase:130, ratio:.55, shape:'oval', ears:false,
     sections:[{id:'A',name:'Paroi',d:150,h:96}] },
-  { id:'prisme', gumroad:{ url:'https://ceramix541.gumroad.com/l/prisme', productId:'hoIL732gArOsPJHke-1Jgw==' }, name:'Prisme à pans', family:'Vase', diff:'Intermédiaire', pack:'base', price:29, paidLater:9.99,
+  { id:'prisme', name:'Prisme à pans', family:'Vase', diff:'Intermédiaire', pack:'base', price:29, paidLater:9.99,
     blurb:"Vase à N pans droits, six par défaut. Une seule facette à découper, répétée.",
     blurbEn:"A vase with N straight facets, six by default. One facet to cut, repeated.",
     thick:5, dBase:98, shape:'poly', n:6, ears:false,
     sections:[{id:'A',name:'Fût',d:98,h:185}] },
-  { id:'facettes', gumroad:{ url:'https://ceramix541.gumroad.com/l/facettes', productId:'okgB1Rjqx0_KvosnlVEwjw==' }, name:'Vase à facettes', family:'Vase', diff:'Avancé', pack:'base', price:29, paidLater:9.99,
+  { id:'facettes', name:'Vase à facettes', family:'Vase', diff:'Avancé', pack:'base', price:29, paidLater:9.99,
     blurb:"Pans qui s'évasent puis se referment : deux jeux de facettes, huit pans.",
     blurbEn:"Facets that flare then close again: two sets of panels, eight sides.",
     thick:5, dBase:70, shape:'poly', n:8, ears:false,
@@ -1599,7 +1530,7 @@ const MODELS = [
   /* ---- vase donut (le « vase anneau » de la V1) : un anneau creux posé sur la tranche.
      Ce n'est pas un solide de révolution vertical : isTore() l'envoie sur torePieces()
      et toreSVG(), comme le bas-relief a ses propres branches. Payant (Louis, 17/10). ---- */
-  { id:'tore', gumroad:{ url:'https://ceramix541.gumroad.com/l/tore', productId:'otKBbEvItIgC52rkgEFx1Q==' }, name:'Vase donut', family:'Vase', diff:'Avancé', price:9.99, novelty:true,
+  { id:'tore', name:'Vase donut', family:'Vase', diff:'Avancé', price:9.99, novelty:true,
     blurb:"Un anneau creux posé sur la tranche, un petit col au sommet : deux faces percées, deux bandes cintrées et le col.",
     blurbEn:"A hollow ring standing on its edge, a small neck on top: two pierced faces, two curved strips and the neck.",
     thick:5, dBase:0, ears:false, tore:{de:200, dt:70, p:65, do:42, hc:28}, sections:[] },
@@ -1716,7 +1647,7 @@ function track(event, props){
 const EDITIONS = {
   sortie:   { features:{ argile:false, plaque:false, sombre:false, contenance:false, emporte:false,
                          libre:false, lots:false, paywall:false, proto:false },
-              shop:['bol-talon','theiere'], shopFree:true, tourAuto:true,   // en vente : bol-tasse à talon + théière (3/11) ; même liste que GC_RELEASE de build-sortie.sh. Les 9 autres pièces ont leur produit Gumroad (m.gumroad) mais sont en « bientôt » + liste d'attente depuis le retour en arrière du 6/11 : pour les relancer, les ajouter ici et dans GC_RELEASE, et sortir prisme/facettes/tore de `hide`
+              shop:['bol-talon','theiere'], shopFree:true, tourAuto:true,   // en vente depuis le 3/11 : bol-tasse à talon + théière (même liste que GC_RELEASE de build-sortie.sh)
               teasers:true,   // emporte-pièces, contenance, lots, atelier libre : « bientôt » → newsletter + cadeau (Louis, 17/10)
               soon:true,   // les formes qui seront payantes : « bientôt disponible » + email (Louis, 17/10)
               hide:['profil','prisme','facettes','coussin','tore'],   // restent dans l'ancienne version (Louis, 17/10) ; prisme, facettes et coussin deviennent payants   // le rayon : les formes de la V1 (gratuites) + le bol-tasse
@@ -3054,116 +2985,6 @@ const NAV = () => [
 ].map(n => n.id==='emporte' && !FEATURES.emporte && GC.teasers ? {...n, soon:'emporte'} : n)
  .filter(n => (n.id!=='catalogue' || FEATURES.catalogue) && (n.id!=='emporte' || FEATURES.emporte || n.soon)
            && (n.id!=='tuto' || draftTuto()));
-/* ---------- Pied de page : ressources · à propos · contact · réseaux ----------
-   Mêmes destinations que le footer du site (www.gabarits-ceramique.com), en
-   anglais quand l'outil est en anglais. Le contact est une adresse, pas une page :
-   /contact n'existe pas côté site. Masqué dans les versions de test (GC_FIXED),
-   comme les liens de la barre. */
-const SITE_URL = 'https://www.gabarits-ceramique.com';
-const CONTACT_MAIL = 'gabarits.ceramique@gmail.com';
-const SOCIALS = [
-  {id:'instagram', label:'Instagram', url:'https://www.instagram.com/gabarits.ceramique',
-   svg:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6"/></svg>'},
-  {id:'pinterest', label:'Pinterest', url:'https://www.pinterest.com/loucoff1995/',
-   svg:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M10.6 17.8 12.3 9.6M9.6 11.2c.2-1.6 1.4-2.4 2.8-2.4 1.5 0 2.4.9 2.4 2.2 0 1.8-1.1 3-2.5 3-.8 0-1.3-.4-1.5-1"/></svg>'}
-];
-function appFootLinks(){
-  const en = state.lang==='en', b = SITE_URL + (en?'/en':'');
-  const arts = en
-    ? [['pottery-without-a-wheel','Pottery without a wheel'],['printable-ceramic-cup-template','Printable cup template'],['make-a-slab-built-ceramic-bowl','Make a slab-built bowl']]
-    : [['poterie-sans-tour','Poterie sans tour'],['gabarit-tasse-ceramique','Gabarit de tasse'],['faire-un-bol-ceramique','Faire un bol']];
-  return {
-    resources: b + (en?'/resources':'/ressources'),
-    arts: arts.map(([s,t]) => [`${b}${en?'/resources/':'/ressources/'}${s}`, t]),
-    about: b + (en?'/about':'/a-propos'),
-    home: b || SITE_URL,
-    legal: b + (en?'/legal':'/mentions-legales'),
-    privacy: b + (en?'/privacy':'/confidentialite'),
-    mail: 'mailto:' + CONTACT_MAIL
-  };
-}
-/* Invitation « Les ressources de Loulou » : en bas du carnet, là où l'on revient après avoir fini une pièce. */
-function resInviteHTML(){
-  const F = appFootLinks(), ph = (()=>{ try{ return EV_PHOTO }catch(e){ return '' } })();
-  return `<a class="resinv" href="${esc(F.resources)}" data-res="ressources" target="_blank" rel="noopener">
-    ${ph ? `<img class="rph" src="${ph}" alt="" width="26" height="26">` : ''}
-    <span class="rtxt"><b>${D('Les ressources de Loulou','Loulou’s resources')}</b> <span>· ${D('guides et astuces pour travailler à la plaque','guides and tips for slab building')}</span></span>
-    <span class="rgo">${D('Sur le site','On the website')} ↗</span></a>`;
-}
-function renderAppFoot(){
-  const el = $('#appfoot'); if(!el) return;
-  if(GC_FIXED){ el.hidden = true; return; }
-  const F = appFootLinks(), ext = 'target="_blank" rel="noopener"';
-  const A = (id, href, txt, blank=true) => `<a href="${esc(href)}" data-ft="${id}"${blank?' '+ext:''}>${txt}</a>`;
-  const G = (route, txt, extra='') => `<button class="afl" type="button" data-ft-go="${route}" ${extra}>${txt}</button>`;
-  const subbed = lsGet('gabarits-news-sub') || lsGet('gabarits-news-click');
-  const ph = (()=>{ try{ return EV_PHOTO }catch(e){ return '' } })();
-  const tool = NAV().filter(n => n.id!=='tuto' && !n.soon).map(n => G(n.id, n.t));
-  const fams = FEATURES.catalogue ? FAMILIES.map(f => G('catalogue', t(f), `data-fam="${f}"`)) : [];
-  const logo = `<svg class="logo" viewBox="0 0 100 100" fill="none" aria-hidden="true">
-      <path d="M50 5 C75 5 95 25 95 51 C95 79 76 96 49 96 C23 96 6 77 6 50 C6 24 25 5 50 5 Z" fill="var(--gc-celadon)"/>
-      <path d="M14.2 46.9 A64 64 0 0 1 85.8 46.9 L71.2 68.5 A38 38 0 0 0 28.8 68.5 Z" stroke="var(--gc-lait)" stroke-width="5" stroke-dasharray="9 6" stroke-linejoin="round"/></svg>`;
-  el.innerHTML = `<div class="afband">
-      <svg class="afdeco" viewBox="0 0 100 100" fill="none" aria-hidden="true">
-        <path d="M50 5 C75 5 95 25 95 51 C95 79 76 96 49 96 C23 96 6 77 6 50 C6 24 25 5 50 5 Z" stroke="#8FBFAA" stroke-width=".6"/>
-        <path d="M14.2 46.9 A64 64 0 0 1 85.8 46.9 L71.2 68.5 A38 38 0 0 0 28.8 68.5 Z" stroke="#8FBFAA" stroke-width="1.2" stroke-dasharray="3 2.4" stroke-linejoin="round"/></svg>
-      <div class="afbandin">
-        <div>
-          <h2>${D('L’intelligence numérique pour les <em>mains agiles.</em>','Digital smarts for <em>nimble hands.</em>')}</h2>
-          <p>${D('Dessine ta pièce, imprime les gabarits à taille réelle : le retrait de cuisson et l’épaisseur de plaque sont déjà compensés.',
-                 'Shape your piece and print full-size templates, with firing shrinkage and slab thickness already compensated.')}</p>
-        </div>
-        <div class="afcta">
-          ${subbed ? '' : `<button class="afcard afnl" type="button" data-ft-news title="${D('Un email quand une nouveauté sort (très peu), et un gabarit PDF exclusif en cadeau','An email when something new comes out (very few), plus an exclusive PDF template as a gift')}">
-            <span class="ic" aria-hidden="true">💌</span><span class="lab">${D('Recevoir les nouveautés','Get the news')}</span><span class="min">🎁 ${D('un gabarit offert','a free template')}</span></button>`}
-          <a class="afcard afsup" href="${esc(BMAC_URL)}" data-ft="don" ${ext} title="${D('L’outil est gratuit : un don aide à le faire vivre','The tool is free: a tip helps keep it alive')}">
-            ${ph ? `<img class="sbph" src="${ph}" alt="Louis" width="34" height="34">` : ''}
-            <span class="sbtxt">${D('Outil gratuit, fait avec 🤎','Free tool, made with 🤎')}<br><span class="lab">${D('offrez-moi un pain de terre ☕','buy me a block of clay ☕')}</span> <span class="min">${D('(montant libre)','(any amount)')}</span></span></a>
-        </div>
-      </div>
-    </div>
-    <div class="afin">
-      <div class="afgrid">
-        <div class="afbrand">
-          <div class="wm">${logo}<span>Gabarits <em>${D('céramique','ceramics')}</em></span></div>
-          <p>${D('Des gabarits de découpe à taille réelle pour la céramique à la plaque, retrait et épaisseur déjà compensés.',
-                 'Full-size cutting templates for slab-built ceramics, with shrinkage and thickness already compensated.')}</p>
-          <div class="afsoc">${SOCIALS.map(s => `<a href="${esc(s.url)}" data-ft="${s.id}" aria-label="${s.label}" title="${s.label}" ${ext}>${s.svg}</a>`).join('')}
-            <a href="${esc(F.mail)}" data-ft="contact" aria-label="Contact" title="${CONTACT_MAIL}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="m4 7.5 8 6 8-6"/></svg></a></div>
-        </div>
-        <nav class="afcol" aria-label="${D('L’outil','The tool')}"><h5>${D('L’outil','The tool')}</h5>${tool.join('')}</nav>
-        ${fams.length ? `<nav class="afcol" aria-label="${D('Formes','Shapes')}"><h5>${D('Formes','Shapes')}</h5>${fams.join('')}
-          <button class="afl afall" type="button" data-ft-go="catalogue" data-fam="Tout">${D('Tout le catalogue →','Full catalogue →')}</button></nav>` : ''}
-        <nav class="afcol" aria-label="${D('Ressources','Resources')}"><h5>${D('Ressources','Resources')}</h5>
-          ${F.arts.map(([u,tt],i)=>A('article'+(i+1), u, tt)).join('')}
-          <a class="afall" href="${esc(F.resources)}" data-ft="ressources" ${ext}>${D('Tous les articles →','All articles →')}</a>
-        </nav>
-        <nav class="afcol" aria-label="${D('Le projet','The project')}"><h5>${D('Le projet','The project')}</h5>
-          ${A('a-propos', F.about, D('À propos','About'))}
-          ${A('contact', F.mail, D('Contact','Contact'), false)}
-          ${A('avis', avisUrl()+'?source=pied-outil-v2', D('Donner mon avis','Give feedback'))}
-        </nav>
-      </div>
-      <div class="afbase">
-        <div class="afleft">
-          <span>© 2026 Gabarits céramique</span>
-          ${A('site', F.home, D('Le site','Website'))}
-          ${A('mentions', F.legal, D('Mentions légales','Legal notice'))}
-          ${A('confidentialite', F.privacy, D('Confidentialité','Privacy'))}
-        </div>
-        <button type="button" data-ft-top>${D('Haut de page','Back to top')} ↑</button>
-      </div>
-    </div>`;
-  el.onclick = e => {
-    const a = e.target.closest('[data-ft]'); if(a){ track('footer_click',{link:a.dataset.ft, lang:state.lang}); return; }
-    const g = e.target.closest('[data-ft-go]');
-    if(g){ track('footer_click',{link:'nav-'+g.dataset.ftGo+(g.dataset.fam?':'+g.dataset.fam:''), lang:state.lang});
-      if(g.dataset.fam){ state.filter.fam=g.dataset.fam; state.filter.view='all'; state.filter.lvl='Tout'; state.filter.q=''; }
-      return go(g.dataset.ftGo); }
-    if(e.target.closest('[data-ft-news]')){ track('newsletter_click',{source:'pied-page'}); showNews('pied-page'); return; }
-    if(e.target.closest('[data-ft-top]')) window.scrollTo({top:0, behavior:'smooth'});
-  };
-}
 function go(route, productId){
   state.route=route; if(productId!==undefined) state.productId=productId;
   window.scrollTo(0,0); render();
@@ -3198,18 +3019,17 @@ function render(){
   renderSbPrefs();
   document.querySelector('main').classList.toggle('appmode', state.route==='atelier');
   const fbLinks = GC_FIXED ? '' : `<div class="sbfb">
-    ${(lsGet('gabarits-news-sub')||lsGet('gabarits-news-click')) ? '' : `<button class="link nl" id="newsFoot" type="button"
+    ${lsGet('gabarits-news-sub') ? '' : `<button class="link nl" id="newsFoot" type="button"
       title="${D('Un email quand une nouveauté sort (très peu), et un gabarit PDF exclusif en cadeau','An email when something new comes out (very few), plus an exclusive PDF template as a gift')}">
       <span class="ic" aria-hidden="true">💌</span><span class="lab">${D('Recevoir les nouveautés','Get the news')}</span><span class="min">🎁 ${D('un gabarit offert','a free template')}</span></button>`}
-    <a class="link sbsup" id="tipNav" href="${BMAC_URL}" target="_blank" rel="noopener"
+    <a class="link" id="tipNav" href="${BMAC_URL}" target="_blank" rel="noopener"
       title="${D('L’outil est gratuit : un don aide à le faire vivre','The tool is free: a tip helps keep it alive')}">
-      <img class="sbph" src="${(()=>{try{return EV_PHOTO}catch(e){return ''}})()}" alt="Louis" width="26" height="26">
-      <span class="sbtxt">${D('Outil gratuit, fait avec 🤎','Free tool, made with 🤎')}<br><span class="lab">${D('offrez-moi un pain de terre ☕','buy me a block of clay ☕')}</span> <span class="min">${D('(montant libre)','(any amount)')}</span></span></a></div>`;
-  $('#sbfoot').innerHTML = !FEATURES.proto ? `${GC_FIXED ? `<b>${esc(GC.footTitle ? D(GC.footTitle.fr, GC.footTitle.en) : D('Version de test','Test version'))}</b>
-    ${GC.foot ? esc(D(GC.foot.fr, GC.foot.en)) : ''}` : ''}
+      <span class="ic" aria-hidden="true">☕</span><span class="lab">${D('Soutenir le projet','Support the project')}</span><span class="min">${D('don','tip')}</span></a></div>`;
+  $('#sbfoot').innerHTML = !FEATURES.proto ? `<b>${esc(GC.footTitle ? D(GC.footTitle.fr, GC.footTitle.en) : D('Version de test','Test version'))}</b>
+    ${GC.foot ? esc(D(GC.foot.fr, GC.foot.en)) : ''}
     ${fbLinks}
     ${GC.feedback ? `<a class="link" href="${esc(GC.feedback)}" target="_blank" rel="noopener" style="padding-left:0;display:block;margin-top:8px">${D('Donner mon avis','Give feedback')} ↗</a>` : ''}
-    ${GC_FIXED ? `<button class="link" id="wipe" style="padding-left:0;display:block;margin-top:8px">${D('tout réinitialiser','reset everything')}</button>` : ''}`
+    <button class="link" id="wipe" style="padding-left:0;display:block;margin-top:8px">${D('tout réinitialiser','reset everything')}</button>`
   : `<b>Prototype</b>
     ${D('Paiement simulé · données locales.','Simulated payment · local data.')}<br>
     ${D('Code de test','Test code')}${COLON()} <b style="font-weight:400;color:var(--sb-accent)">ATELIER-TEST</b>
@@ -3225,9 +3045,9 @@ function render(){
     </span>
     ${fbLinks}
     <button class="link" id="wipe" style="padding-left:0;display:block;margin-top:8px">${D('tout réinitialiser','reset everything')}</button>`;
-  if($('#wipe')) $('#wipe').onclick=wipeAll;
+  $('#wipe').onclick=wipeAll;
   $('#tipNav')?.addEventListener('click',()=>{ track('tip_click',{source:'barre'}); lsSet('gabarits-tip-fait', String(Date.now())); });
-  $('#newsFoot')?.addEventListener('click',()=>{ track('newsletter_click',{source:'footer'}); lsSet('gabarits-news-click','1'); $('#newsFoot')?.remove(); showNews('footer'); });
+  $('#newsFoot')?.addEventListener('click',()=>{ track('newsletter_click',{source:'footer'}); showNews('footer'); });
   if($('#dasw')) $('#dasw').onclick=e=>{
     const b=e.target.closest('[data-da]'); if(!b||b.dataset.da===state.da) return;
     state.da=b.dataset.da; applyDa(); persist(); render();
@@ -3236,7 +3056,6 @@ function render(){
     const b=e.target.closest('[data-as]'); if(!b||b.dataset.as===state.aside) return;
     state.aside=b.dataset.as; applyAside(); persist(); render();
   };
-  renderAppFoot();
   ({atelier:viewAtelier, carnet:viewCarnet, catalogue:viewCatalogue, produit:viewProduit,
     emporte:viewEmporte}[state.route])();
   persist();
@@ -3349,14 +3168,11 @@ const tipRecent = () => { const t=+lsGet('gabarits-tip-fait')||0; return t>0 && 
 if(lsGet('gabarits-xsessions')===null)                 // les habitués ne repartent pas de zéro
   lsSet('gabarits-xsessions', String(Math.min(+lsGet('gabarits-exports')||0, MSTONE_AT-1)));
 let tipShown=false, msPending=0;
-/* la fenêtre de don (palier) ne s'ouvre que pour une pièce GRATUITE : qui a acheté la pièce ne se la voit pas demander */
-let lastExportId=null;
-const exportIsPaid = () => { const m=lastExportId && MODELS.concat(typeof EXTRAS!=='undefined'?EXTRAS:[]).find(x=>x.id===lastExportId); return !!m && m.price>0; };
 function afterExport(){
   const n=(+lsGet('gabarits-exports')||0)+1; lsSet('gabarits-exports', String(n));
   let sn=+lsGet('gabarits-xsessions')||0;
   try{ if(!sessionStorage.getItem('gabarits-xsession')){ sn++; sessionStorage.setItem('gabarits-xsession','1'); lsSet('gabarits-xsessions', String(sn)); } }catch(e){}
-  const palier = n%MSTONE_AT===0 && !tipRecent() && !exportIsPaid();      // 3e, 6e, 9e export (impression, PDF, SVG)
+  const palier = n%MSTONE_AT===0 && !tipRecent();      // 3e, 6e, 9e export (impression, PDF, SVG)
   if($('#mask')){ if(palier) msPending=n; return; }      // une modale est ouverte : le palier attend qu'elle se ferme
   /* sondage de sortie : proposé tout seul au 2e export (le 1er = newsletter, le 3e = don, donc rien d'autre ce jour-là) ;
      un visiteur qui a déjà un historique le reçoit au premier export qui n'est ni un palier de don ni la newsletter.
@@ -3364,7 +3180,8 @@ function afterExport(){
   if(n>=2 && !palier && evolFree() && !lsGet('gabarits-evol-auto') && !(n%2===1 && !lsGet('gabarits-news-sub'))){
     lsSet('gabarits-evol-auto','1'); track('evolution_auto',{export_no:n}); askEvolution('export'); return; }
   if(palier) showMilestone(n);
-  else if(n%2===1 && !lsGet('gabarits-news-sub')) showNews('auto_export');
+  else if(lsGet('gabarits-news-sub')) maybeThanks();
+  else if(n%2===1) showNews('auto_export');
 }
 function maybeThanks(){
   if(tipShown) return; tipShown=true;
@@ -3402,18 +3219,18 @@ function showMilestone(n){
   const m=modal(`<div class="mh"><span></span><button class="x" data-close aria-label="${D('Fermer','Close')}">×</button></div>
     <div class="mb msm2">
       ${MS_ART}
-      <h3>${D('Vous avez créé','You’ve made')} <span class="mscount" data-to="${n}">0</span> ${D('gabarits','templates')} 🎉</h3>
-      <p class="lead">${D('Autant de patrons que vous n’avez pas eu à tracer à la main, retrait de cuisson compris.',
-        'That’s that many patterns you didn’t have to draw by hand, firing shrinkage included.')}</p>
-      <p class="lead">${D('Je développe cet outil seul, sur mon temps libre. Tout ce que vous utilisez aujourd’hui <b>restera gratuit</b>, sans publicité.',
-        'I build this tool on my own, in my spare time. Everything you use today <b>will stay free</b>, with no ads.')}</p>
-      <p class="lead">${D('S’il vous a fait gagner du temps, un café m’aide à le faire connaître et à ajouter de nouvelles formes. 🤎',
-        'If it saved you time, a coffee helps me spread the word and add new shapes. 🤎')}</p>
+      <div class="kick">${D('ton','your')} <b class="mscount" data-to="${n}">0</b><sup>${ord}</sup> ${D('gabarit','template')}</div>
+      <h3>${D('C’est toi qui fais vivre l’outil','You keep this tool alive')}</h3>
+      <p class="lead">${D('Gabarits céramique est gratuit, sans pub et sans compte. Il tient grâce aux dons de celles et ceux qui s’en servent.',
+        'Gabarits céramique is free, ad-free and account-free. It keeps going thanks to tips from the people who use it.')}</p>
+      <ul class="msuses">
+        <li style="--i:0"><span>🏺</span>${D('de nouvelles formes à monter','new shapes to build')}</li>
+        <li style="--i:1"><span>🔥</span>${D('des pièces cuites pour tester chaque gabarit','fired pieces to test every template')}</li>
+        <li style="--i:2"><span>🤍</span>${D('un outil qui reste gratuit pour tout le monde','a tool that stays free for everyone')}</li>
+      </ul>
       <div class="act">
-        <a class="btn mscta" id="msTip" href="${BMAC_URL}" target="_blank" rel="noopener">${D('☕ Offrir un café (ou un pain de terre)','☕ Buy me a coffee (or a block of clay)')}</a>
-        <span class="tagsm">${D('Montant libre, sans minimum','Any amount, no minimum')}</span>
-        ${(()=>{ const tm=model('theiere'); return tm && inShop(tm) && !owns(tm.id)
-          ? `<button class="link msalt" id="msTea" type="button">${D('Pas du genre café ? Faites-vous une théière 🫖','Not a coffee person? Make yourself a teapot 🫖')}</button>` : ''; })()}
+        <a class="btn mscta" id="msTip" href="${BMAC_URL}" target="_blank" rel="noopener">${D('☕ Offrir un café','☕ Buy me a coffee')}</a>
+        <span class="tagsm">${D('montant libre, sans minimum · une fois suffit','any amount, no minimum · once is enough')}</span>
         <button class="link" id="msLater">${D('Pas cette fois','Not this time')}</button>
       </div></div>`, {cls:'modal msmodal'});
   /* confettis de terre (céladon, biscuit, encre), tirés une fois */
@@ -3437,7 +3254,6 @@ function showMilestone(n){
     lsSet('gabarits-news-off','1'); lsSet('gabarits-tip-fait', String(Date.now()));
     m.querySelector('.msm2').classList.add('merci');
     setTimeout(closeModal, 900); };
-  m.querySelector('#msTea')?.addEventListener('click',()=>{ track('milestone_theiere_click',{export_no:n}); closeModal(); go('produit','theiere'); });
   m.querySelector('#msLater').onclick=e=>{ track('milestone_dismiss',{via:'plus_tard'}); flyFrom(e.currentTarget); askEvolution('milestone'); };
   m.querySelector('.mh .x').addEventListener('click',()=>track('milestone_dismiss',{via:'croix'}));
   m.querySelector('.mh .x').onclick=()=>askEvolution('milestone');
@@ -5268,8 +5084,6 @@ function viewCarnet(){
           </div></div>`;
       }).join('')}
     </div>`;
-  $('#page').insertAdjacentHTML('beforeend', resInviteHTML());
-  $('#page').querySelectorAll('[data-res]').forEach(a=>a.addEventListener('click',()=>track('resources_click',{source:'carnet', link:a.dataset.res, lang:state.lang})));
   $('#cNew').onclick=openNewPiece;
   $('#cGo')?.addEventListener('click',()=>go('atelier'));
   const q1=$('#cq');
@@ -5523,7 +5337,7 @@ function soonCardHTML(m){
       <h3>${esc(t(m.name))}</h3>
       <div class="sub">${cardDims(st)} · ${t(m.diff)}</div>
       <div class="row">${asked?`<span class="pill ok">✓ ${D('on te prévient','we’ll let you know')}</span>`
-        :`<span class="pill">${D('me prévenir','notify me')} →</span>`}</div>
+        :`<span class="pill">${D('me prévenir','notify me')} →</span>`}<span class="pill">${eur(m.price)}</span></div>
     </div></button>`;
 }
 function openSoon(id){
@@ -5535,7 +5349,7 @@ function openSoon(id){
       <div class="thumb" style="aspect-ratio:4/3;border:1px solid var(--line);border-radius:4px;background:var(--card);position:relative">
         ${thumbSVG(st,{W:420,H:300,tilt:.26})}</div>
       <p style="margin:12px 0 4px"><span class="pill pay">${D('bientôt disponible','coming soon')}</span>
-        <span class="tagsm" style="margin-left:6px">${t(m.diff)}${isSet(st)?' · '+D('lot de','set of')+' '+st.parts.length:''}</span></p>
+        <span class="tagsm" style="margin-left:6px">${eur(m.price)} · ${t(m.diff)}${isSet(st)?' · '+D('lot de','set of')+' '+st.parts.length:''}</span></p>
       <p style="font-size:13.5px;line-height:1.55">${esc(state.lang==='en'&&m.blurbEn?m.blurbEn:m.blurb)}</p>
       <div id="soonBody">${asked
         ? `<p class="tagsm">✓ ${D('C’est noté : tu recevras un email le jour où elle sort.','Noted: you’ll get an email the day it comes out.')}</p>`
@@ -5591,7 +5405,8 @@ function tutoClipsHTML(m){
     <div class="tgrid">${T.clips.map(c=>`<figure data-tc title="${D('Ouvrir le tutoriel 3D','Open the 3D tutorial')}">
       <video src="${c.src}.mp4" poster="${c.src}.jpg" muted loop playsinline preload="metadata" aria-label="${esc(D(c.fr,c.en))}"></video>
       <figcaption>${esc(D(c.fr,c.en))}</figcaption></figure>`).join('')}</div>
-    ${m.price===0||owns(m.id)?'':`<p class="tfine">${D('Les premières étapes sont à essayer sans acheter.','The first steps are free to try.')}</p>`}
+    <p class="tfine">${D(`Le tutoriel 3D te montre chaque geste, recalculé à tes cotes et à ta terre. ${m.price===0||owns(m.id)?'':'Les premières étapes sont à essayer sans acheter.'}`,
+      `The 3D tutorial shows every move, recomputed for your dimensions and clay. ${m.price===0||owns(m.id)?'':'The first steps are free to try.'}`)}</p>
   </div>`;
 }
 /** lecture des séquences : seulement quand elles sont à l'écran (économie de batterie), figées si l'utilisateur préfère moins d'animations */
@@ -5727,8 +5542,7 @@ function viewProduit(){
               ${has?`<span class="pill ok">✓ ${D('dans ta bibliothèque','in your library')}</span>`
                    :`<span class="tagsm">${m.pack?`${D('le pack','the pack')} · ${MODELS.filter(x=>x.pack===m.pack).length} ${D('formes','shapes')}`:D('achat unique','one-off purchase')}</span>`}
             </div>
-            <div class="pdescw"><p class="note pdesc" id="pdesc">${esc(D(m.blurb, m.blurbEn||m.blurb))}</p>
-              <button class="link pdescmore" id="pdescMore" hidden>${D('Lire la suite','Read more')}</button></div>
+            <p class="note">${esc(D(m.blurb, m.blurbEn||m.blurb))}</p>
             ${tutoClipsHTML(m)}
             ${RETOURS[m.id]?(R=>`<div class="retour">
               <blockquote>« ${esc(D(R.quote.fr,R.quote.en))} »</blockquote>
@@ -5736,13 +5550,13 @@ function viewProduit(){
               <div class="rthumbs" id="rthumbs">${R.photos.map((p,i)=>`<button type="button" data-rp="${i}" aria-label="${D('Agrandir la photo','Enlarge photo')} ${i+1}"><img src="${p.src}" alt="${esc(D(p.fr,p.en))}" loading="lazy"></button>`).join('')}
                 <span class="n">${R.photos.length} ${D('photos','photos')}</span></div>
             </div>`)(RETOURS[m.id]):''}
-            <div class="ctabar">${has
+            ${has
               ? `<button class="btn lg" id="open">${D("Ouvrir dans l'atelier",'Open in the workshop')}</button>`
               : `<button class="btn lg" id="buy">${m.price===0?D('Ajouter à mes formes','Add to my shapes')
                      :m.pack?`${D('Débloquer le pack','Unlock the pack')} · ${eur(PACK.price)}`:`${D('Acheter','Buy')} · ${eur(m.price)}`}</button>
                  <div class="note" style="text-align:center">${m.pack
                      ? `${D('cette forme et les','this shape and the')} ${MODELS.filter(x=>x.pack===m.pack).length-1} ${D('autres du pack','others in the pack')}`
-                     : D('paiement Gumroad · accès immédiat','Gumroad payment · instant access')}</div>`}</div>
+                     : D('paiement Gumroad · accès immédiat','Gumroad payment · instant access')}</div>`}
             ${m.tuto?`<button class="ghost" id="tuto" style="width:100%">${has?D('Voir le tutoriel 3D','Open the 3D tutorial'):D('Aperçu du tutoriel 3D','Preview the 3D tutorial')} ↗</button>`:''}
             <ul class="incl">
               ${m.tuto?`<li><span><b>${D('le tutoriel 3D pas à pas','the step-by-step 3D tutorial')}</b>${D(', recalculé à tes cotes et à ta terre',', recomputed for your dimensions and clay')}</span></li>`:''}
@@ -5761,10 +5575,6 @@ function viewProduit(){
         </div>
       </div>
     </div>`;
-  { const pd=$('#pdesc'), pm=$('#pdescMore');            // description repliée sur 3 lignes : le bouton d'achat reste visible sur un petit écran
-    const full=pd?(pd.classList.add('open'), pd.scrollHeight):0; pd?.classList.remove('open');       // hauteur complète, puis on referme
-    if(pd && pm && full>pd.clientHeight+2){ pm.hidden=false;
-      pm.onclick=()=>{ const o=pd.classList.toggle('open'); pm.textContent=o?D('Réduire','Show less'):D('Lire la suite','Read more'); track('fiche_lire_suite',{shape:m.id}); }; } }
   $('#tabs').onclick=e=>{ const b=e.target.closest('[data-tab]'); if(b){ state.tab=b.dataset.tab; viewProduit(); } };
   $('#partbar')?.addEventListener('click',e=>{
     const b=e.target.closest('[data-part]'); if(!b) return;
@@ -6326,7 +6136,6 @@ function printSheet(d,m){
   let z=$('#printzone');
   if(!z){ z=document.createElement('div'); z.id='printzone'; document.body.appendChild(z); }
   z.innerHTML=sheetHTML(d,m,{print:true});
-  lastExportId=(m&&m.id)||state.draft.modelId;
   track('export_print', {shape:(m&&m.id)||state.draft.modelId, paper:state.paper});
   printThen();
 }
@@ -7630,7 +7439,6 @@ async function exportPDF(st){
     const slug=(st.name||'piece').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
       .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
     try{ doc.save(`gabarits-${slug}-${paper().name.toLowerCase()}.pdf`); }catch(e){}
-    lastExportId=st.modelId;
     track('export_pdf', {shape:st.modelId, pages:doc.getNumberOfPages(), feuilles:plan.sheets.length, unit:state.unit, paper:state.paper, fix:printFix()});
     setTimeout(afterExport, 1400);
     toastAction(D(`PDF prêt · ${doc.getNumberOfPages()} pages`,`PDF ready · ${doc.getNumberOfPages()} pages`),
@@ -8083,7 +7891,7 @@ function cutPlan(c){
   return {sheets};
 }
 function printCutter(c){
-  lastExportId=null; track('export_print', {shape:'emporte_'+c.shape, kind:'emporte', paper:state.paper});
+  track('export_print', {shape:'emporte_'+c.shape, kind:'emporte', paper:state.paper});
   const G=cutStats(gabCut(c)), F=cutStats(c);
   let ps=$('#pagesize');
   if(!ps){ ps=document.createElement('style'); ps.id='pagesize'; document.head.appendChild(ps); }
@@ -8112,7 +7920,7 @@ function printCutter(c){
 }
 async function exportCutterPDF(c){
   if(pdfBusy) return;
-  lastExportId=null; track('export_pdf', {shape:'emporte_'+c.shape, kind:'emporte', paper:state.paper, fix:printFix()}); setTimeout(afterExport, 1400);
+  track('export_pdf', {shape:'emporte_'+c.shape, kind:'emporte', paper:state.paper, fix:printFix()}); setTimeout(afterExport, 1400);
   pdfBusy=true; toast(D('Préparation du PDF…','Building the PDF…'), 9000);
   try{
     if(!await ensurePdfLibs()){ toast(D('Impossible de charger la librairie PDF : vérifie la connexion','Could not load the PDF library: check your connection')); return; }
@@ -8281,7 +8089,6 @@ function exportPieceSVG(st, nu){
   const a=document.createElement('a');
   a.href=url; a.download=`gabarits-${slug}${nu?'-decoupe':''}.svg`;
   document.body.appendChild(a); a.click(); a.remove();
-  lastExportId=st.modelId;
   track('export_svg', {shape:st.modelId, variante:nu?'contour':'cotes'});
   setTimeout(afterExport, 600);
   toastAction(nu?D('SVG du contour exporté','Outline SVG exported'):D('SVG coté exporté','Dimensioned SVG exported'),
@@ -8289,7 +8096,7 @@ function exportPieceSVG(st, nu){
   setTimeout(()=>URL.revokeObjectURL(url), 60000);
 }
 function exportCutterSVG(c, nu){
-  lastExportId=null; track('export_svg', {shape:'emporte_'+c.shape, kind:'emporte', variante:nu?'contour':'cotes'}); setTimeout(afterExport, 600);
+  track('export_svg', {shape:'emporte_'+c.shape, kind:'emporte', variante:nu?'contour':'cotes'}); setTimeout(afterExport, 600);
   const blob=new Blob([cutSVGDoc(c,nu)], {type:'image/svg+xml;charset=utf-8'});
   const url=URL.createObjectURL(blob);
   const slug=(cutLabel(c)||'emporte-piece').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
