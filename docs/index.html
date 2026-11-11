@@ -1720,7 +1720,7 @@ const state = {
   orbit: prefs0.orbit || {yaw:-0.42, pitch:0.36},   // Volume 3D : lacet / tangage (rad), cf. orbitSVG
   zoom: 1, pan:{x:0,y:0},
   unit: prefs0.unit || (GC_FIXED ? 'mm' : 'cm'),   // mm | cm | in — affichage seulement (cm par défaut, comme la V1 ; une build GC garde le mm)
-  lang: prefs0.lang || (/^fr/i.test(navigator.language||'fr') ? 'fr' : 'en'),   // fr | en — langue du navigateur au 1er passage, comme la V1
+  lang: (location.search.match(/[?&]lang=(en|fr)(&|$)/)||[])[1] || prefs0.lang || (/^fr/i.test(navigator.language||'fr') ? 'fr' : 'en'),   // fr | en — ?lang= (liens du site, du tutoriel), sinon la préférence, sinon la langue du navigateur au 1er passage, comme la V1
   // a4 | a3 | letter — Letter d'office aux États-Unis, au Canada, au Mexique et aux Philippines
   paper: prefs0.paper || (/^[a-z]{2}-(US|CA|MX|PH)$/i.test(navigator.language||'') ? 'letter' : 'a4'),
   printFix: prefs0.printFix || 1,   // correction d'imprimante (barre témoin mesurée), cf. printFix()
@@ -2032,11 +2032,12 @@ function talonPieces(dm){
 /** adresse du tutoriel, avec les cotes de la pièce (finies) */
 function tutoURL(st, m){
   const p=st.parts[0], r=state.shrink;
-  if(isTheiere(p)) return m.tuto+'?'+theiereQuery(st, p).toString();
+  // la langue de l'atelier suit dans le lien : le tutoriel s'ouvre dans la même langue (aperçu compris)
+  if(isTheiere(p)) return m.tuto+'?'+theiereQuery(st, p).toString()+'&lang='+state.lang;
   // les feuilles du PDF, papier et carton : l'étape « Imprimer » les nomme telles quelles
   const sh=planTemplates(st).sheets, fc=sh.filter(s=>s.carton).length;
   const q=new URLSearchParams({ d:fmtQ(p.sections[0].d), h:fmtQ(totalH(p)), r:fmtQ(r*100),
-    cuir:'40', e:fmtQ(p.thick/(1-r)), fp:String(sh.length-fc), fc:String(fc) });
+    cuir:'40', e:fmtQ(p.thick/(1-r)), fp:String(sh.length-fc), fc:String(fc), lang:state.lang });
   return m.tuto+'?'+q.toString();
 }
 const fmtQ = v => String(Math.round(v*100)/100);
