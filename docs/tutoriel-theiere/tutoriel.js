@@ -1939,6 +1939,11 @@ if (new URLSearchParams(location.search).has('debug')) {
       FRAME_OVR = [0.02, 0.02, 0.98, 0.98]; this.step(i, t); if (cam) { CAM_OVR = cam; frame(performance.now()); }
       const url = canvas.toDataURL('image/png'); FRAME_OVR = null; return url;
     },
+    // lecture à pas fixe, pour les clips de la fiche produit (clips-tuto/record.mjs) : begin(i) lance l'étape depuis l'état
+    // où l'étape précédente a laissé la caméra, tick(ms) avance l'horloge de ms et rend l'image, end() rend la main
+    begin(i) { FRAME_OVR = [0.02, 0.02, 0.98, 0.98]; sections[i].scrollIntoView(); player.go(i, 'set'); },
+    tick(ms) { last = 1e6; frame(1e6 + ms); return canvas.toDataURL('image/png'); },
+    end() { FRAME_OVR = null; },
     STEPS, C, CFG, get cur() { return cur; },
     G: { ASM, SHAPES, FOOT_O, HOLES, HOLE_P, xf, ROOT, MS },
   };
