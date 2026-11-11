@@ -44,6 +44,11 @@ a{color:inherit} button{font:inherit;color:inherit;cursor:pointer}
 .bar__title b{font:800 17px/1 var(--f-titre); letter-spacing:-.03em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .bar__title span{font-size:13px; color:var(--gris); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .bar__cfg{margin-left:auto; font:400 12px var(--f-cote); background:var(--email); padding:5px 9px; white-space:nowrap}
+@media (max-width:560px){.bar__bt{display:none}}
+.bar__lang{display:inline-flex; border:1.5px solid var(--action); border-radius:999px; overflow:hidden; flex:none}
+.bar__lang button{border:0; background:transparent; color:var(--action); font:600 12px var(--f-cote); letter-spacing:.04em; padding:6px 10px; min-width:38px}
+.bar__lang button.on{background:var(--action); color:var(--creme)}
+.bar__lang button:not(.on):hover{background:var(--email)}
 .bar__pdf{font:600 14px var(--f-texte); text-decoration:none; color:var(--creme); background:var(--action);
   padding:9px 14px; border-radius:999px; box-shadow:0 2px 0 var(--action-d); white-space:nowrap}
 .progress{position:fixed; z-index:21; left:0; right:0; top:var(--bar); height:3px}
@@ -141,6 +146,9 @@ a{color:inherit} button{font:inherit;color:inherit;cursor:pointer}
   <a class="bar__back" href="#" onclick="history.back(); return false">← Mon gabarit</a>
   <p class="bar__title"><b>Théière</b><span data-kind></span></p>
   <p class="bar__cfg" data-cfg></p>
+  <div class="bar__lang" role="group" aria-label="Langue / Language">
+    <button type="button" data-lang="fr" lang="fr">FR</button><button type="button" data-lang="en" lang="en">EN</button>
+  </div>
   <a class="bar__pdf" href="../#produit/theiere">Mes gabarits</a>
 </header>
 <div class="progress" aria-hidden="true"><i></i></div>

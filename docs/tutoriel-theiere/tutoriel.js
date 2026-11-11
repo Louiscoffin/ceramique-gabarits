@@ -12,7 +12,19 @@ const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const lerp = (a, b, t) => a + (b - a) * t;
 const sm = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
 const arc = t => Math.sin(Math.PI * t);
-const fmt = (x, d = 1) => x.toLocaleString('fr-FR', { minimumFractionDigits: d, maximumFractionDigits: d });
+/* Langue : ?lang=, sinon la préférence de l'atelier (même origine), sinon le navigateur.
+   Le bouton FR / EN de la barre l'écrit dans l'atelier puis recharge : tout est recalculé dans la langue. */
+const LANG = (() => {
+  try {
+    const q = new URLSearchParams(location.search).get('lang');
+    if (q === 'en' || q === 'fr') return q;
+    const p = JSON.parse(localStorage.getItem('atelier-prefs') || '{}').lang;
+    if (p === 'en' || p === 'fr') return p;
+  } catch (e) {}
+  return /^fr/i.test(navigator.language || 'fr') ? 'fr' : 'en';
+})();
+const tr = (fr, en) => LANG === 'en' ? en : fr;
+const fmt = (x, d = 1) => x.toLocaleString(LANG === 'en' ? 'en-GB' : 'fr-FR', { minimumFractionDigits: d, maximumFractionDigits: d });
 const lerpV = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
 const hop = (a, b, t, h) => { const p = lerpV(a, b, t); p[1] += h * arc(t); return p; };
 
@@ -585,7 +597,8 @@ function drawAtlas() {
   const x = ATLAS.getContext('2d');
   x.setTransform(1, 0, 0, 1, 0, 0);
   x.clearRect(0, 0, 2048, 2048);
-  const NAMES = { A: 'Panse', B: 'Épaule', C: 'Col', D: 'Fond', E: 'Couvercle', F: 'Collerette', G: 'Bouton', H: 'Bec', I: 'Anse', J: 'Passoire', K: 'Profil anse', L: 'Mandrin panse', M: 'Mandrin bec' };
+  const NAMES = tr({ A: 'Panse', B: 'Épaule', C: 'Col', D: 'Fond', E: 'Couvercle', F: 'Collerette', G: 'Bouton', H: 'Bec', I: 'Anse', J: 'Passoire', K: 'Profil anse', L: 'Mandrin panse', M: 'Mandrin bec' },
+    { A: 'Belly', B: 'Shoulder', C: 'Neck', D: 'Base', E: 'Lid', F: 'Flange', G: 'Knob', H: 'Spout', I: 'Handle', J: 'Strainer', K: 'Handle profile', L: 'Belly mandrel', M: 'Spout mandrel' });
   PAPER_KEYS.forEach((k, i) => {
     const P = SHAPES[k], [x0, y0, x1, y1] = bbox(P), w = x1 - x0, h = y1 - y0;
     const sc = (CELL - 40) / Math.max(w, h), cx = (i % 4) * CELL + (CELL - w * sc) / 2, cy = Math.floor(i / 4) * CELL + (CELL - h * sc) / 2;
@@ -1307,19 +1320,22 @@ const C = {                                                       // les cotes q
 };
 const ANG_SEAM = Math.round(BEC.a / DEG);
 /* ce qu'on imprime : les feuilles du PDF telles que l'outil les a calepinées */
-const nF = (n, w) => `${n} feuille${n > 1 ? 's' : ''} ${w}`;
+const nF = (n, w) => tr(`${n} feuille${n > 1 ? 's' : ''} ${w}`, `${n} sheet${n > 1 ? 's' : ''} ${w}`);
 const PAPER_KIT = CFG.sheets
-  ? [CFG.sheets.fp ? nF(CFG.sheets.fp, 'A4 80 g') : '', CFG.sheets.fc ? nF(CFG.sheets.fc, 'A4 de papier cartonné 160 à 220 g') : ''].filter(Boolean).join(', ')
-  : 'des feuilles A4 80 g et 1 ou 2 feuilles A4 de papier cartonné 160 à 220 g';
-const PRINT_HOW = CFG.sheets
+  ? [CFG.sheets.fp ? nF(CFG.sheets.fp, tr('A4 80 g', 'of A4 80 g paper')) : '', CFG.sheets.fc ? nF(CFG.sheets.fc, tr('A4 de papier cartonné 160 à 220 g', 'of A4 card stock, 160 to 220 g')) : ''].filter(Boolean).join(', ')
+  : tr('des feuilles A4 80 g et 1 ou 2 feuilles A4 de papier cartonné 160 à 220 g', 'A4 80 g sheets and 1 or 2 sheets of A4 card stock, 160 to 220 g');
+const PRINT_HOW = tr(CFG.sheets
   ? `Téléchargez le PDF de vos gabarits depuis l'outil : <b>${nF(CFG.sheets.fp + CFG.sheets.fc, '')}</b>. ${CFG.sheets.fc && !CFG.sheets.fp ? `Imprimez-les toutes sur <b>papier cartonné</b> : les mandrins <b>L</b> et <b>M</b> partagent leurs feuilles avec les autres gabarits.` : CFG.sheets.fc ? `${CFG.sheets.fc > 1 ? `Les ${CFG.sheets.fc} planches marquées` : 'La planche marquée'} « à imprimer sur papier cartonné » (les mandrins <b>L</b> et <b>M</b>) passe${CFG.sheets.fc > 1 ? 'nt' : ''} sur <b>papier cartonné</b>, les autres sur papier ordinaire.` : ''}`
-  : `Téléchargez le PDF de vos gabarits depuis l'outil. Les planches marquées « à imprimer sur papier cartonné » (les mandrins <b>L</b> et <b>M</b>) passent sur <b>papier cartonné</b>, les autres sur papier ordinaire.`;
+  : `Téléchargez le PDF de vos gabarits depuis l'outil. Les planches marquées « à imprimer sur papier cartonné » (les mandrins <b>L</b> et <b>M</b>) passent sur <b>papier cartonné</b>, les autres sur papier ordinaire.`,
+  CFG.sheets
+  ? `Download the PDF of your templates from the tool: <b>${nF(CFG.sheets.fp + CFG.sheets.fc, '')}</b>. ${CFG.sheets.fc && !CFG.sheets.fp ? `Print them all on <b>card stock</b>: mandrels <b>L</b> and <b>M</b> share their sheets with the other templates.` : CFG.sheets.fc ? `${CFG.sheets.fc > 1 ? `The ${CFG.sheets.fc} sheets marked` : 'The sheet marked'} “print on card stock” (mandrels <b>L</b> and <b>M</b>) go${CFG.sheets.fc > 1 ? '' : 'es'} on <b>card stock</b>, the others on ordinary paper.` : ''}`
+  : `Download the PDF of your templates from the tool. The sheets marked “print on card stock” (mandrels <b>L</b> and <b>M</b>) go on <b>card stock</b>, the others on ordinary paper.`);
 const KIND = `${VOL_CL} cl, Ø ${f0(CFG.dp)} mm`;
 
 /* ─────────────── les étapes ─────────────── */
 
 // s : fenêtre de l'animation dans le récit ; cam : caméra imposée ; dur : secondes
-const tag = s => `<span class="st st--${s}">${{ crue: 'crue', cuir: 'au cuir', cuite: 'cuite', papier: 'papier', carton: 'carton' }[s]}</span>`;
+const tag = s => `<span class="st st--${s}">${{ crue: tr('crue', 'raw'), cuir: tr('au cuir', 'leather-hard'), cuite: tr('cuite', 'fired'), papier: tr('papier', 'paper'), carton: tr('carton', 'card') }[s]}</span>`;
 const row = (k, v, s) => `<div class="kv"><span>${k}</span><b>${v}${s ? ' ' + tag(s) : ''}</b></div>`;
 const FINAL_CAM = [[TRN[0], BAT_TOP + Y_TOP * 0.5, TRN[2]], SZ * 0.74, 12, 0.5];
 const STEPS = [
@@ -1498,21 +1514,213 @@ const STEPS = [
 ];
 
 
+/* ─────────────── les étapes en anglais ───────────────
+   Même id, mêmes variables : seuls le titre, la durée et le texte changent. Le français reste la source. */
+const EN_STEPS = {
+  'ma-theiere': {
+    n: 'My teapot',
+    html: `<p class="lead">The tutorial follows <b>your</b> teapot: every dimension below is recalculated for your clay, and given at the stage where you measure it.</p>
+      <div class="cfg">${row('Teapot', `Ø ${f0(CFG.dp)} × ${f0(FIN_H)} mm, lid included`, 'cuite')}${row('Capacity', `${VOL_CL} cl up to the top of the shoulder`)}
+      ${row('Total shrinkage of your clay', `${f0(CFG.r)} %`)}${row('Shrinkage already done at leather-hard', `${f0(CFG.cuir)} %`)}${row('Slab', `${f1(T)} mm`, 'crue')}</div>
+      <div class="states">
+        <div><i>raw</i><b>Ø ${f1(C.crue.d)}</b><small>we cut, we build</small></div>
+        <div><i>leather-hard</i><b>Ø ${f1(C.cuir.d)}</b><small>strainer, spout, handle</small></div>
+        <div><i>fired</i><b>Ø ${f0(C.cuite.d)}</b><small>we serve tea</small></div>
+      </div>
+      <p class="note">Two sessions: you build the body and the lid in soft clay, then pierce the strainer and attach the spout and handle once the teapot is leather-hard. The spout and the handle, cut from the same slab and kept under the same plastic, shrink along with it.</p>
+      <h3>What you need</h3>
+      <ul class="kit">
+        <li><em>paper</em> ${PAPER_KIT}, scissors, glue stick, tape</li>
+        <li><em>clay</em> ≈ ${f0(CLAY_G)} g of fine stoneware, rolling pin, 2 guide strips of ${f1(T)} mm, canvas cloth</li>
+        <li><em>building</em> needle tool, scoring tool, slip, brush, soft rib, wooden modelling tool, newspaper, a straw or a ${f1(HOLE * KR * CR)} mm hole cutter</li>
+        <li><em>finishing</em> banding wheel, sponge, plastic</li>
+      </ul>
+      <p class="note">Allow 2 h 30 on the first day, 2 to 4 h of waiting, then 1 h at leather-hard.</p>`,
+  },
+  'imprimer': {
+    n: 'Print, cut out', time: '20 min',
+    html: `<ol>
+        <li>${PRINT_HOW}</li>
+        <li>In the print dialog: <b>actual size</b>, “fit to page” unticked. Lay a ruler on the scale bar: exactly <b>50 mm</b>, on every sheet.</li>
+        <li>Tape the sections of a single template together edge to edge (notches “1|2” facing each other), then cut out with scissors, <b>along the middle of the solid line</b>.</li>
+      </ol>
+      <div class="cfg">${row('Templates to cut from the clay', 'A to I')}${row('To pierce, to bend', 'J strainer · K handle profile', 'papier')}${row('Mandrels', 'L belly · M spout', 'carton')}</div>
+      <p class="tip"><b>Tip</b> Template J is printed a little smaller than the belly as cut: it is used at leather-hard, when the belly has already shrunk by ${f0(CFG.cuir * CFG.r / 100)} %.</p>`,
+  },
+  'mandrins': {
+    n: 'Roll the mandrels', time: '10 min',
+    html: `<ol>
+        <li><b>L</b>: roll the card into a tube up to the “align here” line, glue the tab, then wrap one turn of newsprint around it. The tube measures <b>Ø ${f1(D_MAND)} mm</b>: the inside of the raw belly.</li>
+        <li><b>M</b>: roll the sector into a cone, tab underneath, and glue. One turn of newsprint here too.</li>
+      </ol>
+      <div class="cfg">${row('Belly mandrel L', `Ø ${f1(D_MAND)} × ${f0(H_L)} mm`, 'carton')}${row('Spout mandrel M', `Ø ${f1(2 * MB.I1)} → ${f1(2 * MB.I0)} mm`, 'carton')}</div>
+      <p class="note">The newsprint stops the clay sticking; at the end you crumple the card to get it out without distorting the piece.</p>`,
+  },
+  'abaisser': {
+    n: 'Roll the slab', time: '10 min',
+    html: `<ol>
+        <li>Wedge ≈ ${f0(CLAY_G)} g of clay and flatten it by hand on the cloth.</li>
+        <li>Rolling pin resting on the two guide strips of ${f1(T)} mm: roll in a cross pattern, and turn the slab over twice.</li>
+        <li>Compress the surface with a soft rib, on both sides: the slab will distort less when it is handled.</li>
+      </ol>
+      <div class="cfg">${row('Slab', `${f1(T)} mm`, 'crue')}${row('Pieces to fit on it', `≈ ${f0(AREA / 100)} cm²`, 'crue')}${row('The longest (A)', `${f0(W_A)} × ${f0(H_A)} mm`, 'crue')}</div>
+      <p class="tip"><b>Tip</b> A slab that holds everything is ≈ ${f0(SLAB_W / 10)} × ${f0(SLAB_D / 10)} cm. Otherwise, two slabs: the belly A alone on the first, the other pieces on the second.</p>`,
+  },
+  'tracer': {
+    n: 'Trace the pieces', time: '15 min',
+    html: `<ol>
+        <li>Lay templates A to I on the slab, close together: look at the view, it is a layout that works.</li>
+        <li>Needle held upright, follow the edge of the paper without pressing on the template. A single pass, down to the cloth.</li>
+        <li>Spout H has a “saddle” base: follow the curve, it will hug the belly.</li>
+      </ol>
+      <div class="cfg">${row('A · belly', `${f1(W_A)} × ${f1(H_A)} mm`, 'crue')}${row('B · shoulder', `sector R ${f1(RB)} / r ${f1(rB)}, ${f0(ANG_B)}°`, 'crue')}${row('H · spout', `axis ${f0(BEC.L)} mm, ${ANG_SEAM}°`, 'crue')}</div>`,
+  },
+  'degager': {
+    n: 'Lift out, protect', time: '5 min',
+    html: `<ol>
+        <li>Remove the offcuts around the pieces, then the templates: keep them flat, you will use them again.</li>
+        <li>Set spout H and handle strip I aside under plastic: they are worked today too, but attached at leather-hard.</li>
+      </ol>
+      <p class="warn"><b>Careful</b> The pieces must dry at the same pace: everything that waits stays under the same plastic.</p>`,
+  },
+  'biseauter': {
+    n: 'Bevel and score', time: '10 min',
+    html: `<ol>
+        <li>The short sides of belly A, neck C and flange F: 45° bevel, one on <b>top</b>, the other <b>underneath</b>. The two straight edges of shoulder B too.</li>
+        <li>Score everything that will touch: bevels, top and bottom edges of the strips, the rim of base D over ${f0(T + 4)} mm.</li>
+        <li>Brush on slip just before each assembly, not before.</li>
+      </ol>
+      <p class="note">The templates already include one extra slab thickness for these bevels: the seam closes at exactly the right Ø.</p>`,
+  },
+  'panse': {
+    n: 'Build the belly', time: '15 min',
+    html: `<ol>
+        <li>Lay mandrel L across the middle of belly A, roll the clay around it. The two bevels overlap: press, and smooth the seam.</li>
+        <li>Stand the cylinder on the scored rim of base D, flush with the edge.</li>
+        <li>Crumple the card to get the mandrel out. Inside, a 3 mm coil in the angle, pressed in with a finger; outside, draw the clay of the base up onto the belly.</li>
+      </ol>
+      <div class="cfg">${row('Belly', `Ø ${f1(2 * RP)} × ${f1(HP)} mm`, 'crue')}</div>
+      <p class="tip"><b>Tip</b> Turn the seam towards you: that is where the handle will go, and it will hide it.</p>`,
+  },
+  'epaule': {
+    n: 'Attach the shoulder', time: '10 min',
+    html: `<ol>
+        <li>Roll shoulder B into a cone, bevels one over the other. The large edge must fit around the belly: <b>Ø ${f1(2 * RP)} mm</b>.</li>
+        <li>Slip on the top of the belly, set the shoulder on, seam on the same side as the belly’s seam.</li>
+        <li>Weld outside with the modelling tool; inside, through the ${f0(2 * RC - 2 * T)} mm opening, a small coil in the angle.</li>
+      </ol>`,
+  },
+  'col': {
+    n: 'Attach the neck', time: '10 min',
+    html: `<ol>
+        <li>Roll neck C, seam closed: <b>Ø ${f1(2 * RC)} mm</b> outside.</li>
+        <li>Set it on top of the shoulder, with slip, and weld inside and outside.</li>
+        <li>Check that it is round: lay the ruler across it, in two directions.</li>
+      </ol>
+      <div class="cfg">${row('Top of the neck', `${f1(Y_TOP)} mm from the foot`, 'crue')}${row('Fill level', `${f1(Y_SH)} mm`, 'crue')}</div>`,
+  },
+  'couvercle': {
+    n: 'The lid', time: '15 min',
+    html: `<ol>
+        <li>Upside down first: disc E flat. Roll flange F, <b>Ø ${f1(2 * R_Fo)} mm</b> outside, and weld it upright at the centre of the disc.</li>
+        <li>Turn the lid over and try it in the neck: ${f1(JEU * KR)} mm of clearance all round. It must neither rub nor rattle.</li>
+        <li>A ${f0(2 * R_TIGE)} mm coil stem at the centre, knob G on top. Pierce the <b>air hole</b> with a straw, ${f0(VENT[0])} mm from the centre.</li>
+      </ol>
+      <div class="cfg">${row('E · lid', `Ø ${f1(2 * R_E)} mm`, 'crue')}${row('F · flange', `Ø ${f1(2 * R_Fo)} × ${f1(H_F)} mm`, 'crue')}</div>
+      <p class="tip"><b>Tip</b> Without an air hole, the tea will not pour: the vacuum holds it in the teapot.</p>`,
+  },
+  'bec': {
+    n: 'Roll the spout', time: '10 min',
+    html: `<ol>
+        <li>Mandrel M standing on the cloth; roll spout H around it, bevels one over the other, the seam <b>underneath</b>.</li>
+        <li>Mark the top: it is the point of the “V” in the middle of the curved base.</li>
+        <li>Slide the mandrel out through the top, and leave the spout standing under the plastic.</li>
+      </ol>
+      <div class="cfg">${row('Spout', `Ø ${f1(2 * BEC.rbO)} → ${f1(2 * BEC.rtO)} mm`, 'crue')}</div>`,
+  },
+  'anse': {
+    n: 'Bend the handle', time: '10 min',
+    html: `<ol>
+        <li>Lay profile K flat next to strip I, and bend the strip to follow its C curve, without squashing the clay.</li>
+        <li>The 6 mm at each end are tabs: leave them straight, they will go into the belly.</li>
+        <li>Let it firm up under the plastic: at leather-hard, it will hold its shape by itself.</li>
+      </ol>
+      <div class="cfg">${row('I · strip', `${f1(L_I)} × ${f1(AW)} mm`, 'crue')}</div>`,
+  },
+  'passoire': {
+    n: 'Pierce the strainer', time: '2 to 4 h, then 15 min',
+    html: `<p class="lead">At leather-hard, the teapot holds its shape and a fingernail still leaves a mark. It has already done <b>${f0(CFG.cuir)} % of its shrinkage</b>: template J is printed at this size.</p>
+      <ol>
+        <li>Press J against the belly, opposite the seam, the bottom of the outline <b>${f1(C.cuir.foot)} mm</b> from the foot.</li>
+        <li>Trace the outline with the needle: that is where the spout will go.</li>
+        <li>Pierce each point from outside to inside, with a straw or a hole cutter. Remove the burrs inside with a damp brush.</li>
+      </ol>
+      <div class="cfg">${row('Holes', `${HOLES.length} × Ø ${f1(C.cuir.hole)} mm`, 'cuir')}${row('Spout footprint', `${f1(C.cuir.jw)} mm wide`, 'cuir')}</div>`,
+  },
+  'poser-bec': {
+    n: 'Attach the spout', time: '15 min',
+    html: `<ol>
+        <li>Offer the spout up to the traced outline: the saddle must touch everywhere. Trim with a knife where it bears.</li>
+        <li>Score the base of the spout and the ring around the holes, apply slip, and press without squashing.</li>
+        <li>Outside, a thin coil all round, smoothed with the modelling tool.</li>
+      </ol>
+      <p class="warn"><b>Careful</b> The tip of the spout must stay above the fill level (the top of the shoulder): ${f1(BEC.tip)} mm against ${f1(Y_SH)} mm, raw. Otherwise the teapot overflows through the spout before it is full.</p>`,
+  },
+  'poser-anse': {
+    n: 'Attach the handle', time: '10 min',
+    html: `<ol>
+        <li>Opposite the spout, on the seam: upper attachment <b>${f1(C.cuir.it)} mm</b> from the foot, lower attachment <b>${f1(C.cuir.ib)} mm</b>.</li>
+        <li>Score, slip, push the tabs in; weld both attachments with the modelling tool.</li>
+        <li>Look from above: spout, knob and handle on a single line.</li>
+      </ol>`,
+  },
+  'finir': {
+    n: 'Finish, dry', time: '10 min, then 3 days',
+    html: `<ol>
+        <li>On the banding wheel, go over all the welds with a barely damp sponge; chamfer the rim of the neck.</li>
+        <li>Lid <b>in place</b>, dry slowly under loose plastic, for two or three days: the lid and the neck shrink together.</li>
+        <li>When glazing, wipe the glaze off the rim of the neck and the flange, or fire the lid separately.</li>
+      </ol>
+      <p class="tip"><b>Tip</b> Put a little alumina or kaolin on the seat if the lid is fired in place.</p>`,
+  },
+  'a-vous': {
+    n: 'Your turn',
+    html: `<p class="lead">A teapot of <b>${VOL_CL} cl</b>, Ø ${f0(CFG.dp)} × ${f0(FIN_H)} mm once fired.</p>
+      <div class="cfg">${row('Spout', `${ANG_SEAM}°, tip above the fill level`, 'cuite')}${row('Strainer', `${HOLES.length} holes`)}${row('Lid', `clearance ${f1(JEU)} mm`, 'cuite')}</div>
+      <p class="note">Spin the teapot by dragging on the scene. For another size, go back to the tool: the tutorial recalculates.</p>`,
+  },
+};
+if (LANG === 'en') STEPS.forEach(st => Object.assign(st, EN_STEPS[st.id]));
+
 /* ─────────────── accès : acheté, ou aperçu ───────────────
    Le tutoriel vit à côté de l'outil (même origine) : il lit les achats que
    l'outil enregistre. Sans achat, les trois premières étapes restent ouvertes,
    la suite renvoie à la fiche produit. */
-const PRODUCT = '../#produit/theiere';
+const PRODUCT = `../?lang=${LANG}#produit/theiere`;   // l'atelier s'ouvre dans la langue du tutoriel
+const UNLOCK = tr('Débloquer · 9,99 €', 'Unlock · €9.99');
+// le bouton FR / EN : la langue est celle de l'atelier (même origine), donc on l'y écrit puis on recharge
+function setLang(l) {
+  if (l === LANG) return;
+  const u = new URL(location.href); u.searchParams.delete('lang');
+  try {
+    const p = JSON.parse(localStorage.getItem('atelier-prefs') || '{}'); p.lang = l;
+    localStorage.setItem('atelier-prefs', JSON.stringify(p));
+  } catch (e) { u.searchParams.set('lang', l); }
+  location.replace(u.href);
+}
 const OWNED = (() => { try { return !!(JSON.parse(localStorage.getItem('atelier-owned') || '{}')['theiere']); } catch (e) { return false; } })();
 const ALL = STEPS.slice();
 const FREE = 3;
 if (!OWNED) {
   STEPS.length = FREE;
   STEPS.push({
-    id: 'suite', n: 'La suite du tutoriel', time: '', s: [17.6, 17.6], dur: 0.1, spin: true, lock: true, cam: ALL[0].cam,
-    html: `<p class="lead">Vous venez de voir le début. Les <b>${ALL.length - FREE} étapes suivantes</b> sont incluses avec le gabarit :</p>
+    id: 'suite', n: tr('La suite du tutoriel', 'The rest of the tutorial'), time: '', s: [17.6, 17.6], dur: 0.1, spin: true, lock: true, cam: ALL[0].cam,
+    html: tr(`<p class="lead">Vous venez de voir le début. Les <b>${ALL.length - FREE} étapes suivantes</b> sont incluses avec le gabarit :</p>
       <ul class="kit">${ALL.slice(FREE).map(x => `<li>${x.n}</li>`).join('')}</ul>
       <p class="note">Les treize gabarits, de la panse A au mandrin de bec M, recalculés à vos cotes, plus ce tutoriel en entier. Achat unique, sur Gumroad.</p>`,
+      `<p class="lead">That was the beginning. The <b>${ALL.length - FREE} steps that follow</b> are included with the template:</p>
+      <ul class="kit">${ALL.slice(FREE).map(x => `<li>${x.n}</li>`).join('')}</ul>
+      <p class="note">All thirteen templates, from belly A to spout mandrel M, recalculated to your dimensions, plus this whole tutorial. One-time purchase, on Gumroad.</p>`),
   });
 }
 
@@ -1526,25 +1734,42 @@ paintGrain();
 {
   const N = STEPS.length - 1;
   $('[data-kind]').textContent = KIND;
-  $('[data-cfg]').textContent = `Ø ${f0(CFG.dp)} × ${f0(FIN_H)} mm · ${VOL_CL} cl · retrait ${f0(CFG.r)} %`;
+  $('[data-cfg]').textContent = `Ø ${f0(CFG.dp)} × ${f0(FIN_H)} mm · ${VOL_CL} cl · ${tr('retrait', 'shrinkage')} ${f0(CFG.r)} %`;
+  // habillage de la page, dans la langue
+  root.lang = LANG;
+  document.title = tr('Tutoriel · Théière · Gabarits Céramique', 'Tutorial · Teapot · Gabarits Céramique');
+  $('.bar__back').innerHTML = `<span aria-hidden="true">←</span><span class="bar__bt"> ${tr('Mon gabarit', 'My template')}</span>`;
+  $('.bar__back').setAttribute('aria-label', tr('Mon gabarit', 'My template'));
+  $('.bar__title b').textContent = tr('Théière', 'Teapot');
+  $('#rail').setAttribute('aria-label', tr('Étapes du tutoriel', 'Tutorial steps'));
+  $('#rail p').textContent = tr('Tutoriel', 'Tutorial');
+  $('.hint').textContent = tr('glisser sur la scène pour tourner autour · ← → pour changer d\'étape', 'drag the scene to orbit · ← → to change step');
+  $('[data-prev]').setAttribute('aria-label', tr('Étape précédente', 'Previous step'));
+  $('[data-next]').setAttribute('aria-label', tr('Étape suivante', 'Next step'));
+  $('[data-replay]').setAttribute('aria-label', tr('Revoir le geste', 'Replay the gesture'));
+  $$('.bar__lang [data-lang]').forEach(b => {
+    b.classList.toggle('on', b.dataset.lang === LANG);
+    b.setAttribute('aria-pressed', b.dataset.lang === LANG);
+    b.addEventListener('click', () => setLang(b.dataset.lang));
+  });
   $('#rail ol').innerHTML = (OWNED ? STEPS : ALL).map((st, i) => {
     const lk = !OWNED && i >= FREE;
     return `<li><a href="#${lk ? 'suite' : st.id}" data-go="${lk ? FREE : i}"${lk ? ' class="lock"' : ''}><span>${i ? String(i).padStart(2, '0') : '·'}</span>${st.n}${lk ? ' <i>🔒</i>' : ''}</a></li>`;
   }).join('');
   $('.bar__back').href = PRODUCT;
   const pdf = $('.bar__pdf');
-  if (OWNED) { pdf.textContent = 'Mes gabarits'; pdf.href = PRODUCT; pdf.removeAttribute('download'); }
-  else { pdf.textContent = 'Débloquer · 9,99 €'; pdf.href = PRODUCT; pdf.removeAttribute('download'); }
+  if (OWNED) { pdf.textContent = tr('Mes gabarits', 'My templates'); pdf.href = PRODUCT; pdf.removeAttribute('download'); }
+  else { pdf.textContent = UNLOCK; pdf.href = PRODUCT; pdf.removeAttribute('download'); }
   $('#steps').innerHTML = STEPS.map((st, i) => `
     <section class="step" id="${st.id}" data-i="${i}">
       <article class="card">
-        <p class="card__num">${st.lock ? 'Inclus avec le gabarit' : i ? `Étape ${String(i).padStart(2, '0')} / ${ALL.length - 1}` : 'Avant de commencer'}${st.time ? `<span>${st.time}</span>` : ''}</p>
+        <p class="card__num">${st.lock ? tr('Inclus avec le gabarit', 'Included with the template') : i ? `${tr('Étape', 'Step')} ${String(i).padStart(2, '0')} / ${ALL.length - 1}` : tr('Avant de commencer', 'Before you start')}${st.time ? `<span>${st.time}</span>` : ''}</p>
         <h2>${st.n}</h2>
         ${st.html}
         <div class="card__nav">
-          ${i && !st.lock ? `<button class="btn btn--ghost" type="button" data-replay>Revoir le geste</button>` : ''}
-          ${st.lock ? `<a class="btn btn--primary" href="${PRODUCT}">Débloquer · 9,99 €</a>`
-            : i < N ? `<button class="btn btn--primary" type="button" data-go="${i + 1}">${i ? 'Étape suivante' : 'Commencer'} →</button>` : `<a class="btn btn--primary" href="#ma-theiere" data-go="0">Revenir au début</a>`}
+          ${i && !st.lock ? `<button class="btn btn--ghost" type="button" data-replay>${tr('Revoir le geste', 'Replay the gesture')}</button>` : ''}
+          ${st.lock ? `<a class="btn btn--primary" href="${PRODUCT}">${UNLOCK}</a>`
+            : i < N ? `<button class="btn btn--primary" type="button" data-go="${i + 1}">${i ? tr('Étape suivante', 'Next step') : tr('Commencer', 'Start')} →</button>` : `<a class="btn btn--primary" href="#ma-theiere" data-go="0">${tr('Revenir au début', 'Back to the start')}</a>`}
         </div>
       </article>
     </section>`).join('');
@@ -1721,9 +1946,17 @@ if (new URLSearchParams(location.search).has('debug')) {
 
 /* L'atelier (autre onglet) change de cotes : ce tutoriel se recharge avec les nouvelles, à la même étape. */
 addEventListener('storage', (e) => {
+  if (e.key === 'atelier-prefs' && e.newValue) {          // l'atelier a changé de langue : le tutoriel la suit
+    try {
+      const l = JSON.parse(e.newValue).lang;
+      if ((l === 'en' || l === 'fr') && l !== LANG) { const u = new URL(location.href); u.searchParams.delete('lang'); location.replace(u.href); }
+    } catch (err) {}
+    return;
+  }
   if (e.key !== 'atelier-tuto-sync' || !e.newValue) return;
   try {
-    const u = new URL(JSON.parse(e.newValue).url);
-    if (u.pathname === location.pathname && u.search !== location.search) location.replace(u.pathname + u.search + location.hash);
+    const u = new URL(JSON.parse(e.newValue).url), cur = new URL(location.href);
+    u.searchParams.delete('lang'); cur.searchParams.delete('lang');                 // la langue ne change pas les cotes
+    if (u.pathname === cur.pathname && u.search !== cur.search) { u.searchParams.set('lang', LANG); location.replace(u.pathname + u.search + location.hash); }
   } catch (err) {}
 });
