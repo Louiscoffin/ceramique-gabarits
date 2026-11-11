@@ -5392,19 +5392,20 @@ const CARD_FIT = { 'theiere':1, 'espresso':1, 'theiere-corps':1, 'bol-talon':1, 
 const PHOTO_RATIO = { 'theiere':'8/5', 'espresso':'3/2', 'theiere-corps':'3/2', 'bol-talon':'3/2', 'tasse-1a':'3/2', 'tasse-galet':'3/2', 'tasse-demilune':'3/2', 'pot':'3/2', 'duo-bol':'3/2', 'calado':'3/2', 'carafe':'3/2', 'soliflore':'3/2', 'lampe':'3/2', 'coupe':'3/2', 'tore':'3/2', 'prisme':'3/2', 'facettes':'3/2', 'coussin':'3/2', 'visage':'3/2' };
 /* séquences du tutoriel 3D, jouées en boucle dans la fiche (muettes, sans contrôle) : n = nombre d'étapes du tutoriel */
 const TUTO_CLIPS = {
-  'theiere': { n:18, clips:[
-    { src:'img/tuto/theiere-panse',     fr:'Étape 8 · la panse se roule autour du mandrin', en:'Step 8 · the body is rolled around the mandrel' },
-    { src:'img/tuto/theiere-passoire',  fr:'Étape 14 · la passoire se perce au gabarit',    en:'Step 14 · the strainer is pierced through the template' } ] },
-  'bol-talon': { n:16, clips:[
-    { src:'img/tuto/talon-monter',      fr:'Étape 11 · la paroi se monte sur le fond',      en:'Step 11 · the wall is built up on the base' },
-    { src:'img/tuto/talon-talon',       fr:'Étape 14 · le talon se pose sous le bol',       en:'Step 14 · the foot ring goes under the bowl' } ] } };
+  'theiere': { n:17, clips:[
+    { src:'img/tuto/theiere-panse',     fr:'Étape 7 · la panse se roule autour du mandrin', en:'Step 7 · the belly is rolled around the mandrel' },
+    { src:'img/tuto/theiere-passoire',  fr:'Étape 13 · la passoire se perce au gabarit',    en:'Step 13 · the strainer is pierced through the template' } ] },
+  'bol-talon': { n:15, clips:[
+    { src:'img/tuto/talon-monter',      fr:'Étape 10 · la paroi se monte sur le fond',      en:'Step 10 · the wall is built up on the base' },
+    { src:'img/tuto/talon-talon',       fr:'Étape 13 · le talon se pose sous le bol',       en:'Step 13 · the foot ring goes under the bowl' } ] } };
 function tutoClipsHTML(m){
   const T=TUTO_CLIPS[m.id]; if(!T||!m.tuto) return '';
+  const vs=state.lang==='en'?'-en':'';   // les séquences 3D existent en deux langues (étiquettes des gabarits) : xxx.mp4 / xxx-en.mp4
   return `<div class="tclips" id="tclips">
     <div class="th"><b>${D('Guidé pas à pas, en 3D','Guided step by step, in 3D')}</b>
       <span class="pill">${T.n} ${D('étapes','steps')}</span></div>
     <div class="tgrid">${T.clips.map(c=>`<figure data-tc title="${D('Ouvrir le tutoriel 3D','Open the 3D tutorial')}">
-      <video src="${c.src}.mp4" poster="${c.src}.jpg" muted loop playsinline preload="metadata" aria-label="${esc(D(c.fr,c.en))}"></video>
+      <video src="${c.src}${vs}.mp4" poster="${c.src}${vs}.jpg" muted loop playsinline preload="metadata" aria-label="${esc(D(c.fr,c.en))}"></video>
       <figcaption>${esc(D(c.fr,c.en))}</figcaption></figure>`).join('')}</div>
     <p class="tfine">${D(`Le tutoriel 3D te montre chaque geste, recalculé à tes cotes et à ta terre. ${m.price===0||owns(m.id)?'':'Les premières étapes sont à essayer sans acheter.'}`,
       `The 3D tutorial shows every move, recomputed for your dimensions and clay. ${m.price===0||owns(m.id)?'':'The first steps are free to try.'}`)}</p>
