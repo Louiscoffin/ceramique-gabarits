@@ -10,7 +10,19 @@ const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const lerp = (a, b, t) => a + (b - a) * t;
 const sm = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
 const arc = t => Math.sin(Math.PI * t);
-const fmt = (x, d = 1) => x.toLocaleString('fr-FR', { minimumFractionDigits: d, maximumFractionDigits: d });
+/* Langue : ?lang=, sinon la préférence de l'atelier (même origine), sinon le navigateur.
+   Le bouton FR / EN de la barre l'écrit dans l'atelier puis recharge : tout est recalculé dans la langue. */
+const LANG = (() => {
+  try {
+    const q = new URLSearchParams(location.search).get('lang');
+    if (q === 'en' || q === 'fr') return q;
+    const p = JSON.parse(localStorage.getItem('atelier-prefs') || '{}').lang;
+    if (p === 'en' || p === 'fr') return p;
+  } catch (e) {}
+  return /^fr/i.test(navigator.language || 'fr') ? 'fr' : 'en';
+})();
+const tr = (fr, en) => LANG === 'en' ? en : fr;
+const fmt = (x, d = 1) => x.toLocaleString(LANG === 'en' ? 'en-GB' : 'fr-FR', { minimumFractionDigits: d, maximumFractionDigits: d });
 const lerpV = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
 const hop = (a, b, t, h) => { const p = lerpV(a, b, t); p[1] += h * arc(t); return p; };
 
@@ -572,7 +584,7 @@ function tpl(x, prog) {
   if (prog > 0) {
     x.save(); x.globalAlpha = sm(0, 0.15, prog);
     mono('gabarits-ceramique.com', WALL.x0, 10.5, 2.6, '#4A7263', 0, 'left', 500);
-    mono('série tasses · n°1b · imprimer à 100 %', 196, 10.5, 2.6, '#8A8D80', 0, 'right');
+    mono(tr('série tasses · n°1b · imprimer à 100 %', 'cups series · no. 1b · print at 100%'), 196, 10.5, 2.6, '#8A8D80', 0, 'right');
     x.restore();
   }
 
@@ -585,13 +597,13 @@ function tpl(x, prog) {
       x.strokeStyle = '#B08874'; x.lineWidth = 0.3; x.setLineDash([1.2, 1]); x.beginPath();
       x.moveTo(X0, Y0 + BEV); x.lineTo(X1, Y0 + BEV); x.moveTo(X0, Y1 - BEV); x.lineTo(X1, Y1 - BEV);
       x.moveTo(X1 - 3, Y0 + BEV); x.lineTo(X1 - 3, Y1 - BEV); x.stroke(); x.setLineDash([]);
-      mono('biseau 45° · dessus', XC, Y0 + BEV + 3, 2.1, ital, 0, 'center', 500);
-      mono('biseau 45° · dessous', XC, Y1 - BEV - 3, 2.1, ital, 0, 'center', 500);
+      mono(tr('biseau 45° · dessus', 'bevel 45° · top'), XC, Y0 + BEV + 3, 2.1, ital, 0, 'center', 500);
+      mono(tr('biseau 45° · dessous', 'bevel 45° · underside'), XC, Y1 - BEV - 3, 2.1, ital, 0, 'center', 500);
       mono('A', XC, Y0 + 15, 5.5, '#4A7263', 0, 'center', 500);
       mono('A', XC, Y1 - 15, 5.5, '#4A7263', 0, 'center', 500);
-      tx(x, 'paroi', XC - 4.5, YC, 12, 800, FONT_TITRE, '#23271F', -Math.PI / 2);
+      tx(x, tr('paroi', 'wall'), XC - 4.5, YC, 12, 800, FONT_TITRE, '#23271F', -Math.PI / 2);
       mono(`${fmt(L_BAND)} × ${fmt(WALL_H)} mm`, XC + 4.6, YC, 3, '#565A4D', -Math.PI / 2);
-      mono('bas de paroi · posé sur le fond', X1 - 5.4, YC + 62, 2, ital, -Math.PI / 2, 'center', 500);
+      mono(tr('bas de paroi · posé sur le fond', 'wall bottom · sits on the base'), X1 - 5.4, YC + 62, 2, ital, -Math.PI / 2, 'center', 500);
       dimLine(x, X0 + 4.2, Y0 + 24, Y1 - 24, `${fmt(L_BAND)} mm`);
     });
     outline(() => partial(x, [[X0, Y0], [X1, Y0], [X1, Y1], [X0, Y1], [X0, Y0]], pw));
@@ -613,11 +625,11 @@ function tpl(x, prog) {
         x.moveTo(cx + u[0] * (FO - 2.2), cy + u[1] * (FO - 2.2)); x.lineTo(cx + u[0] * (FO + 2.2), cy + u[1] * (FO + 2.2)); }
       x.stroke();
       x.lineWidth = 0.35; x.beginPath(); x.moveTo(cx - 3, cy); x.lineTo(cx + 3, cy); x.moveTo(cx, cy - 3); x.lineTo(cx, cy + 3); x.stroke();
-      tx(x, 'fond', cx, cy - 8, 7.5, 800, FONT_TITRE, '#23271F');
+      tx(x, tr('fond', 'base'), cx, cy - 8, 7.5, 800, FONT_TITRE, '#23271F');
       mono(`Ø ${fmt(D_RAW)} mm`, cx, cy + 7, 2.9, ital, 0, 'center', 500);
-      mono('talon · piquer les 8 crans + le centre', cx, cy + FO + 5.2, 2, ital, 0, 'center', 500);
+      mono(tr('talon · piquer les 8 crans + le centre', 'foot · prick the 8 notches + the centre'), cx, cy + FO + 5.2, 2, ital, 0, 'center', 500);
       mono('B', cx - R_OUT + 12, cy, 5, '#4A7263', 0, 'center', 500);
-      mono('couronne de 6 mm · hacher', cx, cy - R_OUT - 2.6, 2, ital, 0, 'center', 500);
+      mono(tr('couronne de 6 mm · hacher', '6 mm rim · score'), cx, cy - R_OUT - 2.6, 2, ital, 0, 'center', 500);
     });
     outline(() => { x.beginPath(); x.arc(cx, cy, R_OUT, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * pd); });
   }
@@ -629,9 +641,9 @@ function tpl(x, prog) {
       x.fillStyle = '#E7EFE9'; x.beginPath(); ring2(x, cx, cy, FO, FI); x.fill('evenodd');
       x.strokeStyle = 'rgba(176,136,116,.6)'; x.lineWidth = 0.25; x.beginPath();
       x.moveTo(cx - 2, cy); x.lineTo(cx + 2, cy); x.moveTo(cx, cy - 2); x.lineTo(cx, cy + 2); x.stroke();
-      tx(x, 'talon', cx + FO + 4, cy - 4, 6.5, 800, FONT_TITRE, '#23271F', 0, 'left');
+      tx(x, tr('talon', 'foot'), cx + FO + 4, cy - 4, 6.5, 800, FONT_TITRE, '#23271F', 0, 'left');
       mono(`Ø ${fmt(2 * FO)} / ${fmt(2 * FI)} mm`, cx + FO + 4, cy + 2.6, 2.6, '#565A4D', 0, 'left');
-      mono(`anneau de ${fmt(FO - FI)} mm · évider d’abord`, cx + FO + 4, cy + 6.6, 2.1, ital, 0, 'left', 500);
+      mono(tr(`anneau de ${fmt(FO - FI)} mm · évider d’abord`, `${fmt(FO - FI)} mm ring · cut out first`), cx + FO + 4, cy + 6.6, 2.1, ital, 0, 'left', 500);
       mono('C', cx, cy, 4.2, '#4A7263', 0, 'center', 500);
     });
     outline(() => { x.beginPath(); x.arc(cx, cy, FI, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * clamp(pr * 2)); });
@@ -642,27 +654,27 @@ function tpl(x, prog) {
   if (info > 0) {
     x.save(); x.globalAlpha = info;
     const nx = Math.max(66, XR), ny = 178;
-    mono('MONTAGE', nx, ny, 2.4, '#4A7263', 0, 'left', 500);
+    mono(tr('MONTAGE', 'ASSEMBLY'), nx, ny, 2.4, '#4A7263', 0, 'left', 500);
     x.strokeStyle = 'rgba(74,114,99,.45)'; x.lineWidth = 0.3; x.setLineDash([1.2, 0.9]);
     x.beginPath(); x.moveTo(nx + 14, ny); x.lineTo(196, ny); x.stroke(); x.setLineDash([]);
     [
-      'abaisser une plaque de 4,5 mm entre réglettes',
-      'tracer A, B, C ; piquer le talon sur B',
-      'biseauter A à 45° : un bout dessus, l’autre dessous',
-      'hacher + barbotine, rouler sur mandrin Ø ' + fmt(2 * R_IN),
-      'monter A sur la couronne de B, colombin dedans',
-      'à consistance cuir : relier les piqûres, poser C',
+      tr('abaisser une plaque de 4,5 mm entre réglettes', 'roll a 4.5 mm slab between guide strips'),
+      tr('tracer A, B, C ; piquer le talon sur B', 'trace A, B, C; prick the foot on B'),
+      tr('biseauter A à 45° : un bout dessus, l’autre dessous', 'bevel A at 45°: one end on top, the other underneath'),
+      tr('hacher + barbotine, rouler sur mandrin Ø ', 'score + slip, roll on mandrel Ø ') + fmt(2 * R_IN),
+      tr('monter A sur la couronne de B, colombin dedans', 'stand A on the rim of B, coil inside'),
+      tr('à consistance cuir : relier les piqûres, poser C', 'at leather-hard: join the pricks, attach C'),
     ].forEach((l, i) => {
       mono(String(i + 1), nx + 1, ny + 7 + i * 5.6, 2.3, '#4A7263', 0, 'left', 500);
       mono(l, nx + 6, ny + 7 + i * 5.6, 2.3, '#565A4D', 0, 'left');
     });
-    tx(x, 'bol-tasse à talon', nx, 248, 8, 800, FONT_TITRE, '#23271F', 0, 'left');
-    mono('n°1b · sans chanfrein · série Tasses', nx, 256, 2.4, '#565A4D', 0, 'left');
-    mono(`Ø ${FIN.d} × ${fmt(FIN.h)} mm après cuisson · ${VOL_CL} cl`, nx, 260.4, 2.4, '#565A4D', 0, 'left');
-    mono('retrait 12 % compris · plaque de 4,5 mm', nx, 264.8, 2.4, '#565A4D', 0, 'left');
+    tx(x, tr('bol-tasse à talon', 'footed cup-bowl'), nx, 248, 8, 800, FONT_TITRE, '#23271F', 0, 'left');
+    mono(tr('n°1b · sans chanfrein · série Tasses', 'no. 1b · no chamfer · Cups series'), nx, 256, 2.4, '#565A4D', 0, 'left');
+    mono(tr(`Ø ${FIN.d} × ${fmt(FIN.h)} mm après cuisson · ${VOL_CL} cl`, `Ø ${FIN.d} × ${fmt(FIN.h)} mm after firing · ${VOL_CL} cl`), nx, 260.4, 2.4, '#565A4D', 0, 'left');
+    mono(tr('retrait 12 % compris · plaque de 4,5 mm', '12% shrinkage included · 4.5 mm slab'), nx, 264.8, 2.4, '#565A4D', 0, 'left');
     x.strokeStyle = '#23271F'; x.lineWidth = 0.35; x.strokeRect(SQ[0], SQ[1], 20, 20);
     mono('20 mm', SQ[0] + 10, SQ[1] + 10, 2.8, '#23271F', 0, 'center', 500);
-    mono('vérifiez à la règle', SQ[0] + 10, SQ[1] - 2.6, 2.1, '#8A8D80');
+    mono(tr('vérifiez à la règle', 'check with a ruler'), SQ[0] + 10, SQ[1] - 2.6, 2.1, '#8A8D80');
     x.restore();
   }
 }
@@ -690,8 +702,8 @@ const CUR = [[0, 290, 300], [0.04, 256, 147], [0.08, 256, 147], [0.12, 237, 240]
 
 // Coupe cotée de la tasse cuite, à côté de l'aperçu
 function drawCoupe(x, X, Y) {
-  tx(x, 'Bol-tasse à talon', X, Y + 10, 20, 800, FONT_TITRE, '#23271F', 0, 'left');
-  tx(x, 'n°1b · droit · cotes après cuisson', X, Y + 33, 11, 400, FONT_MONO, '#565A4D', 0, 'left');
+  tx(x, tr('Bol-tasse à talon', 'Footed cup-bowl'), X, Y + 10, 20, 800, FONT_TITRE, '#23271F', 0, 'left');
+  tx(x, tr('n°1b · droit · cotes après cuisson', 'no. 1b · straight · fired dimensions'), X, Y + 33, 11, 400, FONT_MONO, '#565A4D', 0, 'left');
   const s = 2.6, cx = X + 108, base = Y + 236, ink = '#23271F', dim = '#B08874';
   x.strokeStyle = ink; x.fillStyle = '#E7EFE9'; x.lineWidth = 1.2;
   const box = (x0, y0, x1, y1) => { x.beginPath(); x.rect(cx + x0 * s, base - y1 * s, (x1 - x0) * s, (y1 - y0) * s); x.fill(); x.stroke(); };
@@ -705,12 +717,12 @@ function drawCoupe(x, X, Y) {
   tx(x, 'Ø 64', cx, yT - 11, 12, 500, FONT_MONO, '#8C6A58');
   const xH = cx + 32 * s + 14;
   x.beginPath(); x.moveTo(xH, base); x.lineTo(xH, base - 39.5 * s); x.moveTo(xH - 5, base); x.lineTo(xH + 5, base); x.moveTo(xH - 5, base - 39.5 * s); x.lineTo(xH + 5, base - 39.5 * s); x.stroke();
-  tx(x, '39,5', xH + 4, base - 19.75 * s, 12, 500, FONT_MONO, '#8C6A58', -Math.PI / 2);
+  tx(x, tr('39,5', '39.5'), xH + 4, base - 19.75 * s, 12, 500, FONT_MONO, '#8C6A58', -Math.PI / 2);
   const yB = base + 16;
   x.beginPath(); x.moveTo(cx - 18 * s, yB); x.lineTo(cx + 18 * s, yB); x.moveTo(cx - 18 * s, yB - 5); x.lineTo(cx - 18 * s, yB + 5); x.moveTo(cx + 18 * s, yB - 5); x.lineTo(cx + 18 * s, yB + 5); x.stroke();
-  tx(x, 'talon Ø 36 · 3 × 4', cx, yB + 14, 11, 500, FONT_MONO, '#8C6A58');
+  tx(x, tr('talon Ø 36 · 3 × 4', 'foot Ø 36 · 3 × 4'), cx, yB + 14, 11, 500, FONT_MONO, '#8C6A58');
   tx(x, `${VOL_CL} cl`, cx, base - 24 * s, 14, 500, FONT_MONO, '#4A7263');
-  tx(x, 'A paroi · B fond · C talon', X, base + 62, 11, 400, FONT_MONO, '#565A4D', 0, 'left');
+  tx(x, tr('A paroi · B fond · C talon', 'A wall · B base · C foot'), X, base + 62, 11, 400, FONT_MONO, '#565A4D', 0, 'left');
 }
 
 /* L'outil à l'écran (1024 × 640 px logiques). p : réglages puis tracé ; press : bouton Imprimer. */
@@ -740,11 +752,11 @@ function drawUI(p, press) {
   tx(x, 'Gabarits Céramique', 64, 75, 19, 800, FONT_TITRE, '#23271F', 0, 'left');
 
   const sel = p > 0.06, mod = p > 0.15;
-  tx(x, 'FORME', 24, 114, 11, 600, FONT_TEXTE, '#4A7263', 0, 'left');
+  tx(x, tr('FORME', 'SHAPE'), 24, 114, 11, 600, FONT_TEXTE, '#4A7263', 0, 'left');
   let cx = 24;
   x.font = `600 15px ${FONT_TEXTE}`;
-  for (const name of ['Cylindre', 'Tasse', 'Série Tasses']) {
-    const w = x.measureText(name).width + 26, on = sel && name === 'Série Tasses';
+  for (const name of tr(['Cylindre', 'Tasse', 'Série Tasses'], ['Cylinder', 'Cup', 'Cups series'])) {
+    const w = x.measureText(name).width + 26, on = sel && name === tr('Série Tasses', 'Cups series');
     rr(x, cx, 130, w, 34, 17);
     if (on) { x.fillStyle = '#4A7263'; x.fill(); }
     else { x.setLineDash([5, 4]); x.strokeStyle = '#4A7263'; x.lineWidth = 1.5; x.stroke(); x.setLineDash([]); }
@@ -755,8 +767,8 @@ function drawUI(p, press) {
 
   if (p > 0.08) {
     x.save(); x.globalAlpha = sm(0.08, 0.11, p);
-    tx(x, 'MODÈLE · SÉRIE TASSES', 24, 190, 11, 600, FONT_TEXTE, '#4A7263', 0, 'left');
-    [['n°1a', 'chanfrein', 24, false], ['n°1b', 'droit', 169, true]].forEach(([num, name, X0, b]) => {
+    tx(x, tr('MODÈLE · SÉRIE TASSES', 'MODEL · CUPS SERIES'), 24, 190, 11, 600, FONT_TEXTE, '#4A7263', 0, 'left');
+    [[tr('n°1a', 'no. 1a'), tr('chanfrein', 'chamfer'), 24, false], [tr('n°1b', 'no. 1b'), tr('droit', 'straight'), 169, true]].forEach(([num, name, X0, b]) => {
       const on = mod && b;
       rr(x, X0, 204, 137, 72, 10);
       x.fillStyle = on ? '#E7EFE9' : '#FFFEFA'; x.fill();
@@ -774,8 +786,8 @@ function drawUI(p, press) {
     x.restore();
   }
 
-  tx(x, 'RÉGLAGES', 24, 298, 11, 600, FONT_TEXTE, '#4A7263', 0, 'left');
-  [['Contenance', `${VOL_CL} cl`, 0.2], ['Épaisseur de plaque', '4,5 mm', 0.24], ['Largeur du talon', '3 mm', 0.28], ['Retrait de la terre', '12 %', 0.32]]
+  tx(x, tr('RÉGLAGES', 'SETTINGS'), 24, 298, 11, 600, FONT_TEXTE, '#4A7263', 0, 'left');
+  [[tr('Contenance', 'Capacity'), `${VOL_CL} cl`, 0.2], [tr('Épaisseur de plaque', 'Slab thickness'), tr('4,5 mm', '4.5 mm'), 0.24], [tr('Largeur du talon', 'Foot width'), '3 mm', 0.28], [tr('Retrait de la terre', 'Clay shrinkage'), tr('12 %', '12%'), 0.32]]
     .forEach(([lab, val, at], i) => {
       const y = 312 + i * 46;
       tx(x, lab, 24, y + 15, 16, 400, FONT_TEXTE, '#23271F', 0, 'left');
@@ -783,15 +795,15 @@ function drawUI(p, press) {
       tx(x, mod && p > at ? val : '·', 260, y + 15.5, 15, 500, FONT_MONO, '#23271F');
     });
   const yc = 312 + 4 * 46;
-  tx(x, 'Coupelle', 24, yc + 15, 16, 400, FONT_TEXTE, '#23271F', 0, 'left');
-  tx(x, 'option', 96, yc + 16, 12, 400, FONT_MONO, '#8A8D80', 0, 'left');
+  tx(x, tr('Coupelle', 'Saucer'), 24, yc + 15, 16, 400, FONT_TEXTE, '#23271F', 0, 'left');
+  tx(x, tr('option', 'optional'), tr(96, 78), yc + 16, 12, 400, FONT_MONO, '#8A8D80', 0, 'left');
   rr(x, 262, yc + 4, 44, 22, 11); x.fillStyle = '#E3E2D3'; x.fill();
   x.fillStyle = '#FFFEFA'; x.beginPath(); x.arc(273, yc + 15, 8, 0, 7); x.fill();
 
   // bouton Imprimer
   rr(x, 24, 562, 282, 46, 23); x.fillStyle = press > 0 ? '#3A5A4E' : '#4A7263'; x.fill();
   if (press > 0) { x.save(); rr(x, 24, 562, 282, 46, 23); x.clip(); x.fillStyle = '#5F8A78'; x.fillRect(24, 562, 282 * press, 46); x.restore(); }
-  tx(x, press > 0.98 ? 'Envoyé à l’imprimante' : press > 0 ? 'Impression…' : 'Imprimer le PDF', 165, 585.5, 16, 600, FONT_TEXTE, '#FFFEFA');
+  tx(x, press > 0.98 ? tr('Envoyé à l’imprimante', 'Sent to the printer') : press > 0 ? tr('Impression…', 'Printing…') : tr('Imprimer le PDF', 'Print the PDF'), 165, 585.5, 16, 600, FONT_TEXTE, '#FFFEFA');
 
   // aperçu A4
   const k = 540 / 297, pw = 210 * k, ox = 352, oy = 70;
@@ -1315,19 +1327,21 @@ const C = {                                             // les cotes, par état
 };
 const ESP = FIN.h < 50;
 /* ce qu'on imprime : les feuilles du PDF telles que l'outil les a calepinées */
-const nF = (n, w) => `${n} feuille${n > 1 ? 's' : ''} ${w}`;
+const nF = (n, w) => tr(`${n} feuille${n > 1 ? 's' : ''} ${w}`, `${n} sheet${n > 1 ? 's' : ''} ${w}`);
 const PAPER_KIT = CFG.sheets
-  ? [CFG.sheets.fp ? nF(CFG.sheets.fp, 'A4 80 g') : '', nF(CFG.sheets.fc || 1, 'A4 de papier cartonné 160 à 220 g')].filter(Boolean).join(', ')
-  : '1 feuille A4 de papier cartonné 160 à 220 g, et 1 feuille A4 80 g pour une grande tasse';
+  ? [CFG.sheets.fp ? nF(CFG.sheets.fp, tr('A4 80 g', 'of A4 80 g paper')) : '', nF(CFG.sheets.fc || 1, tr('A4 de papier cartonné 160 à 220 g', 'of A4 card stock, 160 to 220 g'))].filter(Boolean).join(', ')
+  : tr('1 feuille A4 de papier cartonné 160 à 220 g, et 1 feuille A4 80 g pour une grande tasse', '1 sheet of A4 card stock, 160 to 220 g, and 1 sheet of A4 80 g paper for a large cup');
 const PRINT_HOW = CFG.sheets && !CFG.sheets.fp
-  ? `Téléchargez le PDF de vos gabarits depuis l'outil. Les quatre gabarits, mandrin compris, tiennent sur <b>${CFG.sheets.fc > 1 ? CFG.sheets.fc + ' feuilles' : 'une seule feuille'}</b> : imprimez-la sur <b>papier cartonné</b>.`
-  : `Téléchargez le PDF de vos gabarits depuis l'outil. La planche marquée « à imprimer sur papier cartonné » (celle du mandrin <b>D</b>) passe sur <b>papier cartonné</b>${CFG.sheets ? ', les autres (<b>A, B, C</b>) sur papier ordinaire' : ' ; les autres sur papier ordinaire. Pour une petite tasse, les quatre gabarits tiennent sur cette seule feuille'}.`;
-const KIND = ESP ? 'tasse à espresso' : `version haute, ${fmt(FIN.h / 10, FIN.h % 10 ? 1 : 0)} cm`;
+  ? tr(`Téléchargez le PDF de vos gabarits depuis l'outil. Les quatre gabarits, mandrin compris, tiennent sur <b>${CFG.sheets.fc > 1 ? CFG.sheets.fc + ' feuilles' : 'une seule feuille'}</b> : imprimez-la sur <b>papier cartonné</b>.`,
+      `Download the PDF of your templates from the tool. All four templates, mandrel included, fit on <b>${CFG.sheets.fc > 1 ? CFG.sheets.fc + ' sheets' : 'a single sheet'}</b>: print it on <b>card stock</b>.`)
+  : tr(`Téléchargez le PDF de vos gabarits depuis l'outil. La planche marquée « à imprimer sur papier cartonné » (celle du mandrin <b>D</b>) passe sur <b>papier cartonné</b>${CFG.sheets ? ', les autres (<b>A, B, C</b>) sur papier ordinaire' : ' ; les autres sur papier ordinaire. Pour une petite tasse, les quatre gabarits tiennent sur cette seule feuille'}.`,
+      `Download the PDF of your templates from the tool. The sheet marked “print on card stock” (the one with mandrel <b>D</b>) goes on <b>card stock</b>${CFG.sheets ? ', the others (<b>A, B, C</b>) on ordinary paper' : '; the others on ordinary paper. For a small cup, all four templates fit on this one sheet'}.`);
+const KIND = ESP ? tr('tasse à espresso', 'espresso cup') : tr(`version haute, ${fmt(FIN.h / 10, FIN.h % 10 ? 1 : 0)} cm`, `tall version, ${fmt(FIN.h / 10, FIN.h % 10 ? 1 : 0)} cm`);
 
 /* ─────────────── les étapes ─────────────── */
 
 // s : fenêtre de l'animation dans le récit de la LP ; cam : caméra imposée ; ovr(t) : état imposé ; dur : secondes
-const tag = s => `<span class="st st--${s}">${{ crue: 'crue', cuir: 'au cuir', cuite: 'cuite', papier: 'papier', carton: 'carton' }[s]}</span>`;
+const tag = s => `<span class="st st--${s}">${{ crue: tr('crue', 'raw'), cuir: tr('au cuir', 'leather-hard'), cuite: tr('cuite', 'fired'), papier: tr('papier', 'paper'), carton: tr('carton', 'card') }[s]}</span>`;
 const row = (k, v, s) => `<div class="kv"><span>${k}</span><b>${v}${s ? ' ' + tag(s) : ''}</b></div>`;
 const STEPS = [
   {
@@ -1497,21 +1511,202 @@ const STEPS = [
   },
 ];
 
+/* ─────────────── les étapes en anglais ───────────────
+   Même id, mêmes variables : seuls le titre, la durée et le texte changent. Le français reste la source. */
+const EN_STEPS = {
+  'ma-tasse': {
+    n: 'My cup',
+    html: `<p class="lead">The tutorial follows <b>your</b> cup: every dimension below is recalculated for your clay, and given at the stage where you measure it.</p>
+      <div class="cfg">${row('Cup', `Ø ${f0(FIN.d)} × ${f1(FIN.h)} mm`, 'cuite')}${row('Capacity', `${VOL_CL} cl to the brim`)}
+      ${row('Total shrinkage of your clay', `${f0(CFG.r)} %`)}${row('Shrinkage already done at leather-hard', `${f0(CFG.cuir)} %`)}${row('Slab', `${f1(T)} mm`, 'crue')}</div>
+      <div class="states">
+        <div><i>raw</i><b>Ø ${f1(C.crue.d)}</b><small>we cut, we build</small></div>
+        <div><i>leather-hard</i><b>Ø ${f1(C.cuir.d)}</b><small>we attach the foot</small></div>
+        <div><i>fired</i><b>Ø ${f0(C.cuite.d)}</b><small>we drink</small></div>
+      </div>
+      <p class="note">Total shrinkage is drying plus firing, from wet clay to the fired piece. By leather-hard, part of the drying shrinkage has already happened: that is why the foot ring does not have the same dimensions as the ring you cut out.</p>
+      <h3>What you need</h3>
+      <ul class="kit">
+        <li><em>paper</em> ${PAPER_KIT}, scissors, glue stick, tape</li>
+        <li><em>clay</em> ≈ ${CLAY_G} g of fine stoneware, rolling pin, 2 guide strips of ${f1(T)} mm, canvas cloth</li>
+        <li><em>building</em> needle tool, scoring tool, slip, brush, soft rib, wooden modelling tool, newspaper</li>
+        <li><em>finishing</em> banding wheel, foam, sponge, strip of chamois, plastic</li>
+      </ul>
+      <p class="note">Allow 1 h 30 of work, then 2 to 4 h of waiting before attaching the foot ring.</p>`,
+  },
+  'imprimer': {
+    n: 'Print', time: '5 min',
+    html: `<ol>
+        <li>${PRINT_HOW}</li>
+        <li>In the print dialog: <b>actual size</b>, “fit to page” unticked.</li>
+        <li>Lay a ruler on the scale bar in the header: it must read exactly <b>50 mm</b>. At 48 mm, the whole cup would come out 4 % too small: print again.</li>
+      </ol>
+      <div class="cfg">${row('Scale bar', '50.0 mm', 'papier')}</div>
+      <p class="tip"><b>Tip</b> Check the bar on every sheet: printers sometimes change the scale when you change paper.</p>`,
+  },
+  'decouper': {
+    n: 'Cut with scissors', time: '10 min',
+    html: `<ol>
+        <li>Cut <b>along the middle of the solid line</b>: it is the exact edge of the piece.</li>
+        <li>On curves, <b>turn the sheet, not the scissors</b>, and cut with the base of the blades, in small steady snips.</li>
+        <li>The foot ring: fold the sheet slightly at the centre of the ring, snip a notch, then follow the <b>small circle</b> from the inside. The large circle after that.</li>
+      </ol>
+      <div class="cfg">${row('A · wall', `${f1(L_BAND)} × ${f1(WALL_H)} mm`, 'papier')}${row('B · base', `Ø ${f1(D_RAW)} mm`, 'papier')}${row('C · foot ring', `Ø ${f1(2 * FO)} / ${f1(2 * FI)} mm`, 'papier')}${row('D · mandrel', `${f1(L_CARD)} × ${H_CARD} mm`, 'carton')}</div>
+      <p class="tip"><b>Good practice</b> Scissors rather than a craft knife: no blade slipping on the table, and the edge stays clean, with no paper burr to throw the tracing off.</p>`,
+  },
+  'mandrin': {
+    n: 'The card mandrel', time: '10 min',
+    html: `<p class="lead">The diameter of your cup is set in the tool: no off-the-shelf tube would have the right Ø. So the mandrel is rolled from card stock, to the <b>exact Ø of your raw cup</b>.</p>
+      <ol>
+        <li>Roll template <b>D</b>, printed side out, until the edge lands exactly on the <b>“align here”</b> line. That line sets the diameter.</li>
+        <li>Glue the tab (glue stick) along the full height and hold it for a minute. Put tape over it, at the top and at the bottom.</li>
+        <li>Wrap <b>a single turn</b> of newsprint around it, taped: it stops the clay sticking, and the template has already made up for its thickness.</li>
+        <li>Stuff the tube with crumpled newspaper: it will not be crushed when the clay tightens around it.</li>
+      </ol>
+      <div class="cfg">${row('Finished mandrel (newsprint included)', `Ø ${f1(D_MAND)} mm`, 'crue')}${row('Card tube alone', `Ø ${f1(D_CARD)} mm`, 'carton')}${row('Height', `${H_CARD} mm: the wall + 3 cm`)}</div>
+      <p class="tip"><b>Why this Ø</b> The mandrel is used during assembly, with wet clay: it takes the inside Ø of the <b>raw</b> cup (Ø ${f1(D_RAW)} − 2 × ${f1(T)} of slab), not that of the fired cup.</p>`,
+  },
+  'abaisser': {
+    n: 'Roll the slab', time: '10 min',
+    html: `<ol>
+        <li>Pat ≈ ${CLAY_G} g of stoneware into a flat cake with the palm of your hand.</li>
+        <li>Roll from the centre towards the edges, between the two guide strips of <b>${f1(T)} mm</b>. Lift and turn the slab over between passes, until the rolling pin rides on the strips.</li>
+        <li>Compress both faces with a soft rib: the clay will crack less when it is bent.</li>
+        <li>Let it firm up for about twenty minutes: it can then be lifted without sagging.</li>
+      </ol>
+      <div class="cfg">${row('Slab', `${f1(T)} mm`, 'crue')}${row('Once fired', `${f1(E_FIN)} mm`, 'cuite')}</div>`,
+  },
+  'tracer': {
+    n: 'Trace', time: '5 min',
+    html: `<ol>
+        <li>Lay A, B and C on the slab and smooth them with the flat of your hand: the moisture makes them stick.</li>
+        <li>Follow each edge with the needle <b>held vertical</b>, in one stroke per outline. Held at an angle, it cuts a bevelled edge that will weld badly.</li>
+        <li>For the foot ring, the small circle first.</li>
+        <li><b>With template B still in place</b>: prick the <b>centre</b> and the <b>8 notches</b> of the foot circle through the paper with the needle, about a millimetre deep. These pricks will tell you, at leather-hard, where to score the base.</li>
+      </ol>
+      <p class="tip"><b>Tip</b> The pricked face will be the <b>underside</b> of the cup. The pricks are raw, like the ring: they shrink with the cup, so there is nothing to recalculate. The template dimensions are raw too: the ${f0(CFG.r)} % shrinkage is already included. Don’t correct anything by eye.</p>`,
+  },
+  'degager': {
+    n: 'Lift out', time: '5 min',
+    html: `<ol>
+        <li>Remove the clay around the pieces without lifting them; the offcuts go back to the pug, in a sealed bag.</li>
+        <li>Peel the templates off from one corner and keep them. On disc B, <b>note the pricked face</b>: it will be the underside.</li>
+        <li><b>Slide ring C under the same plastic as the cup</b> for the whole drying time: it must reach leather-hard at the same time.</li>
+      </ol>`,
+  },
+  'biseauter': {
+    n: 'Bevel the wall', time: '5 min',
+    html: `<ol>
+        <li>Cut the two short sides of A at 45°, on the hatched zones: <b>one on top, the other underneath</b> (turn the strip over).</li>
+        <li>They will overlap with no extra thickness.</li>
+      </ol>
+      <div class="cfg">${row('Length of A', `${f1(L_BAND)} mm`, 'crue')}${row('of which bevels', `${f1(BEV)} mm`)}</div>
+      <p class="note">${f1(L_BAND)} mm is the circumference taken at mid-thickness (${f1(L_MID)} mm), plus the ${f1(BEV)} mm that the two bevels eat up.</p>`,
+  },
+  'strier': {
+    n: 'Score and slip', time: '5 min',
+    html: `<ol>
+        <li>Score both bevels, the bottom edge of the wall, and the 6 mm rim of the base, <b>on the unpricked face</b>.</li>
+        <li>Brush on thick slip made from the same clay, just before joining.</li>
+      </ol>`,
+  },
+  'rouler': {
+    n: 'Roll around the mandrel', time: '5 min',
+    html: `<ol>
+        <li>Lay the mandrel across the middle of the wall, <b>traced face against it</b>.</li>
+        <li>Lift both ends around the tube, without pulling on the clay.</li>
+        <li>When the bevels meet, press the seam against the card with your thumb, from bottom to top.</li>
+      </ol>
+      <div class="cfg">${row('Inside Ø', `${f1(D_MAND)} mm`, 'crue')}${row('Outside Ø', `${f1(D_RAW)} mm`, 'crue')}</div>`,
+  },
+  'monter': {
+    n: 'Stand it on the base', time: '5 min',
+    html: `<ol>
+        <li>Upright, mandrel in place, set the cylinder on the scored rim, flush with the edge. A slight back-and-forth makes the slip rise.</li>
+        <li>Pull the crumpled newspaper out from the inside, then <b>fold the card in towards the centre</b>: it folds up and comes out without pulling on the clay. The turn of newsprint peels off with your fingertips.</li>
+      </ol>
+      <p class="tip"><b>The advantage of card</b> A rigid tube jams when the clay tightens; card crumples and comes out by itself.</p>`,
+  },
+  'colombin': {
+    n: 'Coil and rib', time: '10 min',
+    html: `<ol>
+        <li>Inside: a 3 mm coil laid in the angle between wall and base, pressed in with a finger, smoothed with the modelling tool. It is what makes the cup watertight.</li>
+        <li>Outside: draw the clay of the base up onto the wall, then run the soft rib all around, vertical seam included.</li>
+        <li>Cover with light plastic, ring C alongside.</li>
+      </ol>`,
+  },
+  'reperer': {
+    n: 'Mark the foot ring', time: '2 to 4 h, then 5 min',
+    html: `<p class="lead">At leather-hard, the cup holds its shape and a fingernail still leaves a mark. It has already done <b>${f0(CFG.cuir)} % of its shrinkage</b>: its dimensions are no longer those of the cut-out.</p>
+      <div class="cfg">${row('Base', `Ø ${f1(C.cuir.d)} mm`, 'cuir')}${row('Foot-ring circle', `Ø ${f1(C.cuir.fo)} mm`, 'cuir')}${row('i.e. a radius of', `${f1(C.cuir.r)} mm`, 'cuir')}</div>
+      <ol>
+        <li>Turn the cup over onto a piece of foam: the underside, with its pricks, faces you. One point at the centre and <b>8 notches</b> on the foot circle.</li>
+        <li>Join the 8 notches with the needle in one continuous line: that is the <b>foot-ring circle</b>. The centre is there to check: every notch is <b>${f1(C.cuir.r)} mm</b> from it.</li>
+        <li>Then score the ${f1((FO - FI) * CR)} mm ring inside the circle with the scoring tool: that is where, and only where, the ring will be stuck.</li>
+      </ol>
+      <p class="tip"><b>No pricks left?</b> Turn the cup over on the banding wheel and centre it. With the wheel spinning, rest the needle point <b>${f1(C.cuir.r)} mm from the centre</b>: one turn draws the same circle.</p>
+      <p class="warn"><b>Careful</b> Don’t put template B back: being paper, it hasn’t shrunk. At leather-hard it overhangs by ${f1((D_RAW - C.cuir.d) / 2)} mm all round, and its foot circle would come out too large.</p>`,
+  },
+  'talon': {
+    n: 'Attach the foot ring', time: '10 min',
+    html: `<ol>
+        <li>Take ring C out from under the plastic: it has dried at the same pace as the cup, it now measures <b>Ø ${f1(C.cuir.fo)} / ${f1(C.cuir.fi)} mm</b> and fits exactly on the circle.</li>
+        <li>The base is already scored: score one face of the ring, then brush slip on both surfaces.</li>
+        <li>Set the ring scored face down, press it flat, then weld the inner and outer angles with the modelling tool.</li>
+      </ol>
+      <div class="cfg">${row('Ring as cut', `Ø ${f1(C.crue.fo)} / ${f1(C.crue.fi)} mm`, 'crue')}${row('Ring when attached', `Ø ${f1(C.cuir.fo)} / ${f1(C.cuir.fi)} mm`, 'cuir')}${row('Finished foot ring', `Ø ${f0(C.cuite.fo)} × ${f1(E_FIN)} mm`, 'cuite')}</div>
+      <p class="tip"><b>Tip</b> Sticking is easier when both pieces have dried a little. Too wet, and the ring slides, squashes and distorts the base; at leather-hard (the clay holds its shape, a fingernail still marks it), it sits, presses on and stays put. Wait until the cup has lost its shine.</p>
+      <p class="warn"><b>Careful</b> A ring left in the open air dries faster than the cup: smaller and harder, it will come unstuck. If that happens, cut a new one from an offcut kept damp, to the “leather-hard” dimensions.</p>`,
+  },
+  'finir': {
+    n: 'Finish the rim', time: '5 min',
+    html: `<ol>
+        <li>Stand the cup back upright, centred on the banding wheel.</li>
+        <li>Go over the whole wall with a well-wrung sponge.</li>
+        <li>A damp strip of chamois folded over the rim, two turns of the wheel: the edge rounds off without being squashed.</li>
+      </ol>`,
+  },
+  'secher': {
+    n: 'Dry', time: '1 week',
+    html: `<ol>
+        <li>Dry the cup <b>upside down</b>, under plastic for the first two days, then in the open air until it no longer feels cool to the touch anywhere.</li>
+        <li>Bisque firing, glaze, second firing: depending on your clay and your glaze. No glaze under the foot.</li>
+      </ol>
+      <div class="cfg">${row('Assembled', `Ø ${f1(C.crue.d)} × ${f1(C.crue.h)} mm`, 'crue')}${row('Foot ring attached', `Ø ${f1(C.cuir.d)} × ${f1(C.cuir.h)} mm`, 'cuir')}${row('Finished', `Ø ${f0(C.cuite.d)} × ${f1(C.cuite.h)} mm · ${VOL_CL} cl`, 'cuite')}</div>
+      <p class="note">If your fired cup measures anything other than Ø ${f0(FIN.d)}, measure the real shrinkage of this clay and enter it in the tool: the next one will come out right.</p>`,
+  },
+};
+if (LANG === 'en') STEPS.forEach(st => Object.assign(st, EN_STEPS[st.id]));
+
 /* ─────────────── accès : acheté, ou aperçu ───────────────
    Le tutoriel vit à côté de l'outil (même origine) : il lit les achats que
    l'outil enregistre. Sans achat, les trois premières étapes restent ouvertes,
    la suite renvoie à la fiche produit. */
-const PRODUCT = '../#produit/bol-talon';
+const PRODUCT = `../?lang=${LANG}#produit/bol-talon`;   // l'atelier s'ouvre dans la langue du tutoriel
+const UNLOCK = tr('Débloquer · 4,99 €', 'Unlock · €4.99');
+// le bouton FR / EN : la langue est celle de l'atelier (même origine), donc on l'y écrit puis on recharge
+function setLang(l) {
+  if (l === LANG) return;
+  const u = new URL(location.href); u.searchParams.delete('lang');
+  try {
+    const p = JSON.parse(localStorage.getItem('atelier-prefs') || '{}'); p.lang = l;
+    localStorage.setItem('atelier-prefs', JSON.stringify(p));
+  } catch (e) { u.searchParams.set('lang', l); }
+  location.replace(u.href);
+}
 const OWNED = (() => { try { return !!(JSON.parse(localStorage.getItem('atelier-owned') || '{}')['bol-talon']); } catch (e) { return false; } })();
 const ALL = STEPS.slice();
 const FREE = 3;
 if (!OWNED) {
   STEPS.length = FREE;
   STEPS.push({
-    id: 'suite', n: 'La suite du tutoriel', time: '', s: [13.5, 13.5], dur: 0.1, spin: true, lock: true, cam: ALL[0].cam,
-    html: `<p class="lead">Vous venez de voir le début. Les <b>${ALL.length - FREE} étapes suivantes</b> sont incluses avec le gabarit :</p>
+    id: 'suite', n: tr('La suite du tutoriel', 'The rest of the tutorial'), time: '', s: [13.5, 13.5], dur: 0.1, spin: true, lock: true, cam: ALL[0].cam,
+    html: tr(`<p class="lead">Vous venez de voir le début. Les <b>${ALL.length - FREE} étapes suivantes</b> sont incluses avec le gabarit :</p>
       <ul class="kit">${ALL.slice(FREE).map(x => `<li>${x.n}</li>`).join('')}</ul>
       <p class="note">Gabarits A, B, C et le mandrin D en carton, recalculés à vos cotes, plus ce tutoriel en entier. Achat unique, sur Gumroad.</p>`,
+      `<p class="lead">That was the beginning. The <b>${ALL.length - FREE} steps that follow</b> are included with the template:</p>
+      <ul class="kit">${ALL.slice(FREE).map(x => `<li>${x.n}</li>`).join('')}</ul>
+      <p class="note">Templates A, B, C and the card mandrel D, recalculated to your dimensions, plus this whole tutorial. One-time purchase, on Gumroad.</p>`),
   });
 }
 
@@ -1525,26 +1720,45 @@ paintGrain();
 {
   const N = STEPS.length - 1;
   $('[data-kind]').textContent = KIND;
-  $('.bar__pdf').href = FIN.h === 80 && FIN.d === 64 ? 'gabarits-h80.pdf' : 'gabarits.pdf';   // maquette : les deux PDF générés
-  $('[data-cfg]').textContent = `Ø ${f0(FIN.d)} × ${f1(FIN.h)} mm · ${VOL_CL} cl · retrait ${f0(CFG.r)} %${CFG.clamped ? ' · cotes ramenées à la plage du tutoriel' : ''}`;
+  $('.bar__pdf').href = FIN.h === 80 && FIN.d === 64 ? 'gabarits-h80.pdf' : 'gabarits.pdf';
+  // habillage de la page, dans la langue
+  root.lang = LANG;
+  document.title = tr('Tutoriel · Bol-tasse à talon · Gabarits Céramique', 'Tutorial · Footed cup-bowl · Gabarits Céramique');
+  $('.bar__back').innerHTML = `<span aria-hidden="true">←</span><span class="bar__bt"> ${tr('Mon gabarit', 'My template')}</span>`;
+  $('.bar__back').setAttribute('aria-label', tr('Mon gabarit', 'My template'));
+  $('.bar__title b').textContent = tr('Bol-tasse à talon', 'Footed cup-bowl');
+  $('.bar__pdf').textContent = tr('Gabarits PDF', 'Templates PDF');
+  $('#rail').setAttribute('aria-label', tr('Étapes du tutoriel', 'Tutorial steps'));
+  $('#rail p').textContent = tr('Tutoriel', 'Tutorial');
+  $('.hint').textContent = tr('glisser sur la scène pour tourner autour · ← → pour changer d\'étape', 'drag the scene to orbit · ← → to change step');
+  $('.dock').setAttribute('aria-label', 'Navigation');
+  $('[data-prev]').setAttribute('aria-label', tr('Étape précédente', 'Previous step'));
+  $('[data-next]').setAttribute('aria-label', tr('Étape suivante', 'Next step'));
+  $('[data-replay]').setAttribute('aria-label', tr('Revoir le geste', 'Replay the gesture'));
+  $$('.bar__lang [data-lang]').forEach(b => {
+    b.classList.toggle('on', b.dataset.lang === LANG);
+    b.setAttribute('aria-pressed', b.dataset.lang === LANG);
+    b.addEventListener('click', () => setLang(b.dataset.lang));
+  });   // maquette : les deux PDF générés
+  $('[data-cfg]').textContent = `Ø ${f0(FIN.d)} × ${f1(FIN.h)} mm · ${VOL_CL} cl · ${tr('retrait', 'shrinkage')} ${f0(CFG.r)} %${CFG.clamped ? tr(' · cotes ramenées à la plage du tutoriel', ' · dimensions brought back within the tutorial range') : ''}`;
   $('#rail ol').innerHTML = (OWNED ? STEPS : ALL).map((st, i) => {
     const lk = !OWNED && i >= FREE;
     return `<li><a href="#${lk ? 'suite' : st.id}" data-go="${lk ? FREE : i}"${lk ? ' class="lock"' : ''}><span>${i ? String(i).padStart(2, '0') : '·'}</span>${st.n}${lk ? ' <i>🔒</i>' : ''}</a></li>`;
   }).join('');
   $('.bar__back').href = PRODUCT;
   const pdf = $('.bar__pdf');
-  if (OWNED) { pdf.textContent = 'Mes gabarits'; pdf.href = PRODUCT; pdf.removeAttribute('download'); }
-  else { pdf.textContent = 'Débloquer · 4,99 €'; pdf.href = PRODUCT; pdf.removeAttribute('download'); }
+  if (OWNED) { pdf.textContent = tr('Mes gabarits', 'My templates'); pdf.href = PRODUCT; pdf.removeAttribute('download'); }
+  else { pdf.textContent = UNLOCK; pdf.href = PRODUCT; pdf.removeAttribute('download'); }
   $('#steps').innerHTML = STEPS.map((st, i) => `
     <section class="step" id="${st.id}" data-i="${i}">
       <article class="card">
-        <p class="card__num">${st.lock ? 'Inclus avec le gabarit' : i ? `Étape ${String(i).padStart(2, '0')} / ${ALL.length - 1}` : 'Avant de commencer'}${st.time ? `<span>${st.time}</span>` : ''}</p>
+        <p class="card__num">${st.lock ? tr('Inclus avec le gabarit', 'Included with the template') : i ? `${tr('Étape', 'Step')} ${String(i).padStart(2, '0')} / ${ALL.length - 1}` : tr('Avant de commencer', 'Before you start')}${st.time ? `<span>${st.time}</span>` : ''}</p>
         <h2>${st.n}</h2>
         ${st.html}
         <div class="card__nav">
-          ${i && !st.lock ? `<button class="btn btn--ghost" type="button" data-replay>Revoir le geste</button>` : ''}
-          ${st.lock ? `<a class="btn btn--primary" href="${PRODUCT}">Débloquer · 4,99 €</a>`
-            : i < N ? `<button class="btn btn--primary" type="button" data-go="${i + 1}">${i ? 'Étape suivante' : 'Commencer'} →</button>` : `<a class="btn btn--primary" href="#ma-tasse" data-go="0">Revenir au début</a>`}
+          ${i && !st.lock ? `<button class="btn btn--ghost" type="button" data-replay>${tr('Revoir le geste', 'Replay the gesture')}</button>` : ''}
+          ${st.lock ? `<a class="btn btn--primary" href="${PRODUCT}">${UNLOCK}</a>`
+            : i < N ? `<button class="btn btn--primary" type="button" data-go="${i + 1}">${i ? tr('Étape suivante', 'Next step') : tr('Commencer', 'Start')} →</button>` : `<a class="btn btn--primary" href="#ma-tasse" data-go="0">${tr('Revenir au début', 'Back to the start')}</a>`}
         </div>
       </article>
     </section>`).join('');
@@ -2007,9 +2221,17 @@ if (new URLSearchParams(location.search).has('debug')) {
 
 /* L'atelier (autre onglet) change de cotes : ce tutoriel se recharge avec les nouvelles, à la même étape. */
 addEventListener('storage', (e) => {
+  if (e.key === 'atelier-prefs' && e.newValue) {          // l'atelier a changé de langue : le tutoriel la suit
+    try {
+      const l = JSON.parse(e.newValue).lang;
+      if ((l === 'en' || l === 'fr') && l !== LANG) { const u = new URL(location.href); u.searchParams.delete('lang'); location.replace(u.href); }
+    } catch (err) {}
+    return;
+  }
   if (e.key !== 'atelier-tuto-sync' || !e.newValue) return;
   try {
-    const u = new URL(JSON.parse(e.newValue).url);
-    if (u.pathname === location.pathname && u.search !== location.search) location.replace(u.pathname + u.search + location.hash);
+    const u = new URL(JSON.parse(e.newValue).url), cur = new URL(location.href);
+    u.searchParams.delete('lang'); cur.searchParams.delete('lang');                 // la langue ne change pas les cotes
+    if (u.pathname === cur.pathname && u.search !== cur.search) { u.searchParams.set('lang', LANG); location.replace(u.pathname + u.search + location.hash); }
   } catch (err) {}
 });
