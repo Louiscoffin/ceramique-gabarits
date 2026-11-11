@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Créer un gabarit de poterie à imprimer | Gabarits Céramique</title>
-<!-- Partage (Facebook, WhatsApp, LinkedIn, Slack…) : en tête du <head>, avant le CSS, pour être lu par les robots -->
+<!-- Partage (Facebook, WhatsApp, LinkedIn, Slack…) : en tête du <head>, avant le CSS -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Gabarits Céramique">
 <meta property="og:url" content="https://app.gabarits-ceramique.com/">
@@ -339,6 +339,8 @@ body.aside-ink .navb.fbsticker{color:var(--gc-encre)}
 .msm2 .kick b{font-size:15px;color:var(--terra);letter-spacing:0}.msm2 .kick sup{font-size:8px}
 .msm2 h3{font-size:21px;margin:6px 0 6px;line-height:1.2}
 .msm2 .lead{font-size:13.5px;line-height:1.55;margin:0 0 10px;color:var(--ink)}
+.msm2 h3 .mscount{color:var(--terra)}
+.msm2 .msalt{font-size:12.5px;color:var(--ink2);text-decoration:underline;text-underline-offset:3px}
 .msuses{list-style:none;margin:0 auto 14px;padding:0;display:grid;gap:6px;max-width:320px;text-align:left}
 .msuses li{display:flex;gap:10px;align-items:center;font-size:13px;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:var(--wash);
   opacity:0;transform:translateY(6px);animation:msin .45s ease forwards;animation-delay:calc(1.6s + var(--i)*.18s)}
@@ -408,7 +410,8 @@ body.aside-ink .sbprefs .unitsw button.on{background:var(--gc-vert-clair);color:
   body.sb-rail .sbfoot{display:block;font-size:0;border-top:0;padding:6px 0;text-align:center}
   body.sb-rail .sbfoot>:not(.sbfb){display:none!important}
   body.sb-rail .sbfb .link{justify-content:center;padding:6px 0}
-  body.sb-rail .sbfb .lab,body.sb-rail .sbfb .min{display:none}
+  body.sb-rail .sbfb .lab,body.sb-rail .sbfb .min,body.sb-rail .sbfb .sbtxt{display:none}
+  body.sb-rail .sbfb .sbsup{background:none;padding:6px 0}
   body.sb-rail .sbfb .ic{font-size:16px}
   body.sb-rail .sbfb .nl{border:0;background:none;padding:6px 0;margin:0}
   body.sb-rail .sbprefs{flex-direction:column;gap:7px;padding:10px 0 2px}
@@ -450,6 +453,10 @@ body.aside-ink{--sb-accent:var(--gc-vert-clair)}
 .sbfb .nl .lab{font-weight:600}
 .sbfb .nl .min{flex-basis:100%;padding-left:25px;font-size:9.5px;color:var(--gc-action)}
 .sbfb .nl:hover{border-style:solid;background:var(--gc-emailclair)}
+.sbfb .sbsup{align-items:center;gap:9px;padding:8px 9px;border-radius:8px;line-height:1.4;background:color-mix(in srgb,var(--gc-celadon) 12%,transparent)}
+.sbfb .sbsup .sbtxt{font-size:11px;color:var(--ink2)}
+.sbfb .sbsup .min{font-family:inherit;font-size:inherit;color:inherit;opacity:.75}
+.sbph{width:26px;height:26px;border-radius:50%;object-fit:cover;flex:none}
 .sbsw{display:inline-flex;margin:8px 0 2px}
 .sbsw button{font-size:10px;padding:2px 8px;letter-spacing:.03em}
 .sblab{display:block;font-family:var(--gc-font-cotes);font-size:8.5px;letter-spacing:.1em;
@@ -462,6 +469,65 @@ main{min-width:0;display:flex;flex-direction:column}
 .topbar .sub{font-size:11.5px;color:var(--ink2)}
 .topbar .sp{margin-left:auto;display:flex;gap:8px;align-items:center}
 .page{padding:22px 24px 90px;max-width:1280px;width:100%}
+
+/* ===================== pied de page =====================
+   Discret : un filet, le fond de l'app, des liens en texte courant. Les couleurs
+   viennent des jetons de l'app (clair/sombre suivent seuls). Il n'existe que quand
+   la page défile ; l'atelier plein écran (≥1081px) n'en a pas. */
+.appfoot{margin-top:auto;border-top:1px solid var(--line);background:color-mix(in srgb,var(--paper2) 45%,transparent);container:appfoot/inline-size}
+.appfoot .afin{max-width:1440px;padding:34px 32px 0}
+.appfoot .afgrid{display:grid;grid-template-columns:1.7fr repeat(4,1fr);gap:28px 24px;padding-bottom:30px}
+.appfoot .afbrand .wm{display:flex;align-items:center;gap:9px;font-family:var(--gc-font-titres);font-weight:800;letter-spacing:-.03em;font-size:16px;color:var(--ink)}
+.appfoot .afbrand .wm em{color:var(--gc-action)}
+.appfoot .afbrand .logo{width:28px;height:28px;flex:none}
+.appfoot .afbrand p{margin:10px 0 0;max-width:300px;font-size:12px;line-height:1.5;color:var(--ink2)}
+.appfoot .afsoc{display:flex;gap:6px;margin-top:14px}
+.appfoot .afsoc a{display:grid;place-items:center;width:30px;height:30px;border:1px solid var(--line);border-radius:50%;color:var(--ink2);transition:color .15s,border-color .15s}
+.appfoot .afsoc a:hover{color:var(--gc-action);border-color:var(--gc-action)}
+.appfoot .afsoc svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.appfoot h5{margin:0 0 10px;font-family:var(--gc-font-cotes);font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);opacity:.85}
+.appfoot .afcol a,.appfoot .afcol button.afl{display:block;width:100%;padding:0;margin:0 0 6px;font:inherit;font-size:12.5px;line-height:1.35;
+  color:var(--ink);text-align:left;text-decoration:none;background:none;border:0;cursor:pointer}
+.appfoot .afcol a:hover,.appfoot .afcol button.afl:hover{color:var(--gc-action);text-decoration:underline;text-underline-offset:3px}
+.appfoot .afcol .afall,.appfoot .afcol button.afall{margin-top:10px;color:var(--gc-action);font-weight:600}
+.appfoot .afbase{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 22px;padding:14px 0 18px;border-top:1px solid var(--line);font-size:11px;color:var(--ink2)}
+.appfoot .afbase .afleft{display:flex;align-items:center;flex-wrap:wrap;gap:4px 18px}
+.appfoot .afbase a,.appfoot .afbase button{color:var(--ink2);text-decoration:none;background:none;border:0;padding:0;font:inherit;cursor:pointer}
+.appfoot .afbase a:hover,.appfoot .afbase button:hover{color:var(--gc-action)}
+@container appfoot (max-width:1040px){ .appfoot .afgrid{grid-template-columns:repeat(4,1fr)} .appfoot .afbrand{grid-column:1/-1} }
+@container appfoot (max-width:700px){ .appfoot .afgrid{grid-template-columns:repeat(2,1fr)} }
+@container appfoot (max-width:520px){ .appfoot .afin{padding:28px 16px 0} }
+/* bandeau d'accroche en tête du pied de page : même fond que le reste, un filet dessous, titre à taille de page */
+.appfoot .afband{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.appfoot .afdeco{position:absolute;right:-70px;top:-80px;width:300px;height:300px;opacity:.09;pointer-events:none}
+.appfoot .afdeco path{stroke:var(--gc-celadon)}
+.appfoot .afbandin{position:relative;max-width:1440px;display:flex;justify-content:space-between;align-items:center;gap:18px 40px;flex-wrap:wrap;padding:26px 32px}
+.appfoot .afbandin h2{margin:0;max-width:560px;font-family:var(--gc-font-titres);font-weight:800;font-size:clamp(19px,3cqw,26px);line-height:1.12;letter-spacing:-.03em;color:var(--ink)}
+.appfoot .afbandin h2 em{font-style:normal;color:var(--gc-action)}
+.appfoot .afbandin p{margin:6px 0 0;max-width:460px;font-size:12.5px;line-height:1.5;color:var(--ink2)}
+.appfoot .afcta{display:flex;gap:10px;flex-wrap:wrap;align-items:stretch}
+/* mêmes cartes que le pied de la barre latérale : encart en pointillés + carte teintée avec la photo */
+.appfoot .afcard{display:flex;align-items:center;gap:9px;box-sizing:border-box;padding:10px 14px;text-align:left;text-decoration:none;font:inherit;font-size:12.5px;line-height:1.4;color:var(--ink)}
+.appfoot .afcard .lab{text-decoration:underline;text-underline-offset:2px}
+.appfoot .afcard:hover .lab{text-decoration-thickness:2px}
+.appfoot .afnl{flex-wrap:wrap;row-gap:1px;cursor:pointer;border:1.5px dashed var(--gc-celadon);border-radius:4px;background:transparent}
+.appfoot .afnl .lab{font-weight:600}
+.appfoot .afnl .min{flex-basis:100%;padding-left:27px;font-family:var(--gc-font-cotes);font-size:10px;color:var(--gc-action)}
+.appfoot .afnl:hover{border-style:solid;background:color-mix(in srgb,var(--gc-celadon) 14%,transparent)}
+.appfoot .afsup{border-radius:8px;background:color-mix(in srgb,var(--gc-celadon) 12%,transparent)}
+.appfoot .afsup .sbtxt{font-size:12px;color:var(--ink2)}
+.appfoot .afsup .min{opacity:.75}
+.appfoot .afsup .sbph{width:34px;height:34px;border-radius:50%;object-fit:cover;flex:none}
+@container appfoot (max-width:520px){ .appfoot .afbandin{padding:22px 16px} .appfoot .afcta,.appfoot .afcard{width:100%} }
+/* invitation aux ressources (carnet) : une ligne, un lien vers le site vitrine */
+.resinv{display:flex;align-items:center;gap:10px;margin-top:20px;padding:8px 4px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink2);text-decoration:none}
+.resinv .rph{width:26px;height:26px;border-radius:50%;object-fit:cover;flex:none}
+.resinv .rtxt{flex:1;min-width:0;line-height:1.35}
+.resinv .rtxt b{font-weight:600;color:var(--ink)}
+.resinv .rgo{flex:none;color:var(--gc-action);white-space:nowrap}
+.resinv:hover .rgo{text-decoration:underline;text-underline-offset:3px}
+.resinv:hover .rtxt b{color:var(--gc-action)}
+@media (max-width:520px){ .resinv .rtxt span{display:none} }
 
 /* ===================== atomes ===================== */
 .btn{background:var(--terra);color:var(--on-terra);border:1.5px solid var(--terra-d);padding:9px 15px;border-radius:2px;
@@ -672,6 +738,7 @@ button.rk:hover .chev,.ritem.open .chev,.rpiv.open .chev{opacity:1}
    chez elle — les réglages restent sous la main quoi qu'il arrive. */
 @media (min-width:1081px){
   main.appmode{height:100vh;overflow:hidden}
+  main.appmode .appfoot{display:none}
   main.appmode .page{flex:1;min-height:0;overflow:hidden;padding-bottom:20px}
   main.appmode .acols{height:100%;min-height:0}
   main.appmode .acols>.panel{height:100%;min-height:0;display:flex;flex-direction:column}
@@ -837,15 +904,21 @@ button.card.own:hover .openhint,button.card.own:focus-visible .openhint{opacity:
 body.da-epure .pphoto{border:1px solid var(--line);border-radius:8px}
 /* retour de testeuse (fiche produit) : verbatim + vignettes qui ouvrent la galerie */
 /* « guidé pas à pas » : deux séquences du tutoriel 3D qui tournent en boucle dans la fiche (v2/img/tuto/) */
-.tclips{border:1px solid var(--line);border-radius:8px;background:var(--card);padding:10px 10px 11px;display:grid;gap:8px}
+.tclips{border:1px solid var(--line);border-radius:8px;background:var(--card);padding:8px 9px 9px;display:grid;gap:6px}
 .tclips .th{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .tclips .th b{font-size:13px;color:var(--ink)}
 .tclips .th .pill{margin-left:auto}
 .tclips .tgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .tclips figure{margin:0;position:relative;cursor:pointer;border-radius:5px;overflow:hidden;border:1px solid var(--line);background:#F4F2E8}
-.tclips video{display:block;width:100%;aspect-ratio:8/5;object-fit:cover}
+.tclips video{display:block;width:100%;aspect-ratio:2/1;object-fit:cover}
 .tclips figcaption{position:absolute;left:5px;bottom:5px;right:5px;font-size:10.5px;line-height:1.25;padding:2px 7px;border-radius:99px;
   background:color-mix(in srgb,var(--card) 90%,transparent);color:var(--ink);width:fit-content;max-width:calc(100% - 10px)}
+.pdesc{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin:0}
+.pdesc.open{display:block;-webkit-line-clamp:unset;overflow:visible}
+.pdescw{display:grid;gap:2px;justify-items:start}
+.pdescmore{padding:0;font-size:12.5px}
+.buybox>.panel:first-child{overflow:visible}   /* sinon le bouton collant ne colle pas (le panneau coupe son contenu) */
+.ctabar{position:sticky;bottom:0;z-index:4;display:grid;gap:6px;padding:8px 0 6px;background:var(--card);box-shadow:0 -10px 10px -8px color-mix(in srgb,var(--ink) 14%,transparent)}
 .tclips .tfine{font-size:11.5px;color:var(--ink2);line-height:1.4;margin:0}
 @media (max-width:420px){ .tclips .tgrid{grid-template-columns:1fr} }
 .retour{border-top:1px dashed var(--line);padding-top:12px;display:grid;gap:7px}
@@ -1213,6 +1286,7 @@ body.da-epure .protoflag{border-radius:6px}
   <main>
     <div class="topbar" id="topbar"></div>
     <div class="page" id="page"></div>
+    <footer class="appfoot" id="appfoot"></footer>
   </main>
 </div>
 <script>
@@ -1220,7 +1294,7 @@ body.da-epure .protoflag{border-radius:6px}
 window.GC_RELEASE = {
   edition: 'sortie',
   // waiver: true,   // à rallumer quand www.gabarits-ceramique.com/cgv existe (case de renonciation avant paiement)
-  shop: ['bol-talon', 'theiere'],   // en vente : un produit Gumroad par pièce (m.gumroad dans atelier-v2.html)
+  shop: ['bol-talon', 'theiere'],   // en vente : un produit Gumroad par pièce (m.gumroad dans atelier-v2.html) ; les 9 autres sont en « bientôt » depuis le 6/11
   avis: { fr:'https://tally.so/r/EqqdQL', en:'https://tally.so/r/aOO502' },   // « Donner mon avis » : les deux Tally du nouvel atelier (FR / EN)
   footTitle: { fr:'Le nouvel atelier', en:'The new workshop' },
   foot: { fr:'Tes réglages et tes pièces restent sur cet appareil. L’ancienne version reste accessible depuis « Nouvelle pièce ».',
@@ -1445,33 +1519,33 @@ const MODELS = [
     sections:[{id:'A', name:'Paroi', d:55, h:49.5}] },
 
   /* ---- planches d'assemblage, payantes ---- */
-  { id:'calado', name:'Calado Vessel', family:'Vase', diff:'Intermédiaire', price:9.99, novelty:true,
+  { id:'calado', gumroad:{ url:'https://ceramix541.gumroad.com/l/calado', productId:'I4floC7F5bxUZA9iLh_5pA==' }, name:'Calado Vessel', family:'Vase', diff:'Intermédiaire', price:9.99, novelty:true,
     blurb:"Vase à panse basse et col droit : quatre sections empilées, fond et anses rapportés.",
     blurbEn:"A vase with a low belly and a straight neck: four stacked sections, base and handles added.",
     thick:5, dBase:52, ears:true, earsLabel:'ANSES',
     sections:[{id:'A',name:'Cône de pied',d:150,h:78},{id:'B',name:'Panse',d:138,h:56},
               {id:'C',name:'Épaule',d:86,h:40},{id:'D',name:'Col',d:84,h:52}] },
-  { id:'carafe', name:'Carafe à col', family:'Vase', diff:'Intermédiaire', price:9.99,
+  { id:'carafe', gumroad:{ url:'https://ceramix541.gumroad.com/l/carafe', productId:'ypebWcpwAZ6-TsyEWbRvvA==' }, name:'Carafe à col', family:'Vase', diff:'Intermédiaire', price:9.99,
     blurb:"Corps bombé, épaule marquée, col long. Trois sections et un fond.",
     blurbEn:"Rounded body, marked shoulder, long neck. Three sections and a base.",
     thick:5, dBase:64, ears:false,
     sections:[{id:'A',name:'Corps',d:132,h:90},{id:'B',name:'Épaule',d:64,h:46},{id:'C',name:'Col',d:58,h:70}] },
-  { id:'soliflore', name:'Soliflore', family:'Vase', diff:'Intermédiaire', price:9.99,
+  { id:'soliflore', gumroad:{ url:'https://ceramix541.gumroad.com/l/soliflore', productId:'pObujpqMRljavfwCa-4_eA==' }, name:'Soliflore', family:'Vase', diff:'Intermédiaire', price:9.99,
     blurb:"Petit vase à une fleur : bulbe bas, col fin et très haut. Sèche lentement.",
     blurbEn:"A vase for a single stem: low bulb, fine and very tall neck. Dries slowly.",
     thick:4, dBase:40, ears:false,
     sections:[{id:'A',name:'Bulbe',d:88,h:52},{id:'B',name:'Rétreint',d:30,h:30},{id:'C',name:'Col',d:26,h:96}] },
-  { id:'lampe', name:'Photophore ajouré', family:'Objet', diff:'Avancé', price:9.99, novelty:true,
+  { id:'lampe', gumroad:{ url:'https://ceramix541.gumroad.com/l/lampe', productId:'5NTV5zXJronmA4n2J6xgPQ==' }, name:'Photophore ajouré', family:'Objet', diff:'Avancé', price:9.99, novelty:true,
     blurb:"Cylindre ajouré sur socle évasé, couronne haute. Les perçages se font après montage.",
     blurbEn:"A pierced cylinder on a flared foot, tall crown. The holes are cut after assembly.",
     thick:6, dBase:96, ears:false,
     sections:[{id:'A',name:'Socle',d:112,h:26},{id:'B',name:'Fût',d:110,h:118},{id:'C',name:'Couronne',d:124,h:24}] },
-  { id:'coupe', name:'Coupe sur pied', family:'Objet', diff:'Avancé', price:9.99,
+  { id:'coupe', gumroad:{ url:'https://ceramix541.gumroad.com/l/coupe', productId:'wTfXhfRN3mN9uQn2uYXE_w==' }, name:'Coupe sur pied', family:'Objet', diff:'Avancé', price:9.99,
     blurb:"Pied conique inversé, nœud, vasque évasée. Le montage demande un support.",
     blurbEn:"Inverted cone foot, knop, flared bowl. The build needs support.",
     thick:5, dBase:80, ears:false,
     sections:[{id:'A',name:'Pied',d:44,h:62},{id:'B',name:'Nœud',d:56,h:18},{id:'C',name:'Vasque',d:168,h:64}] },
-  { id:'pot', name:'Pot à ustensiles', family:'Objet', diff:'Débutant', price:4.99,
+  { id:'pot', gumroad:{ url:'https://ceramix541.gumroad.com/l/pot', productId:'jOhf3NElZQJpt6S1F6OxEQ==' }, name:'Pot à ustensiles', family:'Objet', diff:'Débutant', price:4.99,
     blurb:"Un cylindre franc, légèrement rentrant au pied, à poser près du tour.",
     blurbEn:"A frank cylinder, slightly tucked at the foot, to keep by the wheel.",
     thick:6, dBase:104, ears:false,
@@ -1497,12 +1571,12 @@ const MODELS = [
     blurbEn:"Elliptical section: the band is developed on the true ellipse perimeter, not an average circle.",
     thick:5, dBase:130, ratio:.55, shape:'oval', ears:false,
     sections:[{id:'A',name:'Paroi',d:150,h:96}] },
-  { id:'prisme', name:'Prisme à pans', family:'Vase', diff:'Intermédiaire', pack:'base', price:29, paidLater:9.99,
+  { id:'prisme', gumroad:{ url:'https://ceramix541.gumroad.com/l/prisme', productId:'hoIL732gArOsPJHke-1Jgw==' }, name:'Prisme à pans', family:'Vase', diff:'Intermédiaire', pack:'base', price:29, paidLater:9.99,
     blurb:"Vase à N pans droits, six par défaut. Une seule facette à découper, répétée.",
     blurbEn:"A vase with N straight facets, six by default. One facet to cut, repeated.",
     thick:5, dBase:98, shape:'poly', n:6, ears:false,
     sections:[{id:'A',name:'Fût',d:98,h:185}] },
-  { id:'facettes', name:'Vase à facettes', family:'Vase', diff:'Avancé', pack:'base', price:29, paidLater:9.99,
+  { id:'facettes', gumroad:{ url:'https://ceramix541.gumroad.com/l/facettes', productId:'okgB1Rjqx0_KvosnlVEwjw==' }, name:'Vase à facettes', family:'Vase', diff:'Avancé', pack:'base', price:29, paidLater:9.99,
     blurb:"Pans qui s'évasent puis se referment : deux jeux de facettes, huit pans.",
     blurbEn:"Facets that flare then close again: two sets of panels, eight sides.",
     thick:5, dBase:70, shape:'poly', n:8, ears:false,
@@ -1530,7 +1604,7 @@ const MODELS = [
   /* ---- vase donut (le « vase anneau » de la V1) : un anneau creux posé sur la tranche.
      Ce n'est pas un solide de révolution vertical : isTore() l'envoie sur torePieces()
      et toreSVG(), comme le bas-relief a ses propres branches. Payant (Louis, 17/10). ---- */
-  { id:'tore', name:'Vase donut', family:'Vase', diff:'Avancé', price:9.99, novelty:true,
+  { id:'tore', gumroad:{ url:'https://ceramix541.gumroad.com/l/tore', productId:'otKBbEvItIgC52rkgEFx1Q==' }, name:'Vase donut', family:'Vase', diff:'Avancé', price:9.99, novelty:true,
     blurb:"Un anneau creux posé sur la tranche, un petit col au sommet : deux faces percées, deux bandes cintrées et le col.",
     blurbEn:"A hollow ring standing on its edge, a small neck on top: two pierced faces, two curved strips and the neck.",
     thick:5, dBase:0, ears:false, tore:{de:200, dt:70, p:65, do:42, hc:28}, sections:[] },
@@ -1647,7 +1721,7 @@ function track(event, props){
 const EDITIONS = {
   sortie:   { features:{ argile:false, plaque:false, sombre:false, contenance:false, emporte:false,
                          libre:false, lots:false, paywall:false, proto:false },
-              shop:['bol-talon','theiere'], shopFree:true, tourAuto:true,   // en vente depuis le 3/11 : bol-tasse à talon + théière (même liste que GC_RELEASE de build-sortie.sh)
+              shop:['bol-talon','theiere'], shopFree:true, tourAuto:true,   // en vente : bol-tasse à talon + théière (3/11) ; même liste que GC_RELEASE de build-sortie.sh. Les 9 autres pièces ont leur produit Gumroad (m.gumroad) mais sont en « bientôt » + liste d'attente depuis le retour en arrière du 6/11 : pour les relancer, les ajouter ici et dans GC_RELEASE, et sortir prisme/facettes/tore de `hide`
               teasers:true,   // emporte-pièces, contenance, lots, atelier libre : « bientôt » → newsletter + cadeau (Louis, 17/10)
               soon:true,   // les formes qui seront payantes : « bientôt disponible » + email (Louis, 17/10)
               hide:['profil','prisme','facettes','coussin','tore'],   // restent dans l'ancienne version (Louis, 17/10) ; prisme, facettes et coussin deviennent payants   // le rayon : les formes de la V1 (gratuites) + le bol-tasse
@@ -2986,6 +3060,116 @@ const NAV = () => [
 ].map(n => n.id==='emporte' && !FEATURES.emporte && GC.teasers ? {...n, soon:'emporte'} : n)
  .filter(n => (n.id!=='catalogue' || FEATURES.catalogue) && (n.id!=='emporte' || FEATURES.emporte || n.soon)
            && (n.id!=='tuto' || draftTuto()));
+/* ---------- Pied de page : ressources · à propos · contact · réseaux ----------
+   Mêmes destinations que le footer du site (www.gabarits-ceramique.com), en
+   anglais quand l'outil est en anglais. Le contact est une adresse, pas une page :
+   /contact n'existe pas côté site. Masqué dans les versions de test (GC_FIXED),
+   comme les liens de la barre. */
+const SITE_URL = 'https://www.gabarits-ceramique.com';
+const CONTACT_MAIL = 'gabarits.ceramique@gmail.com';
+const SOCIALS = [
+  {id:'instagram', label:'Instagram', url:'https://www.instagram.com/gabarits.ceramique',
+   svg:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6"/></svg>'},
+  {id:'pinterest', label:'Pinterest', url:'https://www.pinterest.com/loucoff1995/',
+   svg:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M10.6 17.8 12.3 9.6M9.6 11.2c.2-1.6 1.4-2.4 2.8-2.4 1.5 0 2.4.9 2.4 2.2 0 1.8-1.1 3-2.5 3-.8 0-1.3-.4-1.5-1"/></svg>'}
+];
+function appFootLinks(){
+  const en = state.lang==='en', b = SITE_URL + (en?'/en':'');
+  const arts = en
+    ? [['pottery-without-a-wheel','Pottery without a wheel'],['printable-ceramic-cup-template','Printable cup template'],['make-a-slab-built-ceramic-bowl','Make a slab-built bowl']]
+    : [['poterie-sans-tour','Poterie sans tour'],['gabarit-tasse-ceramique','Gabarit de tasse'],['faire-un-bol-ceramique','Faire un bol']];
+  return {
+    resources: b + (en?'/resources':'/ressources'),
+    arts: arts.map(([s,t]) => [`${b}${en?'/resources/':'/ressources/'}${s}`, t]),
+    about: b + (en?'/about':'/a-propos'),
+    home: b || SITE_URL,
+    legal: b + (en?'/legal':'/mentions-legales'),
+    privacy: b + (en?'/privacy':'/confidentialite'),
+    mail: 'mailto:' + CONTACT_MAIL
+  };
+}
+/* Invitation « Les ressources de Loulou » : en bas du carnet, là où l'on revient après avoir fini une pièce. */
+function resInviteHTML(){
+  const F = appFootLinks(), ph = (()=>{ try{ return EV_PHOTO }catch(e){ return '' } })();
+  return `<a class="resinv" href="${esc(F.resources)}" data-res="ressources" target="_blank" rel="noopener">
+    ${ph ? `<img class="rph" src="${ph}" alt="" width="26" height="26">` : ''}
+    <span class="rtxt"><b>${D('Les ressources de Loulou','Loulou’s resources')}</b> <span>· ${D('guides et astuces pour travailler à la plaque','guides and tips for slab building')}</span></span>
+    <span class="rgo">${D('Sur le site','On the website')} ↗</span></a>`;
+}
+function renderAppFoot(){
+  const el = $('#appfoot'); if(!el) return;
+  if(GC_FIXED){ el.hidden = true; return; }
+  const F = appFootLinks(), ext = 'target="_blank" rel="noopener"';
+  const A = (id, href, txt, blank=true) => `<a href="${esc(href)}" data-ft="${id}"${blank?' '+ext:''}>${txt}</a>`;
+  const G = (route, txt, extra='') => `<button class="afl" type="button" data-ft-go="${route}" ${extra}>${txt}</button>`;
+  const subbed = lsGet('gabarits-news-sub') || lsGet('gabarits-news-click');
+  const ph = (()=>{ try{ return EV_PHOTO }catch(e){ return '' } })();
+  const tool = NAV().filter(n => n.id!=='tuto' && !n.soon).map(n => G(n.id, n.t));
+  const fams = FEATURES.catalogue ? FAMILIES.map(f => G('catalogue', t(f), `data-fam="${f}"`)) : [];
+  const logo = `<svg class="logo" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+      <path d="M50 5 C75 5 95 25 95 51 C95 79 76 96 49 96 C23 96 6 77 6 50 C6 24 25 5 50 5 Z" fill="var(--gc-celadon)"/>
+      <path d="M14.2 46.9 A64 64 0 0 1 85.8 46.9 L71.2 68.5 A38 38 0 0 0 28.8 68.5 Z" stroke="var(--gc-lait)" stroke-width="5" stroke-dasharray="9 6" stroke-linejoin="round"/></svg>`;
+  el.innerHTML = `<div class="afband">
+      <svg class="afdeco" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+        <path d="M50 5 C75 5 95 25 95 51 C95 79 76 96 49 96 C23 96 6 77 6 50 C6 24 25 5 50 5 Z" stroke="#8FBFAA" stroke-width=".6"/>
+        <path d="M14.2 46.9 A64 64 0 0 1 85.8 46.9 L71.2 68.5 A38 38 0 0 0 28.8 68.5 Z" stroke="#8FBFAA" stroke-width="1.2" stroke-dasharray="3 2.4" stroke-linejoin="round"/></svg>
+      <div class="afbandin">
+        <div>
+          <h2>${D('L’intelligence numérique pour les <em>mains agiles.</em>','Digital smarts for <em>nimble hands.</em>')}</h2>
+          <p>${D('Dessine ta pièce, imprime les gabarits à taille réelle : le retrait de cuisson et l’épaisseur de plaque sont déjà compensés.',
+                 'Shape your piece and print full-size templates, with firing shrinkage and slab thickness already compensated.')}</p>
+        </div>
+        <div class="afcta">
+          ${subbed ? '' : `<button class="afcard afnl" type="button" data-ft-news title="${D('Un email quand une nouveauté sort (très peu), et un gabarit PDF exclusif en cadeau','An email when something new comes out (very few), plus an exclusive PDF template as a gift')}">
+            <span class="ic" aria-hidden="true">💌</span><span class="lab">${D('Recevoir les nouveautés','Get the news')}</span><span class="min">🎁 ${D('un gabarit offert','a free template')}</span></button>`}
+          <a class="afcard afsup" href="${esc(BMAC_URL)}" data-ft="don" ${ext} title="${D('L’outil est gratuit : un don aide à le faire vivre','The tool is free: a tip helps keep it alive')}">
+            ${ph ? `<img class="sbph" src="${ph}" alt="Louis" width="34" height="34">` : ''}
+            <span class="sbtxt">${D('Outil gratuit, fait avec 🤎','Free tool, made with 🤎')}<br><span class="lab">${D('offrez-moi un pain de terre ☕','buy me a block of clay ☕')}</span> <span class="min">${D('(montant libre)','(any amount)')}</span></span></a>
+        </div>
+      </div>
+    </div>
+    <div class="afin">
+      <div class="afgrid">
+        <div class="afbrand">
+          <div class="wm">${logo}<span>Gabarits <em>${D('céramique','ceramics')}</em></span></div>
+          <p>${D('Des gabarits de découpe à taille réelle pour la céramique à la plaque, retrait et épaisseur déjà compensés.',
+                 'Full-size cutting templates for slab-built ceramics, with shrinkage and thickness already compensated.')}</p>
+          <div class="afsoc">${SOCIALS.map(s => `<a href="${esc(s.url)}" data-ft="${s.id}" aria-label="${s.label}" title="${s.label}" ${ext}>${s.svg}</a>`).join('')}
+            <a href="${esc(F.mail)}" data-ft="contact" aria-label="Contact" title="${CONTACT_MAIL}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="m4 7.5 8 6 8-6"/></svg></a></div>
+        </div>
+        <nav class="afcol" aria-label="${D('L’outil','The tool')}"><h5>${D('L’outil','The tool')}</h5>${tool.join('')}</nav>
+        ${fams.length ? `<nav class="afcol" aria-label="${D('Formes','Shapes')}"><h5>${D('Formes','Shapes')}</h5>${fams.join('')}
+          <button class="afl afall" type="button" data-ft-go="catalogue" data-fam="Tout">${D('Tout le catalogue →','Full catalogue →')}</button></nav>` : ''}
+        <nav class="afcol" aria-label="${D('Ressources','Resources')}"><h5>${D('Ressources','Resources')}</h5>
+          ${F.arts.map(([u,tt],i)=>A('article'+(i+1), u, tt)).join('')}
+          <a class="afall" href="${esc(F.resources)}" data-ft="ressources" ${ext}>${D('Tous les articles →','All articles →')}</a>
+        </nav>
+        <nav class="afcol" aria-label="${D('Le projet','The project')}"><h5>${D('Le projet','The project')}</h5>
+          ${A('a-propos', F.about, D('À propos','About'))}
+          ${A('contact', F.mail, D('Contact','Contact'), false)}
+          ${A('avis', avisUrl()+'?source=pied-outil-v2', D('Donner mon avis','Give feedback'))}
+        </nav>
+      </div>
+      <div class="afbase">
+        <div class="afleft">
+          <span>© 2026 Gabarits céramique</span>
+          ${A('site', F.home, D('Le site','Website'))}
+          ${A('mentions', F.legal, D('Mentions légales','Legal notice'))}
+          ${A('confidentialite', F.privacy, D('Confidentialité','Privacy'))}
+        </div>
+        <button type="button" data-ft-top>${D('Haut de page','Back to top')} ↑</button>
+      </div>
+    </div>`;
+  el.onclick = e => {
+    const a = e.target.closest('[data-ft]'); if(a){ track('footer_click',{link:a.dataset.ft, lang:state.lang}); return; }
+    const g = e.target.closest('[data-ft-go]');
+    if(g){ track('footer_click',{link:'nav-'+g.dataset.ftGo+(g.dataset.fam?':'+g.dataset.fam:''), lang:state.lang});
+      if(g.dataset.fam){ state.filter.fam=g.dataset.fam; state.filter.view='all'; state.filter.lvl='Tout'; state.filter.q=''; }
+      return go(g.dataset.ftGo); }
+    if(e.target.closest('[data-ft-news]')){ track('newsletter_click',{source:'pied-page'}); showNews('pied-page'); return; }
+    if(e.target.closest('[data-ft-top]')) window.scrollTo({top:0, behavior:'smooth'});
+  };
+}
 function go(route, productId){
   state.route=route; if(productId!==undefined) state.productId=productId;
   window.scrollTo(0,0); render();
@@ -3020,17 +3204,18 @@ function render(){
   renderSbPrefs();
   document.querySelector('main').classList.toggle('appmode', state.route==='atelier');
   const fbLinks = GC_FIXED ? '' : `<div class="sbfb">
-    ${lsGet('gabarits-news-sub') ? '' : `<button class="link nl" id="newsFoot" type="button"
+    ${(lsGet('gabarits-news-sub')||lsGet('gabarits-news-click')) ? '' : `<button class="link nl" id="newsFoot" type="button"
       title="${D('Un email quand une nouveauté sort (très peu), et un gabarit PDF exclusif en cadeau','An email when something new comes out (very few), plus an exclusive PDF template as a gift')}">
       <span class="ic" aria-hidden="true">💌</span><span class="lab">${D('Recevoir les nouveautés','Get the news')}</span><span class="min">🎁 ${D('un gabarit offert','a free template')}</span></button>`}
-    <a class="link" id="tipNav" href="${BMAC_URL}" target="_blank" rel="noopener"
+    <a class="link sbsup" id="tipNav" href="${BMAC_URL}" target="_blank" rel="noopener"
       title="${D('L’outil est gratuit : un don aide à le faire vivre','The tool is free: a tip helps keep it alive')}">
-      <span class="ic" aria-hidden="true">☕</span><span class="lab">${D('Soutenir le projet','Support the project')}</span><span class="min">${D('don','tip')}</span></a></div>`;
-  $('#sbfoot').innerHTML = !FEATURES.proto ? `<b>${esc(GC.footTitle ? D(GC.footTitle.fr, GC.footTitle.en) : D('Version de test','Test version'))}</b>
-    ${GC.foot ? esc(D(GC.foot.fr, GC.foot.en)) : ''}
+      <img class="sbph" src="${(()=>{try{return EV_PHOTO}catch(e){return ''}})()}" alt="Louis" width="26" height="26">
+      <span class="sbtxt">${D('Outil gratuit, fait avec 🤎','Free tool, made with 🤎')}<br><span class="lab">${D('offrez-moi un pain de terre ☕','buy me a block of clay ☕')}</span> <span class="min">${D('(montant libre)','(any amount)')}</span></span></a></div>`;
+  $('#sbfoot').innerHTML = !FEATURES.proto ? `${GC_FIXED ? `<b>${esc(GC.footTitle ? D(GC.footTitle.fr, GC.footTitle.en) : D('Version de test','Test version'))}</b>
+    ${GC.foot ? esc(D(GC.foot.fr, GC.foot.en)) : ''}` : ''}
     ${fbLinks}
     ${GC.feedback ? `<a class="link" href="${esc(GC.feedback)}" target="_blank" rel="noopener" style="padding-left:0;display:block;margin-top:8px">${D('Donner mon avis','Give feedback')} ↗</a>` : ''}
-    <button class="link" id="wipe" style="padding-left:0;display:block;margin-top:8px">${D('tout réinitialiser','reset everything')}</button>`
+    ${GC_FIXED ? `<button class="link" id="wipe" style="padding-left:0;display:block;margin-top:8px">${D('tout réinitialiser','reset everything')}</button>` : ''}`
   : `<b>Prototype</b>
     ${D('Paiement simulé · données locales.','Simulated payment · local data.')}<br>
     ${D('Code de test','Test code')}${COLON()} <b style="font-weight:400;color:var(--sb-accent)">ATELIER-TEST</b>
@@ -3046,9 +3231,9 @@ function render(){
     </span>
     ${fbLinks}
     <button class="link" id="wipe" style="padding-left:0;display:block;margin-top:8px">${D('tout réinitialiser','reset everything')}</button>`;
-  $('#wipe').onclick=wipeAll;
+  if($('#wipe')) $('#wipe').onclick=wipeAll;
   $('#tipNav')?.addEventListener('click',()=>{ track('tip_click',{source:'barre'}); lsSet('gabarits-tip-fait', String(Date.now())); });
-  $('#newsFoot')?.addEventListener('click',()=>{ track('newsletter_click',{source:'footer'}); showNews('footer'); });
+  $('#newsFoot')?.addEventListener('click',()=>{ track('newsletter_click',{source:'footer'}); lsSet('gabarits-news-click','1'); $('#newsFoot')?.remove(); showNews('footer'); });
   if($('#dasw')) $('#dasw').onclick=e=>{
     const b=e.target.closest('[data-da]'); if(!b||b.dataset.da===state.da) return;
     state.da=b.dataset.da; applyDa(); persist(); render();
@@ -3057,6 +3242,7 @@ function render(){
     const b=e.target.closest('[data-as]'); if(!b||b.dataset.as===state.aside) return;
     state.aside=b.dataset.as; applyAside(); persist(); render();
   };
+  renderAppFoot();
   ({atelier:viewAtelier, carnet:viewCarnet, catalogue:viewCatalogue, produit:viewProduit,
     emporte:viewEmporte}[state.route])();
   persist();
@@ -3169,11 +3355,14 @@ const tipRecent = () => { const t=+lsGet('gabarits-tip-fait')||0; return t>0 && 
 if(lsGet('gabarits-xsessions')===null)                 // les habitués ne repartent pas de zéro
   lsSet('gabarits-xsessions', String(Math.min(+lsGet('gabarits-exports')||0, MSTONE_AT-1)));
 let tipShown=false, msPending=0;
+/* la fenêtre de don (palier) ne s'ouvre que pour une pièce GRATUITE : qui a acheté la pièce ne se la voit pas demander */
+let lastExportId=null;
+const exportIsPaid = () => { const m=lastExportId && MODELS.concat(typeof EXTRAS!=='undefined'?EXTRAS:[]).find(x=>x.id===lastExportId); return !!m && m.price>0; };
 function afterExport(){
   const n=(+lsGet('gabarits-exports')||0)+1; lsSet('gabarits-exports', String(n));
   let sn=+lsGet('gabarits-xsessions')||0;
   try{ if(!sessionStorage.getItem('gabarits-xsession')){ sn++; sessionStorage.setItem('gabarits-xsession','1'); lsSet('gabarits-xsessions', String(sn)); } }catch(e){}
-  const palier = n%MSTONE_AT===0 && !tipRecent();      // 3e, 6e, 9e export (impression, PDF, SVG)
+  const palier = n%MSTONE_AT===0 && !tipRecent() && !exportIsPaid();      // 3e, 6e, 9e export (impression, PDF, SVG)
   if($('#mask')){ if(palier) msPending=n; return; }      // une modale est ouverte : le palier attend qu'elle se ferme
   /* sondage de sortie : proposé tout seul au 2e export (le 1er = newsletter, le 3e = don, donc rien d'autre ce jour-là) ;
      un visiteur qui a déjà un historique le reçoit au premier export qui n'est ni un palier de don ni la newsletter.
@@ -3181,8 +3370,7 @@ function afterExport(){
   if(n>=2 && !palier && evolFree() && !lsGet('gabarits-evol-auto') && !(n%2===1 && !lsGet('gabarits-news-sub'))){
     lsSet('gabarits-evol-auto','1'); track('evolution_auto',{export_no:n}); askEvolution('export'); return; }
   if(palier) showMilestone(n);
-  else if(lsGet('gabarits-news-sub')) maybeThanks();
-  else if(n%2===1) showNews('auto_export');
+  else if(n%2===1 && !lsGet('gabarits-news-sub')) showNews('auto_export');
 }
 function maybeThanks(){
   if(tipShown) return; tipShown=true;
@@ -3220,18 +3408,18 @@ function showMilestone(n){
   const m=modal(`<div class="mh"><span></span><button class="x" data-close aria-label="${D('Fermer','Close')}">×</button></div>
     <div class="mb msm2">
       ${MS_ART}
-      <div class="kick">${D('ton','your')} <b class="mscount" data-to="${n}">0</b><sup>${ord}</sup> ${D('gabarit','template')}</div>
-      <h3>${D('C’est toi qui fais vivre l’outil','You keep this tool alive')}</h3>
-      <p class="lead">${D('Gabarits céramique est gratuit, sans pub et sans compte. Il tient grâce aux dons de celles et ceux qui s’en servent.',
-        'Gabarits céramique is free, ad-free and account-free. It keeps going thanks to tips from the people who use it.')}</p>
-      <ul class="msuses">
-        <li style="--i:0"><span>🏺</span>${D('de nouvelles formes à monter','new shapes to build')}</li>
-        <li style="--i:1"><span>🔥</span>${D('des pièces cuites pour tester chaque gabarit','fired pieces to test every template')}</li>
-        <li style="--i:2"><span>🤍</span>${D('un outil qui reste gratuit pour tout le monde','a tool that stays free for everyone')}</li>
-      </ul>
+      <h3>${D('Vous avez créé','You’ve made')} <span class="mscount" data-to="${n}">0</span> ${D('gabarits','templates')} 🎉</h3>
+      <p class="lead">${D('Autant de patrons que vous n’avez pas eu à tracer à la main, retrait de cuisson compris.',
+        'That’s that many patterns you didn’t have to draw by hand, firing shrinkage included.')}</p>
+      <p class="lead">${D('Je développe cet outil seul, sur mon temps libre. Tout ce que vous utilisez aujourd’hui <b>restera gratuit</b>, sans publicité.',
+        'I build this tool on my own, in my spare time. Everything you use today <b>will stay free</b>, with no ads.')}</p>
+      <p class="lead">${D('S’il vous a fait gagner du temps, un café m’aide à le faire connaître et à ajouter de nouvelles formes. 🤎',
+        'If it saved you time, a coffee helps me spread the word and add new shapes. 🤎')}</p>
       <div class="act">
-        <a class="btn mscta" id="msTip" href="${BMAC_URL}" target="_blank" rel="noopener">${D('☕ Offrir un café','☕ Buy me a coffee')}</a>
-        <span class="tagsm">${D('montant libre, sans minimum · une fois suffit','any amount, no minimum · once is enough')}</span>
+        <a class="btn mscta" id="msTip" href="${BMAC_URL}" target="_blank" rel="noopener">${D('☕ Offrir un café (ou un pain de terre)','☕ Buy me a coffee (or a block of clay)')}</a>
+        <span class="tagsm">${D('Montant libre, sans minimum','Any amount, no minimum')}</span>
+        ${(()=>{ const tm=model('theiere'); return tm && inShop(tm) && !owns(tm.id)
+          ? `<button class="link msalt" id="msTea" type="button">${D('Pas du genre café ? Faites-vous une théière 🫖','Not a coffee person? Make yourself a teapot 🫖')}</button>` : ''; })()}
         <button class="link" id="msLater">${D('Pas cette fois','Not this time')}</button>
       </div></div>`, {cls:'modal msmodal'});
   /* confettis de terre (céladon, biscuit, encre), tirés une fois */
@@ -3255,6 +3443,7 @@ function showMilestone(n){
     lsSet('gabarits-news-off','1'); lsSet('gabarits-tip-fait', String(Date.now()));
     m.querySelector('.msm2').classList.add('merci');
     setTimeout(closeModal, 900); };
+  m.querySelector('#msTea')?.addEventListener('click',()=>{ track('milestone_theiere_click',{export_no:n}); closeModal(); go('produit','theiere'); });
   m.querySelector('#msLater').onclick=e=>{ track('milestone_dismiss',{via:'plus_tard'}); flyFrom(e.currentTarget); askEvolution('milestone'); };
   m.querySelector('.mh .x').addEventListener('click',()=>track('milestone_dismiss',{via:'croix'}));
   m.querySelector('.mh .x').onclick=()=>askEvolution('milestone');
@@ -5085,6 +5274,8 @@ function viewCarnet(){
           </div></div>`;
       }).join('')}
     </div>`;
+  $('#page').insertAdjacentHTML('beforeend', resInviteHTML());
+  $('#page').querySelectorAll('[data-res]').forEach(a=>a.addEventListener('click',()=>track('resources_click',{source:'carnet', link:a.dataset.res, lang:state.lang})));
   $('#cNew').onclick=openNewPiece;
   $('#cGo')?.addEventListener('click',()=>go('atelier'));
   const q1=$('#cq');
@@ -5338,7 +5529,7 @@ function soonCardHTML(m){
       <h3>${esc(t(m.name))}</h3>
       <div class="sub">${cardDims(st)} · ${t(m.diff)}</div>
       <div class="row">${asked?`<span class="pill ok">✓ ${D('on te prévient','we’ll let you know')}</span>`
-        :`<span class="pill">${D('me prévenir','notify me')} →</span>`}<span class="pill">${eur(m.price)}</span></div>
+        :`<span class="pill">${D('me prévenir','notify me')} →</span>`}</div>
     </div></button>`;
 }
 function openSoon(id){
@@ -5350,7 +5541,7 @@ function openSoon(id){
       <div class="thumb" style="aspect-ratio:4/3;border:1px solid var(--line);border-radius:4px;background:var(--card);position:relative">
         ${thumbSVG(st,{W:420,H:300,tilt:.26})}</div>
       <p style="margin:12px 0 4px"><span class="pill pay">${D('bientôt disponible','coming soon')}</span>
-        <span class="tagsm" style="margin-left:6px">${eur(m.price)} · ${t(m.diff)}${isSet(st)?' · '+D('lot de','set of')+' '+st.parts.length:''}</span></p>
+        <span class="tagsm" style="margin-left:6px">${t(m.diff)}${isSet(st)?' · '+D('lot de','set of')+' '+st.parts.length:''}</span></p>
       <p style="font-size:13.5px;line-height:1.55">${esc(state.lang==='en'&&m.blurbEn?m.blurbEn:m.blurb)}</p>
       <div id="soonBody">${asked
         ? `<p class="tagsm">✓ ${D('C’est noté : tu recevras un email le jour où elle sort.','Noted: you’ll get an email the day it comes out.')}</p>`
@@ -5407,8 +5598,7 @@ function tutoClipsHTML(m){
     <div class="tgrid">${T.clips.map(c=>`<figure data-tc title="${D('Ouvrir le tutoriel 3D','Open the 3D tutorial')}">
       <video src="${c.src}${vs}.mp4" poster="${c.src}${vs}.jpg" muted loop playsinline preload="metadata" aria-label="${esc(D(c.fr,c.en))}"></video>
       <figcaption>${esc(D(c.fr,c.en))}</figcaption></figure>`).join('')}</div>
-    <p class="tfine">${D(`Le tutoriel 3D te montre chaque geste, recalculé à tes cotes et à ta terre. ${m.price===0||owns(m.id)?'':'Les premières étapes sont à essayer sans acheter.'}`,
-      `The 3D tutorial shows every move, recomputed for your dimensions and clay. ${m.price===0||owns(m.id)?'':'The first steps are free to try.'}`)}</p>
+    ${m.price===0||owns(m.id)?'':`<p class="tfine">${D('Les premières étapes sont à essayer sans acheter.','The first steps are free to try.')}</p>`}
   </div>`;
 }
 /** lecture des séquences : seulement quand elles sont à l'écran (économie de batterie), figées si l'utilisateur préfère moins d'animations */
@@ -5544,7 +5734,8 @@ function viewProduit(){
               ${has?`<span class="pill ok">✓ ${D('dans ta bibliothèque','in your library')}</span>`
                    :`<span class="tagsm">${m.pack?`${D('le pack','the pack')} · ${MODELS.filter(x=>x.pack===m.pack).length} ${D('formes','shapes')}`:D('achat unique','one-off purchase')}</span>`}
             </div>
-            <p class="note">${esc(D(m.blurb, m.blurbEn||m.blurb))}</p>
+            <div class="pdescw"><p class="note pdesc" id="pdesc">${esc(D(m.blurb, m.blurbEn||m.blurb))}</p>
+              <button class="link pdescmore" id="pdescMore" hidden>${D('Lire la suite','Read more')}</button></div>
             ${tutoClipsHTML(m)}
             ${RETOURS[m.id]?(R=>`<div class="retour">
               <blockquote>« ${esc(D(R.quote.fr,R.quote.en))} »</blockquote>
@@ -5552,13 +5743,13 @@ function viewProduit(){
               <div class="rthumbs" id="rthumbs">${R.photos.map((p,i)=>`<button type="button" data-rp="${i}" aria-label="${D('Agrandir la photo','Enlarge photo')} ${i+1}"><img src="${p.src}" alt="${esc(D(p.fr,p.en))}" loading="lazy"></button>`).join('')}
                 <span class="n">${R.photos.length} ${D('photos','photos')}</span></div>
             </div>`)(RETOURS[m.id]):''}
-            ${has
+            <div class="ctabar">${has
               ? `<button class="btn lg" id="open">${D("Ouvrir dans l'atelier",'Open in the workshop')}</button>`
               : `<button class="btn lg" id="buy">${m.price===0?D('Ajouter à mes formes','Add to my shapes')
                      :m.pack?`${D('Débloquer le pack','Unlock the pack')} · ${eur(PACK.price)}`:`${D('Acheter','Buy')} · ${eur(m.price)}`}</button>
                  <div class="note" style="text-align:center">${m.pack
                      ? `${D('cette forme et les','this shape and the')} ${MODELS.filter(x=>x.pack===m.pack).length-1} ${D('autres du pack','others in the pack')}`
-                     : D('paiement Gumroad · accès immédiat','Gumroad payment · instant access')}</div>`}
+                     : D('paiement Gumroad · accès immédiat','Gumroad payment · instant access')}</div>`}</div>
             ${m.tuto?`<button class="ghost" id="tuto" style="width:100%">${has?D('Voir le tutoriel 3D','Open the 3D tutorial'):D('Aperçu du tutoriel 3D','Preview the 3D tutorial')} ↗</button>`:''}
             <ul class="incl">
               ${m.tuto?`<li><span><b>${D('le tutoriel 3D pas à pas','the step-by-step 3D tutorial')}</b>${D(', recalculé à tes cotes et à ta terre',', recomputed for your dimensions and clay')}</span></li>`:''}
@@ -5577,6 +5768,10 @@ function viewProduit(){
         </div>
       </div>
     </div>`;
+  { const pd=$('#pdesc'), pm=$('#pdescMore');            // description repliée sur 3 lignes : le bouton d'achat reste visible sur un petit écran
+    const full=pd?(pd.classList.add('open'), pd.scrollHeight):0; pd?.classList.remove('open');       // hauteur complète, puis on referme
+    if(pd && pm && full>pd.clientHeight+2){ pm.hidden=false;
+      pm.onclick=()=>{ const o=pd.classList.toggle('open'); pm.textContent=o?D('Réduire','Show less'):D('Lire la suite','Read more'); track('fiche_lire_suite',{shape:m.id}); }; } }
   $('#tabs').onclick=e=>{ const b=e.target.closest('[data-tab]'); if(b){ state.tab=b.dataset.tab; viewProduit(); } };
   $('#partbar')?.addEventListener('click',e=>{
     const b=e.target.closest('[data-part]'); if(!b) return;
@@ -6138,6 +6333,7 @@ function printSheet(d,m){
   let z=$('#printzone');
   if(!z){ z=document.createElement('div'); z.id='printzone'; document.body.appendChild(z); }
   z.innerHTML=sheetHTML(d,m,{print:true});
+  lastExportId=(m&&m.id)||state.draft.modelId;
   track('export_print', {shape:(m&&m.id)||state.draft.modelId, paper:state.paper});
   printThen();
 }
@@ -6587,7 +6783,8 @@ function pdfPoly(doc, pts, style){
       à gauche ; un autre grand gabarit partage la mosaïque s'il y tient.
    2. Les autres se posent un à un, au plus haut puis au plus à gauche de
       la première feuille qui les accepte (quart de tour permis), sans
-      enjamber un raccord de mosaïque, sauf si cela évite une feuille.
+      jamais enjamber un raccord de mosaïque : une pièce qui tient sur une
+      feuille reste d'un seul morceau.
    3. Plusieurs ordres et préférences d'orientation sont essayés : on garde
       la solution qui fait le moins de feuilles.
    4. Un gabarit à imprimer sur papier cartonné ne partage sa feuille avec
@@ -6912,10 +7109,9 @@ function packRun(V, order, pref){
       }
       if(best){ put(C, i, best.v, best.X, best.Y); return; }
     }
-    for(const C of Cs) if(C.cols*C.rows>1) for(const v of vs){   // à cheval sur un raccord, plutôt qu'une feuille de plus
-      const p=canvasFit(C, v.M, 0, 0, C.cols*W, C.rows*H);
-      if(p){ put(C, i, v, p.X, p.Y); cross++; return; }
-    }
+    /* une pièce qui tient sur une feuille reste d'un seul morceau : jamais à cheval sur un
+       raccord de mosaïque (retour 6/11 : le bec de la théière était coupé en deux), quitte
+       à ouvrir une feuille de plus. Seules les pièces plus grandes qu'une feuille se raccordent. */
     const C=canvasNew(1,1); Cs.push(C); put(C, i, vs[0], 0, 0);
   });
   let n=0;
@@ -7421,6 +7617,218 @@ const pdfTileSheet = (doc, sheet, st, no) => pdfAnySheet(doc, sheet, st, no);
    Entrée : tout le document
    --------------------------------------------------------------- */
 let pdfBusy=false;
+/* ================================================================
+   TUTORIEL DANS LE PDF — les pièces payantes qui n'ont pas (encore) de
+   tutoriel 3D (m.tuto) en reçoivent un, écrit, en pages de fin de planche
+   d'assemblage : matériel, étapes numérotées avec les cotes de la pièce,
+   et « si ça tourne mal ». Les pièces avec tuto 3D (bol-tasse à talon,
+   théière) et les formes gratuites n'en ont pas.
+   ================================================================ */
+const pdfHasTuto = st => { const m=st && model(st.modelId); return !!m && m.price>0 && !m.tuto && !m.extra && !m.soonOnly; };
+
+/** les étapes du tutoriel : [{t:titre, b:texte (paragraphes séparés par \n)}] */
+function pdfTutoSteps(st, plan){
+  const src=model(st.modelId), parts=st.parts, multi=parts.length>1, p=parts[0], S=setStats(st);
+  const relief=isRelief(p), tore=isTore(p), sh=shapeOf(p), poly=sh==='poly', oval=sh==='oval';
+  const shr=Math.round(state.shrink*100), kPct=fmt(100/(1-state.shrink));
+  const slabs=[...new Set(parts.map(q=>U(q.thick/(1-state.shrink))))].join(' / ');
+  const finished=[...new Set(parts.map(q=>U(q.thick)))].join(' / ');
+  const seq=p.sections.map((x,i)=>LETTERS[i]).join(' → ');
+  const narrow=!relief && !tore && parts.some(q=>q.sections.length>1 && q.sections[q.sections.length-1].d<=70);
+  const tall=!relief && !tore && parts.some(q=>totalH(q)>=170);
+  const anse=parts.some(q=>q.anse), ears=parts.some(q=>q.ears);
+  const earsLab=t(p.earsLabel || (parts.find(q=>q.ears)||{}).earsLabel || 'ANSES');
+  const earsCap=earsLab.charAt(0)+earsLab.slice(1).toLowerCase();
+  const clay=!calcsLocked(st) ? uMass(clayPrep(S.g)) : '';
+  const steps=[];
+
+  /* 1 — préparer */
+  steps.push({ t:D('Préparer la terre et l’atelier','Get the clay and the bench ready'),
+    b:D(`Prévois ${clay?`environ ${clay} de terre, `:'de la terre, '}de quoi abaisser une plaque de ${slabs} d’épaisseur régulière, et un plan de travail propre.\n`
+      +'Outils : rouleau, deux règles d’épaisseur (ou tasseaux) de la hauteur de la plaque, un tissu ou une toile, un cutter ou un couteau fin, une aiguille, une estèque, une éponge, une brosse dure pour strier, de la barbotine (terre délayée en crème), un film plastique et du papier journal.',
+      `Allow ${clay?`about ${clay} of clay, `:'clay, '}enough to roll a slab ${slabs} thick and an even thickness throughout, and a clean bench.\n`
+      +'Tools: rolling pin, two thickness guides (or wooden strips) as tall as the slab, a cloth or canvas, a craft knife, a needle, a rib, a sponge, a stiff brush for scoring, slip (clay thinned to a cream), plastic film and newspaper.') });
+
+  /* 2 — imprimer */
+  const ex=[segNote(plan), tileNote(plan)].filter(Boolean).join(' ');
+  steps.push({ t:D('Imprimer et vérifier l’échelle','Print and check the scale'),
+    b:D(`Imprime les planches de gabarits (pages suivantes) sur du ${paper().name}, à 100 % ou « taille réelle », jamais « ajuster ». Mesure la barre témoin du bandeau : elle doit faire 50 mm.\n`
+      +`Les cotes sont déjà agrandies du retrait (${shr} %, gabarits à ${kPct} %) : ne les corrige pas. Découpe chaque gabarit aux ciseaux, juste sur le trait, et écris sa lettre au dos.`+(ex?`\n${ex}`:''),
+      `Print the template sheets (next pages) on ${paper().name}, at 100 % / actual size, never “fit to page”. Measure the bar in the header: it must be 50 mm.\n`
+      +`The dimensions are already scaled up for shrinkage (${shr} %, templates at ${kPct} %): do not correct them. Cut each template out with scissors, right on the line, and write its letter on the back.`+(ex?`\n${ex}`:'')) });
+
+  /* 3 — la plaque */
+  steps.push({ t:D('Abaisser la plaque','Roll the slab'),
+    b:D(`Abaisse la terre entre les deux règles, sur la toile, jusqu’à ${slabs}. Retourne la plaque et repasse le rouleau dans l’autre sens : l’épaisseur reste régulière et la terre ne garde pas de sens, donc ne fend pas en séchant.\n`
+      +`La plaque est plus épaisse que la paroi finie (${finished}) : c’est voulu, le retrait la ramènera à cette épaisseur.\n`
+      +'Laisse-la raffermir à l’air 20 à 30 minutes, jusqu’à la consistance « cuir mou » : elle se plie sans se fendre et ne colle plus aux doigts.',
+      `Roll the clay between the guides, on the cloth, down to ${slabs}. Turn the slab over and roll it the other way: the thickness stays even and the clay keeps no grain direction, so it will not crack as it dries.\n`
+      +`The slab is thicker than the finished wall (${finished}): that is intended, shrinkage brings it back to that thickness.\n`
+      +'Let it stiffen in the air for 20 to 30 minutes, to a soft leather-hard: it bends without cracking and no longer sticks to your fingers.') });
+
+  /* 4 — découper */
+  const seen=new Set(), list=[], ctrl=[];
+  plan.items.forEach(it=>{
+    if(it.q.seg && seen.has(it.tag)) return; seen.add(it.tag);
+    const lab=`${it.tag} ${t(it.q.name)}${it.count>1?` ×${it.count}`:''}`;
+    (it.q.noClay ? ctrl : list).push(lab);
+  });
+  steps.push({ t:D('Découper les pièces','Cut the pieces'),
+    b:D(`Pose chaque gabarit sur la plaque, lettre visible, et détoure au cutter tenu bien droit, sans appuyer sur le papier. Pièces à découper : ${list.join(' · ')}.`
+      +(ctrl.length?`\n${ctrl.join(', ')} : gabarit de contrôle, il ne se découpe pas dans la terre.`:'')
+      +'\nReporte la lettre au dos de chaque pièce découpée, puis couvre-les d’un film : elles restent à la même consistance pendant que tu travailles. Garde les chutes sous film pour les colombins et les réparations.',
+      `Lay each template on the slab, letter up, and cut around it with the knife held upright, without pressing through the paper. Pieces to cut: ${list.join(' · ')}.`
+      +(ctrl.length?`\n${ctrl.join(', ')}: control template, not cut from clay.`:'')
+      +'\nCopy the letter onto the back of each cut piece, then cover them with film: they stay at the same stage while you work. Keep the offcuts under film for coils and repairs.') });
+
+  /* 5 — assembler */
+  let asm;
+  if(relief) asm=reliefMontage(p).replace(/<[^>]+>/g,' ').replace(/[ \t]+/g,' ').replace(/ *\n */g,'\n').trim();
+  else if(tore) asm=D('Laisse raffermir à plat les deux faces A. Cintre la bande intérieure C dans le trou, entre les deux faces, et soude-la : c’est elle qui rend l’anneau creux.\nCintre la bande extérieure B autour des faces en laissant l’ouverture du col au sommet ; perce un petit trou d’évent avant de refermer.\nRoule le col D en cylindre et soude-le sur l’ouverture. Barbotine les tranches et strie chaque joint.',
+    'Let both faces A firm up flat. Bend the inner strip C inside the hole, between the two faces, and weld it: this is what makes the ring hollow.\nBend the outer strip B around the faces, leaving the neck opening at the top; pierce a small vent hole before closing.\nRoll the neck D into a cylinder and weld it onto the opening. Slip the edges and score every joint.');
+  else {
+    const edge = poly
+      ? D(`Chaque côté se biseaute à environ ${fmt(180/(p.n||6))}° (360° ÷ ${p.n||6} pans ÷ 2), l’un dessus, l’autre dessous : les facettes se referment sans jour.`,
+          `Bevel each side at about ${fmt(180/(p.n||6))}° (360° ÷ ${p.n||6} faces ÷ 2), one on top, one underneath: the faces close without a gap.`)
+      : oval
+      ? D('Cintre chaque bande en ovale autour d’un carton plié à la forme du FOND, puis biseaute les deux bords à 45°, l’un dessus, l’autre dessous.',
+          'Bend each strip into an oval around a card folded to the shape of the BASE, then bevel both edges at 45°, one on top, one underneath.')
+      : D('Roule chaque pièce en tronc de cône : ses deux bords droits se rejoignent, c’est la couture. Biseaute-les à 45°, l’un dessus, l’autre dessous.',
+          'Roll each piece into a cone band: its two straight edges meet at the seam. Bevel them at 45°, one on top, one underneath.');
+    asm=(multi ? D('Chaque forme du lot se monte séparément, avec les mêmes gestes ; la tasse et la coupelle se rapprochent à la fin.\n','Each shape of the set is built separately, with the same moves; the cup and saucer only meet at the end.\n') : '')
+      + edge + '\n'
+      + (poly ? '' : '\n'+D('Strie les deux biseaux avec la brosse, passe de la barbotine, presse les bords l’un contre l’autre et lisse la couture à l’estèque, dedans et dehors.',
+          'Score both bevels with the brush, add slip, press the edges together and smooth the seam with the rib, inside and out.'))
+      + (narrow ? '\n'+D('Col étroit : roule la bande autour d’un tube de papier journal pour la tenir ronde, et retire-le dès que la couture tient ; la terre se resserre en séchant et fendrait sur le papier.',
+          'Narrow neck: roll the strip around a tube of newspaper to keep it round, and pull the tube out as soon as the seam holds; the clay tightens as it dries and would crack on the paper.') : '')
+      + '\n' + (poly
+        ? D(`Dresse les ${p.n||6} facettes une à une sur le FOND, biseau contre biseau, en les calant au besoin avec une règle ou une boîte. Barbotine chaque joint, presse, puis soude un colombin dans chaque angle intérieur et lisse. La dernière facette ferme le tour : ajuste-la avant de la souder.`,
+            `Stand the ${p.n||6} faces up one by one on the BASE, bevel against bevel, propping them with a ruler or a box if needed. Slip each joint, press, then weld a coil into every inside corner and smooth. The last face closes the ring: test-fit it before welding.`)
+        : multi
+        ? D('Pour chaque forme, monte les bandes dans l’ordre de leurs lettres (A, puis B…) : chacune se pose sur la précédente, tranches striées et barbotinées, avec un colombin dans l’angle intérieur que tu lisses. Ferme le bas avec le FOND de la forme : pose le corps sur le disque, détoure-le au ras, soude un colombin à l’intérieur.',
+            'For each shape, build the bands in the order of their letters (A, then B…): each sits on the previous one, edges scored and slipped, with a coil pressed into the inside corner and smoothed. Close the bottom with that shape’s BASE: set the body on the disc, trim it flush, weld a coil on the inside.')
+        : p.sections.length>1
+        ? D(`Monte ${seq} dans cet ordre : chaque bande se pose sur la précédente, tranches striées et barbotinées, avec un colombin dans l’angle intérieur que tu lisses. Ferme le bas avec le FOND : pose le corps sur le disque, détoure-le au ras, soude un colombin à l’intérieur.`,
+            `Build ${seq} in that order: each band sits on the previous one, edges scored and slipped, with a coil pressed into the inside corner and smoothed. Close the bottom with the BASE: set the body on the disc, trim it flush, weld a coil on the inside.`)
+        : D('Ferme le bas avec le FOND : pose le corps sur le disque, détoure-le au ras, soude un colombin dans l’angle intérieur et lisse.',
+            'Close the bottom with the BASE: set the body on the disc, trim it flush, weld a coil in the inside corner and smooth.'))
+      + (tall ? '\n'+D('Pièce haute : monte-la en deux séances. Laisse la partie basse raffermir une heure sous film avant d’ajouter la suite, sinon elle s’affaisse sous le poids.',
+          'Tall piece: build it in two sessions. Let the lower part stiffen for an hour under film before adding the rest, or it will sag under the weight.') : '')
+      + (src.id==='coupe' ? '\n'+D('Pied étroit : monte le pied et le nœud d’abord, bourre le pied de papier journal, et ne pose la vasque que lorsqu’il porte son poids sans bouger. Strie largement le joint : c’est lui qui travaille.',
+          'Narrow foot: build the foot and knop first, stuff the foot with newspaper, and only set the bowl on once it carries the weight without moving. Score the joint generously: it takes the load.') : '');
+  }
+  steps.push({ t:D('Assembler','Assemble'), b:asm });
+
+  /* 6 — anses, bec */
+  if(ears){
+    const anseTxt = anse
+      ? D('Cintre la bande ANSE sur le profil CTRL (le gabarit de contrôle, qui ne se découpe pas) et laisse-la raffermir dessus. Marque l’emplacement des deux pattes sur la paroi, strie, barbotine, presse les pattes et lisse les raccords.',
+          'Bend the ANSE strip over the CTRL profile (the control template, never cut from clay) and let it stiffen on it. Mark the two tab positions on the wall, score, add slip, press the tabs and smooth the joins.')
+      : D(`${earsCap} : fais-les dans la plaque restante ou en colombins, et pose-les à consistance cuir. Repère leur place au crayon (à 180° l’une de l’autre quand il y en a deux), strie, barbotine, presse, lisse les raccords.`,
+          `${earsCap}: make them from the leftover slab or from coils, and attach them at leather-hard. Pencil their positions (180° apart when there are two), score, add slip, press, smooth the joins.`);
+    const earsFr = /BEC/.test(earsLab) ? 'Poser le bec et l’anse' : /S$/.test(earsLab) ? 'Poser les anses' : 'Poser l’anse';
+    const earsEn = /BEC|SPOUT/i.test(earsLab) ? 'Attach the spout and handle' : /S$/.test(earsLab) ? 'Attach the handles' : 'Attach the handle';
+    steps.push({ t:D(earsFr, earsEn), b:anseTxt });
+  }
+
+  /* 6 bis — ajours */
+  if(src.id==='lampe') steps.push({ t:D('Percer les ajours','Pierce the openings'),
+    b:D('Trace tes motifs au crayon sur la paroi, la pièce soutenue de l’intérieur par du papier journal froissé. Perce ou découpe à la lame fine, à consistance cuir : plus la terre est sèche, plus elle s’écaille.\nGarde au moins 8 mm de terre entre deux ouvertures, arrondis les angles et lisse les arêtes à l’éponge à peine humide.',
+        'Draw your pattern in pencil on the wall, the piece supported from inside with crumpled newspaper. Pierce or cut with a fine blade at leather-hard: the drier the clay, the more it chips.\nKeep at least 8 mm of clay between two openings, round the corners and smooth the edges with a barely damp sponge.') });
+
+  /* 7 — sécher */
+  steps.push({ t:D('Sécher lentement','Dry slowly'),
+    b:D((relief ? 'Lisse les bords de chaque pièce à l’éponge à peine humide.' : 'Lisse une dernière fois les raccords et les bords, vérifie que la pièce est d’aplomb.')+' Couvre le tout d’un film plastique percé de quelques trous deux ou trois jours, puis découvre peu à peu.\n'
+      +((relief||tore||src.id==='assiette') ? 'Les pièces plates gauchissent : sèche-les entre deux planches ou sur un plâtre, sous un poids léger, en les retournant une fois par jour.\n' : '')
+      +'Un séchage lent et régulier évite les fentes aux jointures. Compte 5 à 10 jours selon l’épaisseur : la terre doit être claire et sèche avant la cuisson.',
+      (relief ? 'Smooth the edges of each piece with a barely damp sponge.' : 'Smooth the joins and edges one last time and check that the piece sits level.')+' Cover everything with plastic film pierced with a few holes for two or three days, then uncover gradually.\n'
+      +((relief||tore||src.id==='assiette') ? 'Flat pieces warp: dry them between two boards or on plaster, under a light weight, turning them once a day.\n' : '')
+      +'Slow, even drying prevents cracks at the joins. Allow 5 to 10 days depending on thickness: the clay must be pale and bone dry before firing.') });
+
+  /* 8 — cuire */
+  steps.push({ t:D('Cuire et émailler','Fire and glaze'),
+    b:D(`Première cuisson (biscuit) autour de 950 °C, puis émail et seconde cuisson selon les indications de ton argile et de ton émail. Sans four, un atelier de cuisson peut s’en charger.\nAprès cuisson, ${relief?`le panneau mesure ${U(p.ph)} x ${U(p.pw)}`:multi?`les pièces mesurent : ${parts.map(q=>`${t(q.name).toLowerCase()} ${U(totalH(q))} de haut pour Ø ${U(maxD(q))}`).join(' ; ')}`:`la pièce mesure ${U(S.H)} de haut pour Ø ${U(S.D)} au plus large`} : c’est la cote finie imprimée sur la planche. Si l’écart est net, mesure ton retrait réel sur un petit carreau d’essai et corrige-le dans l’atelier.`,
+        `First (bisque) firing at around 950 °C, then glaze and second firing following the instructions for your clay and your glaze. With no kiln, a firing studio can do it for you.\nAfter firing, ${relief?`the panel is ${U(p.ph)} x ${U(p.pw)}`:multi?`the pieces measure: ${parts.map(q=>`${t(q.name).toLowerCase()} ${U(totalH(q))} tall and Ø ${U(maxD(q))}`).join('; ')}`:`the piece is ${U(S.H)} tall and Ø ${U(S.D)} at its widest`}: the finished size printed on the sheet. If the gap is clear, measure your real shrinkage on a small test tile and correct it in the workshop.`) });
+  return steps;
+}
+
+/** « Si ça tourne mal » : les accidents les plus courants à la plaque */
+function pdfTutoTroubles(st){
+  return [
+    D('Une fente à un raccord : barbotine trop rare ou séchage trop rapide. Reprends avec de la barbotine épaisse et un petit colombin, puis ralentis le séchage.',
+      'A crack at a join: too little slip or drying too fast. Repair it with thick slip and a small coil, then slow the drying down.'),
+    D('La paroi s’affaisse ou se déforme : la plaque était trop humide. Laisse-la raffermir davantage et soutiens la pièce de l’intérieur avec du papier journal.',
+      'The wall sags or warps: the slab was too wet. Let it stiffen more and support the piece from inside with newspaper.'),
+    D('Une couture qui s’ouvre : biseaux mal rapprochés ou non striés. Strie de nouveau, barbotine, presse fort et lisse à l’estèque.',
+      'A seam that opens: bevels not pressed together, or not scored. Score again, add slip, press firmly and smooth with the rib.'),
+    D('Les pièces ne s’emboîtent pas : vérifie la barre témoin des gabarits et l’épaisseur de la plaque avant de découper.',
+      'The pieces do not fit: check the scale bar on the templates and the slab thickness before cutting.')
+  ];
+}
+
+async function pdfTutoPages(doc, st, plan){
+  const src=model(st.modelId), parts=st.parts, multi=parts.length>1, p=parts[0], S=setStats(st);
+  const k=100/(1-state.shrink), steps=pdfTutoSteps(st, plan);
+  const X0=SHEET_M, W=SHEET_R-SHEET_M, TX=X0+10, TW=W-10, LIM=paper().h-16;
+  const sizeS = isRelief(p) ? `${uNum(p.ph)} x ${U(p.pw)}` : `${uNum(S.H)} x Ø ${U(S.D)}`;
+  const band=()=>{ pdfBand(doc, { subject:D('Tutoriel pas à pas','Step-by-step tutorial'), detail:`${t(st.name)} · ${D('retrait','shrinkage')} ${Math.round(state.shrink*100)} % · ${D('gabarits à','templates at')} ${fmt(k)} %` });
+    pdfFoot(doc, { dims:`${sizeS} · ${D('plaque','slab')} ${U(p.thick/(1-state.shrink))}` }); };
+  pdfPage(doc); band();
+  let y=pdfSheetTitle(doc, t(st.name || (src&&src.name) || 'Pièce'),
+    `${D('tutoriel pas à pas','step-by-step tutorial')} · ${steps.length} ${D('étapes','steps')}`);
+
+  /* en-tête : la vue de la pièce, et ce qu'il faut savoir avant de commencer */
+  const LW=88, VH=92, RX=X0+LW+8, RW=SHEET_R-RX;
+  const view = isRelief(p) ? buildSVG(p,{W:LW*3,H:VH*3,letters:true,pal:PAL_PRINT})
+    : multi ? setSVG(st,{W:LW*3,H:VH*3,tilt:.26,pal:PAL_PRINT,labels:st.combine!=='stack'})
+    : buildSVG(p,{W:LW*3,H:VH*3,mode:'exploded',letters:true,tilt:.26,pal:PAL_PRINT});
+  doc.setDrawColor(...PDF_LINE); doc.setLineWidth(.2); doc.roundedRect(X0, y, LW, VH, 1.5, 1.5, 'S');
+  await pdfDrawSvg(doc, view, X0+1.5, y+1.5, LW-3, VH-3);
+  let ry=pdfSection(doc, D('Avant de commencer','Before you start'), y+4, RX, SHEET_R);
+  const rows=pdfCalcRows(st, [
+    ...(multi ? parts.map(q=>[t(q.name), pdfSlab(q)]) : [[D('Plaque à abaisser','Slab to roll'), pdfSlab(p)]]),
+    calcRow(clayLab(), uMass(clayPrep(S.g))),
+    [D('Retrait compensé','Shrinkage allowed'), `${Math.round(state.shrink*100)} % · ${D('à','at')} ${fmt(k)} %`],
+    [D('Taille finale','Final size'), sizeS],
+    [D('Gabarits','Templates'), `${S.pieces} ${D('pièces','pieces')} · ${plan.sheets.length} ${paper().name}`],
+    [D('Temps de travail','Working time'), D('une séance + séchage','one session + drying')]
+  ]);
+  ry=pdfKV(doc, rows, RX, RW, ry);
+  ry=pdfSection(doc, D('Le principe','How it works'), ry+2.5, RX, SHEET_R);
+  ry=pdfPara(doc, D('Tu découpes à plat, dans une plaque d’argile, des gabarits déjà agrandis du retrait, puis tu les roules et les soudes. La pièce rétrécit ensuite en séchant et en cuisant, jusqu’à la cote finie.',
+    'You cut flat templates, already scaled up for shrinkage, out of a clay slab, then roll and weld them. The piece then shrinks as it dries and fires, down to the finished size.'), RX, RW, ry);
+  ry=pdfPara(doc, D('Les lettres des étapes renvoient à celles des gabarits et de la vue ci-contre.','The letters in the steps match the templates and the view on the left.'), RX, RW, ry+1.5);
+  y=Math.max(y+VH, ry)+7;
+
+  /* les étapes : pastille numérotée + titre + paragraphes */
+  const LH=3.7;
+  steps.forEach((s,i)=>{
+    const paras=s.b.split('\n').filter(Boolean).map(x=>{ doc.setFont('helvetica','normal'); doc.setFontSize(7.8); return doc.splitTextToSize(x, TW); });
+    const h=5.2+paras.reduce((a,l)=>a+l.length*LH+1.3, 0)+3.2;
+    if(y+h>LIM){ pdfPage(doc); band(); y=PG.Y0+4; }
+    doc.setFillColor(...PDF_TERRA); doc.circle(X0+3.4, y+1.9, 3.4, 'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(8.4); doc.setTextColor(255,255,255);
+    doc.text(String(i+1), X0+3.4, y+3.1, {align:'center'});
+    doc.setFontSize(9.4); doc.setTextColor(...PDF_INK); doc.text(s.t, TX, y+2.7);
+    let ty=y+7.4;
+    doc.setFont('helvetica','normal'); doc.setFontSize(7.8); doc.setTextColor(...PDF_INK);
+    paras.forEach(lines=>{ lines.forEach(l=>{ doc.text(l, TX, ty); ty+=LH; }); ty+=1.3; });
+    y=ty+1.6;
+  });
+
+  /* si ça tourne mal */
+  const tr=pdfTutoTroubles(st);
+  doc.setFont('helvetica','normal'); doc.setFontSize(7.4);
+  const trLines=tr.map(x=>doc.splitTextToSize(x, W-12));
+  const th=9+trLines.reduce((a,l)=>a+l.length*3.5+1.2, 0);
+  if(y+th>LIM){ pdfPage(doc); band(); y=PG.Y0+4; }
+  doc.setDrawColor(...PDF_TERRA); doc.setLineWidth(.4); doc.roundedRect(X0, y, W, th, 2, 2, 'S');
+  doc.setFont('courier','bold'); doc.setFontSize(6.4); doc.setTextColor(...PDF_TERRA);
+  doc.setCharSpace(.5); doc.text(D('SI ÇA TOURNE MAL','IF SOMETHING GOES WRONG'), X0+4, y+5.6); doc.setCharSpace(0);
+  let ty=y+10.6; doc.setFont('helvetica','normal'); doc.setFontSize(7.4); doc.setTextColor(...PDF_INK);
+  trLines.forEach(lines=>{ doc.text('•', X0+4, ty); lines.forEach(l=>{ doc.text(l, X0+8, ty); ty+=3.5; }); ty+=1.2; });
+}
+
 async function exportPDF(st){
   if(pdfBusy) return;
   pdfBusy=true; toast(D('Préparation du PDF…','Building the PDF…'), 9000);
@@ -7431,6 +7839,7 @@ async function exportPDF(st){
     const plan=planTemplates(st);
     await pdfSheetPage(doc, st, plan);
     if(isSet(st)) for(let i=0;i<st.parts.length;i++) await pdfPartPage(doc, st.parts[i], i, st, plan);
+    if(pdfHasTuto(st)) await pdfTutoPages(doc, st, plan);   // pièces payantes sans tuto 3D : tutoriel écrit
     plan.sheets.forEach((sh,i)=>{
       pdfPage(doc);
       if(sh.kind==='flat') pdfFlatSheet(doc, sh, st, i+1, plan.sheets.length);
@@ -7441,6 +7850,7 @@ async function exportPDF(st){
     const slug=(st.name||'piece').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
       .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
     try{ doc.save(`gabarits-${slug}-${paper().name.toLowerCase()}.pdf`); }catch(e){}
+    lastExportId=st.modelId;
     track('export_pdf', {shape:st.modelId, pages:doc.getNumberOfPages(), feuilles:plan.sheets.length, unit:state.unit, paper:state.paper, fix:printFix()});
     setTimeout(afterExport, 1400);
     toastAction(D(`PDF prêt · ${doc.getNumberOfPages()} pages`,`PDF ready · ${doc.getNumberOfPages()} pages`),
@@ -7893,7 +8303,7 @@ function cutPlan(c){
   return {sheets};
 }
 function printCutter(c){
-  track('export_print', {shape:'emporte_'+c.shape, kind:'emporte', paper:state.paper});
+  lastExportId=null; track('export_print', {shape:'emporte_'+c.shape, kind:'emporte', paper:state.paper});
   const G=cutStats(gabCut(c)), F=cutStats(c);
   let ps=$('#pagesize');
   if(!ps){ ps=document.createElement('style'); ps.id='pagesize'; document.head.appendChild(ps); }
@@ -7922,7 +8332,7 @@ function printCutter(c){
 }
 async function exportCutterPDF(c){
   if(pdfBusy) return;
-  track('export_pdf', {shape:'emporte_'+c.shape, kind:'emporte', paper:state.paper, fix:printFix()}); setTimeout(afterExport, 1400);
+  lastExportId=null; track('export_pdf', {shape:'emporte_'+c.shape, kind:'emporte', paper:state.paper, fix:printFix()}); setTimeout(afterExport, 1400);
   pdfBusy=true; toast(D('Préparation du PDF…','Building the PDF…'), 9000);
   try{
     if(!await ensurePdfLibs()){ toast(D('Impossible de charger la librairie PDF : vérifie la connexion','Could not load the PDF library: check your connection')); return; }
@@ -8091,6 +8501,7 @@ function exportPieceSVG(st, nu){
   const a=document.createElement('a');
   a.href=url; a.download=`gabarits-${slug}${nu?'-decoupe':''}.svg`;
   document.body.appendChild(a); a.click(); a.remove();
+  lastExportId=st.modelId;
   track('export_svg', {shape:st.modelId, variante:nu?'contour':'cotes'});
   setTimeout(afterExport, 600);
   toastAction(nu?D('SVG du contour exporté','Outline SVG exported'):D('SVG coté exporté','Dimensioned SVG exported'),
@@ -8098,7 +8509,7 @@ function exportPieceSVG(st, nu){
   setTimeout(()=>URL.revokeObjectURL(url), 60000);
 }
 function exportCutterSVG(c, nu){
-  track('export_svg', {shape:'emporte_'+c.shape, kind:'emporte', variante:nu?'contour':'cotes'}); setTimeout(afterExport, 600);
+  lastExportId=null; track('export_svg', {shape:'emporte_'+c.shape, kind:'emporte', variante:nu?'contour':'cotes'}); setTimeout(afterExport, 600);
   const blob=new Blob([cutSVGDoc(c,nu)], {type:'image/svg+xml;charset=utf-8'});
   const url=URL.createObjectURL(blob);
   const slug=(cutLabel(c)||'emporte-piece').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
