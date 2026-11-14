@@ -243,6 +243,23 @@ body.aside-ink .navb.fbsticker{color:var(--gc-encre)}
 .navb .badge.soon{background:none;border-color:var(--glaze);color:var(--glaze)}
 .soonnote{font-size:12.5px;line-height:1.5;color:var(--ink2);margin:-4px 0 12px;max-width:72ch}
 .soonfine{font-size:11.5px;line-height:1.5;color:var(--ink2);margin:8px 0 0}
+/* fiche « bientôt disponible » : l'inscription à la pièce reste TOUJOURS visible (14/11).
+   Bureau : deux colonnes (aperçu à gauche, texte + inscription à droite), plus de défilement.
+   Étroit : aperçu écrasé (16/9, 26 % de la hauteur) et bloc d'inscription collé en bas de la fenêtre. */
+.modal.soonm{max-width:860px}
+.soonm .mb{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:6px 26px;align-items:start}
+.soonm .soonvis{border:1px solid var(--line);border-radius:4px;background:var(--card);position:relative;aspect-ratio:4/3}
+.soonm .soonvis svg{position:absolute;inset:0;width:100%;height:100%}
+.soonm .soonform{position:sticky;bottom:0;background:var(--card);padding-bottom:2px}
+@media(min-width:760px) and (max-height:560px){ .soonm .soonvis{aspect-ratio:auto;height:200px} }
+@media(max-width:759px){
+  .modal.soonm{max-width:470px}
+  .soonm .mb{display:block}
+  .soonm .soonvis{aspect-ratio:16/9;max-height:26vh;width:100%;margin-bottom:12px}
+  .soonm .soonright{display:flex;flex-direction:column}
+  .soonm #soonFine{order:1;margin:0 0 12px}                 /* le texte légal passe AVANT : le bloc d'inscription reste le dernier, collé en bas */
+  .soonm .soonform{order:2;margin:0 -20px -20px;padding:10px 20px 14px;border-top:1px solid var(--line);box-shadow:0 -10px 14px -10px rgba(35,39,31,.18)}
+}
 /* mini-sondage de sortie (note · évolution · mot libre) : même DA que la fenêtre de don, petites animations */
 .evq .evart{display:block;width:100%;max-width:150px;height:auto;margin:-4px auto 6px;overflow:visible}
 .evq .evart path,.evq .evart ellipse{fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-dasharray:300;stroke-dashoffset:300;transition:stroke-dashoffset 1s ease}
@@ -6090,25 +6107,26 @@ function openSoon(id){
   const st=newDraft(m), asked=soonList().includes(id), autres=soonList().filter(x=>x!==id&&model(x)).length;
   const mm=modal(`<div class="mh"><h3>${esc(t(m.name))}</h3><button class="x" data-close>×</button></div>
     <div class="mb">
-      <div class="thumb" style="aspect-ratio:4/3;border:1px solid var(--line);border-radius:4px;background:var(--card);position:relative">
+      <div class="thumb soonvis">
         ${thumbSVG(st,{W:420,H:300,tilt:.26})}</div>
-      <p style="margin:12px 0 4px"><span class="pill pay">${D('bientôt disponible','coming soon')}</span>
+      <div class="soonright">
+      <p style="margin:0 0 4px"><span class="pill pay">${D('bientôt disponible','coming soon')}</span>
         <span class="tagsm" style="margin-left:6px">${t(m.diff)}${isSet(st)?' · '+D('lot de','set of')+' '+st.parts.length:''}</span></p>
       <p style="font-size:13.5px;line-height:1.55">${esc(state.lang==='en'&&m.blurbEn?m.blurbEn:m.blurb)}</p>
-      <div id="soonBody">${asked
+      <div id="soonBody" class="soonform">${asked
         ? `<p class="tagsm">✓ ${D('C’est noté : tu recevras un email le jour où elle sort.','Noted: you’ll get an email the day it comes out.')}</p>`
-        : `<p style="font-size:13px;margin:4px 0 8px"><b>${D('Liste d’attente de cette pièce','Waiting list for this piece')}</b><br>
-             ${D('Laisse ton email : on t’écrit une seule fois, le jour où elle sort.','Leave your email: we’ll write once, the day it comes out.')}</p>
+        : `<p style="font-size:13px;margin:4px 0 8px"><b>${D('On t’écrit une seule fois, le jour où elle sort.','We’ll write once, the day it comes out.')}</b></p>
            <form id="soonForm" novalidate style="display:flex;gap:8px;flex-wrap:wrap">
              <input type="email" id="soonEmail" placeholder="${D('ton@email.fr','you@email.com')}" autocomplete="email" required style="flex:1;min-width:180px">
-             <button class="btn" type="submit">${D('Me prévenir','Notify me')}</button></form>
-           <p class="soonfine">${D('Pour cette pièce uniquement. Ce n’est pas la newsletter : tu ne recevras rien d’autre. Une autre pièce t’intéresse ? Laisse aussi ton email sur sa fiche, chaque liste est séparée.',
-             'For this piece only. This is not the newsletter: you won’t receive anything else. Interested in another piece? Leave your email on its page too, each list is separate.')}
-             ${autres?D(` Tu es déjà sur la liste de ${autres} autre${autres>1?'s':''} pièce${autres>1?'s':''}.`,` You’re already on the list for ${autres} other piece${autres>1?'s':''}.`):''}</p>`}
+             <button class="btn" type="submit">${D('Me prévenir','Notify me')}</button></form>`}
       </div>
-    </div>`, {cls:'modal'});
+      ${asked?'':`<p class="soonfine" id="soonFine">${D('Liste propre à cette pièce, sans newsletter.','List for this piece only, no newsletter.')}
+             ${autres?D(` Déjà inscrit à ${autres} autre${autres>1?'s':''}.`,` Already on ${autres} other list${autres>1?'s':''}.`):''}</p>`}
+      </div>
+    </div>`, {cls:'modal soonm'});
   mm.querySelector('#soonForm')?.addEventListener('submit', e=>{
     e.preventDefault();
+    mm.querySelector('#soonFine')?.remove();
     const inp=mm.querySelector('#soonEmail'), email=inp.value.trim();
     if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ inp.focus(); inp.style.borderColor='var(--terra-d)'; return; }
     track('waitlist_submit', {shape:id});
@@ -6116,9 +6134,7 @@ function openSoon(id){
                                            // pas d'inscription à la newsletter (Louis, 17/10)
     lsSet('gabarits-bientot', JSON.stringify([...new Set([...soonList(), id])]));
     mm.querySelector('#soonBody').innerHTML=`<p style="font-size:13.5px"><b>${D('Merci !','Thanks!')}</b>
-      ${D('On t’écrit une seule fois, le jour où elle sort.','We’ll write once, the day it comes out.')}</p>
-      <p class="soonfine">${D('Tu es sur la liste de cette pièce uniquement, pas sur la newsletter. Pour une autre pièce, laisse ton email sur sa fiche.',
-        'You’re on this piece’s list only, not the newsletter. For another piece, leave your email on its page.')}</p>`;
+      ${D('On t’écrit le jour où elle sort.','We’ll write the day it comes out.')}</p>`;
     if(state.route==='catalogue') setTimeout(()=>{ closeModal(); viewCatalogue(); }, 1600);
   });
 }
