@@ -3716,6 +3716,33 @@ function afterExport(){
   else if(n%2===1 && !lsGet('gabarits-news-sub')) showNews('auto_export');
   else payAfterExport();
 }
+/* Après un export, la page peut disparaître : sur mobile (iOS surtout) le téléchargement du PDF envoie l'onglet vers la
+   visionneuse, et la fenêtre prévue 1,4 s plus tard s'ouvrait dans une page cachée (ou jamais, le compteur d'exports
+   n'étant pas incrémenté). Mesuré sur 12 j de V2 : 43 % des exportateurs mobiles ne reviennent pas contre 19 % sur desktop.
+   On marque donc l'export (gabarits-xpending = date|pièce) et on ne montre la fenêtre que lorsque la page est VISIBLE :
+   à l'écoulement du délai si elle l'est, sinon au retour (visibilitychange / pageshow), ou au rechargement si
+   le navigateur a quitté la page (reprise au démarrage, plus bas). */
+const XPEND_KEY='gabarits-xpending';
+function queueAfterExport(delay){
+  const pieceId=lastExportId;
+  lsSet(XPEND_KEY, Date.now()+'|'+(pieceId||''));
+  let fired=false, t=0;
+  const off=()=>{ clearTimeout(t); removeEventListener('visibilitychange',onVis); removeEventListener('pageshow',onVis); };
+  const run=how=>{ if(fired) return; fired=true; off(); lsSet(XPEND_KEY,''); lastExportId=pieceId;
+    if(how!=='direct') track('export_modal_deferred',{how}); afterExport(); };
+  const onVis=()=>{ if(document.visibilityState==='visible') setTimeout(()=>run('retour'), 700); };
+  t=setTimeout(()=>{ if(document.visibilityState==='visible') run('direct'); }, delay);
+  addEventListener('visibilitychange',onVis); addEventListener('pageshow',onVis);
+}
+/* reprise après rechargement (retour de la visionneuse PDF sans bfcache) */
+function resumeAfterExport(tries){
+  const v=lsGet(XPEND_KEY); if(!v) return;
+  const [ts,id]=v.split('|');
+  if(Date.now()-(+ts||0) > 30*60*1000){ lsSet(XPEND_KEY,''); return; }
+  if(document.visibilityState!=='visible' || $('#mask')){ if((tries||0)<8) setTimeout(()=>resumeAfterExport((tries||0)+1), 2000); return; }
+  lsSet(XPEND_KEY,''); lastExportId=id||null; track('export_modal_deferred',{how:'reload'}); afterExport();
+}
+addEventListener('load', ()=>setTimeout(()=>resumeAfterExport(0), 2500));
 function maybeThanks(){
   if(tipShown) return; tipShown=true;
   track('tip_shown', {source:'bandeau'});
@@ -6880,7 +6907,7 @@ function renderSheetInto(box, d, o){
    fin de l'impression (afterprint). Avant, elle s'ouvrait 600 ms plus tard derrière la boîte d'impression. */
 function printThen(){
   let done=false;
-  const fin=()=>{ if(done) return; done=true; removeEventListener('afterprint',fin); setTimeout(afterExport,500); };
+  const fin=()=>{ if(done) return; done=true; removeEventListener('afterprint',fin); queueAfterExport(500); };
   addEventListener('afterprint',fin);
   setTimeout(fin,120000);                       // navigateur qui n'envoie pas afterprint
   window.print();
@@ -8411,10 +8438,10 @@ async function exportPDF(st){
     const url=doc.output('bloburl');
     const slug=(st.name||'piece').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
       .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-    try{ doc.save(`gabarits-${slug}-${paper().name.toLowerCase()}.pdf`); }catch(e){}
     lastExportId=st.modelId;
     track('export_pdf', {shape:st.modelId, pages:doc.getNumberOfPages(), feuilles:plan.sheets.length, unit:state.unit, paper:state.paper, fix:printFix()});
-    setTimeout(afterExport, 1400);
+    queueAfterExport(1400);                  // AVANT doc.save : la page peut partir vers la visionneuse PDF
+    try{ doc.save(`gabarits-${slug}-${paper().name.toLowerCase()}.pdf`); }catch(e){}
     toastAction(D(`PDF prêt · ${doc.getNumberOfPages()} pages`,`PDF ready · ${doc.getNumberOfPages()} pages`),
       D('ouvrir dans un onglet','open in a tab'),
       ()=>window.open(url,'_blank'), 12000);
@@ -9019,7 +9046,7 @@ async function libreBuildDoc(){
   pdfPaginate(doc); return doc;
 }
 async function exportLibrePDF(){
-  if(pdfBusy) return; lastExportId=null; track('export_pdf',{shape:'libre3d',kind:'libre',paper:state.paper,fix:printFix()}); setTimeout(afterExport,1400);
+  if(pdfBusy) return; lastExportId=null; track('export_pdf',{shape:'libre3d',kind:'libre',paper:state.paper,fix:printFix()}); queueAfterExport(1400);
   pdfBusy=true; toast(D('Préparation du PDF…','Building the PDF…'),9000);
   try{
     const doc=await libreBuildDoc();
@@ -10261,7 +10288,7 @@ function printCutter(c){
 }
 async function exportCutterPDF(c){
   if(pdfBusy) return;
-  lastExportId=null; track('export_pdf', {shape:'emporte_'+c.shape, kind:'emporte', paper:state.paper, fix:printFix()}); setTimeout(afterExport, 1400);
+  lastExportId=null; track('export_pdf', {shape:'emporte_'+c.shape, kind:'emporte', paper:state.paper, fix:printFix()}); queueAfterExport(1400);
   pdfBusy=true; toast(D('Préparation du PDF…','Building the PDF…'), 9000);
   try{
     if(!await ensurePdfLibs()){ toast(D('Impossible de charger la librairie PDF : vérifie la connexion','Could not load the PDF library: check your connection')); return; }
@@ -10429,16 +10456,16 @@ function exportPieceSVG(st, nu){
     .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   const a=document.createElement('a');
   a.href=url; a.download=`gabarits-${slug}${nu?'-decoupe':''}.svg`;
-  document.body.appendChild(a); a.click(); a.remove();
   lastExportId=st.modelId;
   track('export_svg', {shape:st.modelId, variante:nu?'contour':'cotes'});
-  setTimeout(afterExport, 600);
+  queueAfterExport(600);
+  document.body.appendChild(a); a.click(); a.remove();
   toastAction(nu?D('SVG du contour exporté','Outline SVG exported'):D('SVG coté exporté','Dimensioned SVG exported'),
     D('ouvrir dans un onglet','open in a tab'), ()=>window.open(url,'_blank'), 10000);
   setTimeout(()=>URL.revokeObjectURL(url), 60000);
 }
 function exportCutterSVG(c, nu){
-  lastExportId=null; track('export_svg', {shape:'emporte_'+c.shape, kind:'emporte', variante:nu?'contour':'cotes'}); setTimeout(afterExport, 600);
+  lastExportId=null; track('export_svg', {shape:'emporte_'+c.shape, kind:'emporte', variante:nu?'contour':'cotes'}); queueAfterExport(600);
   const blob=new Blob([cutSVGDoc(c,nu)], {type:'image/svg+xml;charset=utf-8'});
   const url=URL.createObjectURL(blob);
   const slug=(cutLabel(c)||'emporte-piece').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
