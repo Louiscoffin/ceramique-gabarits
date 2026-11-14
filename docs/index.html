@@ -1188,6 +1188,7 @@ body.da-epure .pphoto{border:1px solid var(--line);border-radius:8px}
 .toast .tbtn{background:none;border:1px solid color-mix(in srgb,var(--paper) 55%,transparent);color:var(--paper);border-radius:2px;
   padding:3px 9px;font:inherit;font-size:12px}
 .toast .tbtn:hover{background:color-mix(in srgb,var(--paper) 18%,transparent)}
+.toast{width:max-content;max-width:calc(100vw - 24px)} .toast .tbtn{white-space:nowrap;flex:none}
 /* le pied de sidebar dit déjà « Prototype » : le bandeau flottant se
    posait sur le bouton de sortie, on le retire. */
 .protoflag{display:none;position:fixed;right:12px;bottom:12px;z-index:90;background:var(--ink);color:var(--paper);font-size:10px;
@@ -1382,6 +1383,49 @@ body.tourpad{padding-bottom:62vh}
 .tsshop .tsnm{flex:1;font-size:13.5px;line-height:1.25}
 .tsshop .tsnm small{display:block;color:var(--ink2);font-size:11.5px}
 .tsshop .tspr{font-weight:600;font-size:13px;white-space:nowrap}
+/* ---- visibilité des gabarits payants : cinq emplacements à comparer (?promo=…) ---- */
+.paycard{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:9px 12px 9px 9px;background:var(--card);
+  border:1.5px solid var(--line);border-radius:8px;color:var(--ink);font:inherit;cursor:pointer;transition:border-color .15s,transform .15s}
+.paycard:hover{border-color:var(--ink);transform:translateY(-1px)}
+.paycard .pph{width:88px;height:66px;border-radius:5px;object-fit:contain;flex:none;background:var(--wash)}
+.paycard .pnm{flex:1;min-width:0;font-weight:600;font-size:14px;line-height:1.25}
+.paycard .pnm small{display:block;font-weight:400;color:var(--ink2);font-size:12px;margin-top:2px}
+.paycard .ppr{flex:none;font-family:var(--gc-font-cotes);font-size:12px;letter-spacing:.03em;padding:4px 9px;border-radius:3px;background:var(--terra);color:var(--on-terra)}
+.payshelf{margin:30px 0 10px;padding-top:20px;border-top:1px solid var(--line)}
+.payshelf .phead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.payshelf h3{margin:0;font-size:16px}
+.payshelf .phead p{margin:0;font-size:12.5px;color:var(--ink2);flex:1;min-width:200px}
+.payshelf .pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:10px}
+.payshelf .pall{margin-top:10px;font-size:12.5px;color:var(--gc-action);background:none;border:0;padding:0;cursor:pointer}
+.payshelf .pall:hover{text-decoration:underline;text-underline-offset:3px}
+@keyframes payin{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
+.paysnack{position:fixed;right:20px;bottom:88px;z-index:40;width:min(380px,calc(100vw - 32px));padding:10px 10px 12px;background:var(--paper);
+  border:1.5px solid var(--ink);border-radius:10px;box-shadow:0 16px 36px var(--shadow-strong);animation:payin .4s cubic-bezier(.2,.7,.3,1)}
+.paysnack .pl{margin:0 24px 8px 4px;font-size:12.5px;color:var(--ink2);line-height:1.35}
+.paysnack .pl b{color:var(--ink)}
+.paysnack .px{position:absolute;top:6px;right:8px;width:24px;height:24px;border:0;background:none;color:var(--ink2);font-size:18px;line-height:1;cursor:pointer;border-radius:50%}
+.paysnack .px:hover{background:var(--wash);color:var(--ink)}
+.navpay{display:grid;gap:4px;margin:-1px 0 8px 32px}
+.navpay button{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:4px 8px 4px 4px;background:var(--card);border:1px solid var(--line);
+  border-radius:5px;color:var(--ink);font:inherit;font-size:12px;cursor:pointer}
+.navpay button:hover{border-color:var(--ink)}
+.navpay img{width:34px;height:26px;border-radius:3px;object-fit:cover;flex:none;background:var(--wash)}
+.navpay span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.navpay b{font-family:var(--gc-font-cotes);font-size:10.5px;font-weight:400;color:var(--terra-d)}
+body.aside-ink .navpay button{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:var(--on-aside)}
+body.aside-ink .navpay b{color:var(--gc-vert-clair)}
+body.sb-rail .navpay{display:none}
+.burger{position:relative}
+.burger .bdot{position:absolute;top:-7px;right:-7px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:var(--terra);color:var(--on-terra);
+  font:700 10.5px/18px var(--gc-font-cotes);font-style:normal;text-align:center;box-shadow:0 0 0 2px var(--paper);animation:paypulse 1.6s ease-out 1.2s 3}
+@keyframes paypulse{0%{box-shadow:0 0 0 2px var(--paper),0 0 0 2px var(--terra)}100%{box-shadow:0 0 0 2px var(--paper),0 0 0 11px transparent}}
+@media (prefers-reduced-motion:reduce){ .burger .bdot,.paysnack{animation:none} }
+@media (max-width:860px){ .paysnack{right:12px;bottom:calc(86px + env(safe-area-inset-bottom));left:12px;width:auto} }
+.promosw{display:grid;gap:5px;margin:4px 0 8px}
+.promosw .prow{display:flex;align-items:center;gap:6px;font-size:11.5px;line-height:1.3}
+.promosw label{display:flex;align-items:flex-start;gap:6px;flex:1;cursor:pointer}
+.promosw input{margin-top:2px}
+.promosw .link{flex:none;font-size:11px;padding:0 2px;color:var(--sb-accent,var(--gc-action));background:none;border:0;cursor:pointer;text-decoration:underline}
 .tsor{display:flex;align-items:center;gap:10px;font-size:11.5px;color:var(--ink2);margin:0 0 8px}
 .tsor::before,.tsor::after{content:"";flex:1;height:1px;background:var(--line)}
 </style>
@@ -3485,6 +3529,7 @@ function render(){
       <span class="ic">${ICONS[n.id]}</span>
       <span><b style="font-weight:400">${n.t}</b><small>${n.s}</small></span>${badge}</button>`;
   }).join('');
+  payWire($('#nav'));
   /* « Donner mon avis » : hors de #nav, pour que l'animation de découpe ne soit pas
      coupée par les rendus ; reconstruit seulement quand la langue change. */
   { const nf=$('#navfb'), k=state.lang+'|'+(GC_FIXED?1:0);
@@ -3528,6 +3573,7 @@ function render(){
     </span>
     ${fbLinks}
     <button class="link" id="wipe" style="padding-left:0;display:block;margin-top:8px">${D('tout réinitialiser','reset everything')}</button>`;
+  if(PROMO_DBG){ $('#sbfoot').insertAdjacentHTML('afterbegin', promoSwitchHTML()); promoWireSwitch(); }
   if($('#wipe')) $('#wipe').onclick=wipeAll;
   $('#tipNav')?.addEventListener('click',()=>{ track('tip_click',{source:'barre'}); lsSet('gabarits-tip-fait', String(Date.now())); });
   $('#newsFoot')?.addEventListener('click',()=>{ track('newsletter_click',{source:'footer'}); lsSet('gabarits-news-click','1'); $('#newsFoot')?.remove(); showNews('footer'); });
@@ -3568,7 +3614,7 @@ function applySb(){
 function applyDa(){ document.body.classList.toggle('da-epure', state.da==='epure'); }
 function topbar(title, sub, actions){
   $('#topbar').innerHTML = `<button class="burger" id="burger" aria-label="${D('Ouvrir le menu','Open menu')}"
-      aria-expanded="false" aria-controls="side">${BURGER}</button>
+      aria-expanded="false" aria-controls="side">${BURGER}${payBurgerDot()}</button>
     <div class="ttl"><h2>${title}</h2>${sub?`<div class="sub">${sub}</div>`:''}</div>
     <div class="sp">${actions||''}</div>`;
   $('#burger').onclick=()=>drawer(true);
@@ -3668,6 +3714,7 @@ function afterExport(){
     lsSet('gabarits-evol-auto','1'); track('evolution_auto',{export_no:n}); askEvolution('export'); return; }
   if(palier) showMilestone(n);
   else if(n%2===1 && !lsGet('gabarits-news-sub')) showNews('auto_export');
+  else payAfterExport();
 }
 function maybeThanks(){
   if(tipShown) return; tipShown=true;
@@ -4149,7 +4196,8 @@ function toastAction(msg, label, fn, ms){
   setTimeout(()=>d.remove(), ms||9000);
 }
 function modal(html, opts){
-  $('#mask')?.remove();                              // remplacement : pas un vrai « fermer »
+  $('#mask')?.remove();
+  document.querySelectorAll('.paysnack').forEach(e=>e.remove());   // une fenêtre s'ouvre : la proposition s'efface                              // remplacement : pas un vrai « fermer »
   const m=document.createElement('div'); m.className=(opts&&opts.maskCls)||'mask'; m.id='mask';
   m.innerHTML=`<div class="${(opts&&opts.cls)||'modal'}" role="dialog">${html}</div>`;
   document.body.appendChild(m);
@@ -4161,6 +4209,97 @@ const closeModal = () => {
   $('#mask')?.remove();
   if(msPending){ const n=msPending; msPending=0; setTimeout(()=>{ if(!$('#mask')) showMilestone(n); }, 450); }
 };
+/* ===================== visibilité des gabarits payants (14/11) =====================
+   Les pièces en vente ne se voyaient que par le badge « 2 nouv. » de la barre latérale (cachée derrière le burger
+   sur téléphone). Trois emplacements à comparer (vitrine, carte après export, pastille du burger), jamais sur le premier écran de l'atelier :
+   ?promo=all les allume, ?promo=shelf,nav en choisit, et le pied de la barre latérale (tiroir sur mobile) donne
+   un interrupteur par emplacement + « voir » pour rejouer la carte d'export.
+   Chaque emplacement a sa source : PRODUCT_SRC = promo_<emplacement> suit l'achat jusqu'à Gumroad. */
+const PROMO_ALL = ['shelf','export','nav'];
+const PROMO_DEFAULT = ['shelf','export','nav'];   // en ligne depuis le 14/11 ; ?promo=none les éteint, ?promo=… en choisit
+const PROMO_DBG = /[?&]promo\b/.test(location.search);
+const PROMO = new Set((()=>{ const v=(location.search.match(/[?&]promo=([^&]*)/)||[])[1];
+  if(v==null) return PROMO_DEFAULT; if(v==='all') return PROMO_ALL; return v.split(',').filter(k=>PROMO_ALL.includes(k)); })());
+const PROMO_LBL = () => ({
+  shelf:  D('Vitrine en bas de l’atelier','Shelf at the bottom of the workshop'),
+  export: D('Après l’export (PDF, SVG, impression)','After an export (PDF, SVG, print)'),
+  nav:    D('Pastille du burger (mobile)','Burger dot (mobile)') });
+const promoSeen = new Set();                 // une fois par visite (sauf en démo)
+const promoCap = k => PROMO_DBG || !(+lsGet('gabarits-promo-'+k) > Date.now()-7*864e5);   // fermée à la croix : 7 jours de répit
+const promoMute = k => { if(!PROMO_DBG) lsSet('gabarits-promo-'+k, String(Date.now())); };
+const promoTrack = (k, ps) => { if(promoSeen.has('t'+k) && !PROMO_DBG) return; promoSeen.add('t'+k); track('pay_promo_shown',{variant:k, shapes:ps.map(x=>x.id).join(',')}); };
+/** les pièces à mettre en avant : en vente, pas encore à toi, de la famille de la pièce en cours d'abord */
+function payPicks(n, pref){
+  const fam=(model(state.draft.modelId)||{}).family;
+  return MODELS.filter(x=>x.price>0 && inShop(x) && !x.soonOnly && !owns(x.id))
+    .sort((a,b)=>((b.id===pref)-(a.id===pref)) || ((b.family===fam)-(a.family===fam)) || ((!!b.novelty)-(!!a.novelty))).slice(0,n||2);
+}
+function payCard(m,k){
+  const ph=(PRODUCT_PHOTOS[m.id]||[])[0], S=setStats(newDraft(m));
+  return `<button type="button" class="paycard" data-paygo="${m.id}" data-payk="${k}">${ph?`<img class="pph" src="${ph}" alt="" loading="lazy">`:''}
+    <span class="pnm">${esc(t(m.name))}<small>${esc(t(m.family))} · ${esc(t(m.diff))} · ${S.pieces} ${D('gabarits','templates')}${m.tuto?` <span class="pill tuto" style="margin-left:4px">${D('tuto 3D pas à pas','3D step-by-step tutorial')}</span>`:''}</small></span><span class="ppr">${eur(m.price)}</span></button>`;
+}
+function payGo(id,k){
+  track('pay_promo_click',{variant:k, shape:id});
+  document.querySelectorAll('.paysnack').forEach(e=>e.remove()); drawer(false); closeModal();
+  PRODUCT_SRC='promo_'+k; go('produit', id);
+}
+let payIO=null;
+function payWire(root){
+  root.querySelectorAll('[data-paygo]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); payGo(b.dataset.paygo, b.dataset.payk); });
+  root.querySelectorAll('[data-payall]').forEach(b=>b.onclick=()=>{ track('pay_promo_click',{variant:b.dataset.payk, shape:'catalogue'});
+    state.filter.view='paid'; state.filter.fam='Tout'; state.filter.lvl='Tout'; state.filter.q=''; PRODUCT_SRC='promo_'+b.dataset.payk; go('catalogue'); });
+  /* « vu » = à l'écran pour de bon (la vitrine est sous la ligne de flottaison) */
+  const els=root.querySelectorAll('[data-promo-seen]');
+  if(els.length && 'IntersectionObserver' in window){
+    payIO = payIO || new IntersectionObserver(es=>es.forEach(en=>{ if(!en.isIntersecting) return; payIO.unobserve(en.target);
+      const k=en.target.dataset.promoSeen; if(promoSeen.has('s'+k) && !PROMO_DBG) return; promoSeen.add('s'+k); track('pay_promo_seen',{variant:k}); }), {threshold:.6});
+    els.forEach(el=>payIO.observe(el)); }
+}
+/* 1 · vitrine : sous l'atelier (et sous le carnet), là où l'on arrive en ayant fini de régler */
+function payShelfHTML(k, title, sub){
+  const ps=payPicks(); if(!ps.length) return '';
+  promoTrack(k, ps);
+  return `<section class="payshelf" data-promo-seen="${k}"><div class="phead"><h3>${title}</h3><p>${sub}</p></div>
+    <div class="pgrid">${ps.map(m=>payCard(m,k)).join('')}</div>
+    <button type="button" class="pall" data-payall data-payk="${k}">${D('Tout le catalogue →','Full catalogue →')}</button></section>`;
+}
+/* 2 · après l'export : le PDF est parti, c'est le moment où l'on est content ; une carte, 14 s, jamais bloquante */
+function payAfterExport(demo){
+  if(!demo && !PROMO.has('export')) return;
+  if(!demo && (!promoCap('export') || (!PROMO_DBG && promoSeen.has('snack')))) return;
+  const ps=payPicks(1,'theiere'); if(!ps.length) return;
+  promoSeen.add('snack'); promoTrack('export', ps);
+  setTimeout(()=>{
+    if($('#mask,#tourOv,#welcome,.paysnack') || msPending) return;      // jamais par-dessus une fenêtre (newsletter, don, sondage, visite)
+    const el=document.createElement('div'); el.className='paysnack'; el.setAttribute('role','complementary');
+    el.innerHTML=`<button class="px" aria-label="${D('Fermer','Close')}">×</button>
+      <p class="pl"><b>${D('Ton gabarit est prêt 🎉','Your template is ready 🎉')}</b> ${D('Pour ta prochaine pièce :','For your next piece:')}</p>${payCard(ps[0],'export')}`;
+    document.body.appendChild(el); payWire(el);
+    el.querySelector('.px').onclick=()=>{ promoMute('export'); track('pay_promo_dismiss',{variant:'export'}); el.remove(); };
+    setTimeout(()=>el.remove(), 14000);
+  }, demo?0:2200);
+}
+/* 4 · pastille numérotée sur le burger du téléphone (les vignettes sous « Catalogue » ont été retirées le 14/11) */
+const payNavOn = () => PROMO.has('nav') && state.route!=='catalogue' && state.route!=='produit';
+const payBurgerDot = () => { if(!payNavOn()) return ''; const n=payPicks(9).length; return n?`<i class="bdot" aria-hidden="true">${n}</i>`:''; };
+/* interrupteurs de comparaison (?promo dans l'URL), au pied de la barre latérale */
+function promoSwitchHTML(){
+  if(!PROMO_DBG) return '';
+  const L=PROMO_LBL();
+  return `<span class="sblab">${D('Visibilité des payants','Paid shapes visibility')}</span><div class="promosw" id="promosw">${PROMO_ALL.map(k=>
+    `<div class="prow"><label><input type="checkbox" data-pk="${k}"${PROMO.has(k)?' checked':''}><span>${L[k]}</span></label>${k==='export'?`<button type="button" class="link" data-pdemo="${k}">${D('voir','play')}</button>`:''}</div>`).join('')}</div>`;
+}
+function promoWireSwitch(){
+  const root=$('#promosw'); if(!root) return;
+  root.onchange=e=>{ const c=e.target.closest('[data-pk]'); if(!c) return;
+    c.checked?PROMO.add(c.dataset.pk):PROMO.delete(c.dataset.pk);
+    const u=new URL(location.href); u.searchParams.set('promo',[...PROMO].join(',')||'none'); history.replaceState(null,'',u);
+    promoSeen.clear(); document.querySelectorAll('.paysnack').forEach(x=>x.remove());
+    render(); };
+  root.onclick=e=>{ const b=e.target.closest('[data-pdemo]'); if(!b) return; drawer(false); const k=b.dataset.pdemo;
+    if(k==='export') payAfterExport(true); };
+}
 /* le fil « 1 payer · 2 coller le lien · 3 atelier » des modales d'achat */
 const STEPS = (at, done) => `<div class="steps">
   <span class="s ${done?'done':at===1?'on':''}"><b>${done?'✓':1}</b> ${D('Payer','Pay')}</span><span class="sep"></span>
@@ -4240,7 +4379,10 @@ function viewAtelier(){
           <button class="btn" id="aExport">${D('Télécharger le PDF','Download the PDF')}</button>
         </div>
       </div>
-    </div>`;
+    </div>
+    ${PROMO.has('shelf')?payShelfHTML('shelf', D('Pour ta prochaine pièce','For your next piece'),
+        D('Des formes à ajouter à l’atelier : tu les règles à tes cotes, le PDF sort à l’échelle 1.','Shapes to add to the workshop: set them to your size, the PDF comes out at actual size.')):''}`;
+  payWire($('#page'));
   $('#tabs').onclick=e=>{ const b=e.target.closest('[data-tab]'); if(b){ state.tab=b.dataset.tab; track('tab_changed',{tab:state.tab}); viewAtelier(); } };
   $('#page').querySelectorAll('[data-fold]').forEach(b=>b.onclick=()=>{
     state.fold[b.dataset.fold]=!state.fold[b.dataset.fold]; persist(); viewAtelier();
@@ -5536,12 +5678,6 @@ function openNewPiece(){
       ${ownedPaid.length?`<div class="sect-title" style="margin:18px 0 8px"><h3 style="font-size:16px">${D('Tes formes','Your shapes')}</h3><span class="tagsm">${D('achetées','owned')}</span></div>
         <div class="hs">${ownedPaid.map(x=>card(`data-pick="${x.id}"`, newDraft(x), t(x.name),
           `${x.parts?x.parts.length+' '+D('formes','shapes')+' · ':''}${state.owned[x.id]?.key==='OFFERT'?D('offert','gift'):D('acheté','owned')}`)).join('')}</div>`:''}
-      ${!FEATURES.lots && GC.teasers ? `<div class="sect-title" style="margin:18px 0 6px"><h3 style="font-size:16px">${D('Lots de pièces assorties','Matching sets')}</h3> ${SOON_TAG()}</div>
-        <button class="link soonlink" data-teaser="lots" style="padding:0;font-size:12.5px">${D('Tasse & coupelle, bol & assiette, réglés ensemble','Cup & saucer, bowl & plate, adjusted together')} →</button>` : ''}
-      ${ONLY?'':`<div class="sect-title" style="margin:18px 0 6px"><h3 style="font-size:16px">${D('Dans l’ancienne version','In the old version')}</h3>
-        <span class="tagsm">${D('pas encore dans le nouvel atelier','not in the new workshop yet')}</span></div>
-      <p style="margin:0 0 6px;font-size:12.5px">${V1_ONLY.filter(x=>!x.hidden || HIDE.includes(x.k)).map(x=>`<a class="link" style="padding:0 10px 0 0" href="${V1_URL}${x.q}${x.q?'&':'?'}lang=${state.lang}" target="_blank" rel="noopener"
-          data-v1="${x.k}">${D(x.fr,x.en)} ↗</a>`).join('')}</p>`}
       ${FEATURES.catalogue ? `<div style="margin-top:14px;text-align:center">
         <button class="ghost sm" id="toCat">${D('Voir tout le catalogue','Browse the full catalogue')} · ${(n=>`${n} ${n>1?D('formes à ajouter','shapes to add'):D('forme à ajouter','shape to add')}`)(MODELS.filter(x=>inShop(x)&&!owns(x.id)).length)}</button>
       </div>` : ''}
@@ -5649,7 +5785,10 @@ function viewCarnet(){
           </div></div>`;
       }).join('')}
     </div>`;
+  if(PROMO.has('shelf')) $('#page').insertAdjacentHTML('beforeend', payShelfHTML('shelf-carnet', D('Pour ta prochaine pièce','For your next piece'),
+    D('Des formes à ajouter à l’atelier : tu les règles à tes cotes, le PDF sort à l’échelle 1.','Shapes to add to the workshop: set them to your size, the PDF comes out at actual size.')));
   $('#page').insertAdjacentHTML('beforeend', resInviteHTML());
+  payWire($('#page'));
   $('#page').querySelectorAll('[data-res]').forEach(a=>a.addEventListener('click',()=>track('resources_click',{source:'carnet', link:a.dataset.res, lang:state.lang})));
   $('#cNew').onclick=openNewPiece;
   $('#cGo')?.addEventListener('click',()=>go('atelier'));
