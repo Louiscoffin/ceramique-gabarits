@@ -1921,10 +1921,14 @@ const MODELS = [
     blurbEn:"A tall cone to stand over a string of fairy lights: the minimalist Christmas tree. One sector and one base. Punch small holes with a cutter before drying: the light draws stars.",
     thick:6, dBase:130, ears:false,
     sections:[{id:'A', name:'Paroi', d:16, h:240}] },
-  /* maison lumineuse (Louis, 14/11) : jumelle gratuite du sapin, murs à plat + toit à deux pans (isMaison) */
-  { id:'maison-lumineuse', air:true, name:'Maison lumineuse', family:'Objet', diff:'Débutant', price:0, novelty:true,
-    blurb:"Une petite maison à poser sur une bougie LED : un carré surmonté d'un toit à deux pans, deux plaques rectangulaires appuyées l'une contre l'autre. Porte, fenêtres et fentes sont déjà tracées dans les gabarits : tu les découpes avant le séchage, la lumière fait le reste.",
-    blurbEn:"A little house to stand over an LED tea light: a square body under a gable roof made of two rectangular slabs leaning together. Door, windows and slits are already drawn on the templates: cut them out before drying and let the light do the rest.",
+  /* maison lumineuse (Louis, 14/11) : jumelle du sapin (gratuit), murs à plat + toit à deux pans (isMaison).
+     15/11 : « BIENTÔT DISPONIBLE » à 3,99 € (prix > 0 et hors `shop` = fiche « bientôt » + liste d'attente), le temps de réaliser
+     le tutoriel 3D et le tutoriel PDF qui justifient le prix. Brouillon Gumroad hlipzr (non publié). Pour la mettre en vente :
+     l'ajouter à `shop` (ici + GC_RELEASE de build-sortie.sh) une fois les tutoriels faits et le produit Gumroad publié. */
+  { id:'maison-lumineuse', air:true, name:'Maison lumineuse', family:'Objet', diff:'Débutant', price:3.99, novelty:true,
+    gumroad:{ url:'https://ceramix541.gumroad.com/l/maison-lumineuse', productId:'4iRlTlRIURF3qHK636fYIA==' },
+    blurb:"Une petite maison à poser sur une bougie LED : un carré surmonté d'un toit à deux pans, deux plaques rectangulaires appuyées l'une contre l'autre. Porte, fenêtres et fentes sont déjà tracées dans les gabarits : tu les découpes avant le séchage, la lumière fait le reste. Avec un tutoriel 3D et un tutoriel PDF pas à pas.",
+    blurbEn:"A little house to stand over an LED tea light: a square body under a gable roof made of two rectangular slabs leaning together. Door, windows and slits are already drawn on the templates: cut them out before drying and let the light do the rest. With a 3D tutorial and a step-by-step PDF tutorial.",
     thick:6, dBase:0, ears:false, maison:{l:90, p:70, h:70, r:38, d:8}, sections:[] },
 
   /* ---- atelier libre 3D : la pièce composée dans la scène. Jamais au catalogue (retire) ;
@@ -10979,6 +10983,7 @@ function readUrl(){
     if(m && shown(m) && owns(m.id)){ state.draft=newDraft(m); state.route='atelier'; state.tab='volume';
       res.shape=id; track('shape_selected', {shape:id, source:'url'}); }
     else if(m && inShop(m)){ state.route='produit'; state.productId=m.id; res.shape=id; PRODUCT_SRC='site'; }
+    else if(m && isSoon(m) && !m.soonOnly && !HIDE.includes(m.id)){ if(FEATURES.catalogue) state.route='catalogue'; res.soon=m.id; }   // ?forme= d'une pièce « bientôt » (maison lumineuse) : catalogue + fenêtre « me prévenir » (openSoon), jamais la fiche d'achat
     else if(m && HIDE.includes(m.id) && m.paidLater && isSoon(m)){   // prisme, facettes, coussin : fiche « bientôt » + liste d'attente
       if(FEATURES.catalogue) state.route='catalogue'; res.soon=m.id; }
     else if(['libre','tore'].includes(id) || /^(kur|tour)/.test(id) || (m && HIDE.includes(m.id))) res.v1=id;
