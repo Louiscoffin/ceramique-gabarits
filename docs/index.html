@@ -1533,7 +1533,7 @@ body.sb-rail .navpay{display:none}
 window.GC_RELEASE = {
   edition: 'sortie',
   // waiver: true,   // à rallumer quand www.gabarits-ceramique.com/cgv existe (case de renonciation avant paiement)
-  shop: ['bol-talon', 'theiere'],   // en vente : un produit Gumroad par pièce (m.gumroad dans atelier-v2.html) ; les 9 autres sont en « bientôt » depuis le 6/11
+  shop: ['bol-talon', 'theiere', 'maison-lumineuse'],   // en vente : un produit Gumroad par pièce (m.gumroad dans atelier-v2.html) ; les 9 autres sont en « bientôt » depuis le 6/11
   avis: { fr:'https://tally.so/r/EqqdQL', en:'https://tally.so/r/aOO502' },   // « Donner mon avis » : les deux Tally du nouvel atelier (FR / EN)
   footTitle: { fr:'Le nouvel atelier', en:'The new workshop' },
   foot: { fr:'Tes réglages et tes pièces restent sur cet appareil. L’ancienne version reste accessible depuis « Nouvelle pièce ».',
@@ -1922,11 +1922,10 @@ const MODELS = [
     thick:6, dBase:130, ears:false,
     sections:[{id:'A', name:'Paroi', d:16, h:240}] },
   /* maison lumineuse (Louis, 14/11) : jumelle du sapin (gratuit), murs à plat + toit à deux pans (isMaison).
-     15/11 : « BIENTÔT DISPONIBLE » à 3,99 € (prix > 0 et hors `shop` = fiche « bientôt » + liste d'attente), le temps de réaliser
-     le tutoriel 3D et le tutoriel PDF qui justifient le prix. Brouillon Gumroad hlipzr (non publié). Pour la mettre en vente :
-     l'ajouter à `shop` (ici + GC_RELEASE de build-sortie.sh) une fois les tutoriels faits et le produit Gumroad publié. */
+     15/11 : EN VENTE à 3,99 € (produit Gumroad hlipzr, tuto 3D v2/tutoriel-maison + tuto PDF joint). Dans `shop` (ici + GC_RELEASE de build-sortie.sh). */
   { id:'maison-lumineuse', air:true, name:'Maison lumineuse', family:'Objet', diff:'Débutant', price:3.99, novelty:true,
     gumroad:{ url:'https://ceramix541.gumroad.com/l/maison-lumineuse', productId:'4iRlTlRIURF3qHK636fYIA==' },
+    tuto:'tutoriel-maison/',
     blurb:"Une petite maison à poser sur une bougie LED : un carré surmonté d'un toit à deux pans, deux plaques rectangulaires appuyées l'une contre l'autre. Porte, fenêtres et fentes sont déjà tracées dans les gabarits : tu les découpes avant le séchage, la lumière fait le reste. Avec un tutoriel 3D et un tutoriel PDF pas à pas.",
     blurbEn:"A little house to stand over an LED tea light: a square body under a gable roof made of two rectangular slabs leaning together. Door, windows and slits are already drawn on the templates: cut them out before drying and let the light do the rest. With a 3D tutorial and a step-by-step PDF tutorial.",
     thick:6, dBase:0, ears:false, maison:{l:90, p:70, h:70, r:38, d:8}, sections:[] },
@@ -2050,7 +2049,7 @@ function track(event, props){
 const EDITIONS = {
   sortie:   { features:{ argile:false, plaque:false, sombre:false, contenance:false, emporte:false,
                          libre:false, lots:false, paywall:false, proto:false },
-              shop:['bol-talon','theiere'], shopFree:true, tourAuto:true,   // en vente : bol-tasse à talon + théière (3/11) ; même liste que GC_RELEASE de build-sortie.sh. Les 9 autres pièces ont leur produit Gumroad (m.gumroad) mais sont en « bientôt » + liste d'attente depuis le retour en arrière du 6/11 : pour les relancer, les ajouter ici et dans GC_RELEASE, et sortir prisme/facettes/tore de `hide`
+              shop:['bol-talon','theiere','maison-lumineuse'], shopFree:true, tourAuto:true,   // en vente : bol-tasse à talon + théière (3/11) ; même liste que GC_RELEASE de build-sortie.sh. Les 9 autres pièces ont leur produit Gumroad (m.gumroad) mais sont en « bientôt » + liste d'attente depuis le retour en arrière du 6/11 : pour les relancer, les ajouter ici et dans GC_RELEASE, et sortir prisme/facettes/tore de `hide`
               teasers:true,   // emporte-pièces, contenance, lots, atelier libre : « bientôt » → newsletter + cadeau (Louis, 17/10)
               soon:true,   // les formes qui seront payantes : « bientôt disponible » + email (Louis, 17/10)
               hide:['profil','prisme','facettes','coussin','tore'],   // restent dans l'ancienne version (Louis, 17/10) ; prisme, facettes et coussin deviennent payants   // le rayon : les formes de la V1 (gratuites) + le bol-tasse
@@ -2554,6 +2553,9 @@ function tutoURL(st, m){
   const p=st.parts[0], r=state.shrink;
   // la langue de l'atelier suit dans le lien : le tutoriel s'ouvre dans la même langue (aperçu compris)
   if(isTheiere(p)) return m.tuto+'?'+theiereQuery(st, p).toString()+'&lang='+state.lang;
+  // la maison lumineuse : cotes FINIES (largeur, profondeur, murs, toit, débord, plaque), retrait total, nombre de feuilles A4 du PDF
+  if(isMaison(p)) return m.tuto+'?'+new URLSearchParams({ l:fmtQ(p.maison.l), p:fmtQ(p.maison.p), h:fmtQ(p.maison.h), r:fmtQ(p.maison.r), d:fmtQ(p.maison.d),
+    e:fmtQ(p.thick), sh:fmtQ(r*100), cuir:'40', fp:String(planTemplates(st).sheets.length), lang:state.lang }).toString();
   // les feuilles du PDF, papier et carton : l'étape « Imprimer » les nomme telles quelles
   const sh=planTemplates(st).sheets, fc=sh.filter(s=>s.carton).length;
   const q=new URLSearchParams({ d:fmtQ(p.sections[0].d), h:fmtQ(totalH(p)), r:fmtQ(r*100),
