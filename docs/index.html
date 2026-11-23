@@ -1522,6 +1522,19 @@ body.tourpad{padding-bottom:62vh}
 .payshelf .pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:10px}
 .payshelf .pall{margin-top:10px;font-size:12.5px;color:var(--gc-action);background:none;border:0;padding:0;cursor:pointer}
 .payshelf .pall:hover{text-decoration:underline;text-underline-offset:3px}
+.payafter{position:relative;margin:10px 0 0;padding:10px 34px 10px 12px;background:var(--paper);border:1.5px solid var(--ink);border-radius:8px;animation:payin .35s cubic-bezier(.2,.7,.3,1)}
+.payafter .ok{margin:0 0 6px;font-size:12.5px;color:var(--ink2);line-height:1.35}
+.payafter .ok b{color:var(--ink)}
+.payafter .px{position:absolute;top:6px;right:6px;width:24px;height:24px;border:0;background:none;color:var(--ink2);font-size:18px;line-height:1;cursor:pointer;border-radius:50%}
+.payafter .px:hover{background:var(--wash);color:var(--ink)}
+.payafter .pgrid{display:grid;gap:8px}
+.payafter .paycard{padding:6px 8px 6px 6px;gap:8px}.payafter .paycard .pph{width:54px;height:42px}.payafter .paycard .pnm{font-size:13px}.payafter .paycard .pill{display:none}
+.payafter .paylink{display:block;width:100%;text-align:left;padding:8px 10px;background:var(--card);border:1.5px solid var(--line);border-radius:6px;color:var(--ink);font:inherit;font-size:13px;cursor:pointer}
+.payafter .paylink:hover{border-color:var(--ink)}
+.payafter .paylink b{font-weight:600}
+.payafter.v-bar{padding-top:8px;padding-bottom:8px}.payafter.v-bar .ok{margin-bottom:4px}
+.payafter .paylink.soft{background:none;border:0;padding:0;color:var(--gc-action);font-size:12.5px}
+.payafter .paylink.soft:hover{text-decoration:underline;text-underline-offset:3px}
 @keyframes payin{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
 .paysnack{position:fixed;right:20px;bottom:88px;z-index:40;width:min(380px,calc(100vw - 32px));padding:10px 10px 12px;background:var(--paper);
   border:1.5px solid var(--ink);border-radius:10px;box-shadow:0 16px 36px var(--shadow-strong);animation:payin .4s cubic-bezier(.2,.7,.3,1)}
@@ -1549,6 +1562,7 @@ body.sb-rail .navpay{display:none}
 .promosw .prow{display:flex;align-items:center;gap:6px;font-size:11.5px;line-height:1.3}
 .promosw label{display:flex;align-items:flex-start;gap:6px;flex:1;cursor:pointer}
 .promosw input{margin-top:2px}
+.promosw .prow{flex-wrap:wrap}.promosw select{flex:1 1 100%;order:3;font:inherit;font-size:11px;padding:2px 4px;margin-left:20px}
 .promosw .link{flex:none;font-size:11px;padding:0 2px;color:var(--sb-accent,var(--gc-action));background:none;border:0;cursor:pointer;text-decoration:underline}
 .tsor{display:flex;align-items:center;gap:10px;font-size:11.5px;color:var(--ink2);margin:0 0 8px}
 .tsor::before,.tsor::after{content:"";flex:1;height:1px;background:var(--line)}
@@ -4910,6 +4924,10 @@ const PROMO_LBL = () => ({
   shelf:  D('Vitrine en bas de l’atelier','Shelf at the bottom of the workshop'),
   export: D('Après l’export (PDF, SVG, impression)','After an export (PDF, SVG, print)'),
   nav:    D('Pastille du burger (mobile)','Burger dot (mobile)') });
+/* variantes du moment « après l'export » (comparées dans l'aperçu avec ?promo=export&pexp=…) :
+   toast = carte flottante actuelle · bar = ligne sous le bouton · shelf = vitrine sous le bouton · tip = conseil d'impression + lien discret */
+const EXP_VARIANTS = ['toast','bar','shelf','tip'];
+let EXPV = (()=>{ const v=(location.search.match(/[?&]pexp=(\w+)/)||[])[1]; return EXP_VARIANTS.includes(v)?v:'toast'; })();
 const promoSeen = new Set();                 // une fois par visite (sauf en démo)
 const promoCap = k => PROMO_DBG || !(+lsGet('gabarits-promo-'+k) > Date.now()-7*864e5);   // fermée à la croix : 7 jours de répit
 const promoMute = k => { if(!PROMO_DBG) lsSet('gabarits-promo-'+k, String(Date.now())); };
@@ -4954,8 +4972,10 @@ function payShelfHTML(k, title, sub){
 function payAfterExport(demo){
   if(!demo && !PROMO.has('export')) return;
   if(!demo && (!promoCap('export') || (!PROMO_DBG && promoSeen.has('snack')))) return;
-  const ps=payPicks(1,'theiere'); if(!ps.length) return;
-  promoSeen.add('snack'); promoTrack('export', ps);
+  const ps=payPicks(EXPV==='shelf'?2:1,'theiere'); if(!ps.length) return;
+  const k = EXPV==='toast' ? 'export' : 'export-'+EXPV;
+  promoSeen.add('snack'); promoTrack(k, ps);
+  if(EXPV!=='toast'){ payAfterInline(ps, k, demo); return; }
   setTimeout(()=>{
     if($('#mask,#tourOv,#welcome,.paysnack') || msPending) return;      // jamais par-dessus une fenêtre (newsletter, don, sondage, visite)
     const el=document.createElement('div'); el.className='paysnack'; el.setAttribute('role','complementary');
@@ -4966,6 +4986,28 @@ function payAfterExport(demo){
     setTimeout(()=>el.remove(), 14000);
   }, demo?0:2200);
 }
+/* variantes en ligne : sous la barre d'actions de l'atelier, là où l'œil est resté après le clic ; pas de minuteur, pas de pop-up */
+function payAfterInline(ps, k, demo){
+  setTimeout(()=>{
+    if($('#mask,#tourOv,#welcome') || msPending) return;
+    const bar=document.querySelector('.actbar'); if(!bar) return;          // hors de l'atelier : rien
+    document.querySelectorAll('.payafter').forEach(e=>e.remove());
+    const m=ps[0], pr=eur(m.price), nm=esc(t(m.name)), X=`<button class="px" aria-label="${D('Fermer','Close')}">×</button>`;
+    let html;
+    if(EXPV==='bar')
+      html=`<p class="ok"><b>✓ ${D('PDF téléchargé','PDF downloaded')}</b></p>
+        <button type="button" class="paylink" data-paygo="${m.id}" data-payk="${k}">${D('Prochaine pièce :','Next piece:')} <b>${nm}</b> · ${pr} →</button>${X}`;
+    else if(EXPV==='shelf')
+      html=`<p class="ok"><b>${D('Ton gabarit est prêt 🎉','Your template is ready 🎉')}</b> ${D('Pour ta prochaine pièce :','For your next piece:')}</p>
+        <div class="pgrid">${ps.map(x=>payCard(x,k)).join('')}</div>${X}`;
+    else
+      html=`<p class="ok"><b>${D('Avant d’imprimer','Before you print')}</b> · ${D('choisis « taille réelle » (100 %), pas « ajuster à la page ».','choose “actual size” (100%), not “fit to page”.')}</p>
+        <button type="button" class="paylink soft" data-paygo="${m.id}" data-payk="${k}">${D('Et ensuite ? Voir','What next? See')} ${nm} →</button>${X}`;
+    const el=document.createElement('div'); el.className='payafter v-'+EXPV; el.setAttribute('role','complementary'); el.dataset.promoSeen=k;
+    el.innerHTML=html; bar.insertAdjacentElement('afterend', el); payWire(el);
+    el.querySelector('.px').onclick=()=>{ promoMute('export'); track('pay_promo_dismiss',{variant:k}); el.remove(); };
+  }, demo?0:700);
+}
 /* 4 · pastille numérotée sur le burger du téléphone (les vignettes sous « Catalogue » ont été retirées le 14/11) */
 const payNavOn = () => PROMO.has('nav') && state.route!=='catalogue' && state.route!=='produit';
 const payBurgerDot = () => { if(!payNavOn()) return ''; const n=payPicks(9).length; return n?`<i class="bdot" aria-hidden="true">${n}</i>`:''; };
@@ -4974,11 +5016,14 @@ function promoSwitchHTML(){
   if(!PROMO_DBG) return '';
   const L=PROMO_LBL();
   return `<span class="sblab">${D('Visibilité des payants','Paid shapes visibility')}</span><div class="promosw" id="promosw">${PROMO_ALL.map(k=>
-    `<div class="prow"><label><input type="checkbox" data-pk="${k}"${PROMO.has(k)?' checked':''}><span>${L[k]}</span></label>${k==='export'?`<button type="button" class="link" data-pdemo="${k}">${D('voir','play')}</button>`:''}</div>`).join('')}</div>`;
+    `<div class="prow"><label><input type="checkbox" data-pk="${k}"${PROMO.has(k)?' checked':''}><span>${L[k]}</span></label>${k==='export'?`<select data-pexp aria-label="${D('Variante','Variant')}">${EXP_VARIANTS.map(v=>`<option value="${v}"${v===EXPV?' selected':''}>${({toast:D('carte flottante (actuelle)','floating card (current)'),bar:D('ligne sous le bouton','line under the button'),shelf:D('vitrine sous le bouton','shelf under the button'),tip:D('conseil d’impression','print tip')})[v]}</option>`).join('')}</select><button type="button" class="link" data-pdemo="${k}">${D('voir','play')}</button>`:''}</div>`).join('')}</div>`;
 }
 function promoWireSwitch(){
   const root=$('#promosw'); if(!root) return;
-  root.onchange=e=>{ const c=e.target.closest('[data-pk]'); if(!c) return;
+  root.onchange=e=>{ const sel=e.target.closest('[data-pexp]');
+    if(sel){ EXPV=sel.value; const u=new URL(location.href); u.searchParams.set('pexp',EXPV); history.replaceState(null,'',u);
+      drawer(false); document.querySelectorAll('.paysnack,.payafter').forEach(x=>x.remove()); promoSeen.clear(); payAfterExport(true); return; }
+    const c=e.target.closest('[data-pk]'); if(!c) return;
     c.checked?PROMO.add(c.dataset.pk):PROMO.delete(c.dataset.pk);
     const u=new URL(location.href); u.searchParams.set('promo',[...PROMO].join(',')||'none'); history.replaceState(null,'',u);
     promoSeen.clear(); document.querySelectorAll('.paysnack').forEach(x=>x.remove());
@@ -12305,7 +12350,12 @@ function readUrl(){
     const m=model(id);
     if(m && shown(m) && owns(m.id)){ state.draft=newDraft(m); state.route='atelier'; state.tab='volume';
       res.shape=id; track('shape_selected', {shape:id, source:'url'}); }
-    else if(m && inShop(m)){ state.route='produit'; state.productId=m.id; res.shape=id; PRODUCT_SRC='site'; }
+    else if(m && inShop(m)){ state.route='produit'; state.productId=m.id; res.shape=id;
+      /* lien d'un article du site : ?utm_source=blog&utm_medium=article&utm_campaign=<slug> → source « article_<slug> »
+         (suit product_view, buy_click, le lien Gumroad en utm_campaign/gc_src et license_ok). Sinon « site » comme avant. */
+      const uc=(q.get('utm_campaign')||'').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,60);
+      PRODUCT_SRC = (uc && (q.get('utm_source')||'').toLowerCase()==='blog') ? 'article_'+uc : 'site';
+      if(PRODUCT_SRC!=='site') track('article_landing', {shape:m.id, source:PRODUCT_SRC}); }
     else if(m && isSoon(m) && !m.soonOnly && !HIDE.includes(m.id)){ if(FEATURES.catalogue) state.route='catalogue'; res.soon=m.id; }   // ?forme= d'une pièce « bientôt » (maison lumineuse) : catalogue + fenêtre « me prévenir » (openSoon), jamais la fiche d'achat
     else if(m && HIDE.includes(m.id) && m.paidLater && isSoon(m)){   // prisme, facettes, coussin : fiche « bientôt » + liste d'attente
       if(FEATURES.catalogue) state.route='catalogue'; res.soon=m.id; }
