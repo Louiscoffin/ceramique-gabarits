@@ -761,12 +761,14 @@ button.rk:hover .chev,.ritem.open .chev,.rpiv.open .chev{opacity:1}
 .rlock:hover .lockico{stroke:var(--terra)}
 .note{font-size:11.5px;color:var(--ink2);line-height:1.45}
 .stack{display:flex;flex-direction:column;gap:8px}
-/* Atelier en mode « app » : la page ne défile pas, chaque colonne défile
-   chez elle — les réglages restent sous la main quoi qu'il arrive. */
+/* Atelier en mode « app » : le premier écran (barre du haut + atelier) tient
+   exactement dans la fenêtre, chaque colonne défile chez elle — les réglages
+   restent sous la main quoi qu'il arrive. Le pied de page vit sous la ligne
+   de flottaison : on y arrive en faisant défiler la page, hors des colonnes.
+   --tbh = hauteur réelle de la barre du haut (mesurée en JS, 58px par défaut). */
 @media (min-width:1081px){
-  main.appmode{height:100vh;overflow:hidden}
-  main.appmode .appfoot{display:none}
-  main.appmode .page{flex:1;min-height:0;overflow:hidden;padding-bottom:20px}
+  main.appmode{min-height:100vh}
+  main.appmode .page{flex:none;height:calc(100vh - var(--tbh,58px));min-height:0;overflow:hidden;padding-bottom:20px}
   main.appmode .acols{height:100%;min-height:0}
   main.appmode .acols>.panel{height:100%;min-height:0;display:flex;flex-direction:column}
   main.appmode .acols>.panel>.pbody{flex:1;min-height:0;overflow-y:auto}
@@ -1507,6 +1509,15 @@ body.tourpad{padding-bottom:62vh}
 .tsshop .tsnm{flex:1;font-size:13.5px;line-height:1.25}
 .tsshop .tsnm small{display:block;color:var(--ink2);font-size:11.5px}
 .tsshop .tspr{font-weight:600;font-size:13px;white-space:nowrap}
+/* après le sondage : une ligne + deux vignettes, discret */
+.paymerci{margin:16px 0 2px;padding-top:12px;border-top:1px solid var(--line);text-align:center}
+.paymerci p{margin:0 0 8px;font-size:12px;color:var(--ink2)}
+.paymerci .pmrow{display:flex;gap:8px;justify-content:center}
+.paymini{flex:1;max-width:170px;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 6px 7px;background:none;border:1px solid var(--line);border-radius:8px;color:var(--ink);font:inherit;cursor:pointer;transition:border-color .15s}
+.paymini:hover{border-color:var(--ink)}
+.paymini img{width:100%;height:58px;object-fit:contain;border-radius:5px;background:var(--wash)}
+.paymini .pmn{font-size:12px;font-weight:600;line-height:1.2}
+.paymini .pmp{font-family:var(--gc-font-cotes);font-size:11px;color:var(--ink2)}
 /* ---- visibilité des gabarits payants : cinq emplacements à comparer (?promo=…) ---- */
 .paycard{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:9px 12px 9px 9px;background:var(--card);
   border:1.5px solid var(--line);border-radius:8px;color:var(--ink);font:inherit;cursor:pointer;transition:border-color .15s,transform .15s}
@@ -1535,6 +1546,23 @@ body.tourpad{padding-bottom:62vh}
 .payafter.v-bar{padding-top:8px;padding-bottom:8px}.payafter.v-bar .ok{margin-bottom:4px}
 .payafter .paylink.soft{background:none;border:0;padding:0;color:var(--gc-action);font-size:12.5px}
 .payafter .paylink.soft:hover{text-decoration:underline;text-underline-offset:3px}
+/* puce « même famille » */
+.paychip{display:inline-flex;align-items:center;gap:8px;margin-top:6px;padding:3px 4px 3px 10px;background:var(--wash);border:1px solid var(--line);border-radius:999px;color:var(--ink);font:inherit;font-size:12px;cursor:pointer;max-width:100%}
+.paychip:hover{border-color:var(--ink)}
+.paychip span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.paychip i{font-style:normal;font-family:var(--gc-font-cotes);font-size:11px;padding:2px 8px;border-radius:999px;background:var(--terra);color:var(--on-terra);flex:none}
+/* barre du bas (mobile) */
+#paytabs{display:none}
+@media (max-width:860px){
+  body.has-tabbar{padding-bottom:calc(64px + env(safe-area-inset-bottom))}
+  body.has-tabbar #paytabs{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:0;right:0;bottom:0;z-index:45;background:var(--paper);border-top:1px solid var(--line);padding:4px 4px env(safe-area-inset-bottom);box-sizing:content-box;height:56px}
+  body.has-tabbar .side .actbar{bottom:calc(61px + env(safe-area-inset-bottom))}
+  body.has-tabbar .paysnack{bottom:calc(150px + env(safe-area-inset-bottom))}
+  #paytabs button{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;background:none;border:0;color:var(--ink2);font:inherit;font-size:11px;cursor:pointer}
+  #paytabs button.on{color:var(--ink);font-weight:600}
+  #paytabs .ic svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  #paytabs .bdot{position:absolute;top:2px;left:calc(50% + 6px);min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--terra);color:var(--on-terra);font:700 10px/16px var(--gc-font-cotes);font-style:normal;text-align:center}
+}
 @keyframes payin{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
 .paysnack{position:fixed;right:20px;bottom:88px;z-index:40;width:min(380px,calc(100vw - 32px));padding:10px 10px 12px;background:var(--paper);
   border:1.5px solid var(--ink);border-radius:10px;box-shadow:0 16px 36px var(--shadow-strong);animation:payin .4s cubic-bezier(.2,.7,.3,1)}
@@ -4202,7 +4230,7 @@ function render(){
       <span class="ic">${ICONS[n.id]}</span>
       <span><b style="font-weight:400">${n.t}</b><small>${n.s}</small></span>${badge}</button>`;
   }).join('');
-  payWire($('#nav'));
+  payWire($('#nav')); payTabbar();
   /* « Donner mon avis » : hors de #nav, pour que l'animation de découpe ne soit pas
      coupée par les rendus ; reconstruit seulement quand la langue change. */
   { const nf=$('#navfb'), k=state.lang+'|'+(GC_FIXED?1:0);
@@ -4217,6 +4245,8 @@ function render(){
     go(b.dataset.nav); });
   renderSbPrefs();
   document.querySelector('main').classList.toggle('appmode', state.route==='atelier');
+  { const tb=$('#topbar'); if(tb){ const fit=()=>document.documentElement.style.setProperty('--tbh',tb.offsetHeight+'px'); fit();
+      if(!window.__tbRO && window.ResizeObserver){ window.__tbRO=new ResizeObserver(fit); window.__tbRO.observe(tb); } } }
   document.body.classList.toggle('route-libre', state.route==='libre');
   const fbLinks = GC_FIXED ? '' : `<div class="sbfb">
     ${(lsGet('gabarits-news-sub')||lsGet('gabarits-news-click')) ? '' : `<button class="link nl" id="newsFoot" type="button"
@@ -4612,8 +4642,9 @@ function askEvolution(source){
   const end=()=>{
     prog(4); stepEl.textContent=''; backB.hidden=true; fxSet(false);
     render(`<p class="evmerci">${D('Merci, c’est noté','Thanks, noted')} <svg class="evcheck" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M7 12.5 L10.5 16 L17 8.5"/></svg></p>
-      <p class="evh" style="text-align:center;margin:0">${D('Ça m’aide à choisir la suite.','It helps me pick what comes next.')}</p>`);
-    later(closeModal, 1900);
+      <p class="evh" style="text-align:center;margin:0">${D('Ça m’aide à choisir la suite.','It helps me pick what comes next.')}</p>${payMerciHTML()}`);
+    payWire(body);
+    if(PROMO.has('merci') && body.querySelector('.paymini')) { /* on laisse le temps de voir : fermeture à la croix */ } else later(closeModal, 1900);
   };
   const s1=()=>{
     step(1);
@@ -4915,15 +4946,19 @@ const closeModal = () => {
    ?promo=all les allume, ?promo=shelf,nav en choisit, et le pied de la barre latérale (tiroir sur mobile) donne
    un interrupteur par emplacement + « voir » pour rejouer la carte d'export.
    Chaque emplacement a sa source : PRODUCT_SRC = promo_<emplacement> suit l'achat jusqu'à Gumroad. */
-const PROMO_ALL = ['shelf','export','nav'];
-const PROMO_DEFAULT = ['shelf','export','nav'];   // en ligne depuis le 14/11 ; ?promo=none les éteint, ?promo=… en choisit
+const PROMO_ALL = ['shelf','export','nav','chip','tabbar','merci','pdf'];
+const PROMO_DEFAULT = ['shelf','export','nav','merci'];   // en ligne depuis le 14/11 ; ?promo=none les éteint, ?promo=… en choisit
 const PROMO_DBG = /[?&]promo\b/.test(location.search);
 const PROMO = new Set((()=>{ const v=(location.search.match(/[?&]promo=([^&]*)/)||[])[1];
   if(v==null) return PROMO_DEFAULT; if(v==='all') return PROMO_ALL; return v.split(',').filter(k=>PROMO_ALL.includes(k)); })());
 const PROMO_LBL = () => ({
   shelf:  D('Vitrine en bas de l’atelier','Shelf at the bottom of the workshop'),
   export: D('Après l’export (PDF, SVG, impression)','After an export (PDF, SVG, print)'),
-  nav:    D('Pastille du burger (mobile)','Burger dot (mobile)') });
+  nav:    D('Pastille du burger (mobile)','Burger dot (mobile)'),
+  chip:   D('Puce « même famille » sous le titre','“Same family” chip under the title'),
+  tabbar: D('Barre du bas avec Catalogue (mobile)','Bottom bar with Catalogue (mobile)'),
+  merci:  D('Après le sondage de sortie','After the exit survey'),
+  pdf:    D('Pied des PDF : lien vers le catalogue','PDF footer: link to the catalogue') });
 /* variantes du moment « après l'export » (comparées dans l'aperçu avec ?promo=export&pexp=…) :
    toast = carte flottante actuelle · bar = ligne sous le bouton · shelf = vitrine sous le bouton · tip = conseil d'impression + lien discret */
 const EXP_VARIANTS = ['toast','bar','shelf','tip'];
@@ -5008,6 +5043,45 @@ function payAfterInline(ps, k, demo){
     el.querySelector('.px').onclick=()=>{ promoMute('export'); track('pay_promo_dismiss',{variant:k}); el.remove(); };
   }, demo?0:700);
 }
+/* 5 · puce « même famille » : sous le titre de la pièce en cours, la cousine payante (pas de pop-up, pas de minuteur) */
+function payChip(){
+  document.querySelectorAll('.paychip').forEach(e=>e.remove());
+  if(!PROMO.has('chip') || state.route!=='atelier') return;
+  const cur0=model(state.draft.modelId); if(cur0 && cur0.price>0) return;     // déjà une pièce payante : rien
+  const ps=payPicks(1,'theiere'); if(!ps.length) return; const m=ps[0], ttl=document.querySelector('#topbar .ttl'); if(!ttl) return;
+  promoTrack('chip', ps);
+  const b=document.createElement('button'); b.type='button'; b.className='paychip'; b.dataset.paygo=m.id; b.dataset.payk='chip'; b.dataset.promoSeen='chip';
+  b.innerHTML=`<span>${D('Dans la même veine','In the same vein')} : <b>${esc(t(m.name))}</b>${m.tuto?' · '+D('tuto 3D','3D tutorial'):''}</span><i>${eur(m.price)} →</i>`;
+  ttl.appendChild(b); payWire(ttl);
+}
+/* 6 · barre du bas sur téléphone : Atelier · Carnet · Catalogue toujours sous le pouce (le burger cache le catalogue) */
+function payTabbar(){
+  document.body.classList.toggle('has-tabbar', PROMO.has('tabbar'));
+  let el=$('#paytabs'); if(!PROMO.has('tabbar')){ el&&el.remove(); return; }
+  if(!el){ el=document.createElement('nav'); el.id='paytabs'; el.setAttribute('aria-label',D('Navigation','Navigation')); document.body.appendChild(el);
+    el.onclick=e=>{ const b=e.target.closest('[data-tab2]'); if(!b) return; if(b.dataset.tab2==='more'){ drawer(true); return; }
+      if(b.dataset.tab2==='catalogue') track('pay_promo_click',{variant:'tabbar', shape:'catalogue'}); go(b.dataset.tab2); }; }
+  const nw=MODELS.filter(m=>inShop(m) && !m.soonOnly && m.price>0 && !owns(m.id)).length;
+  const it=(id,lab)=>`<button type="button" data-tab2="${id}" class="${state.route===id||(id==='catalogue'&&state.route==='produit')?'on':''}"><span class="ic">${ICONS[id]||''}</span><span>${lab}</span>${id==='catalogue'&&nw?`<i class="bdot">${nw}</i>`:''}</button>`;
+  el.innerHTML=it('atelier',D('Atelier','Workshop'))+it('carnet',D('Carnet','Shape book'))+it('catalogue',D('Catalogue','Catalogue'))+
+    `<button type="button" data-tab2="more"><span class="ic">${BURGER}</span><span>${D('Plus','More')}</span></button>`;
+  if(!promoSeen.has('stabbar')){ promoSeen.add('stabbar'); track('pay_promo_shown',{variant:'tabbar'}); }
+}
+/* 7 · après le sondage de sortie : « merci » + une proposition, quand on est de bonne humeur */
+function payMerciHTML(){
+  if(!PROMO.has('merci')) return '';
+  const ps=payPicks(2,'theiere'); if(!ps.length) return '';
+  promoTrack('merci', ps);
+  const tile=m=>{ const ph=(PRODUCT_PHOTOS[m.id]||[])[0];
+    return `<button type="button" class="paymini" data-paygo="${m.id}" data-payk="merci">${ph?`<img src="${ph}" alt="" loading="lazy">`:''}<span class="pmn">${esc(t(m.name))}</span><span class="pmp">${eur(m.price)}</span></button>`; };
+  return `<div class="paymerci" data-promo-seen="merci"><p>${D('Pour ta prochaine pièce :','For your next piece:')}</p><div class="pmrow">${ps.map(tile).join('')}</div></div>`;
+}
+function payMerci(demo){
+  const m=modal(`<div class="mh"><span></span><button class="x" data-close aria-label="${D('Fermer','Close')}">×</button></div><div class="mb">
+    <p class="evmerci" style="text-align:center">${D('Merci, c’est noté','Thanks, noted')} ✓</p>
+    <p style="text-align:center;margin:0;font-size:13px">${D('Ça m’aide à choisir la suite.','It helps me pick what comes next.')}</p>${(()=>{ const was=PROMO.has('merci'); PROMO.add('merci'); const h=payMerciHTML(); if(!was) PROMO.delete('merci'); return h; })()}</div>`, {cls:'modal'});
+  payWire(m);
+}
 /* 4 · pastille numérotée sur le burger du téléphone (les vignettes sous « Catalogue » ont été retirées le 14/11) */
 const payNavOn = () => PROMO.has('nav') && state.route!=='catalogue' && state.route!=='produit';
 const payBurgerDot = () => { if(!payNavOn()) return ''; const n=payPicks(9).length; return n?`<i class="bdot" aria-hidden="true">${n}</i>`:''; };
@@ -5016,7 +5090,7 @@ function promoSwitchHTML(){
   if(!PROMO_DBG) return '';
   const L=PROMO_LBL();
   return `<span class="sblab">${D('Visibilité des payants','Paid shapes visibility')}</span><div class="promosw" id="promosw">${PROMO_ALL.map(k=>
-    `<div class="prow"><label><input type="checkbox" data-pk="${k}"${PROMO.has(k)?' checked':''}><span>${L[k]}</span></label>${k==='export'?`<select data-pexp aria-label="${D('Variante','Variant')}">${EXP_VARIANTS.map(v=>`<option value="${v}"${v===EXPV?' selected':''}>${({toast:D('carte flottante (actuelle)','floating card (current)'),bar:D('ligne sous le bouton','line under the button'),shelf:D('vitrine sous le bouton','shelf under the button'),tip:D('conseil d’impression','print tip')})[v]}</option>`).join('')}</select><button type="button" class="link" data-pdemo="${k}">${D('voir','play')}</button>`:''}</div>`).join('')}</div>`;
+    `<div class="prow"><label><input type="checkbox" data-pk="${k}"${PROMO.has(k)?' checked':''}><span>${L[k]}</span></label>${k==='merci'?`<button type="button" class="link" data-pdemo="${k}">${D('voir','play')}</button>`:''}${k==='pdf'?`<button type="button" class="link" data-pdemo="${k}">${D('voir','play')}</button>`:''}${k==='export'?`<select data-pexp aria-label="${D('Variante','Variant')}">${EXP_VARIANTS.map(v=>`<option value="${v}"${v===EXPV?' selected':''}>${({toast:D('carte flottante (actuelle)','floating card (current)'),bar:D('ligne sous le bouton','line under the button'),shelf:D('vitrine sous le bouton','shelf under the button'),tip:D('conseil d’impression','print tip')})[v]}</option>`).join('')}</select><button type="button" class="link" data-pdemo="${k}">${D('voir','play')}</button>`:''}</div>`).join('')}</div>`;
 }
 function promoWireSwitch(){
   const root=$('#promosw'); if(!root) return;
@@ -5029,7 +5103,9 @@ function promoWireSwitch(){
     promoSeen.clear(); document.querySelectorAll('.paysnack').forEach(x=>x.remove());
     render(); };
   root.onclick=e=>{ const b=e.target.closest('[data-pdemo]'); if(!b) return; drawer(false); const k=b.dataset.pdemo;
-    if(k==='export') payAfterExport(true); };
+    if(k==='export') payAfterExport(true);
+    if(k==='merci') payMerci(true);
+    if(k==='pdf') exportPDF(state.draft); };
 }
 /* le fil « 1 payer · 2 coller le lien · 3 atelier » des modales d'achat */
 const STEPS = (at, done) => `<div class="steps">
@@ -5134,6 +5210,7 @@ function viewAtelier(){
   $('#aSvg')?.addEventListener('click',e=>{ e.stopPropagation(); svgMenu($('#aSvg'), nu=>exportPieceSVG(st, nu),
     D('tous les gabarits, repères et cotes','every template, labels and dimensions')); });
   galetPartsBar(cur()); renderPreview(); renderDims(); wireInfo($('#page'));
+  payChip();
 }
 
 /** le lot édité : le brouillon de l'atelier, ou l'essai d'une fiche produit */
@@ -7998,15 +8075,29 @@ function pdfMiniMap(doc, t, xRight, yBase){
   }
   return x;
 }
+const PDF_QR={en:'11111110111011010010011000000110001111111|10000010111100000101000001100101001000001|10111010111001000111010111100001101011101|10111010001000111001101001001100101011101|10111010101100111111011000001101001011101|10000010001001111010000100001000101000001|11111110101010101010101010101010101111111|00000000011100100011100001001000000000000|10011111101110000101100000111100110010111|10000101000100111011000101110001000110000|00110011110000100100000100011100010010100|00110001000110010110101110110101100001010|11111110000001111001000011011000101100001|10010100011100110011100001011110001111111|01101011101001101101111111110001111000001|11001000110000100000100100000001010101111|10100010111011100000101011010011010001000|11100100011001001111111000111101110011010|01110011110010010111000101011011011111101|10101000100011010001110101110011111010110|01111110000011110011110101010100001101110|11111000110101000001001100110011100110100|01001110100100100110000101111000000011100|10010101101101001100100000000100111111010|11100111000010010000101010011000101101000|10001000101101000010000100111100101110101|10100010000000110101101010111101110101001|00101100001000001011100110010011011101111|10000010001101101010101101001011000101001|11100101111100111010111110110000110111010|11010011100000100000110101011101110010101|11000100010010001010001011101001001110101|11111011100010001110000000110101111111101|00000000110110100101000001110000100011000|11111110101101101000110101011111101011100|10000010101111011010000101001101100011011|10111010111001011101011011010001111110100|10111010111100101010111101111001100101110|10111010001010110101110001010100010111101|10000010011111111110000110010000010011101|11111110101000010000101101000011101010000',fr:'11111110001000111101011101001001101111111|10000010010011101100010001110010101000001|10111010100111000111111001011000101011101|10111010101111011001010110111101101011101|10111010110001011011011100001001001011101|10000010110100011110011000011100101000001|11111110101010101010101010101010101111111|00000000111100110011110110101001100000000|10111110010100111100101001100101101111100|00010000101111100011111100001101111110111|00101010011010001100111001011100100010000|10101000111100011010111010101001110111011|11011011000011111100100111110101000001110|10111101000110110100011001010001100110000|00011110000111100000110110110010010001000|11011100110110000000010100111001001101000|10111111010110101100001110111100110101101|10111001001110101011100100101001001111101|01011011110101001010101000011000110011100|00101100001011100001100010111010101011000|01100111000111110010011010011101000100111|00010001101101000001110100111001011110011|11011111111101100010000011011100111111000|00010100110111001000111110011000100001000|11010010000101110100000011100101000001101|11001000100101011011100101001001001111011|00000111010000001000111011110000101110000|00000001001011110001011110101001101111000|01010110111101011100001001101101100001110|10110101001011001000111011101001111011011|10011010111101101101010001111110111111000|10011001011110000001111010110011111111010|10000111110100111101001011101110111110100|00000000111011101111110101001010100011111|11111110001100100100110001110001101011000|10000010110000100110011111001001100011000|10111010110101110001010000110100111110101|10111010110111001011101100001011010100000|10111010101001101010011000010101011110100|10000010001100000100011000111000101011010|11111110111101011100001001110111001110100'};   // QR du catalogue (CoreImage, niveau M, décodés OK) : fr / en, lignes séparées par |
+/** QR du catalogue, dessiné en rectangles pleins (une barre par suite de modules noirs) : net à toute échelle, rien à charger */
+function pdfQr(doc, x, y, size){
+  const rows=(PDF_QR[state.lang==='en'?'en':'fr']).split('|'), n=rows.length, c=size/n;
+  doc.setFillColor(255,255,255); doc.rect(x-1.5,y-1.5,size+3,size+3,'F');
+  doc.setFillColor(...PDF_INK);
+  rows.forEach((r,j)=>{ let i=0; while(i<n){ if(r[i]!=='1'){ i++; continue; } let k=i; while(k<n && r[k]==='1') k++; doc.rect(x+i*c, y+j*c, (k-i)*c+.02, c+.02, 'F'); i=k; } });
+}
+const pdfQrOn = st => { if(!PROMO.has('pdf')) return false; const m=model(st.modelId); return !(m && m.price>0); };   // gratuit seulement : qui a payé n'a pas de pub
 function pdfFoot(doc, hd, pageW){
   pageW=pageW||doc.internal.pageSize.getWidth(); const M=10, right=pageW-M, y=pdfPageH(doc)-5.5;
   doc.setDrawColor(...PDF_LINE); doc.setLineWidth(.2); doc.line(M, y-3.2, right, y-3.2);
   doc.setFont('helvetica','normal'); doc.setFontSize(6.2); doc.setTextColor(...PDF_GREY);
-  doc.text('gabarits-ceramique.com', M, y);
+  if(PROMO.has('pdf')){
+    const lab='gabarits-ceramique.com', more=D('  ·  plus de gabarits : catalogue','  ·  more templates: catalogue');
+    doc.textWithLink(lab, M, y, {url: SITE_URL+(state.lang==='en'?'/en':'')+'/?utm_source=pdf&utm_medium=footer&utm_campaign=gabarit_gratuit'});
+    doc.setTextColor(...PDF_TERRA); doc.textWithLink(more, M+doc.getTextWidth(lab), y, {url: SITE_URL+(state.lang==='en'?'/en':'')+'/?utm_source=pdf&utm_medium=footer&utm_campaign=catalogue'});
+    doc.setTextColor(...PDF_GREY);
+  } else doc.text('gabarits-ceramique.com', M, y);
   let xEnd=right-16;
   if(hd.tile) xEnd=pdfMiniMap(doc, hd.tile, xEnd, y)-3;
   if(hd.dims){
-    const x=M+doc.getTextWidth('gabarits-ceramique.com')+6;
+    const x=M+doc.getTextWidth('gabarits-ceramique.com')+(PROMO.has('pdf')?doc.getTextWidth(D('  ·  plus de gabarits : catalogue','  ·  more templates: catalogue')):0)+6;
     doc.setTextColor(...PDF_INK);
     doc.text(pdfFit(doc, hd.dims, Math.max(20, xEnd-x), 6.8), x, y);
   }
@@ -8880,6 +8971,54 @@ const calcRow = (k, v) => Object.assign([k, v], {calc:true});
 const capRow  = (k, v) => FEATURES.contenance ? calcRow(k, v) : null;   // contenance : derrière son drapeau
 /* d.thick est la paroi FINIE : la plaque se sort plus épaisse du retrait */
 const pdfSlab = p => `${U(p.thick/(1-state.shrink))} · ${D('paroi finie','finished wall')} ${U(p.thick)}`;
+/** pictos des réseaux, tracés en vectoriel (jsPDF) : pas d'image à charger */
+function pdfSocialIcon(doc, id, x, y, s){
+  doc.setDrawColor(...PDF_TERRA); doc.setFillColor(...PDF_TERRA); doc.setLineWidth(.35);
+  if(id==='instagram'){ doc.roundedRect(x, y, s, s, s*.3, s*.3, 'S'); doc.circle(x+s/2, y+s/2, s*.22, 'S'); doc.circle(x+s*.78, y+s*.22, .22, 'F'); }
+  else { doc.circle(x+s/2, y+s/2, s/2, 'S'); doc.setFont('helvetica','bold'); doc.setFontSize(s*2.1); doc.setTextColor(...PDF_TERRA); doc.text('P', x+s/2, y+s*.74, {align:'center'}); }
+}
+/** Bloc « prochaine pièce » des PDF gratuits : QR vers le catalogue + comment suivre le projet. Grand (carte) si la page a la place,
+    compact (QR + 2 lignes) s'il n'y en a qu'un peu, rien si la page est pleine. */
+function pdfQrBlock(doc, st, y, boxY, up){
+  if(!pdfQrOn(st)) return;
+  const top=y+.5+(up||0), room=boxY-top, {X0,W}=PG;
+  if(room<24) return;
+  const paid=MODELS.filter(x=>x.price>0 && inShop(x) && !x.soonOnly), from=paid.length?Math.min(...paid.map(x=>x.price)):0;
+  const url=SITE_URL+(state.lang==='en'?'/en':'')+'/?utm_source=pdf&utm_medium=qr&utm_campaign=gabarit_gratuit';
+  const pitch=D(`Théière avec tuto 3D, bol-tasse, maison lumineuse…${from?` dès ${eur(from)}`:''}. Les formes payantes financent l’outil, qui reste gratuit.`,
+                `Teapot with 3D tutorial, footed cup, glowing house…${from?` from ${eur(from)}`:''}. Paid shapes fund the tool, which stays free.`);
+  if(room<27){                                  // compact : pas la place pour la carte
+    const q=16, xq=X0+W-q-1.5, tx=xq-5;
+    pdfQr(doc, xq, top+1.5, q); doc.link(xq, top+1.5, q, q, {url});
+    doc.setFont('helvetica','bold'); doc.setFontSize(8.4); doc.setTextColor(...PDF_INK);
+    doc.text(D('Ta prochaine pièce est à un scan','Your next piece is one scan away'), tx, top+5.6, {align:'right'});
+    doc.setFont('helvetica','normal'); doc.setFontSize(7.2); doc.setTextColor(...PDF_GREY);
+    doc.text(doc.splitTextToSize(pitch, 100), tx, top+10, {align:'right'});
+    return;
+  }
+  const H=Math.min(31, room-5), q=Math.min(21, H-12), qx=X0+7, qy=top+4.2;
+  doc.setFillColor(...PDF_WASH); doc.setDrawColor(...PDF_LINE); doc.setLineWidth(.25); doc.roundedRect(X0, top, W, H, 2.2, 2.2, 'FD');
+  doc.setFillColor(...PDF_TERRA); doc.roundedRect(X0, top+4, 1.4, H-8, .7, .7, 'F');                 // liseré céladon
+  pdfQr(doc, qx, qy, q); doc.link(qx, qy, q, q, {url});
+  doc.setFont('helvetica','bold'); doc.setFontSize(5.8); doc.setTextColor(...PDF_TERRA); doc.setCharSpace(.4);
+  doc.text(D('SCANNE-MOI','SCAN ME'), qx+q/2, qy+q+4.1, {align:'center'}); doc.setCharSpace(0);
+  const tx=qx+q+9, tw=W-(tx-X0)-6;
+  doc.setFont('helvetica','bold'); doc.setFontSize(11.5); doc.setTextColor(...PDF_INK);
+  doc.text(D('Ta prochaine pièce est à un scan.','Your next piece is one scan away.'), tx, top+9);
+  doc.setFont('helvetica','normal'); doc.setFontSize(7.6); doc.setTextColor(...PDF_GREY);
+  const pl=doc.splitTextToSize(pitch, tw); doc.text(pl, tx, top+14); 
+  const sy=top+H-5.2;                                                                               // rangée des réseaux
+  doc.setDrawColor(...PDF_LINE); doc.line(tx, sy-4, X0+W-6, sy-4);
+  doc.setFont('helvetica','bold'); doc.setFontSize(7); doc.setTextColor(...PDF_INK);
+  const lab=D('Ta pièce est finie ? Montre-la :','Piece finished? Show it off:'); doc.text(lab, tx, sy+.6);
+  let sx=tx+doc.getTextWidth(lab)+5;
+  const hand={instagram:'@gabarits.ceramique', pinterest:'pinterest.com/loucoff1995'};
+  SOCIALS.filter(x=>hand[x.id]).forEach(x=>{
+    pdfSocialIcon(doc, x.id, sx, sy-2.6, 4); sx+=5.6;
+    doc.setFont('helvetica','normal'); doc.setFontSize(7.2); doc.setTextColor(...PDF_TERRA);
+    const w=doc.getTextWidth(hand[x.id]); doc.textWithLink(hand[x.id], sx, sy+.5, {url:x.url}); sx+=w+6;
+  });
+}
 async function pdfSheetPage(doc, st, plan){
   const parts=st.parts, multi=parts.length>1, src=model(st.modelId), S=setStats(st);
   const k=100/(1-state.shrink);
@@ -8912,7 +9051,7 @@ async function pdfSheetPage(doc, st, plan){
     y=pdfSection(doc, `${D('Les gabarits du lot','The templates')} · ${fmt(k)} %`, y);
     const ex=[segNote(plan), tileNote(plan)].filter(Boolean), up=4.4*ex.length;
     y=pdfPatGrid(doc, plan.items, plan, y+1, paper().h-55-up);
-    pdfBeforeBox(doc, Math.min(Math.max(y+4+up, paper().h-51), paper().h-35), ex);  // calé en pied de page
+    { const by=Math.min(Math.max(y+4+up, paper().h-51), paper().h-35); pdfQrBlock(doc, st, y, by, up); pdfBeforeBox(doc, by, ex); }  // calé en pied de page
     pdfFoot(doc, { dims: parts.map(p=>`${p.name} ${uNum(totalH(p))} x Ø ${U(maxD(p))}`).join('   ·   ') });
     return;
   }
@@ -8955,7 +9094,7 @@ async function pdfSheetPage(doc, st, plan){
   y=pdfSection(doc, `${D('Gabarits à découper','Templates to cut')} · ${fmt(k)} % (${D('retrait','shrinkage')} ${Math.round(state.shrink*100)} %)`, y);
   const ex=[segNote(plan), tileNote(plan)].filter(Boolean), up=4.4*ex.length;
   y=pdfPatGrid(doc, plan.items, plan, y+1, paper().h-55-up);
-  pdfBeforeBox(doc, Math.min(Math.max(y+4+up, paper().h-51), paper().h-35), ex);  // calé en pied de page
+  { const by=Math.min(Math.max(y+4+up, paper().h-51), paper().h-35); pdfQrBlock(doc, st, y, by, up); pdfBeforeBox(doc, by, ex); }  // calé en pied de page
   pdfFoot(doc, { dims:`${uNum(totalH(p))} x Ø ${U(maxD(p))} · ${D('plaque','slab')} ${U(p.thick/(1-state.shrink))}` });
 }
 
