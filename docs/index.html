@@ -1509,15 +1509,10 @@ body.tourpad{padding-bottom:62vh}
 .tsshop .tsnm{flex:1;font-size:13.5px;line-height:1.25}
 .tsshop .tsnm small{display:block;color:var(--ink2);font-size:11.5px}
 .tsshop .tspr{font-weight:600;font-size:13px;white-space:nowrap}
-/* après le sondage : une ligne + deux vignettes, discret */
-.paymerci{margin:16px 0 2px;padding-top:12px;border-top:1px solid var(--line);text-align:center}
-.paymerci p{margin:0 0 8px;font-size:12px;color:var(--ink2)}
-.paymerci .pmrow{display:flex;gap:8px;justify-content:center}
-.paymini{flex:1;max-width:170px;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 6px 7px;background:none;border:1px solid var(--line);border-radius:8px;color:var(--ink);font:inherit;cursor:pointer;transition:border-color .15s}
-.paymini:hover{border-color:var(--ink)}
-.paymini img{width:100%;height:58px;object-fit:contain;border-radius:5px;background:var(--wash)}
-.paymini .pmn{font-size:12px;font-weight:600;line-height:1.2}
-.paymini .pmp{font-family:var(--gc-font-cotes);font-size:11px;color:var(--ink2)}
+/* après le sondage : une seule ligne discrète vers le catalogue */
+.mb .paymerci,.paymerci{margin:16px 0 0!important;text-align:center}
+.paymerci button{background:none;border:0;padding:0;font:inherit;font-size:12.5px;color:var(--ink2);cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line)}
+.paymerci button:hover{color:var(--gc-action);text-decoration-color:currentColor}
 /* ---- visibilité des gabarits payants : cinq emplacements à comparer (?promo=…) ---- */
 .paycard{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:9px 12px 9px 9px;background:var(--card);
   border:1.5px solid var(--line);border-radius:8px;color:var(--ink);font:inherit;cursor:pointer;transition:border-color .15s,transform .15s}
@@ -4644,7 +4639,7 @@ function askEvolution(source){
     render(`<p class="evmerci">${D('Merci, c’est noté','Thanks, noted')} <svg class="evcheck" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M7 12.5 L10.5 16 L17 8.5"/></svg></p>
       <p class="evh" style="text-align:center;margin:0">${D('Ça m’aide à choisir la suite.','It helps me pick what comes next.')}</p>${payMerciHTML()}`);
     payWire(body);
-    if(PROMO.has('merci') && body.querySelector('.paymini')) { /* on laisse le temps de voir : fermeture à la croix */ } else later(closeModal, 1900);
+    if(PROMO.has('merci') && body.querySelector('.paymerci')) { /* on laisse le temps de voir : fermeture à la croix */ } else later(closeModal, 1900);
   };
   const s1=()=>{
     step(1);
@@ -4947,7 +4942,7 @@ const closeModal = () => {
    un interrupteur par emplacement + « voir » pour rejouer la carte d'export.
    Chaque emplacement a sa source : PRODUCT_SRC = promo_<emplacement> suit l'achat jusqu'à Gumroad. */
 const PROMO_ALL = ['shelf','export','nav','chip','tabbar','merci','pdf'];
-const PROMO_DEFAULT = ['shelf','export','nav','merci'];   // en ligne depuis le 14/11 ; ?promo=none les éteint, ?promo=… en choisit
+const PROMO_DEFAULT = ['shelf','export','nav','merci','pdf'];   // en ligne depuis le 14/11 ; ?promo=none les éteint, ?promo=… en choisit
 const PROMO_DBG = /[?&]promo\b/.test(location.search);
 const PROMO = new Set((()=>{ const v=(location.search.match(/[?&]promo=([^&]*)/)||[])[1];
   if(v==null) return PROMO_DEFAULT; if(v==='all') return PROMO_ALL; return v.split(',').filter(k=>PROMO_ALL.includes(k)); })());
@@ -5072,9 +5067,7 @@ function payMerciHTML(){
   if(!PROMO.has('merci')) return '';
   const ps=payPicks(2,'theiere'); if(!ps.length) return '';
   promoTrack('merci', ps);
-  const tile=m=>{ const ph=(PRODUCT_PHOTOS[m.id]||[])[0];
-    return `<button type="button" class="paymini" data-paygo="${m.id}" data-payk="merci">${ph?`<img src="${ph}" alt="" loading="lazy">`:''}<span class="pmn">${esc(t(m.name))}</span><span class="pmp">${eur(m.price)}</span></button>`; };
-  return `<div class="paymerci" data-promo-seen="merci"><p>${D('Pour ta prochaine pièce :','For your next piece:')}</p><div class="pmrow">${ps.map(tile).join('')}</div></div>`;
+  return `<p class="paymerci" data-promo-seen="merci"><button type="button" data-payall data-payk="merci">${D('Une prochaine pièce en tête ? Découvrir le catalogue →','A next piece in mind? Browse the catalogue →')}</button></p>`;
 }
 function payMerci(demo){
   const m=modal(`<div class="mh"><span></span><button class="x" data-close aria-label="${D('Fermer','Close')}">×</button></div><div class="mb">
@@ -8975,6 +8968,7 @@ const pdfSlab = p => `${U(p.thick/(1-state.shrink))} · ${D('paroi finie','finis
 function pdfSocialIcon(doc, id, x, y, s){
   doc.setDrawColor(...PDF_TERRA); doc.setFillColor(...PDF_TERRA); doc.setLineWidth(.35);
   if(id==='instagram'){ doc.roundedRect(x, y, s, s, s*.3, s*.3, 'S'); doc.circle(x+s/2, y+s/2, s*.22, 'S'); doc.circle(x+s*.78, y+s*.22, .22, 'F'); }
+  else if(id==='mail'){ doc.roundedRect(x, y+s*.15, s, s*.7, .5, .5, 'S'); doc.line(x+.3, y+s*.25, x+s/2, y+s*.58); doc.line(x+s-.3, y+s*.25, x+s/2, y+s*.58); }
   else { doc.circle(x+s/2, y+s/2, s/2, 'S'); doc.setFont('helvetica','bold'); doc.setFontSize(s*2.1); doc.setTextColor(...PDF_TERRA); doc.text('P', x+s/2, y+s*.74, {align:'center'}); }
 }
 /** Bloc « prochaine pièce » des PDF gratuits : QR vers le catalogue + comment suivre le projet. Grand (carte) si la page a la place,
@@ -8985,8 +8979,8 @@ function pdfQrBlock(doc, st, y, boxY, up){
   if(room<24) return;
   const paid=MODELS.filter(x=>x.price>0 && inShop(x) && !x.soonOnly), from=paid.length?Math.min(...paid.map(x=>x.price)):0;
   const url=SITE_URL+(state.lang==='en'?'/en':'')+'/?utm_source=pdf&utm_medium=qr&utm_campaign=gabarit_gratuit';
-  const pitch=D(`Théière avec tuto 3D, bol-tasse, maison lumineuse…${from?` dès ${eur(from)}`:''}. Les formes payantes financent l’outil, qui reste gratuit.`,
-                `Teapot with 3D tutorial, footed cup, glowing house…${from?` from ${eur(from)}`:''}. Paid shapes fund the tool, which stays free.`);
+  const pitch=D(`Théière avec tuto 3D, bol-tasse, maison lumineuse…${from?` dès ${eur(from)}`:''}   ·  Les formes payantes financent l’outil, qui reste gratuit.`,
+                `Teapot with 3D tutorial, footed cup, glowing house…${from?` from ${eur(from)}`:''}   ·  Paid shapes fund the tool, which stays free.`);
   if(room<27){                                  // compact : pas la place pour la carte
     const q=16, xq=X0+W-q-1.5, tx=xq-5;
     pdfQr(doc, xq, top+1.5, q); doc.link(xq, top+1.5, q, q, {url});
@@ -9004,19 +8998,20 @@ function pdfQrBlock(doc, st, y, boxY, up){
   doc.text(D('SCANNE-MOI','SCAN ME'), qx+q/2, qy+q+4.1, {align:'center'}); doc.setCharSpace(0);
   const tx=qx+q+9, tw=W-(tx-X0)-6;
   doc.setFont('helvetica','bold'); doc.setFontSize(11.5); doc.setTextColor(...PDF_INK);
-  doc.text(D('Ta prochaine pièce est à un scan.','Your next piece is one scan away.'), tx, top+9);
+  doc.text(D('Ta prochaine pièce est à un scan.','Your next piece is one scan away.'), tx, top+8);
   doc.setFont('helvetica','normal'); doc.setFontSize(7.6); doc.setTextColor(...PDF_GREY);
-  const pl=doc.splitTextToSize(pitch, tw); doc.text(pl, tx, top+14); 
-  const sy=top+H-5.2;                                                                               // rangée des réseaux
-  doc.setDrawColor(...PDF_LINE); doc.line(tx, sy-4, X0+W-6, sy-4);
-  doc.setFont('helvetica','bold'); doc.setFontSize(7); doc.setTextColor(...PDF_INK);
-  const lab=D('Ta pièce est finie ? Montre-la :','Piece finished? Show it off:'); doc.text(lab, tx, sy+.6);
-  let sx=tx+doc.getTextWidth(lab)+5;
+  doc.text(doc.splitTextToSize(pitch, tw), tx, top+12.6);
+  doc.setDrawColor(...PDF_LINE); doc.line(tx, top+15.4, X0+W-6, top+15.4);
+  /* le cadeau : la photo de la pièce finie, par les réseaux ou par e-mail */
+  doc.setFont('helvetica','bold'); doc.setFontSize(7.4); doc.setTextColor(...PDF_INK);
+  doc.text(D('Ta pièce est finie ? Ce serait un superbe cadeau pour moi d’en recevoir la photo :','Piece finished? A photo of it would be a wonderful gift to me:'), tx, top+19.6);
+  const ry=top+24.4; let sx=tx;
   const hand={instagram:'@gabarits.ceramique', pinterest:'pinterest.com/loucoff1995'};
-  SOCIALS.filter(x=>hand[x.id]).forEach(x=>{
-    pdfSocialIcon(doc, x.id, sx, sy-2.6, 4); sx+=5.6;
+  const chans=[...SOCIALS.filter(x=>hand[x.id]).map(x=>({id:x.id, txt:hand[x.id], url:x.url})), {id:'mail', txt:CONTACT_MAIL, url:'mailto:'+CONTACT_MAIL}];
+  chans.forEach(c=>{
+    pdfSocialIcon(doc, c.id, sx, ry-2.6, 4); sx+=5.4;
     doc.setFont('helvetica','normal'); doc.setFontSize(7.2); doc.setTextColor(...PDF_TERRA);
-    const w=doc.getTextWidth(hand[x.id]); doc.textWithLink(hand[x.id], sx, sy+.5, {url:x.url}); sx+=w+6;
+    const w=doc.getTextWidth(c.txt); doc.textWithLink(c.txt, sx, ry+.5, {url:c.url}); sx+=w+5.5;
   });
 }
 async function pdfSheetPage(doc, st, plan){
@@ -12499,6 +12494,12 @@ function readUrl(){
     else if(m && HIDE.includes(m.id) && m.paidLater && isSoon(m)){   // prisme, facettes, coussin : fiche « bientôt » + liste d'attente
       if(FEATURES.catalogue) state.route='catalogue'; res.soon=m.id; }
     else if(['libre','tore'].includes(id) || /^(kur|tour)/.test(id) || (m && HIDE.includes(m.id))) res.v1=id;
+  }
+  /* lien direct vers le catalogue (email de bienvenue, newsletters) : ?page=catalogue.
+     Une ?forme= reconnue garde la priorité ; sans catalogue dans l'édition, on reste sur l'atelier. */
+  else if(q.get('page')==='catalogue' && FEATURES.catalogue){
+    state.route='catalogue';
+    track('catalogue_landing', {source:(q.get('utm_campaign')||'direct').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,60)||'direct'});
   }
   return res;
 }
