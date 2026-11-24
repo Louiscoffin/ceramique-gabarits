@@ -2193,7 +2193,7 @@ if(PH_LIVE){
        parcours à l'écran est enregistré, sur 1 session sur 5 (quota gratuit PostHog : 5 000/mois). */
     session_recording:{ maskAllInputs:true, maskTextSelector:'[data-ph-mask]', recordBody:false, recordHeaders:false },
     enable_recording_console_log:false,
-    loaded:ph=>{ try{ ph.register({ app:'v2', edition:(typeof EDITION!=='undefined'&&EDITION)||'config' });
+    loaded:ph=>{ try{ ph.register(Object.assign({ app:'v2', edition:(typeof EDITION!=='undefined'&&EDITION)||'config' }, window.AB_NAV?{ab_nav:window.AB_NAV}:{}));
                       if(!PH_LOCAL && Math.random()<0.2) ph.startSessionRecording(); }catch(e){} } },
     PH_LOCAL ? { api_host:location.origin+'/__posthog', disable_compression:true,
                  before_send:ev=>{ window.__phSent.push([ev.event, ev.properties]); return ev; } } : {})); }catch(e){} };
@@ -2202,6 +2202,9 @@ if(PH_LIVE){
 const trackQueue=[]; let trackTimer=null, trackTries=0;
 function track(event, props){
   props=Object.assign({ app:'v2', edition:(typeof EDITION!=='undefined'&&EDITION)||'config' }, props||{});
+  /* test A/B de la navigation mobile (23/11) : la variante et le temps écoulé accompagnent TOUS les événements */
+  try{ if(window.AB_NAV){ props.ab_nav=window.AB_NAV; if(window.AB_FORCED) props.ab_forced=1; }
+       props.since_load_s=Math.round(performance.now()/100)/10; }catch(e){}
   window.__gcEvents.push([event, props]);
   if(!PH_LIVE) return;
   try{
@@ -4207,6 +4210,9 @@ function renderAppFoot(){
   };
 }
 function go(route, productId){
+  const from=state.route;
+  if(route!==from || route==='produit') track('screen_view',{ route, from, via:navVia||'other', shape:route==='produit'?(productId!==undefined?productId:state.productId):undefined });
+  navVia=null;
   state.route=route; if(productId!==undefined) state.productId=productId;
   window.scrollTo(0,0); render();
 }
@@ -4234,7 +4240,9 @@ function render(){
         title="${D('2 minutes pour choisir ensemble la suite de l’outil','A 2-minute survey (in French) to shape what comes next')}">
         <span class="ic" aria-hidden="true">✍️</span><span class="lab">${D('Donner mon avis','Give feedback')}</span><span class="min">2 min</span><span class="fb-cut" aria-hidden="true"><svg class="fb-line"><mask id="fbMask" maskUnits="userSpaceOnUse"><path class="fb-mask"/></mask><path class="fb-dash" mask="url(#fbMask)"/></svg><svg class="fb-sc" viewBox="0 0 20 14"><g class="bl-a"><circle cx="4" cy="3.5" r="2.5" fill="none" stroke="#23271F" stroke-width="1.5"/><path d="M6.2 5 19 11.2" stroke="#23271F" stroke-width="1.6" stroke-linecap="round"/></g><g class="bl-b"><circle cx="4" cy="10.5" r="2.5" fill="none" stroke="#23271F" stroke-width="1.5"/><path d="M6.2 9 19 2.8" stroke="#23271F" stroke-width="1.6" stroke-linecap="round"/></g></svg></span></a>`;
       $('#fbNav')?.addEventListener('click',()=>avisClick('barre')); } }
-  $('#nav').querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{ drawer(false);
+  $('#nav').querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{
+    navVia = document.body.classList.contains('drawer-open') ? 'drawer' : 'sidebar';
+    track('nav_click',{ via:navVia, to:b.dataset.nav }); drawer(false);
     if(b.dataset.nav==='tuto'){ track('tuto_open',{shape:state.draft.modelId, source:'barre'}); return window.open(tutoURL(state.draft, draftTuto()),'_blank'); }
     const n=NAV().find(x=>x.id===b.dataset.nav); if(n && n.soon) return showTeaser(n.soon);
     go(b.dataset.nav); });
@@ -4315,7 +4323,7 @@ function topbar(title, sub, actions){
       aria-expanded="false" aria-controls="side">${BURGER}${payBurgerDot()}</button>
     <div class="ttl"><h2>${title}</h2>${sub?`<div class="sub">${sub}</div>`:''}</div>
     <div class="sp">${actions||''}</div>`;
-  $('#burger').onclick=()=>drawer(true);
+  $('#burger').onclick=()=>{ track('burger_open'); drawer(true); };
 }
 /* Thème et langue vivent dans la barre latérale : ce sont des réglages
    d'ambiance, pas des actions de page. Le bandeau reste aux actions. */
@@ -4941,8 +4949,30 @@ const closeModal = () => {
    ?promo=all les allume, ?promo=shelf,nav en choisit, et le pied de la barre latérale (tiroir sur mobile) donne
    un interrupteur par emplacement + « voir » pour rejouer la carte d'export.
    Chaque emplacement a sa source : PRODUCT_SRC = promo_<emplacement> suit l'achat jusqu'à Gumroad. */
+/* ===================== test A/B : navigation mobile (24/11) =====================
+   Seulement pour la mise en page « téléphone » (≤ 860 px, comme le CSS) :
+     burger  = témoin : catalogue derrière le burger + pastille numérotée sur le burger (en ligne depuis le 14/11)
+     tabbar  = barre du bas Atelier · Carnet · Catalogue · Plus (sans pastille sur le burger)
+   50/50 au premier chargement, gardé dans localStorage (gabarits-ab-nav : la variante seule, aucun identifiant) pour qu'un
+   visiteur ne change pas d'interface d'une visite à l'autre. PostHog tourne sans cookie (persistence:'memory') : une visite
+   = une unité d'analyse ; une personne qui revient reste dans son groupe. Tous les événements portent ab_nav + since_load_s.
+   ?ab=tabbar|burger force une variante (non gardée, ab_forced=1) ; ?promo=… désactive le test (comparaison manuelle). */
+const AB_NAV_KEY = 'gabarits-ab-nav';
+(function(){
+  try{
+    if(/[?&]promo\b/.test(location.search) || !matchMedia('(max-width:860px)').matches) return;
+    const f=(location.search.match(/[?&]ab=(tabbar|burger)\b/)||[])[1];
+    let v=f||lsGet(AB_NAV_KEY), returning=!!(!f && (v==='tabbar'||v==='burger'));
+    if(v!=='tabbar' && v!=='burger'){ v=(crypto.getRandomValues(new Uint8Array(1))[0]&1)?'tabbar':'burger'; }
+    if(!f) lsSet(AB_NAV_KEY, v);
+    window.AB_NAV=v; if(f) window.AB_FORCED=1;
+    track('ab_exposed',{ returning, vw:innerWidth, vh:innerHeight, route:null });
+  }catch(e){}
+})();
+let navVia=null;   // d'où vient le dernier changement d'écran : tabbar | drawer | sidebar | other
 const PROMO_ALL = ['shelf','export','nav','chip','tabbar','merci','pdf'];
-const PROMO_DEFAULT = ['shelf','export','nav','merci','pdf'];   // en ligne depuis le 14/11 ; ?promo=none les éteint, ?promo=… en choisit
+const PROMO_DEFAULT = window.AB_NAV==='burger' ? ['shelf','export','nav','merci','pdf']
+                                              : ['shelf','export','nav','tabbar','merci','pdf'];   // en ligne depuis le 14/11 (tabbar : test A/B 24/11, mobile) ; ?promo=none les éteint, ?promo=… en choisit
 const PROMO_DBG = /[?&]promo\b/.test(location.search);
 const PROMO = new Set((()=>{ const v=(location.search.match(/[?&]promo=([^&]*)/)||[])[1];
   if(v==null) return PROMO_DEFAULT; if(v==='all') return PROMO_ALL; return v.split(',').filter(k=>PROMO_ALL.includes(k)); })());
@@ -5054,8 +5084,9 @@ function payTabbar(){
   document.body.classList.toggle('has-tabbar', PROMO.has('tabbar'));
   let el=$('#paytabs'); if(!PROMO.has('tabbar')){ el&&el.remove(); return; }
   if(!el){ el=document.createElement('nav'); el.id='paytabs'; el.setAttribute('aria-label',D('Navigation','Navigation')); document.body.appendChild(el);
-    el.onclick=e=>{ const b=e.target.closest('[data-tab2]'); if(!b) return; if(b.dataset.tab2==='more'){ drawer(true); return; }
-      if(b.dataset.tab2==='catalogue') track('pay_promo_click',{variant:'tabbar', shape:'catalogue'}); go(b.dataset.tab2); }; }
+    el.onclick=e=>{ const b=e.target.closest('[data-tab2]'); if(!b) return; track('nav_click',{ via:'tabbar', to:b.dataset.tab2 });
+      if(b.dataset.tab2==='more'){ drawer(true); return; }
+      if(b.dataset.tab2==='catalogue') track('pay_promo_click',{variant:'tabbar', shape:'catalogue'}); navVia='tabbar'; go(b.dataset.tab2); }; }
   const nw=MODELS.filter(m=>inShop(m) && !m.soonOnly && m.price>0 && !owns(m.id)).length;
   const it=(id,lab)=>`<button type="button" data-tab2="${id}" class="${state.route===id||(id==='catalogue'&&state.route==='produit')?'on':''}"><span class="ic">${ICONS[id]||''}</span><span>${lab}</span>${id==='catalogue'&&nw?`<i class="bdot">${nw}</i>`:''}</button>`;
   el.innerHTML=it('atelier',D('Atelier','Workshop'))+it('carnet',D('Carnet','Shape book'))+it('catalogue',D('Catalogue','Catalogue'))+
@@ -5076,7 +5107,7 @@ function payMerci(demo){
   payWire(m);
 }
 /* 4 · pastille numérotée sur le burger du téléphone (les vignettes sous « Catalogue » ont été retirées le 14/11) */
-const payNavOn = () => PROMO.has('nav') && state.route!=='catalogue' && state.route!=='produit';
+const payNavOn = () => PROMO.has('nav') && !PROMO.has('tabbar') && state.route!=='catalogue' && state.route!=='produit';
 const payBurgerDot = () => { if(!payNavOn()) return ''; const n=payPicks(9).length; return n?`<i class="bdot" aria-hidden="true">${n}</i>`:''; };
 /* interrupteurs de comparaison (?promo dans l'URL), au pied de la barre latérale */
 function promoSwitchHTML(){
