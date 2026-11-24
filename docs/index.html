@@ -2104,9 +2104,9 @@ const MODELS = [
     thick:5, dBase:0, ears:false, kit:{type:'ange-v', H:100, D:66, d:20, head:32, heart:16}, sections:[] },
   { id:'ange-photo', air:true, name:'Ange photophore', family:'Objet', diff:'Intermédiaire', price:3.99, novelty:true,
     lot:'noel', gumroad:{ url:'https://ceramix541.gumroad.com/l/ange-photo', productId:'RsHkrJIHZzyWtJjBlnv6dA==' },
-    blurb:"Un grand ange en cône creux, avec une fenêtre en cœur découpée dans la robe : posé sur une bougie LED, la lumière sort par le cœur. Secteur à découper, deux ailes, une boule-témoin.",
-    blurbEn:"A tall hollow cone angel with a heart-shaped window cut out of the dress: stood over an LED tea light, the light shines through the heart. Sector to cut, two wings, a ball gauge.",
-    thick:6, dBase:0, ears:false, kit:{type:'ange-photo', H:130, D:80, d:24, head:38, window:30}, sections:[] },
+    blurb:"Un grand ange en cône creux, avec une fenêtre en cœur découpée dans la robe : posé sur une bougie LED, la lumière sort par le cœur, assez grand pour y glisser une bougie ronde (réglable). Secteur à découper, deux ailes, une boule-témoin.",
+    blurbEn:"A tall hollow cone angel with a heart-shaped window cut out of the dress: stood over an LED tea light, the light shines through the heart, big enough to slide a round candle through (adjustable). Sector to cut, two wings, a ball gauge.",
+    thick:6, dBase:0, ears:false, kit:{type:'ange-photo', H:150, D:110, d:40, head:44, window:70}, sections:[] },
   { id:'plat-sapin', name:'Plat sapin à compartiments', family:'Vaisselle', diff:'Intermédiaire', price:3.99, novelty:true,
     lot:'noel', gumroad:{ url:'https://ceramix541.gumroad.com/l/plat-sapin', productId:'75hKvSM-xiD1vaHPHvjnnA==' },
     blurb:"Un grand plat en forme de sapin partagé en trois compartiments par deux cloisons, pour l'apéritif des fêtes. Le fond est la silhouette du sapin ; le bord se monte avec trois bandes collées sur la tranche.",
@@ -2828,18 +2828,22 @@ const KITS = {
       Incise three small branches at the bottom of the dress with a modelling tool before drying. Dry flat, slowly.`]
   },
   'ange-photo': {
-    rows:()=>[['H',D('Hauteur du cône','Cone height'),'h',80,260],['D',D('Ø du bas','Bottom Ø'),'Ø',50,170],['d',D('Ø du haut','Top Ø'),'Ø',12,80],['head',D('Ø de la tête','Head Ø'),'Ø',20,80],['window',D('Cœur-fenêtre','Heart window'),'L',12,70]],
+    rows:()=>[['H',D('Hauteur du cône','Cone height'),'h',80,260],['D',D('Ø du bas','Bottom Ø'),'Ø',50,170],['d',D('Ø du haut','Top Ø'),'Ø',12,80],['head',D('Ø de la tête','Head Ø'),'Ø',20,80],['window',D('Cœur-fenêtre','Heart window'),'L',12,110]],
     H:p=>p.H+p.head*.85, W:p=>Math.max(p.D, p.D*(2*40*1.35/80)+14),
-    hint:()=>D('Les cotes se règlent à droite : cône, tête, fenêtre. Les ailes suivent le Ø du bas.','Set the dimensions on the right: cone, head, window. The wings follow the bottom Ø.'),
-    note:()=>D('la fenêtre en cœur est tracée : à découper avant le séchage','the heart window is drawn in: cut it out before drying'),
+    hint:()=>D('Les cotes se règlent à droite : cône, tête, cœur-fenêtre. Agrandis le cœur pour y glisser une bougie ronde, ou réduis-le pour ne laisser filtrer que la lumière. Les ailes suivent le Ø du bas.','Set the dimensions on the right: cone, head, heart window. Make the heart bigger to slide a round candle through it, or smaller to let only the light through. The wings follow the bottom Ø.'),
+    note:p=>{ const base=D('la fenêtre en cœur est tracée : à découper avant le séchage','the heart window is drawn in: cut it out before drying');
+      if(!p) return base;
+      const cd=Math.floor(p.window*.62-2), c=kCone(p.H,p.D,Math.min(p.d,p.D-10),1,9), hh=p.window*.88, L0=c.Ls+(c.Lt-c.Ls)*.52, out=hh/2>(c.Lt-c.Ls)*.46 || p.window*.55>c.th*L0*.5;
+      return base+' · '+(cd>=30 ? D(`bougie ronde jusqu'à Ø ${U(cd)} : passe par le cœur`,`round candle up to Ø ${U(cd)} fits through the heart`) : D(`cœur trop petit pour une bougie (Ø ${U(Math.max(0,cd))} max) : la lumière seule passe`,`heart too small for a candle (Ø ${U(Math.max(0,cd))} max): only the light gets out`))
+        +(out?' · ⚠ '+D('le cœur est trop grand pour ce cône : agrandis le cône ou réduis le cœur','the heart is too big for this cone: enlarge the cone or reduce the heart'):''); },
     pieces(dm,k){ const p=dm.kit, d=Math.min(p.d,p.D-10), c=kCone(p.H,p.D,d,k,9), s=(p.D/80)*1.35*k, wing=wingAPts(s);
       return [ kPiece('A','A',D('Cône','Cone'),c.pts,[kAt(c,.52,0,kHeart(p.window*k))],1,`${D('secteur','sector')} ${Math.round(c.deg)}° · R ${uNum(c.Lt)} / ${U(c.Ls)} · ${D('fenêtre en cœur','heart window')} ${uNum(p.window*k)} · ${D('patte de collage','glue tab')} 9`),
         kPiece('B','B',D('Aile','Wing'),wing,[],2,`2 × ${kDim(wing)} · ${D('une en miroir','one mirrored')}`),
         KIT_BOULE('C',p.head,k) ]; },
     vol:dm=>kFrustVol(dm.kit.H,dm.kit.D,Math.min(dm.kit.d,dm.kit.D-10),dm.thick),
-    steps:()=>[`Laisser raffermir les pièces à plat. Découper la fenêtre en cœur dans le secteur A avant le séchage. Rouler le cône (patte sous le bord opposé, couture dans le dos), barbotine et stries.
+    steps:()=>[`Laisser raffermir les pièces à plat. Découper la fenêtre en cœur dans le secteur A avant le séchage (avec le cœur de départ, une bougie ronde Ø 40 passe : l'ange se pose dessus, ou on la glisse par le cœur). Rouler le cône (patte sous le bord opposé, couture dans le dos), barbotine et stries.
       Modeler la boule C, creuse ou percée d'un trou d'évent ; la coller au sommet. Coller les deux ailes B de chaque côté, au niveau des épaules. Pas de fond : l'ange se pose sur une bougie LED.`,
-      `Let the pieces firm up flat. Cut out the heart window in sector A before drying. Roll the cone (tab under the opposite edge, seam at the back), slip and score.
+      `Let the pieces firm up flat. Cut out the heart window in sector A before drying (with the default heart a round Ø 40 candle fits through: stand the angel over it, or slide it in through the heart). Roll the cone (tab under the opposite edge, seam at the back), slip and score.
       Hand-roll ball C, hollow or with a vent hole; attach it on top. Glue the two wings B on each side, at shoulder level. No base: the angel stands over an LED tea light.`]
   },
   'plat-sapin': {
@@ -5290,7 +5294,7 @@ function renderPreview(){
   if(isMaison(d)){                                  // une maison : rien à tirer, tout se règle à droite
     box.innerHTML=`<div class="stage">${maisonSVG(d,{W:660,H:450,letters:true})}
         <div class="hint">${isKit(d)?KITS[d.kit.type].hint():D('Les cotes se règlent à droite : largeur, profondeur, murs, toit.','Set the dimensions on the right: width, depth, walls, roof.')}</div></div>
-      <div class="note" style="margin-top:10px">${nPieces(d)} ${D('gabarits','templates')} · ${isKit(d)?KITS[d.kit.type].note():D('porte, fenêtres et fentes sont tracées : à découper avant le séchage','door, windows and slits are drawn in: cut them out before drying')}.</div>`;
+      <div class="note" style="margin-top:10px">${nPieces(d)} ${D('gabarits','templates')} · ${isKit(d)?KITS[d.kit.type].note(d.kit):D('porte, fenêtres et fentes sont tracées : à découper avant le séchage','door, windows and slits are drawn in: cut them out before drying')}.</div>`;
     return;
   }
   if(isTore(d)){                                    // un anneau sur la tranche : rien à tirer
