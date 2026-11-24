@@ -1290,6 +1290,13 @@ body.da-epure .pphoto{border:1px solid var(--line);border-radius:8px}
 .packband b{font-family:var(--gc-font-titres);font-weight:800;letter-spacing:-.03em;font-size:18px;display:block;margin-bottom:4px}
 .packband p{margin:0;font-size:12px;color:var(--ink2);max-width:560px}
 .packband .sp{margin-left:auto}
+.kguide{margin-top:16px;border-top:1px dashed var(--line);padding-top:12px}
+.kgh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px}.kgh h4{margin:0;font-family:var(--gc-font-titres);font-size:15px}
+.kguide ol{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.kguide li{display:flex;gap:10px;align-items:flex-start}
+.kgn{flex:none;width:22px;height:22px;border-radius:50%;background:var(--terra);color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center;margin-top:1px}
+.kgb b{font-size:13px}.kgb p{margin:3px 0 4px;font-size:12px;line-height:1.45;color:var(--ink2)}
+.kgth{display:block;max-width:260px;border:1px solid var(--line);border-radius:3px;background:var(--card);margin-top:5px}.kgth svg{display:block;width:100%;height:auto}
 .lotband img{width:148px;aspect-ratio:3/2;object-fit:cover;border-radius:2px;flex:none}
 .lotband{padding:12px 16px;margin:0 0 12px}
 .lotoffer{display:flex;gap:10px;align-items:center;border:1px dashed var(--line);border-radius:3px;padding:8px 10px;background:var(--card)}
@@ -1685,7 +1692,7 @@ body.sb-rail .navpay{display:none}
 window.GC_RELEASE = {
   edition: 'sortie',
   // waiver: true,   // à rallumer quand www.gabarits-ceramique.com/cgv existe (case de renonciation avant paiement)
-  shop: ['bol-talon', 'theiere', 'maison-lumineuse', 'tasse-galet', 'ange-v', 'ange-photo', 'plat-sapin', 'plateau-houx', 'plateau-etoile'],   // en vente : un produit Gumroad par pièce (m.gumroad dans atelier-v2.html) ; les 9 autres sont en « bientôt » depuis le 6/11
+  shop: ['bol-talon', 'theiere', 'maison-lumineuse', 'tasse-galet'],   // en vente : un produit Gumroad par pièce (m.gumroad dans atelier-v2.html) ; les 9 autres sont en « bientôt » depuis le 6/11
   avis: { fr:'https://tally.so/r/EqqdQL', en:'https://tally.so/r/aOO502' },   // « Donner mon avis » : les deux Tally du nouvel atelier (FR / EN)
   footTitle: { fr:'Le nouvel atelier', en:'The new workshop' },
   foot: { fr:'Tes réglages et tes pièces restent sur cet appareil. L’ancienne version reste accessible depuis « Nouvelle pièce ».',
@@ -2121,7 +2128,7 @@ const MODELS = [
     lot:'noel', gumroad:{ url:'https://ceramix541.gumroad.com/l/plateau-etoile', productId:'Tjsi1z3s2A_1Ml-BIdUUZA==' },
     blurb:"Un plateau en étoile dont chaque pointe porte une coupelle, avec un bol au centre : cinq coupelles à remplir de noix, de clémentines ou de chocolats. Onze pièces à monter, le plus complet de la série.",
     blurbEn:"A star-shaped platter with a small bowl on each point and a bowl in the centre: five bowls for nuts, clementines or chocolates. Eleven pieces to assemble, the most complete of the series.",
-    thick:6, dBase:0, ears:false, kit:{type:'plateau-etoile', R:138, cd:54, ch:22, cc:80}, sections:[] },
+    thick:6, dBase:0, ears:false, kit:{type:'plateau-etoile', R:138, cd:0, ch:22, cc:80, rim:22, dv:22}, sections:[] },
 
   /* ---- atelier libre 3D : la pièce composée dans la scène. Jamais au catalogue (retire) ;
      le modèle n'existe que pour que model(draft.modelId) réponde. ---- */
@@ -2256,7 +2263,7 @@ function track(event, props){
 const EDITIONS = {
   sortie:   { features:{ argile:false, plaque:false, sombre:false, contenance:false, emporte:false,
                          libre:false, lots:false, paywall:false, proto:false },
-              shop:['bol-talon','theiere','maison-lumineuse','tasse-galet','ange-v','ange-photo','plat-sapin','plateau-houx','plateau-etoile'], shopFree:true, tourAuto:true,   // en vente : bol-tasse à talon + théière (3/11), maison, galet, puis les 5 pièces de Noël (24/11) ; même liste que GC_RELEASE de build-sortie.sh. Les 9 autres pièces ont leur produit Gumroad (m.gumroad) mais sont en « bientôt » + liste d'attente depuis le retour en arrière du 6/11 : pour les relancer, les ajouter ici et dans GC_RELEASE, et sortir prisme/facettes/tore de `hide`
+              shop:['bol-talon','theiere','maison-lumineuse','tasse-galet'], shopFree:true, tourAuto:true,   // en vente : bol-tasse à talon + théière (3/11), maison, galet, puis les 5 pièces de Noël (24/11) ; même liste que GC_RELEASE de build-sortie.sh. Les 9 autres pièces ont leur produit Gumroad (m.gumroad) mais sont en « bientôt » + liste d'attente depuis le retour en arrière du 6/11 : pour les relancer, les ajouter ici et dans GC_RELEASE, et sortir prisme/facettes/tore de `hide`
               teasers:true,   // emporte-pièces, contenance, lots, atelier libre : « bientôt » → newsletter + cadeau (Louis, 17/10)
               soon:true,   // les formes qui seront payantes : « bientôt disponible » + email (Louis, 17/10)
               hide:['profil','prisme','facettes','coussin','tore'],   // restent dans l'ancienne version (Louis, 17/10) ; prisme, facettes et coussin deviennent payants   // le rayon : les formes de la V1 (gratuites) + le bol-tasse
@@ -2791,6 +2798,24 @@ const kPerim=pts=>pts.reduce((a,p,i)=>{ const q=pts[(i+1)%pts.length]; return a+
 const KIT_BOULE = (letter,head,k)=>kPiece(letter,'BOULE',D('Boule · gabarit témoin','Ball · gauge'),kCirc(head*k/2,40),[],1,
   `${D('boule modelée à la main','hand-rolled ball')} Ø ${uNum(head*k)} · ${D('creuse ou percée d’un trou d’évent avant cuisson','hollow, or vented, before firing')}`,{noClay:true});
 
+/** bords d'un contour polygonal : une bande droite par côté, bouts biseautés selon l'angle du contour
+    (biseau = moitié de l'angle de tournant : 45° pour un angle droit). Les côtés identiques ou symétriques se regroupent.
+    poly = sommets (déjà × retrait), h = hauteur du bord (× retrait), L0 = lettre de la 1re bande. */
+function kStrips(poly, h, k, L0){
+  const n=poly.length; let sa=0; for(let i=0;i<n;i++){ const a=poly[i], b=poly[(i+1)%n]; sa+=a[0]*b[1]-b[0]*a[1]; }
+  const sg=sa>=0?1:-1, ang=i=>{ const a=poly[(i-1+n)%n], b=poly[i], c=poly[(i+1)%n];   // tournant au sommet i (+ = saillant)
+    let d=Math.atan2(c[1]-b[1],c[0]-b[0])-Math.atan2(b[1]-a[1],b[0]-a[0]); while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; return sg*d*90/Math.PI; };   // = demi-tournant en degrés
+  const groups=[];
+  for(let i=0;i<n;i++){ const a=poly[i], b=poly[(i+1)%n], L=Math.hypot(b[0]-a[0],b[1]-a[1]);
+    const bv=[Math.round(ang(i)), Math.round(ang((i+1)%n))].sort((x,y)=>x-y), key=(Math.round(L/k*2)/2)+'|'+bv.join(',');
+    let g=groups.find(x=>x.key===key); if(!g){ g={key,L,bv,count:0}; groups.push(g); } g.count++; }
+  const fmt=b=>`${Math.abs(b)}°${b<0?' ('+D('creux','notch')+')':''}`;
+  return groups.map((g,i)=>{ const l=String.fromCharCode(L0.charCodeAt(0)+i), Lw=g.L+4*k;
+    return kPiece(l,l,groups.length>1?D('Bande de bord ','Rim strip ')+(i+1):D('Bande de bord','Rim strip'),kRect(Lw,h),[],g.count,
+      `${g.count} × ${uNum(Lw)} × ${U(h)} · ${D('biseaux','bevels')} ${fmt(g.bv[0])} + ${fmt(g.bv[1])}`,{role:'strip'}); });
+}
+const nextL=(arr,L0)=>String.fromCharCode(L0.charCodeAt(0)+arr.length);
+
 const KITS = {
   'cone-etoile': {
     rows:()=>[['H',D('Hauteur','Height'),'h',60,220],['D',D('Ø du bas','Bottom Ø'),'Ø',50,160],['d',D('Ø du haut','Top Ø'),'Ø',20,110]],
@@ -2850,17 +2875,19 @@ const KITS = {
     rows:()=>[['h',D('Hauteur du plat','Dish height'),'h',150,400],['wall',D('Hauteur du bord','Rim height'),'h',15,45]],
     H:p=>p.h, W:p=>200*p.h/225,
     hint:()=>D('Les cotes se règlent à droite : hauteur du plat, hauteur du bord.','Set the dimensions on the right: dish height, rim height.'),
-    note:()=>D('le bord se monte en trois bandes collées sur la tranche du fond','the rim is built from three strips attached to the edge of the base'),
-    pieces(dm,k){ const p=dm.kit, sc=p.h/225*k, base=kRound(TREE_PLAT.map(q=>[q[0]*sc,q[1]*sc]),3*k), L=kPerim(base)/3+6*k, hh=p.wall*k;
-      return [ kPiece('A','A',D('Fond','Base'),base,[],1,`${D('silhouette de sapin','fir-tree outline')} ${kDim(base)}`),
-        kPiece('B','B',D('Bande de bord','Rim strip'),kRect(L,hh),[],3,`3 × ${D('bande','strip')} ${uNum(L)} × ${U(hh)} · ${D('biseau à 45° aux bouts','45° bevel at the ends')}`),
-        kPiece('C','C',D('Cloison haute','Long divider'),kRect(104*sc,hh*.92),[],1,`${uNum(104*sc)} × ${U(hh*.92)}`),
-        kPiece('D','D',D('Cloison courte','Short divider'),kRect(56*sc,hh*.92),[],1,`${uNum(56*sc)} × ${U(hh*.92)}`) ]; },
+    note:()=>D('le bord se monte avec une bande par côté du sapin, biseautée à chaque angle (angles indiqués sur chaque gabarit)','the rim is built with one strip per side of the tree, bevelled at every corner (angles given on each template)'),
+    pieces(dm,k){ const p=dm.kit, sc=p.h/225*k, poly=TREE_PLAT.map(q=>[q[0]*sc,q[1]*sc]), base=kRound(poly,3*k), hh=p.wall*k;
+      const out=[ kPiece('A','A',D('Fond','Base'),base,[],1,`${D('silhouette de sapin','fir-tree outline')} ${kDim(base)}`) ];
+      kStrips(poly,hh,k,'B').forEach(q=>out.push(q));
+      let l=nextL(out,'A');
+      out.push(kPiece(l,l,D('Cloison haute','Long divider'),kRect(104*sc,hh*.92),[],1,`${uNum(104*sc)} × ${U(hh*.92)}`,{role:'div'})); l=nextL(out,'A');
+      out.push(kPiece(l,l,D('Cloison courte','Short divider'),kRect(56*sc,hh*.92),[],1,`${uNum(56*sc)} × ${U(hh*.92)}`,{role:'div'}));
+      return out; },
     vol:dm=>{ const p=dm.kit, sc=p.h/225; return polyArea(TREE_PLAT.map(q=>[q[0]*sc,q[1]*sc]))*Math.max(0,p.wall-dm.thick)*.9/10000; },
-    steps:()=>[`Laisser raffermir toutes les pièces à plat. Découper le fond A. Biseauter les bouts des trois bandes B à 45°, les poser sur la tranche du fond en suivant le contour (barbotine, stries, colombin à l'intérieur de chaque angle).
-      Poser les deux cloisons C et D à leur place, un peu plus basses que le bord. Lisser à l'éponge. Sécher lentement entre deux planches pour que le fond reste plat ; émail alimentaire à l'intérieur.`,
-      `Let every piece firm up flat. Cut out base A. Bevel the ends of the three strips B at 45°, set them on the edge of the base following the outline (slip, score, a coil inside every corner).
-      Set the two dividers C and D in place, slightly lower than the rim. Smooth with a sponge. Dry slowly between two boards so the base stays flat; food-safe glaze inside.`]
+    steps:()=>[`Laisser raffermir toutes les pièces à plat. Découper le fond A. Découper chaque bande de bord (une par côté du sapin) et biseauter ses deux bouts à l'angle indiqué sur son gabarit (les « creux » se biseautent dans l'autre sens). Les poser sur la tranche du fond en suivant le contour, un côté après l'autre : chaque bout vient contre le biseau de la bande voisine (barbotine, stries, colombin à l'intérieur de chaque angle).
+      Poser les deux cloisons à leur place, un peu plus basses que le bord. Lisser à l'éponge. Sécher lentement entre deux planches pour que le fond reste plat ; émail alimentaire à l'intérieur.`,
+      `Let every piece firm up flat. Cut out base A. Cut every rim strip (one per side of the tree) and bevel both ends at the angle given on its template (“notch” corners are bevelled the other way). Set them on the edge of the base following the outline, one side after the other: each end meets the bevel of the next strip (slip, score, a coil inside every corner).
+      Set the two dividers in place, slightly lower than the rim. Smooth with a sponge. Dry slowly between two boards so the base stays flat; food-safe glaze inside.`]
   },
   'plateau-houx': {
     rows:()=>[['L',D('Longueur','Length'),'L',200,420],['W',D('Largeur','Width'),'L',100,260]],
@@ -2880,31 +2907,108 @@ const KITS = {
       Shape berries B as small balls and stem C as a flat coil; attach them under the leaf base (slip, score). Dry slowly on the mould; food-safe glaze.`]
   },
   'plateau-etoile': {
-    rows:()=>[['R',D('Rayon du plateau','Platter radius'),'R',100,170],['cd',D('Ø des coupelles','Bowl Ø'),'Ø',35,85],['ch',D('Hauteur des coupelles','Bowl height'),'h',12,45],['cc',D('Ø du bol central','Centre bowl Ø'),'Ø',50,120]],
+    rows:()=>[['R',D('Rayon du plateau','Platter radius'),'R',100,170],['rim',D('Bord autour de l’étoile (0 = sans)','Rim around the star (0 = none)'),'h',0,45],['dv',D('Cloisons entre les branches (0 = sans)','Dividers between the points (0 = none)'),'h',0,45],['cc',D('Ø du bol central (0 = sans)','Centre bowl Ø (0 = none)'),'Ø',0,120],['ch',D('Hauteur du bol central','Centre bowl height'),'h',12,45],['cd',D('Ø des coupelles sur les branches (0 = sans)','Bowl Ø on the points (0 = none)'),'Ø',0,85]],
     H:p=>p.R*1.9, W:p=>p.R*1.9,
-    hint:()=>D('Les cotes se règlent à droite : plateau, coupelles, bol central.','Set the dimensions on the right: platter, bowls, centre bowl.'),
-    note:()=>D('les emplacements des coupelles se tracent au compas sur le plateau (non dessinés)','the bowl positions are marked with a compass on the platter (not drawn)'),
-    pieces(dm,k){ const p=dm.kit, R=p.R*k, star=kRound(kStar(R,R*.46),4*k), cd=p.cd*k, ch=p.ch*k, cc=p.cc*k, tab=8*k;
-      const wall=(w)=>[[0,0],[w,0],[w+tab,3*k],[w+tab,ch-3*k],[w,ch],[0,ch]], wc=Math.PI*cd, wb=Math.PI*cc;
-      return [ kPiece('A','A',D('Plateau','Platter'),star,[],1,`${D('étoile à 5 branches','5-point star')} Ø ${uNum(2*R)}`),
-        kPiece('B','B',D('Paroi de coupelle','Bowl wall'),wall(wc),[],5,`5 × ${uNum(wc)} × ${U(ch)} · ${D('patte de collage','glue tab')} 8`),
-        kPiece('C','C',D('Fond de coupelle','Bowl base'),kCirc(cd/2,36),[],5,`5 × Ø ${uNum(cd)}`),
-        kPiece('D','D',D('Paroi du bol central','Centre bowl wall'),[[0,0],[wb,0],[wb+tab,3*k],[wb+tab,ch-3*k],[wb,ch],[0,ch]],[],1,`${uNum(wb)} × ${U(ch)} · ${D('patte de collage','glue tab')} 8`),
-        kPiece('E','E',D('Fond du bol central','Centre bowl base'),kCirc(cc/2,36),[],1,`Ø ${uNum(cc)}`) ]; },
-    vol:dm=>{ const p=dm.kit, e=dm.thick; return (5*Math.PI*Math.pow(p.cd/2-e,2)*Math.max(0,p.ch-e)+Math.PI*Math.pow(p.cc/2-e,2)*Math.max(0,p.ch-e))/10000; },
-    steps:()=>[`Laisser raffermir toutes les pièces à plat. Découper le plateau A, puis tracer au compas cinq empreintes de la taille des coupelles, une par pointe, et une au centre pour le bol.
-      Rouler chaque paroi B (et D) en anneau, patte sous le bord ; coller les anneaux sur leurs fonds C (et E), puis sur les empreintes (barbotine, stries, colombin à l'intérieur). Sécher lentement sous un léger poids ; émail alimentaire.`,
-      `Let every piece firm up flat. Cut out platter A, then mark five bowl-sized circles with a compass, one per point, and one in the centre for the bowl.
-      Roll each wall B (and D) into a ring, tab under the edge; attach the rings to their bases C (and E), then onto the marked circles (slip, score, a coil inside). Dry slowly under a light weight; food-safe glaze.`]
+    hint:()=>D('Les cotes se règlent à droite : plateau, bord, cloisons, bol central. Mets 0 pour supprimer le bord, les cloisons ou le bol ; les coupelles rondes sur les branches sont en option.','Set the dimensions on the right: platter, rim, dividers, centre bowl. Use 0 to leave out the rim, the dividers or the bowl; round bowls on the points are optional.'),
+    note:p=>(p&&(p.rim||0)>0)?D('le bord se monte avec dix bandes droites, biseautées à chaque angle de l’étoile ; les cloisons partent du bol central vers chaque creux','the rim is built with ten straight strips, bevelled at every corner of the star; the dividers run from the centre bowl to each notch'):D('les emplacements des coupelles se tracent au compas sur le plateau (non dessinés)','the bowl positions are marked with a compass on the platter (not drawn)'),
+    pieces(dm,k){ const p=dm.kit, R=p.R*k, r=R*.46, poly=kStar(R,r), star=kRound(poly,4*k), ch=p.ch*k, tab=8*k, rim=(p.rim||0)*k, dv=(p.dv||0)*k, cc=(p.cc==null?80:p.cc)*k, cd=(p.cd||0)*k;
+      const wall=(w)=>[[0,0],[w,0],[w+tab,3*k],[w+tab,ch-3*k],[w,ch],[0,ch]];
+      const out=[ kPiece('A','A',D('Plateau','Platter'),star,[],1,`${D('étoile à 5 branches','5-point star')} Ø ${uNum(2*R)}`) ];
+      if(rim>0) kStrips(poly,rim,k,'B').forEach(q=>out.push(q));
+      if(cc>0){ const l=nextL(out,'A'), wb=Math.PI*cc; out.push(kPiece(l,l,D('Paroi du bol central','Centre bowl wall'),wall(wb),[],1,`${uNum(wb)} × ${U(ch)} · ${D('patte de collage','glue tab')} 8 · ${D('anneau Ø','ring Ø')} ${uNum(cc)}`,{role:'ring'})); }
+      if(dv>0){ const ld=Math.max(0,r-cc/2-2*k); if(ld>5*k){ const l=nextL(out,'A'); out.push(kPiece(l,l,D('Cloison entre branches','Divider between points'),kRect(ld,dv),[],5,`5 × ${uNum(ld)} × ${U(dv)} · ${D('du bol central vers chaque creux','from the centre bowl to each notch')}`,{role:'div'})); } }
+      if(cd>0){ const wc=Math.PI*cd, l1=nextL(out,'A'); out.push(kPiece(l1,l1,D('Paroi de coupelle','Bowl wall'),wall(wc),[],5,`5 × ${uNum(wc)} × ${U(ch)} · ${D('patte de collage','glue tab')} 8`,{role:'cup'}));
+        const l2=nextL(out,'A'); out.push(kPiece(l2,l2,D('Fond de coupelle','Bowl base'),kCirc(cd/2,36),[],5,`5 × Ø ${uNum(cd)}`,{role:'cup'})); }
+      return out; },
+    vol:dm=>{ const p=dm.kit, e=dm.thick, R=p.R, rim=p.rim||0, cc=p.cc==null?80:p.cc;
+      if(rim>0){ const A=polyArea(kStar(R,R*.46))-Math.PI*Math.pow(cc/2,2); return Math.max(0,A)*Math.max(0,Math.min(rim,p.dv>0?p.dv:rim)-e)*.8/10000; }
+      return ((p.cd>0?5*Math.PI*Math.pow(p.cd/2-e,2)*Math.max(0,p.ch-e):0)+(cc>0?Math.PI*Math.pow(cc/2-e,2)*Math.max(0,p.ch-e):0))/10000; },
+    steps:d=>{ const p=d.kit, bord=(p.rim||0)>0, cups=(p.cd||0)>0;
+      return [`Laisser raffermir toutes les pièces à plat. Découper le plateau A.`+(bord?`
+      Découper les bandes de bord (dix côtés identiques) et biseauter leurs bouts à l'angle indiqué : un biseau d'angle à la pointe, un biseau « creux » dans l'autre sens au creux de l'étoile. Les poser sur la tranche du plateau en suivant le contour, côté après côté (barbotine, stries, colombin à l'intérieur de chaque angle).`:'')+((p.cc||0)>0?`
+      Rouler la paroi du bol central en anneau (patte sous le bord) et la coller au centre du plateau.`:'')+((p.dv||0)>0?`
+      Poser les cloisons entre l'anneau et chaque creux de l'étoile, un peu plus basses que le bord ; elles séparent les branches.`:'')+(cups?`
+      Rouler les parois de coupelle en anneaux, les coller sur leurs fonds, puis sur les empreintes tracées au compas à chaque pointe.`:'')+`
+      Lisser à l'éponge. Sécher lentement sous un léger poids ; émail alimentaire à l'intérieur.`,
+      `Let every piece firm up flat. Cut out platter A.`+(bord?`
+      Cut the rim strips (ten identical sides) and bevel their ends at the angle given: a corner bevel at each point, a “notch” bevel the other way in each hollow of the star. Set them on the edge of the platter following the outline, side after side (slip, score, a coil inside every corner).`:'')+((p.cc||0)>0?`
+      Roll the centre bowl wall into a ring (tab under the edge) and attach it in the middle of the platter.`:'')+((p.dv||0)>0?`
+      Set the dividers between the ring and every hollow of the star, slightly lower than the rim; they separate the points.`:'')+(cups?`
+      Roll the bowl walls into rings, attach them to their bases, then onto the circles marked with a compass at each point.`:'')+`
+      Smooth with a sponge. Dry slowly under a light weight; food-safe glaze inside.`]; }
   }
 };
+/* ====== pas à pas des kits payants : étapes illustrées par les gabarits utilisés (affichage, PDF) ====== */
+const KG = {
+  slab:d=>({t:D('Préparer la plaque','Prepare the slab'), p:[],
+    b:D(`Abaisse une plaque régulière de ${U(d.thick/(1-state.shrink))} d'épaisseur (deux règles de bois ou des guides de chaque côté du rouleau). Laisse-la raffermir 15 à 30 minutes, jusqu'à ce qu'elle se tienne sans coller aux doigts. Les gabarits sont déjà agrandis de ${Math.round(state.shrink*100)} % pour le retrait : rien à recalculer.`,
+        `Roll an even slab ${U(d.thick/(1-state.shrink))} thick (two wooden rulers or guides on each side of the roller). Let it stiffen for 15 to 30 minutes, until it holds without sticking to your fingers. The templates are already enlarged by ${Math.round(state.shrink*100)} % for shrinkage: nothing to recompute.`)}),
+  print:(ids)=>({t:D('Imprimer et poser les gabarits','Print and lay out the templates'), p:ids,
+    b:D(`Imprime à 100 % (la barre témoin doit mesurer 50 mm), assemble les feuilles si une pièce déborde, découpe les gabarits papier et pose-les sur la plaque en laissant 1 cm entre eux. Note la lettre de chaque pièce au dos avec l'aiguille.`,
+        `Print at 100 % (the scale bar must measure 50 mm), tape the sheets together if a piece overflows, cut out the paper templates and lay them on the slab, 1 cm apart. Mark each piece's letter on the back with the needle.`)}),
+  cut:(ids,extra)=>({t:D('Découper les pièces','Cut out the pieces'), p:ids,
+    b:D(`Suis le contour à la pointe ou au cutter, lame bien verticale. Retire le papier, puis lisse les chants du bout du doigt humide.${extra?' '+extra[0]:''}`,
+        `Follow the outline with the needle tool or a craft knife, blade held upright. Remove the paper, then smooth the edges with a damp fingertip.${extra?' '+extra[1]:''}`)}),
+  dry:(d)=>{ const air=!!(model(d.modelId)||{}).air; return {t:air?D('Sécher et finir','Dry and finish'):D('Sécher, cuire, émailler','Dry, fire, glaze'), p:[],
+    b:air?D(`Laisse sécher lentement, à l'abri des courants d'air, 24 à 72 heures ; retourne la pièce à mi-séchage si elle tient. Ponce légèrement au papier fin, puis peins et vernis. Pas de cuisson avec l'argile autodurcissante.`,
+            `Let it dry slowly, away from drafts, for 24 to 72 hours; turn it over halfway if it can take it. Sand lightly with fine paper, then paint and varnish. No firing with air-dry clay.`)
+        :D(`Laisse sécher lentement, 3 à 7 jours, à l'abri des courants d'air et sous un léger poids pour que la pièce reste plane. Cuis le biscuit (environ 940 à 1000 °C), puis émaille (émail alimentaire à l'intérieur) et cuis l'émail selon ta terre.`,
+            `Let it dry slowly, 3 to 7 days, away from drafts and under a light weight so it stays flat. Bisque-fire (about 940 to 1000 °C), then glaze (food-safe glaze inside) and glaze-fire according to your clay.`)}; },
+  cone:(id)=>({t:D('Rouler le cône','Roll the cone'), p:[id],
+    b:D(`Ramène les deux bords du secteur l'un vers l'autre, la patte glissée sous le bord opposé. Strie les deux surfaces de contact, passe de la barbotine, presse, puis lisse la couture à l'éponge. Place la couture dans le dos de l'ange.`,
+        `Bring the two edges of the sector together, the tab slipped under the opposite edge. Score both contact surfaces, add slip, press, then smooth the seam with a sponge. Put the seam on the back of the angel.`)}),
+  head:(id,head,k)=>({t:D('Modeler la tête','Shape the head'), p:[id],
+    b:D(`Roule une boule de Ø ${U(head)} entre les paumes et compare-la au gabarit-témoin. Creuse-la ou perce un trou d'évent avant cuisson (inutile en autodurcissante). Strie et colle-la au sommet du cône.`,
+        `Roll a ball Ø ${U(head)} between your palms and compare it with the gauge template. Hollow it out or pierce a vent hole before firing (not needed with air-dry clay). Score and attach it on top of the cone.`)})
+};
+const kitGuide = d => {
+  const type=d.kit.type, pcs=pieces(d), ids=r=>pcs.filter(q=>q.role===r).map(q=>q.letter), L=l=>pcs.find(q=>q.letter===l)?l:null, k=1/(1-state.shrink);
+  const only=(...a)=>a.filter(Boolean);
+  if(type==='ange-v') return [ KG.slab(d), KG.print(only('A','B','C')), KG.cut(only('A','B','C')), KG.cone('A'), KG.head('D',d.kit.head*1,k),
+    {t:D('Coller les ailes','Attach the wings'), p:['B'], b:D(`Strie le dos du cône juste sous la tête et le bord de la pièce des ailes B, passe de la barbotine et presse. Soutiens avec un rouleau de papier le temps que ça tienne : les deux ailes s'ouvrent en V de chaque côté.`,`Score the back of the cone just under the head and the edge of the wing piece B, add slip and press. Prop it with a paper roll until it holds: both wings open in a V on each side.`)},
+    {t:D('Poser le cœur et les branches','Add the heart and the branches'), p:['C'], b:D(`Strie, barbotine et colle le cœur C en relief sur le devant de la robe. Avec un ébauchoir, incise trois petites branches en bas de la robe, avant le séchage.`,`Score, slip and attach heart C in relief on the front of the dress. With a modelling tool, incise three small branches at the bottom of the dress, before drying.`)},
+    KG.dry(d) ];
+  if(type==='ange-photo') return [ KG.slab(d), KG.print(only('A','B','C')), KG.cut(only('A','B','C'),[`Découpe d'abord la fenêtre en cœur dans le secteur A : une bougie ronde de Ø 40 mm doit pouvoir passer (voir la note sous la planche).`,`Cut the heart window in sector A first: a round Ø 40 mm candle must be able to pass through (see the note under the sheet).`]), KG.cone('A'), KG.head('C',d.kit.head,k),
+    {t:D('Coller les ailes','Attach the wings'), p:['B'], b:D(`Strie le dos du cône sous la tête et le bord des deux ailes B (une en miroir), barbotine, presse, et colle-les de chaque côté, au niveau des épaules.`,`Score the back of the cone under the head and the edge of both wings B (one mirrored), add slip, press, and attach them on each side, at shoulder level.`)},
+    {t:D('Essayer avec une bougie','Try it with a candle'), p:['A'], b:D(`Pas de fond : l'ange se pose sur la bougie. Vérifie qu'une bougie ronde entre bien par le cœur ou par le bas, et agrandis le cœur dans l'outil si besoin. Avec une bougie LED, la lumière sort par le cœur.`,`No base: the angel stands over the candle. Check that a round candle fits through the heart or from below, and make the heart bigger in the tool if needed. With an LED candle the light shines through the heart.`)},
+    KG.dry(d) ];
+  if(type==='plateau-houx') return [ KG.slab(d), KG.print(only('A','B','C')), KG.cut(only('A')),
+    {t:D('Tracer les nervures','Draw the veins'), p:['A'], b:D(`Trace la nervure centrale puis les nervures latérales à l'ébauchoir, sans traverser la plaque, avant qu'elle ne sèche.`,`Draw the central vein then the side veins with a modelling tool, without going through the slab, before it dries.`)},
+    {t:D('Relever les bords sur un moule','Lift the edges over a mould'), p:['A'], b:D(`Pose la feuille sur un moule renversé (grand bol, plat ou crumpled foil) et laisse-la épouser sa forme, bords légèrement relevés. Fais-le tant que la plaque est encore souple.`,`Lay the leaf over an upturned mould (a large bowl or dish) and let it follow its shape, edges slightly raised. Do it while the slab is still flexible.`)},
+    {t:D('Baies et tige','Berries and stem'), p:['B','C'], b:D(`Roule les baies B en petites boules (compare avec le gabarit) et façonne la tige C en boudin plat. Strie, barbotine et colle-les sous le pied de la feuille.`,`Roll the berries B into small balls (compare with the template) and shape the stem C as a flat coil. Score, slip and attach them under the base of the leaf.`)},
+    KG.dry(d) ];
+  const rim = (strips,extra)=>({t:D('Monter le bord','Build the rim'), p:strips, b:D(`Biseaute les deux bouts de chaque bande à l'angle indiqué sur son gabarit (un angle « creux » se biseaute dans l'autre sens). Strie la tranche du plateau et la base de chaque bande, passe de la barbotine, puis pose les bandes côté après côté en suivant le contour : chaque bout vient contre le biseau de la bande voisine. Presse, puis ajoute un colombin à l'intérieur de chaque angle et lisse.`,`Bevel both ends of every strip at the angle given on its template (a “notch” angle is bevelled the other way). Score the edge of the base and the bottom of each strip, add slip, then set the strips one side after the other following the outline: each end meets the bevel of the next strip. Press, then add a coil inside every corner and smooth.`)});
+  if(type==='plat-sapin'){ const st=ids('strip'), dv=ids('div'); return [ KG.slab(d), KG.print(only('A',...st,...dv)), KG.cut(only('A',...st,...dv)),
+    {t:D('Poser le fond','Lay the base'), p:['A'], b:D(`Pose le fond A sur une planche ou un plateau : il doit rester plat. Marque au doigt, à 5 mm du bord, la ligne où viendront les bandes.`,`Lay base A on a board: it must stay flat. Mark with a finger, 5 mm from the edge, the line where the strips will go.`)},
+    rim(st), {t:D('Ajouter les cloisons','Add the dividers'), p:dv, b:D(`Pose la cloison haute puis la courte à leur place (voir la vue éclatée), un peu plus basses que le bord. Strie et barbotine le fond et les extrémités, presse et ajoute un petit colombin aux jonctions. Lisse à l'éponge.`,`Set the long divider then the short one in place (see the exploded view), slightly lower than the rim. Score and slip the base and the ends, press and add a small coil at the joins. Smooth with a sponge.`)},
+    KG.dry(d) ]; }
+  if(type==='plateau-etoile'){ const st=ids('strip'), ring=ids('ring'), dv=ids('div'), cup=ids('cup'); const out=[ KG.slab(d), KG.print(only('A',...st,...ring,...dv,...cup)), KG.cut(only('A',...st,...ring,...dv,...cup)) ];
+    if(st.length) out.push(rim(st));
+    if(ring.length) out.push({t:D('Le bol central','The centre bowl'), p:ring, b:D(`Roule la paroi en anneau, la patte sous le bord ; strie, barbotine, lisse la couture. Trace son empreinte au centre du plateau, strie, barbotine et colle l'anneau, avec un colombin à l'intérieur.`,`Roll the wall into a ring, tab under the edge; score, slip, smooth the seam. Mark its circle in the centre of the platter, score, slip and attach the ring, with a coil inside.`)});
+    if(dv.length) out.push({t:D('Les cloisons entre les branches','Dividers between the points'), p:dv, b:D(`Pose chaque cloison de l'anneau jusqu'à un creux de l'étoile, un peu plus basse que le bord. Strie, barbotine, presse, ajoute un petit colombin aux deux bouts et lisse.`,`Set each divider from the ring to a notch of the star, slightly lower than the rim. Score, slip, press, add a small coil at both ends and smooth.`)});
+    if(cup.length) out.push({t:D('Les coupelles sur les branches','Bowls on the points'), p:cup, b:D(`Roule les parois en anneaux, colle-les sur leurs fonds, puis sur les empreintes tracées au compas à chaque pointe. Colombin à l'intérieur de chaque coupelle.`,`Roll the walls into rings, attach them to their bases, then onto the circles marked with a compass at each point. Coil inside each bowl.`)});
+    out.push(KG.dry(d)); return out; }
+  return null;
+};
+const kitPart = d => d && d.parts ? d.parts[0] : d;        // un brouillon (parts) ou une partie
+const kitGuideOK = d => { d=kitPart(d); return !!(d && d.kit && ['ange-v','ange-photo','plat-sapin','plateau-houx','plateau-etoile'].includes(d.kit.type)); };
+/** le pas à pas à l'écran : titres et pièces pour tous, détail pour qui a la pièce */
+function kitGuideHTML(d, owned){
+  if(!kitGuideOK(d)) return ''; d=kitPart(d);
+  const steps=kitGuide(d); if(!steps) return '';
+  const th=ids=>ids&&ids.length?`<span class="kgth" aria-hidden="true">${kitSVG(d,{W:260,H:96,pal:PAL_SCREEN,letters:true,only:ids})}</span>`:'';
+  return `<div class="kguide"><div class="kgh"><h4>${D('Pas à pas','Step by step')} · ${steps.length} ${D('étapes','steps')}</h4>
+      <span class="tagsm">${owned?D('inclus','included'):D('le détail de chaque étape est dans ta version','the detail of each step is in your copy')}</span></div>
+    <ol>${steps.map((s,i)=>`<li><span class="kgn">${i+1}</span><div class="kgb"><b>${esc(s.t)}</b>${owned?`<p>${esc(s.b)}</p>`:''}${th(s.p)}</div></li>`).join('')}</ol></div>`;
+}
+const kitGuideSteps = d => (kitGuideOK(d)&&kitGuide(kitPart(d))||[]);
 const kitPieces = dm => KITS[dm.kit.type].pieces(dm, dm.wetK||1);
 const kitVol = dm => { const K=KITS[dm.kit.type]; return K.vol ? Math.max(0,K.vol(dm)) : 0; };
 const kitSteps = d => { const s=KITS[d.kit.type].steps(d); return D(s[0],s[1]); };
 /** les pièces à plat, rangées côte à côte (pas de vue 3D : ce sont des gabarits) */
 function kitSVG(dm, o){
   o=Object.assign({W:600,H:440,pal:PAL_SCREEN,letters:false}, o||{});
-  const P=o.pal, gs=pieces(dm).map(q=>({q, g:geomOf(q)})), pad=14, gap=12, W=o.W, H=o.H;
+  const P=o.pal, gs=pieces(dm).filter(q=>!o.only||o.only.includes(q.letter)).map(q=>({q, g:geomOf(q)})), pad=14, gap=12, W=o.W, H=o.H;
   const maxw=Math.max(...gs.map(x=>x.g.w))||1;
   const layout=s=>{ let x=pad, y=pad, rowH=0; const pos=[];
     for(const it of gs){ const w=it.g.w*s, h=it.g.h*s; if(x+w>W-pad && x>pad){ x=pad; y+=rowH+gap; rowH=0; }
@@ -8028,6 +8132,7 @@ function renderSheetInto(box, d, o){
            <button class="ghost" id="shHtml">${D('Imprimer la planche','Print the sheet')}</button>
            ${o.compact?'':`<button class="btn" id="shPdf">${D('Télécharger le PDF','Download the PDF')}</button>`}</div>`;
     /* dans l'atelier (compact), la barre du bas porte déjà le PDF */
+    box.insertAdjacentHTML('beforeend', kitGuideHTML(d,true));
     $('#shHtml').onclick=()=>printSheet(d,o.model);
     $('#shPdf')?.addEventListener('click',()=>exportPDF(d)); wireCalcs(box); return; }
   const m=o.model;
@@ -8040,6 +8145,7 @@ function renderSheetInto(box, d, o){
         <button class="btn" id="lockBuy">${m.pack?`${D('Débloquer le pack','Unlock the pack')} · ${eur(PACK.price)}`:`${D('Acheter','Buy')} · ${eur(m.price)}`}</button>
         <button class="link" id="lockRes">${D("j'ai déjà mon lien Gumroad",'I already have my Gumroad link')}</button>
       </div></div>`;
+  box.insertAdjacentHTML('beforeend', kitGuideHTML(d,false));
   $('#lockBuy').onclick=()=>m.pack?openPack(m):openBuy(m);
   $('#lockRes').onclick=()=>openUnlock(m);
 }
@@ -9423,6 +9529,7 @@ const pdfHasTuto = st => { const m=st && model(st.modelId); return !!m && m.pric
 
 /** les étapes du tutoriel : [{t:titre, b:texte (paragraphes séparés par \n)}] */
 function pdfTutoSteps(st, plan){
+  if(kitGuideOK(st.parts[0])){ const g=kitGuideSteps(st.parts[0]); if(g.length) return g.map(x=>({t:x.t, b:x.b, p:x.p})); }
   const src=model(st.modelId), parts=st.parts, multi=parts.length>1, p=parts[0], S=setStats(st);
   const relief=isRelief(p), tore=isTore(p), maison=isMaison(p), sh=shapeOf(p), poly=sh==='poly', oval=sh==='oval';
   const galet=isTalon(p) && !!p.galet;     // espresso + plateau galet : tasse à talon, plateau et cuillère
@@ -9598,7 +9705,8 @@ async function pdfTutoPages(doc, st, plan){
 
   /* en-tête : la vue de la pièce, et ce qu'il faut savoir avant de commencer */
   const LW=88, VH=92, RX=X0+LW+8, RW=SHEET_R-RX;
-  const view = isRelief(p) ? buildSVG(p,{W:LW*3,H:VH*3,letters:true,pal:PAL_PRINT})
+  const view = isKit(p) ? kitSVG(p,{W:LW*3,H:VH*3,pal:PAL_PRINT,letters:true})
+    : isRelief(p) ? buildSVG(p,{W:LW*3,H:VH*3,letters:true,pal:PAL_PRINT})
     : multi ? setSVG(st,{W:LW*3,H:VH*3,tilt:.26,pal:PAL_PRINT,labels:st.combine!=='stack'})
     : buildSVG(p,{W:LW*3,H:VH*3,mode:'exploded',letters:true,tilt:.26,pal:PAL_PRINT});
   doc.setDrawColor(...PDF_LINE); doc.setLineWidth(.2); doc.roundedRect(X0, y, LW, VH, 1.5, 1.5, 'S');
@@ -9621,9 +9729,10 @@ async function pdfTutoPages(doc, st, plan){
 
   /* les étapes : pastille numérotée + titre + paragraphes */
   const LH=3.7;
-  steps.forEach((s,i)=>{
+  for(let i=0;i<steps.length;i++){ const s=steps[i];
     const paras=s.b.split('\n').filter(Boolean).map(x=>{ doc.setFont('helvetica','normal'); doc.setFontSize(7.8); return doc.splitTextToSize(x, TW); });
-    const h=5.2+paras.reduce((a,l)=>a+l.length*LH+1.3, 0)+3.2;
+    const TH=(s.p&&s.p.length)?26:0;
+    const h=5.2+paras.reduce((a,l)=>a+l.length*LH+1.3, 0)+3.2+TH;
     if(y+h>LIM){ pdfPage(doc); band(); y=PG.Y0+4; }
     doc.setFillColor(...PDF_TERRA); doc.circle(X0+3.4, y+1.9, 3.4, 'F');
     doc.setFont('helvetica','bold'); doc.setFontSize(8.4); doc.setTextColor(255,255,255);
@@ -9632,8 +9741,10 @@ async function pdfTutoPages(doc, st, plan){
     let ty=y+7.4;
     doc.setFont('helvetica','normal'); doc.setFontSize(7.8); doc.setTextColor(...PDF_INK);
     paras.forEach(lines=>{ lines.forEach(l=>{ doc.text(l, TX, ty); ty+=LH; }); ty+=1.3; });
+    if(TH){ doc.setDrawColor(...PDF_LINE); doc.setLineWidth(.2); doc.roundedRect(TX, ty, 74, 23, 1.2, 1.2, 'S');
+      await pdfDrawSvg(doc, kitSVG(p,{W:300,H:90,pal:PAL_PRINT,letters:true,only:s.p}), TX+1, ty+1, 72, 21); ty+=TH+1; }
     y=ty+1.6;
-  });
+  }
 
   /* si ça tourne mal */
   const tr=pdfTutoTroubles(st);
