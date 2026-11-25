@@ -190,6 +190,16 @@ aside{
 .nlcard .btn{border-radius:999px;white-space:nowrap}
 .nlcard .fine{font-size:10.5px;color:var(--ink2);padding-left:4px}
 .nlcard.done{gap:6px}
+.nlslim{flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px 18px;padding:10px 16px;margin:0 0 14px;transform:none;box-shadow:none;border-radius:14px}
+.nlslim:hover,.nlslim:focus-within{box-shadow:0 2px 10px rgba(35,39,31,.12)}
+.nlslim .top{flex:1 1 320px;gap:12px;min-width:0}
+.nlslim .th{width:52px;padding:4px;border-radius:10px}
+.nlslim .nlt{font-size:15px}.nlslim .nld{font-size:11.5px}
+.nlslim .row{flex:0 1 360px}
+.nlslim .fine{flex-basis:100%;padding-left:0;font-size:10.5px}
+.nlslim.done{display:block;padding:12px 16px}
+@media (max-width:860px){ .nlcard.nlslim{margin:0 0 12px} }
+@media (max-width:700px){ .nlslim{flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:8px;margin:0 0 12px} .nlslim .top,.nlslim .row,.nlslim .fine{flex:none} }
 @media (max-width:860px){ .hero2{grid-template-columns:minmax(0,1fr);gap:24px} .nlcard{transform:none;margin:0 6px;min-width:0} }
 .navb.fbsticker{position:relative;margin:4px 8px 6px;padding:8px 12px;gap:9px;border:1.5px solid var(--line);border-radius:10px;
   background:rgba(255,254,250,.6);color:var(--ink);text-decoration:none}
@@ -1185,6 +1195,28 @@ body.da-epure .pphoto{border:1px solid var(--line);border-radius:8px}
 .pdesc.open{display:block;-webkit-line-clamp:unset;overflow:visible}
 .pdescw{display:grid;gap:2px;justify-items:start}
 .pdescmore{padding:0;font-size:12.5px}
+.pcols>*{min-width:0}
+.packpage .pthumbs button{flex:1 1 0;min-width:0;width:auto}
+.packpage .plist{display:grid;gap:8px}
+.prow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1.5px solid var(--line);border-radius:3px;background:var(--card);padding:8px 10px;cursor:pointer;font:inherit;color:inherit}
+.prow:hover,.prow:focus-visible{border-color:var(--ink)}
+.prow .pth{width:72px;aspect-ratio:3/2;flex:none;border-radius:2px;overflow:hidden;background:var(--wash,#eee);display:block}
+.prow .pth img,.prow .pth svg{width:100%;height:100%;object-fit:cover;display:block}
+.prow .ptx{flex:1;min-width:0}.prow .ptx b{display:block;font-size:14px}.prow .ptx small{display:block;font-size:11.5px;color:var(--ink2)}
+.prow .ppr s{font-size:12.5px;color:var(--ink2)}
+.prow .pgo{font-size:12px;color:var(--terra-d);white-space:nowrap}
+.ptot{display:flex;justify-content:space-between;align-items:baseline;padding:6px 4px 0;font-size:13px;color:var(--ink2)}
+.ptot.big{font-size:15px;color:var(--ink);border-top:1.5px solid var(--ink);margin-top:2px;padding-top:8px}.ptot.big b{font-family:var(--gc-font-titres);font-size:22px}
+.psteps{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.psteps li{display:flex;gap:12px;align-items:flex-start}.psteps b{font-size:13.5px}.psteps p{margin:2px 0 0;font-size:12.5px;color:var(--ink2);line-height:1.45}
+.pfaq details{border-bottom:1px dashed var(--line);padding:9px 0}.pfaq details:last-child{border-bottom:0}
+.pfaq summary{cursor:pointer;font-weight:600;font-size:13.5px}.pfaq p{margin:6px 0 0;font-size:12.5px;color:var(--ink2);line-height:1.5}
+.pheb2{display:flex;gap:6px;flex-wrap:wrap}
+.pprice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.pprice s{font-size:15px;color:var(--ink2)}
+.pproof{margin:0;text-align:center}
+.supportnote{margin:0;font-size:11.5px;line-height:1.4;color:var(--ink2);text-align:center}.supportnote span{color:var(--terra)}.supportnote a{color:inherit;text-decoration:underline;overflow-wrap:anywhere}
+.supportnote+.supportnote{margin-top:4px}
+@media (max-width:560px){ .prow .pgo{display:none} }
 .buybox>.panel:first-child{overflow:visible}   /* sinon le bouton collant ne colle pas (le panneau coupe son contenu) */
 .ctabar{position:sticky;bottom:0;z-index:4;display:grid;gap:6px;padding:8px 0 6px;background:var(--card);box-shadow:0 -10px 10px -8px color-mix(in srgb,var(--ink) 14%,transparent)}
 /* mobile : le bouton d'achat reste collé en bas de l'écran pendant toute la fiche. En collant seulement dans le 1er panneau
@@ -1299,6 +1331,42 @@ body.da-epure .pphoto{border:1px solid var(--line);border-radius:8px}
 .kgth{display:block;max-width:260px;border:1px solid var(--line);border-radius:3px;background:var(--card);margin-top:5px}.kgth svg{display:block;width:100%;height:auto}
 .lotband img{width:148px;aspect-ratio:3/2;object-fit:cover;border-radius:2px;flex:none}
 .lotband{padding:12px 16px;margin:0 0 12px}
+.packslim{display:flex;align-items:center;gap:12px;border:1.5px solid var(--line);border-radius:3px;background:var(--card);padding:8px 12px;margin:0 0 12px}
+.packslim img{width:64px;aspect-ratio:3/2;object-fit:cover;border-radius:2px;flex:none}
+.packslim .pstx{flex:1;min-width:0}
+.packslim .pstx b{display:block;font-family:var(--gc-font-titres);font-weight:800;letter-spacing:-.02em;font-size:15px}
+.packslim .pstx small{display:block;font-size:11.5px;color:var(--ink2);line-height:1.35}
+.packslim .pspr{display:flex;align-items:baseline;gap:8px;flex:none}
+.packslim .pspr b{font-family:var(--gc-font-titres);font-weight:800;font-size:17px}
+.packslim .pspr s{font-size:12px;color:var(--ink2)}
+.shelf{margin:0 0 22px}
+.shelf .sect-title{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.shelf .shmore{margin-left:auto;font-size:12.5px;padding:2px 4px}
+.shwrap{position:relative}
+.shrow{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(210px,232px);gap:16px;overflow-x:auto;scroll-snap-type:x proximity;padding:2px 2px 10px;scrollbar-width:thin}
+.shrow>.card{scroll-snap-align:start}
+.shnav{position:absolute;top:34%;width:34px;height:34px;border-radius:50%;border:1.5px solid var(--ink);background:var(--card);font-size:20px;line-height:1;cursor:pointer;display:grid;place-items:center;box-shadow:2px 2px 0 var(--shadow-strong,rgba(0,0,0,.12))}
+.shnav.prev{left:-12px}.shnav.next{right:-12px}
+.shwrap.at-start .shnav.prev,.shwrap.at-end .shnav.next{display:none}
+@media (hover:none),(max-width:700px){ .shnav{display:none} .shrow{grid-auto-columns:minmax(170px,62vw)} }
+@media (max-width:700px){ .packslim{flex-wrap:wrap} .packslim .pstx{flex-basis:calc(100% - 80px)} .packslim .pspr{flex:1} }
+.packhero{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:0;border:1.5px solid var(--ink);border-radius:3px;background:var(--card);overflow:hidden;margin:0 0 18px;box-shadow:4px 4px 0 var(--shadow-strong,rgba(0,0,0,.12))}
+.packhero .phimg{min-height:240px;background:var(--wash,#eee)}
+.packhero .phimg img{width:100%;height:100%;object-fit:cover;display:block}
+.packhero .phbody{padding:18px 22px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.packhero .pheb{display:flex;gap:6px;flex-wrap:wrap}
+.packhero h2{margin:0;font-family:var(--gc-font-titres);font-weight:800;letter-spacing:-.03em;font-size:24px;line-height:1.1}
+.packhero p{margin:0;font-size:13px;color:var(--ink2);max-width:520px;line-height:1.45}
+.packhero .phthumbs{display:flex;gap:6px;flex-wrap:wrap}
+.packhero .phth{width:58px;aspect-ratio:4/3;border:1px solid var(--line);border-radius:2px;overflow:hidden;background:var(--card);display:block}
+.packhero .phth img,.packhero .phth svg{width:100%;height:100%;object-fit:cover;display:block}
+.packhero .phbuy{margin-top:auto;display:grid;gap:4px}
+.packhero .phprice{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.packhero .phprice b{font-family:var(--gc-font-titres);font-weight:800;font-size:30px;letter-spacing:-.03em}
+.packhero .phprice s{font-size:15px;color:var(--ink2)}
+.packhero .phbuy small{font-size:11.5px;color:var(--ink2)}
+.packhero .phact{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:6px}
+@media (max-width:700px){ .packhero{grid-template-columns:1fr} .packhero .phimg{min-height:0;aspect-ratio:3/2} .packhero .phbody{padding:14px 16px} .packhero h2{font-size:20px} .packhero .phact .btn{width:100%} .packhero .phthumbs{gap:5px} .packhero .phth{width:calc((100% - 25px)/6)} }
 .lotoffer{display:flex;gap:10px;align-items:center;border:1px dashed var(--line);border-radius:3px;padding:8px 10px;background:var(--card)}
 .lotoffer img{width:64px;aspect-ratio:3/2;object-fit:cover;border-radius:2px;flex:none}
 .lotoffer div{flex:1;min-width:0}
@@ -1567,6 +1635,7 @@ body.tourpad{padding-bottom:62vh}
   body.has-tabbar{padding-bottom:calc(64px + env(safe-area-inset-bottom))}
   body.has-tabbar #paytabs{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:0;right:0;bottom:0;z-index:45;background:var(--paper);border-top:1px solid var(--line);padding:4px 4px env(safe-area-inset-bottom);box-sizing:content-box;height:56px}
   body.has-tabbar .side .actbar{bottom:calc(61px + env(safe-area-inset-bottom))}
+  body.has-tabbar .ctabar{bottom:calc(61px + env(safe-area-inset-bottom))}   /* le bouton d'achat des fiches ne passe plus sous la barre du bas */
   body.has-tabbar .paysnack{bottom:calc(150px + env(safe-area-inset-bottom))}
   #paytabs button{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;background:none;border:0;color:var(--ink2);font:inherit;font-size:11px;cursor:pointer}
   #paytabs button.on{color:var(--ink);font-weight:600}
@@ -2099,7 +2168,7 @@ const MODELS = [
 
   /* ---- Noël, 2e vague (15/11) : choisis dans le bac à sable v2/anges-sapin. Pas des solides de révolution : `kit` (voir KITS).
      Le cône ciel étoilé est gratuit ; les cinq autres sont à 3,99 € (produits Gumroad créés le 24/11, `lot:'noel'` = vendus aussi dans le
-     Pack Noël 9,99 €, voir EXTRAS). EN VENTE dès qu'ils sont dans `shop` (ici + GC_RELEASE de build-sortie.sh) ; sinon « bientôt ». ---- */
+     Pack Noël 12,99 € (9,99 € avant le 25/11), voir EXTRAS). EN VENTE dès qu'ils sont dans `shop` (ici + GC_RELEASE de build-sortie.sh) ; sinon « bientôt ». ---- */
   { id:'cone-etoile', air:true, name:'Cône « ciel étoilé »', family:'Objet', diff:'Débutant', price:0, novelty:true,
     blurb:"Un cône tronqué ouvert dessous, à poser sur une bougie LED : une lune et huit étoiles découpées laissent passer la lumière. Un seul secteur à découper et à rouler, les ouvertures sont déjà tracées dans le gabarit.",
     blurbEn:"A truncated cone open at the bottom, to stand over an LED tea light: a moon and eight stars cut out let the light through. A single sector to cut and roll, the openings are already drawn on the template.",
@@ -2179,12 +2248,14 @@ const EXTRAS = [
     blurb:"Contenance, argile nécessaire et taille de plaque à sortir, recalculés à chaque cote, sur toutes les formes gratuites." },
   /* Pack Noël (24/11) : UN produit Gumroad, UNE clé, qui débloque les 6 pièces de Noël payantes (`lot:'noel'`).
      Distinct de `pack` (ancien pack formes de base, supprimé avec les paywalls) : le pack Noël est un vrai lot commercial. */
-  { id:'pack-noel', name:'Pack Noël', price:9.99, extra:true, lot:'noel', photo:'img/produits/pack-noel.jpg',
+  { id:'pack-noel', name:'Pack Noël', price:12.99, extra:true, lot:'noel', photo:'img/produits/pack-noel.jpg',
     gumroad:{ url:'https://ceramix541.gumroad.com/l/pack-noel', productId:'maZxv6YcxhxZXgzjsn1xkg==' },
     blurb:"Tous les gabarits de Noël en vente, réunis : deux anges, la maison lumineuse, le plat sapin, le plateau feuille de houx et le plateau étoile à coupelles.",
     blurbEn:"Every Christmas template on sale, together: two angels, the light-up house, the fir-tree dish, the holly-leaf platter and the star platter with bowls." }
 ];
 const model = id => MODELS.find(m=>m.id===id) || EXTRAS.find(m=>m.id===id);
+/* aperçu local seulement : ?prixpack=12.99 simule un autre prix du pack Noël (le vrai prix reste celui de Gumroad) */
+if(/^(localhost|127\.0\.0\.1)$/.test(location.hostname)){ const pp=parseFloat((location.search.match(/[?&]prixpack=([\d.]+)/)||[])[1]); if(pp>0) EXTRAS.find(x=>x.id==='pack-noel').price=pp; }
 const PACK  = EXTRAS[0];
 const CALCS = EXTRAS[1];
 const packOf = m => m && m.pack ? EXTRAS.find(x=>x.pack===m.pack) : null;
@@ -2272,6 +2343,10 @@ const EDITIONS = {
                     en:'The V1 features in the new workshop. Your settings stay on this device.'} },
   complete: { features:{ paywall:false, libre3d:true }, tourAuto:true }
 };
+/* Catalogue « en vente d'abord » (25/11) : pack Noël en tête, pièces payantes avant les gratuites. ?cat=ancien rétablit l'ancien ordre. */
+const CATMODE = (location.search.match(/[?&]cat=(ancien|pack)(&|$)/)||[])[1] || 'hybride';   // hybride (défaut) : deux étagères, gratuites puis en vente · pack : hero Pack Noël + en vente d'abord · ancien : l'ancien catalogue
+const CATV2 = CATMODE!=='ancien';
+const CATPACK = CATMODE==='pack';
 const GC_FIXED = !!window.GC_CONFIG;
 /* Version en ligne (bêta /v2/, puis la bascule) : window.GC_RELEASE = { edition, footTitle?, foot? }
    posé par le build impose l'édition et cache le sélecteur ; ?beta=1 rallume la complète. */
@@ -2354,7 +2429,7 @@ const state = {
   view: 'assemble',           // assemble | exploded
   tab:  'volume',              // volume | photo | planche
   photo:null, ph:{x:0,y:0,s:1,o:.55},
-  filter:{fam:'Tout', q:'', lvl:'Tout', clay:'Tout', view:'free', open:false}
+  filter:{fam:'Tout', q:'', lvl:'Tout', clay:'Tout', view:CATV2?'all':'free', open:false}
 };
 /* `state.shrink` reste LA valeur lue partout (une cinquantaine d'endroits) : c'est un accesseur qui
    suit la pièce en cours. Une forme `air:true` lit/écrit shrinkAir, les autres shrinkFired : passer
@@ -2408,8 +2483,11 @@ function tutoSync(){
     localStorage.setItem('atelier-tuto-sync', JSON.stringify({ url:new URL(tutoURL(st,m), location.href).href, t:Date.now() }));
   }catch(e){}
 }
+/* aperçu local seulement : ?visiteur=1 montre le catalogue comme à quelqu'un qui n'a rien acheté (ne touche pas au stockage) */
+const VISITEUR = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) && /[?&]visiteur=1(&|$)/.test(location.search);
 const owns = id => { const m=model(id); if(!m) return false;
-  if(m.price===0 || state.owned[id] || (!FEATURES.paywall && m.pack)) return true;
+  if(m.price===0) return true; if(VISITEUR) return false;
+  if(state.owned[id] || (!FEATURES.paywall && m.pack)) return true;
   const pk=packOf(m); if(pk && state.owned[pk.id]) return true;
   const lt=lotOf(m); return !!(lt && state.owned[lt.id]); };
 /* formes offertes par la version (testeurs) : marquées comme achetées, ce que
@@ -7073,16 +7151,23 @@ function viewCatalogue(){
   /* vues du catalogue : les gratuites d'abord (ce que la plupart viennent chercher), les payantes à un clic ou en
      bande « Nouveautés » après la 1re rangée, les « bientôt » repliées en une ligne ; une recherche regarde partout */
   const nFree=free.length, nPaid=paid.length+packed.length, nSoon=soon.length;
-  let view=q ? 'all' : (state.filter.view||'free');
+  let view=q ? 'all' : (state.filter.view||(CATV2?'all':'free'));
   if(view!=='all' && ((view==='free'&&!nFree)||(view==='paid'&&!nPaid)||(view==='soon'&&!nSoon))) view='all';
   /* effectif par niveau : même périmètre que l'onglet affiché (+ famille et recherche en cours) */
   const inView=m=>view==='all'||(view==='soon'?isSoon(m):(!isSoon(m)&&(view==='free'?m.price===0:m.price>0)));
   const lvlCount=l=>[...CAT,...MODELS.filter(isSoon)].filter(m=>matchNoLvl(m)&&inView(m)&&(l==='Tout'||m.diff===l)).length;
   const nAct=(fam!=='Tout'?1:0)+(lvl!=='Tout'?1:0)+(clay!=='Tout'?1:0);
   const tabsHTML=`<div class="cattabs" role="tablist" aria-label="${D('Type de formes','Kind of shapes')}">${
-    [['free',D('Gratuites','Free'),nFree],['paid',D('Payantes','Paid'),nPaid],['soon',D('Bientôt','Coming soon'),nSoon],['all',D('Tout','All'),nFree+nPaid+nSoon]]
+    (CATPACK ? [['all',D('Tout','All'),nFree+nPaid+nSoon],['paid',D('En vente','For sale'),nPaid],['free',D('Gratuites','Free'),nFree],['soon',D('Bientôt','Coming soon'),nSoon]]
+     : CATV2 ? [['all',D('Tout','All'),nFree+nPaid+nSoon],['free',D('Gratuites','Free'),nFree],['paid',D('En vente','For sale'),nPaid],['soon',D('Bientôt','Coming soon'),nSoon]]
+           : [['free',D('Gratuites','Free'),nFree],['paid',D('Payantes','Paid'),nPaid],['soon',D('Bientôt','Coming soon'),nSoon],['all',D('Tout','All'),nFree+nPaid+nSoon]])
     .map(([k,l,n])=>`<button role="tab" class="cattab${view===k?' on':''}" data-view="${k}" aria-selected="${view===k}"${n===0&&k!=='all'?' disabled':''}>${l} <span class="n">${n}</span></button>`).join('')}</div>`;
-  const lotBand=(!q && fam==='Tout' && lvl==='Tout' && clay==='Tout')?lotBandHTML(model('pack-noel')):'';   // jamais sous un filtre ou une recherche : il ne se rapporte à aucune forme
+  const noFilter=(!q && fam==='Tout' && lvl==='Tout' && clay==='Tout');
+  const lotBand=!noFilter?'':CATMODE==='ancien'?lotBandHTML(model('pack-noel')):CATMODE==='hybride'?packSlimHTML(model('pack-noel')):'';
+  const packHero=(CATPACK && noFilter)?packHeroHTML(model('pack-noel')):'';
+  const HY=CATMODE==='hybride' && view==='all' && noFilter;   // deux étagères horizontales : gratuites puis en vente
+  const PF=CATPACK && view==='all';                           // en vente d'abord
+  const shelves=HY?shelvesHTML(free,paid,lotBand,nFree,nPaid):'';   // jamais sous un filtre ou une recherche : il ne se rapporte à aucune forme
   const newBand=paid.length?`<div class="newband"><div class="nbh"><b>${D('Nouveautés','New')}</b><span class="tagsm">${D('achat unique','one-off')}</span></div>
       ${lotBand}<div class="grid">${paid.map(cardHTML).join('')}</div></div>`:'';
   const freeHead=`<div class="sect-title"><h3>${D('Pour commencer','To start with')}</h3><span class="tagsm">${D('gratuites','free')}</span></div>`;
@@ -7094,8 +7179,7 @@ function viewCatalogue(){
       <span class="stth" aria-hidden="true">${soon.slice(0,5).map(m=>{ const p=(typeof PRODUCT_PHOTOS!=='undefined'&&PRODUCT_PHOTOS[m.id]||[])[0]; return p?`<img src="${p}" alt="" loading="lazy">`:''; }).join('')}</span>
       <span class="stx"><b>${nSoon} ${D('pièces arrivent bientôt','pieces coming soon')}</b><small>${D('Choisis celles qui t’intéressent : on te prévient le jour de leur sortie.','Pick the ones you like: we’ll let you know the day they come out.')}</small></span>
       <span class="stgo">${D('Voir','See')} →</span></button>`:'';
-  $('#page').innerHTML=`
-    ${(show=>`<div class="hero hero2${show?'':' solo'}">
+  const heroFn=(show=>`<div class="hero hero2${show?'':' solo'}">
       <div class="hl">
         <h3>${D('Des formes prêtes à monter, à ta taille.','Shapes ready to build, at your size.')}</h3>
         <p>${hasPaid ? D(`Règle les cotes sur l'aperçu 3D : l'outil recalcule les gabarits et la planche d'assemblage. À partir de ${eur(minP)} la forme, achat unique.`,
@@ -7115,7 +7199,16 @@ function viewCatalogue(){
           <button class="btn" type="submit">${D('Je le veux','I want it')}</button></div>
         <span class="fine">${D('Désinscription en un clic. Aucune revente d’adresse.','Unsubscribe in one click. We never sell your address.')}</span>
       </form>`:''}
-    </div>`)(!(GC_FIXED || lsGet('gabarits-news-sub')))}
+    </div>`);   // bandeau d'accroche (+ newsletter si show)
+  const nlShow=!(GC_FIXED || lsGet('gabarits-news-sub'));
+  const heroBlock=heroFn(nlShow);
+  /* vue « Tout » hybride : l'inscription (≈ 10 % des inscrits) reste TOUT EN HAUT, en bandeau compact ; l'accroche descend sous les étagères sans le formulaire */
+  const nlTop=(HY && nlShow)?nlSlimHTML():'';
+  const heroLow=HY?heroFn(false):'';
+  $('#page').innerHTML=`
+    ${nlTop}
+    ${packHero}
+    ${(PF||HY)?'':heroBlock}
     <div class="catbar">
       <input class="search" id="kq" type="search" placeholder="${D('rechercher une forme…','search a shape…')}" value="${esc(state.filter.q)}" aria-label="${D('Rechercher une forme','Search a shape')}">
       <button class="chip fbtn${nAct?' on':''}" id="fToggle" aria-expanded="${!!state.filter.open}" aria-controls="fPanel">${D('Filtres','Filters')}${nAct?` <span class="n">${nAct}</span>`:''} <span aria-hidden="true">${state.filter.open?'▴':'▾'}</span></button>
@@ -7131,9 +7224,11 @@ function viewCatalogue(){
       ${nAct?`<button class="link" id="fReset">${D('Tout réinitialiser','Reset all')}</button>`:''}
     </div>`:''}
     ${tabsHTML}
-    ${freeHTML}
-    ${paid.length && (view==='paid'||view==='all')?`${(view==='all'&&free.length)?`<div class="sect-title"><h3>${D('À l’unité','Single shapes')}</h3><span class="tagsm">${D('achat unique','one-off')}</span></div>`:''}
+    ${HY?shelves:(PF?'':freeHTML)}
+    ${paid.length && (view==='paid'||view==='all') && !HY?`${PF?`<div class="sect-title" id="catPaid"><h3>${D('En vente à l’unité','For sale, one by one')}</h3><span class="tagsm">${D('achat unique · tuto 3D','one-off · 3D tutorial')}</span></div>`
+        :(view==='all'&&free.length)?`<div class="sect-title"><h3>${D('À l’unité','Single shapes')}</h3><span class="tagsm">${D('achat unique','one-off')}</span></div>`:''}
       ${lotBand}<div class="grid">${paid.map(cardHTML).join('')}</div>`:''}
+    ${HY?heroLow:PF?heroBlock+freeHTML:''}
     ${(nFree+nPaid+nSoon)?'':`<div class="empty"><h3>${D('Aucune forme ici','Nothing here')}</h3><p>${D('Change de famille ou vide la recherche.','Try another family or clear the search.')}</p></div>`}
     ${packed.length&&(view==='paid'||view==='all')?`
       <div class="sect-title"><h3>${D('Pack formes de base','Basics pack')}</h3>
@@ -7167,7 +7262,10 @@ function viewCatalogue(){
           <small>${D('Une pièce que tu aimerais monter à la plaque ? Décris-la en deux mots, on lit tout.','A piece you’d like to build from slabs? Describe it in a few words, we read everything.')}</small></span>
       </button>`:''}`;
   $('#page').querySelectorAll('[data-soon]').forEach(b=>b.onclick=()=>openSoon(b.dataset.soon));
-  $('#page').querySelectorAll('[data-lot]').forEach(b=>b.onclick=()=>openLot(model(b.dataset.lot)));
+  $('#page').querySelectorAll('[data-lot]').forEach(b=>b.onclick=()=>{ if(b.dataset.from==='hero'){ PRODUCT_SRC='catalogue_pack'; track('pack_hero_click',{prix:model(b.dataset.lot).price}); } openLotPage(model(b.dataset.lot)); });
+  $('#page').querySelectorAll('[data-shnav]').forEach(b=>b.onclick=()=>{ const r=b.closest('.shwrap')?.querySelector('.shrow'); r?.scrollBy({left:(b.dataset.shnav==='next'?1:-1)*r.clientWidth*.85,behavior:'smooth'}); });
+  $('#page').querySelectorAll('.shrow').forEach(r=>{ const w=r.parentElement, u=()=>{ w.classList.toggle('at-start',r.scrollLeft<4); w.classList.toggle('at-end',r.scrollLeft+r.clientWidth>=r.scrollWidth-4); }; r.addEventListener('scroll',u,{passive:true}); u(); });
+  $('#page').querySelectorAll('[data-jump]').forEach(b=>b.onclick=()=>{ track('pack_hero_unite'); document.getElementById(b.dataset.jump)?.scrollIntoView({behavior:'smooth',block:'start'}); });
   $('#ideaCard')?.addEventListener('click', openIdea);
   $('#nlBand')?.addEventListener('submit', e=>{
     e.preventDefault();
@@ -7430,6 +7528,7 @@ document.addEventListener('keydown',e=>{
 let productPhoto = 0;                            // photo affichée dans la fiche
 function viewProduit(){
   const m=model(state.productId); if(!m) return go('catalogue');
+  if(m.extra && m.lot) return viewPackProduit(m);   // pack Noël : fiche dédiée
   if(lastProductView!==m.id){ lastProductView=m.id; productPhoto=0; track('product_view', {shape:m.id, prix:m.price, possede:owns(m.id), source:PRODUCT_SRC}); }
   state.editing='trial';
   if(!state.trial || state.trial.modelId!==m.id){ state.trial=newDraft(m); state.ensemble=isSet(state.trial); }
@@ -7494,6 +7593,7 @@ function viewProduit(){
                  <div class="note" style="text-align:center">${m.pack
                      ? `${D('cette forme et les','this shape and the')} ${MODELS.filter(x=>x.pack===m.pack).length-1} ${D('autres du pack','others in the pack')}`
                      : D('paiement Gumroad · accès immédiat','Gumroad payment · instant access')}</div>`}</div>
+            ${(!has && m.price>0)?supportNoteHTML():''}
             ${has?'':lotOfferHTML(m)}
             ${m.tuto?`<button class="ghost" id="tuto" style="width:100%">${has?D('Voir le tutoriel 3D','Open the 3D tutorial'):D('Aperçu du tutoriel 3D','Preview the 3D tutorial')} ↗</button>`:''}
             <ul class="incl">
@@ -7534,12 +7634,99 @@ function viewProduit(){
     $('#pthumbs').querySelectorAll('[data-ph]').forEach(x=>x.setAttribute('aria-pressed', x===b));
   });
   $('#buy')?.addEventListener('click',()=>m.pack?openPack(m):openBuy(m));
-  $('#page').querySelectorAll('[data-lot]').forEach(b=>b.onclick=()=>openLot(model(b.dataset.lot)));
+  $('#page').querySelectorAll('[data-lot]').forEach(b=>b.onclick=()=>{ if(b.dataset.from==='hero'){ PRODUCT_SRC='catalogue_pack'; track('pack_hero_click',{prix:model(b.dataset.lot).price}); } openLotPage(model(b.dataset.lot)); });
+  $('#page').querySelectorAll('[data-shnav]').forEach(b=>b.onclick=()=>{ const r=b.closest('.shwrap')?.querySelector('.shrow'); r?.scrollBy({left:(b.dataset.shnav==='next'?1:-1)*r.clientWidth*.85,behavior:'smooth'}); });
+  $('#page').querySelectorAll('[data-jump]').forEach(b=>b.onclick=()=>{ track('pack_hero_unite'); document.getElementById(b.dataset.jump)?.scrollIntoView({behavior:'smooth',block:'start'}); });
   $('#open')?.addEventListener('click',()=>openInAtelier(m));
   $('#tuto')?.addEventListener('click',()=>window.open(tutoURL(d, m),'_blank'));
   wireTutoClips();
   renderPreview(); renderDims();
   renderSheetInto($('#sheetbox'), d, {locked:!has, model:m});
+}
+/** petite mention sur les fiches payantes : acheter, c'est aussi soutenir le site */
+const supportNoteHTML = () => `<p class="note supportnote"><span aria-hidden="true">♥</span> ${D('Prendre un gabarit payant, c’est aussi soutenir ce site : l’outil et les formes gratuites le restent.','Buying a paid template also supports this site: the tool and the free shapes stay free.')}</p>
+  <p class="note supportnote"><span aria-hidden="true">✉</span> ${D('Un souci avec un gabarit ? Écris-moi à','Any problem with a template? Email me at')} <a href="mailto:${CONTACT_MAIL}">${CONTACT_MAIL}</a>${D(' : je suis disponible et je te réponds vite.',': I’m available and happy to help.')}</p>`;
+/** « Voir le pack » : la fiche du pack (et plus la petite fenêtre de paiement) */
+function openLotPage(pk){ track('pack_page_open',{prix:pk.price, source:PRODUCT_SRC}); go('produit', pk.id); }
+let packPhoto = 0;
+/** fiche produit du pack Noël : ce qu'il contient, comment ça marche, le prix, puis Gumroad directement */
+function viewPackProduit(pk){
+  if(lastProductView!==pk.id){ lastProductView=pk.id; packPhoto=0; track('product_view',{shape:pk.id, prix:pk.price, possede:owns(pk.id), source:PRODUCT_SRC, lot:true}); }
+  const items=lotItems(pk).filter(x=>inShop(x)), n=items.length, sum=lotSum(pk), has=owns(pk.id);
+  const save=Math.round((sum-pk.price)*100)/100, pct=Math.round(save/sum*100), per=Math.round(pk.price/n*100)/100;
+  const launch=pk.price<=9.99;
+  const imgs=[{src:pk.photo,alt:t(pk.name)}].concat(items.map(x=>({src:(PRODUCT_PHOTOS[x.id]||[])[0],alt:t(x.name)})).filter(i=>i.src));
+  topbar(esc(t(pk.name)), `${n} ${D('gabarits','templates')} · ${D('achat unique','one-off purchase')}`,
+    `<button class="ghost sm" id="backCat">← ${D('Catalogue','Catalogue')}</button>`);
+  const steps=[
+    [D('Tu paies sur Gumroad','You pay on Gumroad'), D('Paiement sécurisé, dans un nouvel onglet.','Secure payment, in a new tab.')],
+    [D('Tu reçois ta clé par email','You get your key by email'), D('Une seule clé de licence, affichée aussi sur la page de confirmation.','A single license key, also shown on the confirmation page.')],
+    [D('Tu la colles ici','You paste it here'), D(`Les ${n} pièces s’ouvrent d’un coup dans l’atelier, avec leurs planches et leurs gabarits.`,`All ${n} pieces unlock at once in the workshop, with their sheets and templates.`)]];
+  const faq=[
+    [D('Qu’est-ce que je reçois exactement ?','What exactly do I get?'),
+     D(`Les ${n} pièces dans l’atelier : tu règles les cotes, l’outil recalcule la planche d’assemblage et les gabarits à découper, retrait compris. Le tutoriel 3D de la maison lumineuse est inclus.`,
+       `All ${n} pieces in the workshop: you set the dimensions, the tool recomputes the assembly sheet and the cutting templates, shrinkage included. The light-up house 3D tutorial is included.`)],
+    [D('Comment j’imprime ?','How do I print?'),
+     D('Les gabarits s’impriment en A4 ou Letter, à l’échelle 100 %, et se réutilisent autant de fois que tu veux.','Templates print on A4 or Letter at 100 % scale and can be reused as many times as you like.')],
+    [D('Je peux les retrouver sur un autre appareil ?','Can I get them back on another device?'),
+     D('Oui. La même clé débloque tes pièces sur n’importe quel appareil : « J’ai déjà acheté », en haut du catalogue.','Yes. The same key unlocks your pieces on any device: “I already bought”, at the top of the catalogue.')],
+    [D('Je peux voir une pièce avant d’acheter ?','Can I look at a piece before buying?'),
+     D('Oui. Chaque fiche te laisse régler les cotes et voir le volume 3D avant de payer.','Yes. Every piece page lets you set the dimensions and see the 3D volume before you pay.')]];
+  $('#page').innerHTML=`
+    <div class="pcols packpage">
+      <div class="pgal">
+        <div class="panel"><div class="ph"><h3>${D('Ce que contient le pack','What’s in the pack')}</h3>
+            <span class="sp tagsm">${n} ${D('gabarits','templates')}</span></div>
+          <div class="pbody"><div class="plist">${items.map(x=>{ const ph=(PRODUCT_PHOTOS[x.id]||[])[0], own=!has&&owns(x.id);
+            return `<button type="button" class="prow" data-piece="${x.id}">
+              <span class="pth">${ph?`<img src="${ph}" alt="" loading="lazy">`:thumbSVG(newDraft(x),{W:120,H:90,tilt:.26})}</span>
+              <span class="ptx"><b>${esc(t(x.name))}</b><small>${cardDims(newDraft(x))} · ${t(x.diff)}${x.air?` · ${D('autodurcissante','air-dry')}`:''}</small></span>
+              <span class="ppr">${has||own?`<span class="pill ok">✓ ${D('à toi','yours')}</span>`:`<s>${eur(x.price)}</s>`}</span>
+              <span class="pgo" aria-hidden="true">${D('Voir','View')} →</span></button>`; }).join('')}
+            <div class="ptot"><span>${D('Une par une','One by one')}</span><s>${eur(sum)}</s></div>
+            <div class="ptot big"><span>${D('Le pack','The pack')}</span><b>${eur(pk.price)}</b></div></div>
+            <p class="note" style="margin:10px 0 0">${D('Un tutoriel 3D est inclus pour la maison lumineuse.','A 3D tutorial is included for the light-up house.')}</p></div></div>
+        <div class="panel"><div class="ph"><h3>${D('Comment ça marche','How it works')}</h3></div>
+          <div class="pbody"><ol class="psteps">${steps.map((x,i)=>`<li><span class="kgn">${i+1}</span><div><b>${x[0]}</b><p>${x[1]}</p></div></li>`).join('')}</ol></div></div>
+        <div class="panel"><div class="ph"><h3>${D('Questions fréquentes','Questions')}</h3></div>
+          <div class="pbody pfaq">${faq.map(x=>`<details><summary>${x[0]}</summary><p>${x[1]}</p></details>`).join('')}</div></div>
+      </div>
+      <div class="stack buybox">
+        <div class="panel"><div class="pbody stack">
+          <figure class="pphoto" style="--pr:3/2"><img id="ppimg" src="${imgs[packPhoto].src}" alt="${esc(imgs[packPhoto].alt)}"></figure>
+          <div class="pthumbs" id="ppthumbs" style="--pr:3/2">${imgs.map((i,k)=>`<button data-pp="${k}" aria-pressed="${k===packPhoto}" aria-label="${esc(i.alt)}"><img src="${i.src}" alt=""></button>`).join('')}</div>
+          <div class="pheb2"><span class="pill pay">${D('Pour les fêtes','For the holidays')}</span>${launch?`<span class="pill free">${D('Prix de lancement','Launch price')}</span>`:''}</div>
+          <div class="pprice"><span class="price">${eur(pk.price)}</span><s>${eur(sum)}</s><span class="pill pay">−${pct} %</span></div>
+          <div class="note">${D(`Soit ${eur(per)} la pièce au lieu de ${eur(items[0].price)}. Tu économises ${eur(save)}.`,`That’s ${eur(per)} a piece instead of ${eur(items[0].price)}. You save ${eur(save)}.`)}</div>
+          ${has?`<span class="pill ok" style="justify-self:start">✓ ${D('dans ta bibliothèque','in your library')}</span>`:''}
+          ${(!has&&GC.waiver)?`<label class="waiver"><input type="checkbox" id="pwaiver">
+            <span>${D(`Je demande l'accès immédiat au contenu numérique et je <b>renonce à mon droit de rétractation</b> (art. L221-28 du Code de la consommation). J'ai lu les <a href="${LEGAL_CGV}" target="_blank" rel="noopener">conditions de vente</a>.`,
+                      `I ask for immediate access to the digital content and <b>waive my right of withdrawal</b> (French Consumer Code art. L221-28). I have read the <a href="${LEGAL_CGV}" target="_blank" rel="noopener">terms of sale</a>.`)}</span></label>`:''}
+          <div class="ctabar">${has
+            ? `<button class="btn lg" id="pOpen">${D('Ouvrir une pièce','Open a piece')}</button>`
+            : `<button class="btn lg" id="pbuy"${GC.waiver?' disabled':''}>${D('Acheter le pack','Buy the pack')} · ${eur(pk.price)}</button>
+               <div class="note" style="text-align:center">${D('paiement Gumroad · clé par email · accès immédiat','Gumroad payment · key by email · instant access')}</div>`}</div>
+          ${has?'':supportNoteHTML()}
+          ${has?'':`<button type="button" class="link" id="already2" style="justify-self:center">${D('j’ai déjà mon lien','I already have my link')}</button>`}
+          <ul class="incl">
+            <li>${D(`les ${n} pièces, cotes réglables à volonté`,`all ${n} pieces, dimensions adjustable at will`)}</li>
+            <li>${D('planches d’assemblage et gabarits à l’échelle, retrait compensé','assembly sheets and full-size templates, shrinkage compensated')}</li>
+            <li>${D('impression A4 ou Letter, réutilisation illimitée','A4 or Letter printing, unlimited reuse')}</li>
+            <li>${D('tutoriel 3D de la maison lumineuse','light-up house 3D tutorial')}</li>
+            <li>${D('achat unique, à vie, sur tous tes appareils','one-off purchase, for life, on all your devices')}</li>
+          </ul>
+          <p class="note pproof">★ ${D('Notre outil est noté <b>4,82 / 5</b> par ses utilisateurs (92 avis).','Our tool is rated <b>4.82 / 5</b> by its users (92 reviews).')}</p>
+        </div></div>
+      </div>
+    </div>`;
+  $('#backCat').onclick=()=>go('catalogue');
+  $('#ppthumbs').onclick=e=>{ const b=e.target.closest('[data-pp]'); if(!b) return; packPhoto=+b.dataset.pp; const i=imgs[packPhoto]; $('#ppimg').src=i.src; $('#ppimg').alt=i.alt;
+    $('#ppthumbs').querySelectorAll('[data-pp]').forEach(x=>x.setAttribute('aria-pressed', x===b)); };
+  $('#page').querySelectorAll('[data-piece]').forEach(b=>b.onclick=()=>{ track('pack_page_piece',{piece:b.dataset.piece}); PRODUCT_SRC='pack_page'; go('produit',b.dataset.piece); });
+  $('#pwaiver')?.addEventListener('change',e=>{ $('#pbuy').disabled=!e.target.checked; if(e.target.checked) track('waiver_checked',{shape:pk.id}); });
+  $('#pbuy')?.addEventListener('click',()=>{ track('buy_click',{shape:pk.id, prix:pk.price, source:PRODUCT_SRC, lot:true, page:'fiche'}); saveBuyCtx(pk); payGumroad(pk); });
+  $('#already2')?.addEventListener('click',()=>openUnlock(pk));
+  $('#pOpen')?.addEventListener('click',()=>$('.plist').scrollIntoView({behavior:'smooth',block:'center'}));
 }
 function shotHTML(d,cap,exploded){
   const P={ink:'#23271F',thin:'#565A4D',hide:'rgba(86,90,77,.35)',fill:'rgba(255,254,250,.62)',top:'rgba(231,239,233,.85)'};
@@ -7678,7 +7865,7 @@ function openLot(pk){
     ${STEPS(1)}
     <div class="mb">
       <div class="recap">
-        ${items.map(x=>`<div class="r"><span>${esc(t(x.name))}</span><span>${state.owned[x.id]?D('déjà à toi','already yours'):eur(x.price)}</span></div>`).join('')}
+        ${items.map(x=>`<div class="r"><span>${esc(t(x.name))}</span><span>${(!VISITEUR&&state.owned[x.id])?D('déjà à toi','already yours'):eur(x.price)}</span></div>`).join('')}
         <div class="r"><span>${D('Planches + gabarits','Sheets + templates')}</span><span>PDF ${paper().name}</span></div>
         <div class="r"><span>${D('Maison lumineuse : tutoriel 3D + PDF','Light-up house: 3D tutorial + PDF')}</span><span>${D('inclus','included')}</span></div>
         <div class="r"><span>${D('À l’unité','Bought one by one')}</span><span><s>${eur(sum)}</s></span></div>
@@ -7712,6 +7899,70 @@ function lotBandHTML(pk){
     <div class="sp">${own?`<span class="pill ok">✓ ${D('pack débloqué','pack unlocked')}</span>`
       :`<button class="btn" data-lot="${pk.id}">${D('Voir le pack','See the pack')} · ${eur(pk.price)}</button>`}</div>
   </div>`;
+}
+/** hero du catalogue : le pack Noël en tête, prix de lancement + prix barré (sans compte à rebours : le prix est affiché tel quel) */
+function packHeroHTML(pk){
+  if(!lotLive(pk) || owns(pk.id)) return '';
+  const items=lotItems(pk).filter(x=>inShop(x)), n=items.length, sum=lotSum(pk);
+  const save=Math.round((sum-pk.price)*100)/100, pct=Math.round(save/sum*100), per=pk.price/n;
+  const launch=pk.price<=9.99;
+  const th=items.map(x=>{ const ph=(typeof PRODUCT_PHOTOS!=='undefined'&&PRODUCT_PHOTOS[x.id]||[])[0];
+    return `<span class="phth" title="${esc(t(x.name))}">${ph?`<img src="${ph}" alt="${esc(t(x.name))}" loading="lazy">`:thumbSVG(newDraft(x),{W:120,H:90,tilt:.26})}</span>`; }).join('');
+  return `<section class="packhero" aria-label="${esc(t(pk.name))}">
+    <div class="phimg"><img src="${pk.photo}" alt="${esc(t(pk.name))}"></div>
+    <div class="phbody">
+      <div class="pheb"><span class="pill pay">${D('Pour les fêtes','For the holidays')}</span>${launch?`<span class="pill free">${D('Prix de lancement','Launch price')}</span>`:''}</div>
+      <h2>${esc(t(pk.name))} : ${n} ${D('gabarits à monter pour Noël','templates to build for Christmas')}</h2>
+      <p>${D('Deux anges, la maison lumineuse, le plat sapin, le plateau feuille de houx et le plateau étoile à coupelles. Le tutoriel 3D de la maison est inclus. Une seule clé, achat unique.',
+             'Two angels, the light-up house, the fir-tree dish, the holly-leaf platter and the star platter with bowls. The house’s 3D tutorial is included. One key, one-off purchase.')}</p>
+      <div class="phthumbs">${th}</div>
+      <div class="phbuy">
+        <div class="phprice"><b>${eur(pk.price)}</b><s>${eur(sum)}</s><span class="pill pay">−${pct} %</span></div>
+        <small>${D(`soit ${eur(Math.round(per*100)/100)} la pièce, au lieu de ${eur(items[0].price)}`,`that’s ${eur(Math.round(per*100)/100)} a piece, instead of ${eur(items[0].price)}`)}</small>
+        <div class="phact"><button class="btn" data-lot="${pk.id}" data-from="hero">${D('Voir le pack','See the pack')} · ${eur(pk.price)}</button>
+          <button class="link" data-jump="catPaid">${D('ou choisir une pièce','or pick one piece')} ↓</button></div>
+      </div>
+    </div>
+  </section>`;
+}
+/** inscription à la newsletter en bandeau compact (même formulaire #nlBand que la grande carte : mêmes gestionnaires) */
+function nlSlimHTML(){
+  const m=model('espresso');
+  return `<form class="nlcard nlslim" id="nlBand" novalidate>
+    <div class="top">
+      ${m?`<span class="th" aria-hidden="true">${thumbSVG(newDraft(m),{W:260,H:190,tilt:.26})}</span>`:''}
+      <div class="tx"><span class="eb">${D('Gabarit offert','Free template')}</span>
+        <b class="nlt">${D('Ta tasse espresso & coupelle, en PDF','Your espresso cup & saucer, as a PDF')}</b>
+        <span class="nld">${D('Gratuit, dans ta boîte mail.','Free, in your inbox.')}</span></div></div>
+    <div class="row"><input type="email" id="nlBandEmail" placeholder="${D('ton@email.fr','you@email.com')}" autocomplete="email" required aria-label="${D('Ton email','Your email')}">
+      <button class="btn" type="submit">${D('Je le veux','I want it')}</button></div>
+    <span class="fine">${D('Désinscription en un clic. Aucune revente d’adresse.','Unsubscribe in one click. We never sell your address.')}</span>
+  </form>`;
+}
+/** bandeau discret du pack Noël (catalogue hybride) : une ligne, pas un hero */
+function packSlimHTML(pk){
+  if(!lotLive(pk) || owns(pk.id)) return '';
+  const n=lotItems(pk).filter(x=>inShop(x)).length, sum=lotSum(pk), pct=Math.round((sum-pk.price)/sum*100);
+  return `<div class="packslim">
+    <img src="${pk.photo}" alt="" loading="lazy">
+    <div class="pstx"><b>${esc(t(pk.name))} · ${n} ${D('gabarits','templates')}</b>
+      <small>${D('Les pièces de Noël réunies, tutoriel 3D de la maison inclus.','Every Christmas piece together, house 3D tutorial included.')}</small></div>
+    <div class="pspr"><b>${eur(pk.price)}</b><s>${eur(sum)}</s><span class="pill pay">−${pct} %</span></div>
+    <button class="btn sm" data-lot="${pk.id}" data-from="hero">${D('Voir le pack','See the pack')}</button>
+  </div>`;
+}
+/** deux étagères de même poids : « Pour commencer » (gratuites) puis « Pour aller plus loin » (en vente) */
+function shelvesHTML(free, paid, packBand, nFree, nPaid){
+  const shelf=(key,title,tag,more,items,extra)=>`<section class="shelf" id="shelf-${key}">
+    <div class="sect-title"><h3>${title}</h3><span class="tagsm">${tag}</span><button class="link shmore" data-view="${key}">${more} →</button></div>
+    ${extra||''}
+    <div class="shwrap">
+      <div class="shrow">${items.map(cardHTML).join('')}</div>
+      <button class="shnav prev" data-shnav="prev" aria-label="${D('Précédent','Previous')}">‹</button>
+      <button class="shnav next" data-shnav="next" aria-label="${D('Suivant','Next')}">›</button>
+    </div></section>`;
+  return (free.length?shelf('free',D('Pour commencer','To start with'),D('gratuites, et elles le restent','free, and they stay free'),D(`Voir les ${nFree} gratuites`,`See all ${nFree} free`),free):'')
+       + (paid.length?shelf('paid',D('Pour aller plus loin','To go further'),D('achat unique · tutoriel 3D','one-off · 3D tutorial'),D(`Voir les ${nPaid} en vente`,`See all ${nPaid} for sale`),paid,packBand):'');
 }
 function lotOfferHTML(m){
   const pk=lotOf(m); if(!pk || !lotLive(pk) || owns(pk.id)) return '';
