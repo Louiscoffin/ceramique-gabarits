@@ -2118,17 +2118,17 @@ const MODELS = [
     lot:'noel', gumroad:{ url:'https://ceramix541.gumroad.com/l/plat-sapin', productId:'75hKvSM-xiD1vaHPHvjnnA==' },
     blurb:"Un grand plat en forme de sapin partagé en trois compartiments par deux cloisons, pour l'apéritif des fêtes. Le fond est la silhouette du sapin ; le bord se monte avec trois bandes collées sur la tranche.",
     blurbEn:"A large fir-tree-shaped dish split into three compartments by two dividers, for the festive aperitif. The base is the tree outline; the rim is built from three strips attached to its edge.",
-    thick:6, dBase:0, ears:false, kit:{type:'plat-sapin', h:250, wall:28}, sections:[] },
+    thick:6, dBase:0, ears:false, kit:{type:'plat-sapin', h:210, wall:20}, sections:[] },
   { id:'plateau-houx', name:'Plateau feuille de houx', family:'Vaisselle', diff:'Débutant', price:3.99, novelty:true,
     lot:'noel', gumroad:{ url:'https://ceramix541.gumroad.com/l/plateau-houx', productId:'UvAmcTonM96GMLX9sOMutg==' },
-    blurb:"Un grand plateau en feuille de houx : contour à pointes, nervures à inciser, quelques baies au pied. Une seule plaque que l'on relève sur un moule, donc simple à fabriquer et très reconnaissable.",
-    blurbEn:"A large holly-leaf platter: pointed outline, veins to incise, a few berries at the base. A single slab lifted over a mould, so simple to make and instantly recognisable.",
-    thick:6, dBase:0, ears:false, kit:{type:'plateau-houx', L:300, W:150}, sections:[] },
+    blurb:"Un grand plateau en feuille de houx : contour à pointes, nervures repérées à inciser. Une seule plaque que l'on relève sur un moule, donc simple à fabriquer et très reconnaissable.",
+    blurbEn:"A large holly-leaf platter: pointed outline, marked veins to incise. A single slab lifted over a mould, so simple to make and instantly recognisable.",
+    thick:6, dBase:0, ears:false, kit:{type:'plateau-houx', L:300, W:160}, sections:[] },
   { id:'plateau-etoile', name:'Plateau étoile à coupelles', family:'Vaisselle', diff:'Avancé', price:3.99, novelty:true,
     lot:'noel', gumroad:{ url:'https://ceramix541.gumroad.com/l/plateau-etoile', productId:'Tjsi1z3s2A_1Ml-BIdUUZA==' },
     blurb:"Un plateau en étoile dont chaque pointe porte une coupelle, avec un bol au centre : cinq coupelles à remplir de noix, de clémentines ou de chocolats. Onze pièces à monter, le plus complet de la série.",
     blurbEn:"A star-shaped platter with a small bowl on each point and a bowl in the centre: five bowls for nuts, clementines or chocolates. Eleven pieces to assemble, the most complete of the series.",
-    thick:6, dBase:0, ears:false, kit:{type:'plateau-etoile', R:138, cd:0, ch:22, cc:80, rim:22, dv:22}, sections:[] },
+    thick:6, dBase:0, ears:false, kit:{type:'plateau-etoile', R:105, cd:0, ch:24, cc:88, rim:20, dv:0}, sections:[] },
 
   /* ---- atelier libre 3D : la pièce composée dans la scène. Jamais au catalogue (retire) ;
      le modèle n'existe que pour que model(draft.modelId) réponde. ---- */
@@ -2789,11 +2789,33 @@ function kPiece(letter,id,name,pts,holes,count,desc,extra){
   const A=polyArea(pts)-holes.reduce((a,x)=>a+polyArea(x),0);
   return Object.assign({ letter, id, name, kind:'contour', pts, holes, count, d0:0, d1:0, h:0, area:count*A, desc }, extra||{});
 }
-const wingVPts=s=>kScale([].concat(kBez([0,14],[20,4],[40,2],[52,2],10), kBez([52,2],[64,2],[84,4],[104,14],10), [[98,34]],
-  kBez([98,34],[84,28],[66,26],[52,26],10), kBez([52,26],[38,26],[20,28],[6,34],10)), s);
-const wingAPts=s=>kScale([].concat([[0,46],[0,14]], kBez([0,14],[6,6],[22,0],[40,4],10), kBez([40,4],[37,18],[32,34],[20,46],10)), s);
+/** courbe fermée lisse (Catmull-Rom, tangente continue partout) passant par les points : aucun angle */
+const kSmooth=(P,n)=>{ n=n||14; const m=P.length, out=[];
+  for(let i=0;i<m;i++){ const p0=P[(i-1+m)%m], p1=P[i], p2=P[(i+1)%m], p3=P[(i+2)%m];
+    for(let j=0;j<n;j++){ const t=j/n, t2=t*t, t3=t2*t;
+      out.push([0,1].map(k=>.5*((2*p1[k])+(-p0[k]+p2[k])*t+(2*p0[k]-5*p1[k]+4*p2[k]-p3[k])*t2+(-p0[k]+3*p1[k]-3*p2[k]+p3[k])*t3))); } }
+  return out; };
+const wingVPts=s=>{    // d'après la photo : large à la racine (derrière le cou), bord haut presque droit, bout arrondi, bord bas en diagonale ; UN SEUL TRAIT lisse, moitié gauche puis SYMÉTRIE exacte
+  const L=[[52,6],[34,4],[16,1],[4,3],[0,10],[4,17],[14,28],[28,36.5],[52,38.5]];
+  const R=L.slice(1,-1).reverse().map(q=>[104-q[0],q[1]]);
+  return kScale(kSmooth(L.concat(R),14), s);
+};
+/** petite branche à feuilles (tige + paires de feuilles), à tracer par l'utilisateur : polylignes en pointillés ; « haut » = −y */
+function kSprig(h,w,lean){
+  const out=[[[0,h/2],[0,-h/2]]], n=3;
+  const leaf=(y,sg,ang)=>{ const c=Math.cos(ang), sn=Math.sin(ang), P=(x,yy)=>[sg*(x*c-yy*sn), y+(x*sn+yy*c)];   // feuille en lentille, pointe vers le haut-extérieur
+    return [P(0,0),P(w*.35,-w*.22),P(w*.95,-w*.45),P(w*.45,-w*.02),P(0,0)]; };
+  for(let i=0;i<n;i++){ const y=h/2-(i+.7)*h/(n+.6); out.push(leaf(y,1,-.25), leaf(y,-1,-.25)); }
+  out.push([[0,-h/2],[w*.28,-h/2-w*.5],[0,-h/2-w],[-w*.28,-h/2-w*.5],[0,-h/2]]);   // feuille du bout
+  const c=Math.cos(lean||0), sn=Math.sin(lean||0);
+  return out.map(pl=>pl.map(q=>[q[0]*c-q[1]*sn, q[0]*sn+q[1]*c]));
+}
+/** coupe-coin de Chaikin (polygone fermé) : arrondit tous les angles en gardant la silhouette */
+const kChaikin=(P,it)=>{ let A=P; for(let k=0;k<it;k++){ const B=[]; A.forEach((a,i)=>{ const b=A[(i+1)%A.length]; B.push([.75*a[0]+.25*b[0],.75*a[1]+.25*b[1]],[.25*a[0]+.75*b[0],.25*a[1]+.75*b[1]]); }); A=B; } return A; };
+const wingAPts=s=>kScale(kChaikin([[0,46],[0,14],[5,5],[20,0],[38,3],[40,10],[33,32],[22,47]],4), s);   // aile en feuille : bord de collage droit, bout arrondi, aucun angle vif
 const kFrustVol=(H,D,d,e)=>{ const a=Math.max(0,D/2-e), b=Math.max(0,d/2-e); return Math.PI*H/3*(a*a+a*b+b*b)/10000; };   // cl
-const TREE_PLAT=[[0,0],[40,60],[28,60],[70,120],[52,120],[100,190],[18,190],[18,225],[-18,225],[-18,190],[-100,190],[-52,120],[-70,120],[-28,60],[-40,60]];
+/* silhouette relevée sur la photo (largeur/hauteur ≈ 1,13) : trois étages larges, tronc court. Creux à (±39, 63) et (±77, 128) : c'est là que courent les cloisons. */
+const TREE_PLAT=[[0,0],[55,51],[39,63],[95,111],[77,128],[127,172],[34,186],[34,225],[-34,225],[-34,186],[-127,172],[-77,128],[-95,111],[-39,63],[-55,51]];
 const kPerim=pts=>pts.reduce((a,p,i)=>{ const q=pts[(i+1)%pts.length]; return a+Math.hypot(q[0]-p[0],q[1]-p[1]); },0);
 const KIT_BOULE = (letter,head,k)=>kPiece(letter,'BOULE',D('Boule · gabarit témoin','Ball · gauge'),kCirc(head*k/2,40),[],1,
   `${D('boule modelée à la main','hand-rolled ball')} Ø ${uNum(head*k)} · ${D('creuse ou percée d’un trou d’évent avant cuisson','hollow, or vented, before firing')}`,{noClay:true});
@@ -2803,18 +2825,26 @@ const KIT_BOULE = (letter,head,k)=>kPiece(letter,'BOULE',D('Boule · gabarit té
     poly = sommets (déjà × retrait), h = hauteur du bord (× retrait), L0 = lettre de la 1re bande. */
 function kStrips(poly, h, k, L0){
   const n=poly.length; let sa=0; for(let i=0;i<n;i++){ const a=poly[i], b=poly[(i+1)%n]; sa+=a[0]*b[1]-b[0]*a[1]; }
-  const sg=sa>=0?1:-1, ang=i=>{ const a=poly[(i-1+n)%n], b=poly[i], c=poly[(i+1)%n];   // tournant au sommet i (+ = saillant)
-    let d=Math.atan2(c[1]-b[1],c[0]-b[0])-Math.atan2(b[1]-a[1],b[0]-a[0]); while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; return sg*d*90/Math.PI; };   // = demi-tournant en degrés
-  const groups=[];
-  for(let i=0;i<n;i++){ const a=poly[i], b=poly[(i+1)%n], L=Math.hypot(b[0]-a[0],b[1]-a[1]);
-    const bv=[Math.round(ang(i)), Math.round(ang((i+1)%n))].sort((x,y)=>x-y), key=(Math.round(L/k*2)/2)+'|'+bv.join(',');
-    let g=groups.find(x=>x.key===key); if(!g){ g={key,L,bv,count:0}; groups.push(g); } g.count++; }
-  const fmt=b=>`${Math.abs(b)}°${b<0?' ('+D('creux','notch')+')':''}`;
-  return groups.map((g,i)=>{ const l=String.fromCharCode(L0.charCodeAt(0)+i), Lw=g.L+4*k;
-    return kPiece(l,l,groups.length>1?D('Bande de bord ','Rim strip ')+(i+1):D('Bande de bord','Rim strip'),kRect(Lw,h),[],g.count,
-      `${g.count} × ${uNum(Lw)} × ${U(h)} · ${D('biseaux','bevels')} ${fmt(g.bv[0])} + ${fmt(g.bv[1])}`,{role:'strip'}); });
+  const sg=sa>=0?1:-1, ang=i=>{ const a=poly[(i-1+n)%n], b=poly[i], c=poly[(i+1)%n];   // demi-tournant au sommet i en degrés (+ = saillant, − = creux)
+    let d=Math.atan2(c[1]-b[1],c[0]-b[0])-Math.atan2(b[1]-a[1],b[0]-a[0]); while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; return sg*d*90/Math.PI; };
+  const fmt=b=>`${Math.abs(Math.round(b))}°${b<0?' ('+D('creux','notch')+')':''}`;
+  const out=[];
+  for(let i=0;i<n;i++){ const a=poly[i], b=poly[(i+1)%n], L=Math.hypot(b[0]-a[0],b[1]-a[1]), l=String.fromCharCode(L0.charCodeAt(0)+i);
+    out.push(kPiece(l,l,`${D('Bande de bord','Rim strip')} ${i+1}`,kRect(L,h),[],1,
+      `${D('côté','side')} ${i+1}/${n} · ${uNum(L)} × ${U(h)} · ${D('longueur côté extérieur','length on the outer face')} · ${D('biseau début','bevel start')} ${fmt(ang(i))}, ${D('fin','end')} ${fmt(ang((i+1)%n))}`,{role:'strip'})); }
+  return out;
 }
 const nextL=(arr,L0)=>String.fromCharCode(L0.charCodeAt(0)+arr.length);
+
+/** feuille de houx relevée sur la photo : pointes (sens horaire, du bord gauche) puis nervures ; x ∈ [0,1] le long de la feuille, y ∈ [−½,½] */
+const HOUX_TIPS=[[0.0505,-0.2953],[0.2551,-0.4498],[0.4569,-0.4904],[0.6691,-0.5],[0.8632,-0.3966],[1.0,-0.1598],[0.9744,0.1282],[0.8179,0.3676],[0.6425,0.5],[0.4492,0.4876],[0.2711,0.4124],[0.0,0.2637]];
+const HOUX_VEINS=[[[0.0401,0.2189],[0.4,0.07],[0.9919,-0.1412]],[[0.2008,0.0493],[0.2537,-0.441]],[[0.3885,0.0008],[0.4555,-0.4815]],[[0.5784,0.0017],[0.668,-0.4929]],[[0.6915,0.0018],[0.8624,-0.3913]],[[0.7637,0],[1.0017,-0.1511]],[[0.6878,0.0247],[0.9697,0.1256]],[[0.4804,0.1006],[0.8019,0.3393]],[[0.2872,0.1518],[0.6293,0.4541]],[[0.1796,0.1818],[0.4426,0.4646]]];
+function houxLeaf(L,W){ const P=HOUX_TIPS.map(q=>[q[0]*L,q[1]*W]), n=P.length, cx=P.reduce((a,q)=>a+q[0],0)/n, cy=P.reduce((a,q)=>a+q[1],0)/n, out=[];
+  for(let i=0;i<n;i++){ const a=P[i], b=P[(i+1)%n]; out.push(a); if(i===n-1) continue;     // le bord gauche (base) reste droit, les autres côtés sont des festons creux
+    const mx=(a[0]+b[0])/2, my=(a[1]+b[1])/2, c=[mx+(cx-mx)*.34, my+(cy-my)*.34];
+    for(let j=1;j<8;j++){ const t=j/8, u=1-t; out.push([u*u*a[0]+2*u*t*c[0]+t*t*b[0], u*u*a[1]+2*u*t*c[1]+t*t*b[1]]); } }
+  return out; }
+const houxVeins=(L,W)=>HOUX_VEINS.map(v=>v.map(q=>[q[0]*L,q[1]*W]));
 
 const KITS = {
   'cone-etoile': {
@@ -2837,20 +2867,21 @@ const KITS = {
     rows:()=>[['H',D('Hauteur du cône','Cone height'),'h',50,200],['D',D('Ø du bas','Bottom Ø'),'Ø',35,140],['d',D('Ø du haut','Top Ø'),'Ø',10,60],['head',D('Ø de la tête','Head Ø'),'Ø',15,70],['heart',D('Largeur du cœur','Heart width'),'L',8,40]],
     H:p=>p.H+p.head*.85, W:p=>Math.max(p.D, 104*p.D/66),
     hint:()=>D('Les cotes se règlent à droite : cône, tête, cœur. Les ailes suivent le Ø du bas.','Set the dimensions on the right: cone, head, heart. The wings follow the bottom Ø.'),
-    note:()=>D('les branches de la robe s’incisent à la main (non tracées)','the dress branches are incised by hand (not drawn)'),
+    note:()=>D('les trois branches de la robe sont repérées en pointillés sur le cône : à piquer au papier puis à inciser à la main','the three dress branches are marked in dotted lines on the cone: prick them through the paper, then incise by hand'),
     pieces(dm,k){ const p=dm.kit, d=Math.min(p.d,p.D-10), c=kCone(p.H,p.D,d,k,9), s=(p.D/66)*k;
       const wing=wingVPts(s), heart=kHeart(p.heart*k);
-      return [ kPiece('A','A',D('Cône','Cone'),c.pts,[],1,`${D('secteur','sector')} ${Math.round(c.deg)}° · R ${uNum(c.Lt)} / ${U(c.Ls)} · ${D('patte de collage','glue tab')} 9`),
+      const sp=(r,a,h,w,lean)=>kSprig(h*k*p.D/66,w*k*p.D/66,lean).map(pl=>kAt(c,r,a,pl)), guides=[].concat(sp(.72,0,44,10,0), sp(.76,-.46,32,7.5,-.3), sp(.76,.46,32,7.5,.3));
+      return [ kPiece('A','A',D('Cône','Cone'),c.pts,[],1,`${D('secteur','sector')} ${Math.round(c.deg)}° · R ${uNum(c.Lt)} / ${U(c.Ls)} · ${D('patte de collage','glue tab')} 9 · ${D('3 branches repérées en pointillés','3 branches marked in dotted lines')}`,{guides}),
         kPiece('B','B',D('Ailes d’une pièce','One-piece wings'),wing,[],1,`${kDim(wing)} · ${D('collées dans le dos, sous la tête','glued on the back, under the head')}`),
         kPiece('C','C',D('Cœur','Heart'),heart,[],1,`${uNum(p.heart*k)} · ${D('appliqué en relief sur la robe','applied in relief on the dress')}`),
         KIT_BOULE('D',p.head,k) ]; },
     vol:dm=>kFrustVol(dm.kit.H,dm.kit.D,Math.min(dm.kit.d,dm.kit.D-10),dm.thick),
     steps:()=>[`Laisser raffermir les pièces à plat. Rouler le cône A (patte sous le bord opposé, couture dans le dos), barbotine et stries.
       Modeler la boule D à la main : creuse, ou percée d'un trou d'évent si la pièce est cuite ; la coller au sommet. Coller les ailes B dans le dos, sous la tête, puis le cœur C sur le devant.
-      Inciser trois petites branches en bas de la robe avec un ébauchoir, avant le séchage. Sécher à plat, lentement.`,
+      Inciser trois petites branches en bas de la robe avec un ébauchoir, avant le séchage (leur tracé est repéré en pointillés sur le gabarit A : le piquer à l'aiguille à travers le papier). Sécher à plat, lentement.`,
       `Let the pieces firm up flat. Roll cone A (tab under the opposite edge, seam at the back), slip and score.
       Hand-roll ball D: hollow, or with a vent hole if fired; attach it on top. Glue wings B on the back, under the head, then heart C on the front.
-      Incise three small branches at the bottom of the dress with a modelling tool before drying. Dry flat, slowly.`]
+      Incise three small branches at the bottom of the dress with a modelling tool before drying (their outline is marked in dotted lines on template A: prick it through the paper with a needle). Dry flat, slowly.`]
   },
   'ange-photo': {
     rows:()=>[['H',D('Hauteur du cône','Cone height'),'h',80,260],['D',D('Ø du bas','Bottom Ø'),'Ø',50,170],['d',D('Ø du haut','Top Ø'),'Ø',12,80],['head',D('Ø de la tête','Head Ø'),'Ø',20,80],['window',D('Cœur-fenêtre','Heart window'),'L',12,110]],
@@ -2862,26 +2893,29 @@ const KITS = {
       return base+' · '+(cd>=30 ? D(`bougie ronde jusqu'à Ø ${U(cd)} : passe par le cœur`,`round candle up to Ø ${U(cd)} fits through the heart`) : D(`cœur trop petit pour une bougie (Ø ${U(Math.max(0,cd))} max) : la lumière seule passe`,`heart too small for a candle (Ø ${U(Math.max(0,cd))} max): only the light gets out`))
         +(out?' · ⚠ '+D('le cœur est trop grand pour ce cône : agrandis le cône ou réduis le cœur','the heart is too big for this cone: enlarge the cone or reduce the heart'):''); },
     pieces(dm,k){ const p=dm.kit, d=Math.min(p.d,p.D-10), c=kCone(p.H,p.D,d,k,9), s=(p.D/80)*1.35*k, wing=wingAPts(s);
-      return [ kPiece('A','A',D('Cône','Cone'),c.pts,[kAt(c,.52,0,kHeart(p.window*k))],1,`${D('secteur','sector')} ${Math.round(c.deg)}° · R ${uNum(c.Lt)} / ${U(c.Ls)} · ${D('fenêtre en cœur','heart window')} ${uNum(p.window*k)} · ${D('patte de collage','glue tab')} 9`),
-        kPiece('B','B',D('Aile','Wing'),wing,[],2,`2 × ${kDim(wing)} · ${D('une en miroir','one mirrored')}`),
+      const sl=c.Lt-c.Ls, zw=9*k, zl=Math.min(.72*32*s, (.40-.06)*sl), r0=.06+zl/sl/2+.02, ax=.64,   // zone un peu plus courte que la racine de l'aile, haute et rejetée sur les côtés : loin du cœur
+        rect=[[-zw/2,-zl/2],[zw/2,-zl/2],[zw/2,zl/2],[-zw/2,zl/2],[-zw/2,-zl/2]];
+      const gCone=[kAt(c,r0,-ax,rect), kAt(c,r0,ax,rect)], gWing=[[[zw,29.5*s-zl/2],[zw,29.5*s+zl/2]]];
+      return [ kPiece('A','A',D('Cône','Cone'),c.pts,[kAt(c,.52,0,kHeart(p.window*k))],1,`${D('secteur','sector')} ${Math.round(c.deg)}° · R ${uNum(c.Lt)} / ${U(c.Ls)} · ${D('fenêtre en cœur','heart window')} ${uNum(p.window*k)} · ${D('patte de collage','glue tab')} 9 · ${D('2 zones de collage des ailes en pointillés','2 wing glue zones in dotted lines')}`,{guides:gCone}),
+        kPiece('B','B',D('Aile','Wing'),wing,[],2,`2 × ${kDim(wing)} · ${D('zone de collage en pointillés','glue zone in dotted lines')} ${uNum(zw)}`,{guides:gWing,mirror:true}),
         KIT_BOULE('C',p.head,k) ]; },
     vol:dm=>kFrustVol(dm.kit.H,dm.kit.D,Math.min(dm.kit.d,dm.kit.D-10),dm.thick),
     steps:()=>[`Laisser raffermir les pièces à plat. Découper la fenêtre en cœur dans le secteur A avant le séchage (avec le cœur de départ, une bougie ronde Ø 40 passe : l'ange se pose dessus, ou on la glisse par le cœur). Rouler le cône (patte sous le bord opposé, couture dans le dos), barbotine et stries.
-      Modeler la boule C, creuse ou percée d'un trou d'évent ; la coller au sommet. Coller les deux ailes B de chaque côté, au niveau des épaules. Pas de fond : l'ange se pose sur une bougie LED.`,
+      Modeler la boule C, creuse ou percée d'un trou d'évent ; la coller au sommet. Strier les deux zones de collage repérées en pointillés sur le cône A et le bord droit de chaque aile B (même largeur), barbotine, puis coller les ailes de chaque côté, au niveau des épaules. Pas de fond : l'ange se pose sur une bougie LED.`,
       `Let the pieces firm up flat. Cut out the heart window in sector A before drying (with the default heart a round Ø 40 candle fits through: stand the angel over it, or slide it in through the heart). Roll the cone (tab under the opposite edge, seam at the back), slip and score.
-      Hand-roll ball C, hollow or with a vent hole; attach it on top. Glue the two wings B on each side, at shoulder level. No base: the angel stands over an LED tea light.`]
+      Hand-roll ball C, hollow or with a vent hole; attach it on top. Score the two glue zones marked in dotted lines on cone A and the straight edge of each wing B (same width), add slip, then glue the wings on each side, at shoulder level. No base: the angel stands over an LED tea light.`]
   },
   'plat-sapin': {
     rows:()=>[['h',D('Hauteur du plat','Dish height'),'h',150,400],['wall',D('Hauteur du bord','Rim height'),'h',15,45]],
-    H:p=>p.h, W:p=>200*p.h/225,
+    H:p=>p.h, W:p=>254*p.h/225,
     hint:()=>D('Les cotes se règlent à droite : hauteur du plat, hauteur du bord.','Set the dimensions on the right: dish height, rim height.'),
     note:()=>D('le bord se monte avec une bande par côté du sapin, biseautée à chaque angle (angles indiqués sur chaque gabarit)','the rim is built with one strip per side of the tree, bevelled at every corner (angles given on each template)'),
     pieces(dm,k){ const p=dm.kit, sc=p.h/225*k, poly=TREE_PLAT.map(q=>[q[0]*sc,q[1]*sc]), base=kRound(poly,3*k), hh=p.wall*k;
       const out=[ kPiece('A','A',D('Fond','Base'),base,[],1,`${D('silhouette de sapin','fir-tree outline')} ${kDim(base)}`) ];
       kStrips(poly,hh,k,'B').forEach(q=>out.push(q));
       let l=nextL(out,'A');
-      out.push(kPiece(l,l,D('Cloison haute','Long divider'),kRect(104*sc,hh*.92),[],1,`${uNum(104*sc)} × ${U(hh*.92)}`,{role:'div'})); l=nextL(out,'A');
-      out.push(kPiece(l,l,D('Cloison courte','Short divider'),kRect(56*sc,hh*.92),[],1,`${uNum(56*sc)} × ${U(hh*.92)}`,{role:'div'}));
+      out.push(kPiece(l,l,D('Cloison haute','Long divider'),kRect(154*sc,hh*.92),[],1,`${uNum(154*sc)} × ${U(hh*.92)} · ${D('creux du bas à creux du bas','notch to notch, lower tier')}`,{role:'div'})); l=nextL(out,'A');
+      out.push(kPiece(l,l,D('Cloison courte','Short divider'),kRect(78*sc,hh*.92),[],1,`${uNum(78*sc)} × ${U(hh*.92)} · ${D('creux du haut à creux du haut','notch to notch, upper tier')}`,{role:'div'}));
       return out; },
     vol:dm=>{ const p=dm.kit, sc=p.h/225; return polyArea(TREE_PLAT.map(q=>[q[0]*sc,q[1]*sc]))*Math.max(0,p.wall-dm.thick)*.9/10000; },
     steps:()=>[`Laisser raffermir toutes les pièces à plat. Découper le fond A. Découper chaque bande de bord (une par côté du sapin) et biseauter ses deux bouts à l'angle indiqué sur son gabarit (les « creux » se biseautent dans l'autre sens). Les poser sur la tranche du fond en suivant le contour, un côté après l'autre : chaque bout vient contre le biseau de la bande voisine (barbotine, stries, colombin à l'intérieur de chaque angle).
@@ -2892,19 +2926,13 @@ const KITS = {
   'plateau-houx': {
     rows:()=>[['L',D('Longueur','Length'),'L',200,420],['W',D('Largeur','Width'),'L',100,260]],
     H:p=>p.W, W:p=>p.L,
-    hint:()=>D('Les cotes se règlent à droite : longueur, largeur.','Set the dimensions on the right: length, width.'),
-    note:()=>D('les nervures se tracent à l’ébauchoir (non dessinées)','the veins are drawn with a modelling tool (not drawn here)'),
-    pieces(dm,k){ const p=dm.kit, L=p.L*k, W=p.W*k, N=10, top=[], bot=[];
-      for(let j=0;j<=N;j++){ const x=-L/2+L*j/N, w=(W/2)*Math.pow(Math.sin(Math.PI*j/N),.75)*(j%2===0?1:.68); top.push([x,-w]); bot.push([x,w]); }
-      const leaf=kRound([...top,...bot.reverse().slice(1,-1)],2.5*k), stem=kRound([[0,11*k],[L*.2,2*k],[L*.5,6*k],[L*.5,16*k],[L*.2,22*k]],3*k);
-      return [ kPiece('A','A',D('Feuille','Leaf'),leaf,[],1,`${D('feuille de houx','holly leaf')} ${kDim(leaf)} · ${N-1} ${D('pointes','points')}`),
-        kPiece('B','B',D('Baie','Berry'),kCirc(7*k,24),[],3,`3 × ${D('boule','ball')} Ø ${uNum(14*k)} · ${D('en grappe au pied de la feuille','in a cluster at the leaf base')}`),
-        kPiece('C','C',D('Tige','Stem'),stem,[],1,`${kDim(stem)} · ${D('boudin plat collé sous la feuille','flat coil attached under the leaf')}`) ]; },
-    vol:dm=>polyArea(kRound((()=>{ const L=dm.kit.L,W=dm.kit.W,N=10,t=[],b=[]; for(let j=0;j<=N;j++){ const x=-L/2+L*j/N,w=(W/2)*Math.pow(Math.sin(Math.PI*j/N),.75)*(j%2===0?1:.68); t.push([x,-w]); b.push([x,w]); } return [...t,...b.reverse().slice(1,-1)]; })(),2.5))*8*.3/10000,
-    steps:()=>[`Laisser raffermir la feuille A à plat. Tracer les nervures à l'ébauchoir. Relever les bords en posant la plaque sur un moule renversé (grand bol), avant qu'elle ne soit trop sèche.
-      Façonner les baies B en petites boules et la tige C en boudin plat ; les coller sous le pied de la feuille (barbotine, stries). Sécher lentement sur le moule ; émail alimentaire.`,
-      `Let leaf A firm up flat. Draw the veins with a modelling tool. Lift the edges by laying the slab over an upturned mould (a large bowl) before it dries too much.
-      Shape berries B as small balls and stem C as a flat coil; attach them under the leaf base (slip, score). Dry slowly on the mould; food-safe glaze.`]
+    hint:()=>D('Les cotes se règlent à droite : longueur, largeur. Les nervures sont repérées en pointillés sur la feuille.','Set the dimensions on the right: length, width. The veins are marked in dotted lines on the leaf.'),
+    note:()=>D('contour relevé sur la photo ; la nervure centrale et les nervures latérales sont repérées en pointillés : à piquer au papier puis à inciser à l’ébauchoir','outline taken from the photo; the central vein and side veins are marked in dotted lines: prick them through the paper, then incise with a modelling tool'),
+    pieces(dm,k){ const p=dm.kit, L=p.L*k, W=p.W*k, leaf=kRound(houxLeaf(L,W),2.5*k), guides=houxVeins(L,W);
+      return [ kPiece('A','A',D('Feuille','Leaf'),leaf,[],1,`${D('feuille de houx','holly leaf')} ${kDim(leaf)} · ${D('11 pointes','11 points')} · ${D('nervures en pointillés','veins in dotted lines')}`,{guides}) ]; },
+    vol:dm=>polyArea(houxLeaf(dm.kit.L,dm.kit.W))*8*.3/10000,
+    steps:()=>[`Laisser raffermir la feuille A à plat. Piquer les nervures repérées en pointillés à l'aiguille à travers le papier, puis les inciser à l'ébauchoir sans traverser la plaque. Relever les bords en posant la plaque sur un moule renversé (grand bol), avant qu'elle ne soit trop sèche. Sécher lentement sur le moule ; émail alimentaire.`,
+      `Let leaf A firm up flat. Prick the veins marked in dotted lines with a needle through the paper, then incise them with a modelling tool without going through the slab. Lift the edges by laying the slab over an upturned mould (a large bowl) before it dries too much. Dry slowly on the mould; food-safe glaze.`]
   },
   'plateau-etoile': {
     rows:()=>[['R',D('Rayon du plateau','Platter radius'),'R',100,170],['rim',D('Bord autour de l’étoile (0 = sans)','Rim around the star (0 = none)'),'h',0,45],['dv',D('Cloisons entre les branches (0 = sans)','Dividers between the points (0 = none)'),'h',0,45],['cc',D('Ø du bol central (0 = sans)','Centre bowl Ø (0 = none)'),'Ø',0,120],['ch',D('Hauteur du bol central','Centre bowl height'),'h',12,45],['cd',D('Ø des coupelles sur les branches (0 = sans)','Bowl Ø on the points (0 = none)'),'Ø',0,85]],
@@ -2961,23 +2989,22 @@ const KG = {
     b:D(`Roule une boule de Ø ${U(head)} entre les paumes et compare-la au gabarit-témoin. Creuse-la ou perce un trou d'évent avant cuisson (inutile en autodurcissante). Strie et colle-la au sommet du cône.`,
         `Roll a ball Ø ${U(head)} between your palms and compare it with the gauge template. Hollow it out or pierce a vent hole before firing (not needed with air-dry clay). Score and attach it on top of the cone.`)})
 };
-const kitGuide = d => {
+const kitGuide0 = d => {
   const type=d.kit.type, pcs=pieces(d), ids=r=>pcs.filter(q=>q.role===r).map(q=>q.letter), L=l=>pcs.find(q=>q.letter===l)?l:null, k=1/(1-state.shrink);
   const only=(...a)=>a.filter(Boolean);
   if(type==='ange-v') return [ KG.slab(d), KG.print(only('A','B','C')), KG.cut(only('A','B','C')), KG.cone('A'), KG.head('D',d.kit.head*1,k),
     {t:D('Coller les ailes','Attach the wings'), p:['B'], b:D(`Strie le dos du cône juste sous la tête et le bord de la pièce des ailes B, passe de la barbotine et presse. Soutiens avec un rouleau de papier le temps que ça tienne : les deux ailes s'ouvrent en V de chaque côté.`,`Score the back of the cone just under the head and the edge of the wing piece B, add slip and press. Prop it with a paper roll until it holds: both wings open in a V on each side.`)},
-    {t:D('Poser le cœur et les branches','Add the heart and the branches'), p:['C'], b:D(`Strie, barbotine et colle le cœur C en relief sur le devant de la robe. Avec un ébauchoir, incise trois petites branches en bas de la robe, avant le séchage.`,`Score, slip and attach heart C in relief on the front of the dress. With a modelling tool, incise three small branches at the bottom of the dress, before drying.`)},
+    {t:D('Poser le cœur et les branches','Add the heart and the branches'), p:['C'], b:D(`Strie, barbotine et colle le cœur C en relief sur le devant de la robe. Les trois petites branches sont repérées en pointillés sur le gabarit A : pique leur tracé à l'aiguille à travers le papier posé sur la plaque (ou dessine-les à main levée), puis incise-les à l'ébauchoir, avant le séchage.`,`Score, slip and attach heart C in relief on the front of the dress. The three small branches are marked in dotted lines on template A: prick their outline with a needle through the paper laid on the slab (or draw them freehand), then incise them with a modelling tool, before drying.`)},
     KG.dry(d) ];
   if(type==='ange-photo') return [ KG.slab(d), KG.print(only('A','B','C')), KG.cut(only('A','B','C'),[`Découpe d'abord la fenêtre en cœur dans le secteur A : une bougie ronde de Ø 40 mm doit pouvoir passer (voir la note sous la planche).`,`Cut the heart window in sector A first: a round Ø 40 mm candle must be able to pass through (see the note under the sheet).`]), KG.cone('A'), KG.head('C',d.kit.head,k),
-    {t:D('Coller les ailes','Attach the wings'), p:['B'], b:D(`Strie le dos du cône sous la tête et le bord des deux ailes B (une en miroir), barbotine, presse, et colle-les de chaque côté, au niveau des épaules.`,`Score the back of the cone under the head and the edge of both wings B (one mirrored), add slip, press, and attach them on each side, at shoulder level.`)},
+    {t:D('Coller les ailes','Attach the wings'), p:['B'], b:D(`Strie les deux zones de collage repérées en pointillés sur le cône A (sous la tête, de chaque côté) et la bande en pointillés du bord droit de chaque aile B (une en miroir), barbotine, presse, et colle-les au niveau des épaules ; tiens-les quelques minutes ou cale-les avec du papier roulé.`,`Score the two glue zones marked in dotted lines on cone A (under the head, on each side) and the dotted strip along the straight edge of each wing B (one mirrored), add slip, press, and attach them at shoulder level; hold them a few minutes or prop them with rolled paper.`)},
     {t:D('Essayer avec une bougie','Try it with a candle'), p:['A'], b:D(`Pas de fond : l'ange se pose sur la bougie. Vérifie qu'une bougie ronde entre bien par le cœur ou par le bas, et agrandis le cœur dans l'outil si besoin. Avec une bougie LED, la lumière sort par le cœur.`,`No base: the angel stands over the candle. Check that a round candle fits through the heart or from below, and make the heart bigger in the tool if needed. With an LED candle the light shines through the heart.`)},
     KG.dry(d) ];
-  if(type==='plateau-houx') return [ KG.slab(d), KG.print(only('A','B','C')), KG.cut(only('A')),
-    {t:D('Tracer les nervures','Draw the veins'), p:['A'], b:D(`Trace la nervure centrale puis les nervures latérales à l'ébauchoir, sans traverser la plaque, avant qu'elle ne sèche.`,`Draw the central vein then the side veins with a modelling tool, without going through the slab, before it dries.`)},
-    {t:D('Relever les bords sur un moule','Lift the edges over a mould'), p:['A'], b:D(`Pose la feuille sur un moule renversé (grand bol, plat ou crumpled foil) et laisse-la épouser sa forme, bords légèrement relevés. Fais-le tant que la plaque est encore souple.`,`Lay the leaf over an upturned mould (a large bowl or dish) and let it follow its shape, edges slightly raised. Do it while the slab is still flexible.`)},
-    {t:D('Baies et tige','Berries and stem'), p:['B','C'], b:D(`Roule les baies B en petites boules (compare avec le gabarit) et façonne la tige C en boudin plat. Strie, barbotine et colle-les sous le pied de la feuille.`,`Roll the berries B into small balls (compare with the template) and shape the stem C as a flat coil. Score, slip and attach them under the base of the leaf.`)},
+  if(type==='plateau-houx') return [ KG.slab(d), KG.print(only('A')), KG.cut(only('A'),[`Les pointes sont fines : coupe-les d'un trait, lame bien verticale.`,`The points are slender: cut them in one stroke, blade held upright.`]),
+    {t:D('Tracer les nervures','Draw the veins'), p:['A'], b:D(`Les nervures (la médiane et les latérales qui vont à chaque pointe) sont repérées en pointillés sur le gabarit : pique leur tracé à l'aiguille à travers le papier posé sur la plaque, retire le papier, puis relie les points et inciser à l'ébauchoir, sans traverser la plaque, avant qu'elle ne sèche.`,`The veins (the central one and the side ones running to each point) are marked in dotted lines on the template: prick their outline with a needle through the paper laid on the slab, remove the paper, join the dots and incise with a modelling tool, without going through the slab, before it dries.`)},
+    {t:D('Relever les bords sur un moule','Lift the edges over a mould'), p:['A'], b:D(`Pose la feuille sur un moule renversé (grand bol ou plat) et laisse-la épouser sa forme, bords légèrement relevés. Fais-le tant que la plaque est encore souple, puis lisse les pointes du bout du doigt humide.`,`Lay the leaf over an upturned mould (a large bowl or dish) and let it follow its shape, edges slightly raised. Do it while the slab is still flexible, then smooth the points with a damp fingertip.`)},
     KG.dry(d) ];
-  const rim = (strips,extra)=>({t:D('Monter le bord','Build the rim'), p:strips, b:D(`Biseaute les deux bouts de chaque bande à l'angle indiqué sur son gabarit (un angle « creux » se biseaute dans l'autre sens). Strie la tranche du plateau et la base de chaque bande, passe de la barbotine, puis pose les bandes côté après côté en suivant le contour : chaque bout vient contre le biseau de la bande voisine. Presse, puis ajoute un colombin à l'intérieur de chaque angle et lisse.`,`Bevel both ends of every strip at the angle given on its template (a “notch” angle is bevelled the other way). Score the edge of the base and the bottom of each strip, add slip, then set the strips one side after the other following the outline: each end meets the bevel of the next strip. Press, then add a coil inside every corner and smooth.`)});
+  const rim = (strips,extra)=>({t:D('Monter le bord','Build the rim'), p:strips, b:D(`Les bandes sont numérotées dans le sens des aiguilles d'une montre : la bande 1 part de la pointe en haut, le début de chacune touche la fin de la précédente. Biseaute les deux bouts de chaque bande à l'angle indiqué sur son gabarit (un angle « creux » se biseaute dans l'autre sens ; les longueurs sont mesurées sur la face extérieure). Strie la tranche du plateau et la base de chaque bande, passe de la barbotine, puis pose les bandes côté après côté en suivant le contour : chaque bout vient contre le biseau de la bande voisine. Presse, puis ajoute un colombin à l'intérieur de chaque angle et lisse.`,`The strips are numbered clockwise: strip 1 starts at the tip at the top, the start of each one meets the end of the previous one. Bevel both ends of every strip at the angle given on its template (a “notch” angle is bevelled the other way; lengths are measured on the outer face). Score the edge of the base and the bottom of each strip, add slip, then set the strips one side after the other following the outline: each end meets the bevel of the next strip. Press, then add a coil inside every corner and smooth.`)});
   if(type==='plat-sapin'){ const st=ids('strip'), dv=ids('div'); return [ KG.slab(d), KG.print(only('A',...st,...dv)), KG.cut(only('A',...st,...dv)),
     {t:D('Poser le fond','Lay the base'), p:['A'], b:D(`Pose le fond A sur une planche ou un plateau : il doit rester plat. Marque au doigt, à 5 mm du bord, la ligne où viendront les bandes.`,`Lay base A on a board: it must stay flat. Mark with a finger, 5 mm from the edge, the line where the strips will go.`)},
     rim(st), {t:D('Ajouter les cloisons','Add the dividers'), p:dv, b:D(`Pose la cloison haute puis la courte à leur place (voir la vue éclatée), un peu plus basses que le bord. Strie et barbotine le fond et les extrémités, presse et ajoute un petit colombin aux jonctions. Lisse à l'éponge.`,`Set the long divider then the short one in place (see the exploded view), slightly lower than the rim. Score and slip the base and the ends, press and add a small coil at the joins. Smooth with a sponge.`)},
@@ -2991,6 +3018,7 @@ const kitGuide = d => {
   return null;
 };
 const kitPart = d => d && d.parts ? d.parts[0] : d;        // un brouillon (parts) ou une partie
+const kitGuide = d => { const st=kitGuide0(d); if(!st) return st; const pcs=pieces(d), E=ls=>[...new Set(ls.flatMap(l=>pcs.filter(q=>q.letter===l||new RegExp('^'+l+'\\d+$').test(q.letter)).map(q=>q.letter)))]; return st.map(x=>({...x,p:E(x.p||[])})); };
 const kitGuideOK = d => { d=kitPart(d); return !!(d && d.kit && ['ange-v','ange-photo','plat-sapin','plateau-houx','plateau-etoile'].includes(d.kit.type)); };
 /** le pas à pas à l'écran : titres et pièces pour tous, détail pour qui a la pièce */
 function kitGuideHTML(d, owned){
@@ -3002,7 +3030,11 @@ function kitGuideHTML(d, owned){
     <ol>${steps.map((s,i)=>`<li><span class="kgn">${i+1}</span><div class="kgb"><b>${esc(s.t)}</b>${owned?`<p>${esc(s.b)}</p>`:''}${th(s.p)}</div></li>`).join('')}</ol></div>`;
 }
 const kitGuideSteps = d => (kitGuideOK(d)&&kitGuide(kitPart(d))||[]);
-const kitPieces = dm => KITS[dm.kit.type].pieces(dm, dm.wetK||1);
+const kitPieces = dm => { const raw=KITS[dm.kit.type].pieces(dm, dm.wetK||1), out=[];
+  raw.forEach(q=>{ const n=q.count||1; if(n<=1){ out.push(q); return; }
+    for(let i=0;i<n;i++){ const mir=q.mirror&&i%2===1, pts=mir?q.pts.map(v=>[-v[0],v[1]]).reverse():q.pts, holes=q.holes&&mir?q.holes.map(h=>h.map(v=>[-v[0],v[1]]).reverse()):q.holes;
+      out.push({...q, letter:q.letter+(i+1), id:q.id+(i+1), count:1, pts, holes, area:q.area/n, desc:String(q.desc||'').replace(/^\d+ × /,'')+(q.mirror?' · '+(mir?D('en miroir','mirrored'):D('sens normal','normal')):'')}); } });
+  return out; };
 const kitVol = dm => { const K=KITS[dm.kit.type]; return K.vol ? Math.max(0,K.vol(dm)) : 0; };
 const kitSteps = d => { const s=KITS[d.kit.type].steps(d); return D(s[0],s[1]); };
 /** les pièces à plat, rangées côte à côte (pas de vue 3D : ce sont des gabarits) */
@@ -3023,7 +3055,7 @@ function kitSVG(dm, o){
     const tag=o.letters?`<g><circle cx="${(x+9).toFixed(1)}" cy="${(y+oy+9).toFixed(1)}" r="9" fill="${P.fill}" stroke="${P.ink}" stroke-width="1"/>
       <text x="${(x+9).toFixed(1)}" y="${(y+oy+9).toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="9" font-family="monospace" fill="${P.ink}">${q.letter}</text></g>`:'';
     const n=q.count>1?`<text x="${(x+L.pos[i][2]).toFixed(1)}" y="${(y+oy+L.pos[i][3]+11).toFixed(1)}" text-anchor="end" font-size="10" font-family="monospace" fill="${P.ink}">×${q.count}</text>`:'';
-    return `<g transform="translate(${x.toFixed(2)} ${(y+oy).toFixed(2)}) scale(${lo.toFixed(4)})"><path fill-rule="evenodd" d="${d}" fill="${q.noClay?'none':P.fill}" stroke="${P.ink}" stroke-width="1.6" vector-effect="non-scaling-stroke" stroke-linejoin="round"${q.noClay?' stroke-dasharray="4 3"':''}/></g>${tag}${n}`; }).join('');
+    return `<g transform="translate(${x.toFixed(2)} ${(y+oy).toFixed(2)}) scale(${lo.toFixed(4)})"><path fill-rule="evenodd" d="${d}" fill="${q.noClay?'none':P.fill}" stroke="${P.ink}" stroke-width="1.6" vector-effect="non-scaling-stroke" stroke-linejoin="round"${q.noClay?' stroke-dasharray="4 3"':''}/>${(g.guides||[]).map(pl=>`<path d="M${pl.map(v=>v[0].toFixed(2)+' '+v[1].toFixed(2)).join('L')}" fill="none" stroke="${P.thin||P.ink}" stroke-width="1" stroke-dasharray="3 2.4" vector-effect="non-scaling-stroke"/>`).join('')}</g>${tag}${n}`; }).join('');
   return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" role="img">${body}</svg>`;
 }
 const kitRows = d => KITS[d.kit.type].rows();
@@ -8110,7 +8142,8 @@ function patternSVG(p){
       poly([[-a,h/2],[a,h/2],[b,-h/2],[-b,-h/2]]); break; }
     case 'contour': { pts=p.pts.slice();
       const ring=q=>'M'+q.map(v=>v[0].toFixed(2)+' '+v[1].toFixed(2)).join('L')+'Z';
-      d=`<path fill-rule="evenodd" d="${ring(p.pts)}${(p.holes||[]).map(ring).join('')}"${stroke}/>`; break; }
+      d=`<path fill-rule="evenodd" d="${ring(p.pts)}${(p.holes||[]).map(ring).join('')}"${stroke}/>`
+        +(p.guides||[]).map(pl=>`<path d="M${pl.map(v=>v[0].toFixed(2)+' '+v[1].toFixed(2)).join('L')}" fill="none" stroke="#4A7263" stroke-width=".7" stroke-dasharray="2 1.4" vector-effect="non-scaling-stroke"/>`).join(''); break; }
     default: {                                        // secteur annulaire
       const ang=Math.min(p.ang,359.5)*Math.PI/180, a0=-ang/2, R=p.R, r=p.r, N=48, all=[];
       for(let i=0;i<=N;i++){ const t=a0+ang*i/N; all.push([R*Math.sin(t),-R*Math.cos(t)]); }
